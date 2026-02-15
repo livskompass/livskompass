@@ -4,6 +4,7 @@ import { getPage, rewriteMediaUrls } from '../lib/api'
 import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
+import BlockRenderer from '../components/BlockRenderer'
 import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
@@ -39,11 +40,17 @@ export default function Page() {
   }
 
   const { page, children } = data
+  const pageAny = page as any
+
+  // ── Puck block rendering ─────────────────────────────────────────
+  if (pageAny.editor_version === 'puck' && pageAny.content_blocks) {
+    return <BlockRenderer data={pageAny.content_blocks} />
+  }
+
+  // ── Legacy HTML rendering ────────────────────────────────────────
   const hasChildren = children && children.length > 0
   const hasContent = page.content
     && page.content.replace(/&nbsp;/g, '').trim().length > 0
-  // If the content is mainly just links (like WordPress hub pages), render it
-  // as-is and skip the child cards — the links already serve as navigation.
   const strippedContent = (page.content || '')
     .replace(/&nbsp;/g, '')
     .replace(/<a[^>]*>.*?<\/a>/gi, '')

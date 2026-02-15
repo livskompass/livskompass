@@ -45,6 +45,7 @@ packages/api/    → Cloudflare Workers backend (Hono)
 - **GitHub**: https://github.com/livskompass/livskompass
 
 ### CI/CD
+**IMPORTANT: Always deploy by pushing to git. Never use `wrangler pages deploy` directly.**
 GitHub Actions auto-deploys all three services on push to `main`:
 - `.github/workflows/deploy.yml` — 3 parallel jobs (api, web, admin)
 - GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`

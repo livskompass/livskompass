@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
@@ -14,6 +15,17 @@ export default defineConfig({
         target: process.env.API_TARGET || 'https://livskompass-api.livskompass-config.workers.dev',
         changeOrigin: true,
       },
+    },
+    fs: {
+      allow: ['.', '../../packages/shared'],
+    },
+  },
+  optimizeDeps: {
+    include: ['@livskompass/shared'],
+  },
+  resolve: {
+    alias: {
+      '@livskompass/shared': path.resolve(__dirname, '../shared/src'),
     },
   },
 })

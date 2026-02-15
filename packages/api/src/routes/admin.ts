@@ -55,14 +55,15 @@ adminRoutes.get('/pages/:id', async (c) => {
 // Create page
 adminRoutes.post('/pages', async (c) => {
   const body = await c.req.json()
-  const { slug, title, content, metaDescription, parentSlug, sortOrder, status } = body
+  const { slug, title, content, metaDescription, parentSlug, sortOrder, status,
+          contentBlocks, editorVersion } = body
 
   const id = nanoid()
 
   await c.env.DB.prepare(`
-    INSERT INTO pages (id, slug, title, content, meta_description, parent_slug, sort_order, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(id, slug, title, content, metaDescription, parentSlug, sortOrder || 0, status || 'draft').run()
+    INSERT INTO pages (id, slug, title, content, content_blocks, editor_version, meta_description, parent_slug, sort_order, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, slug, title, content, contentBlocks || null, editorVersion || 'legacy', metaDescription, parentSlug, sortOrder || 0, status || 'draft').run()
 
   return c.json({ page: { id, slug, title } }, 201)
 })
@@ -71,14 +72,15 @@ adminRoutes.post('/pages', async (c) => {
 adminRoutes.put('/pages/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { slug, title, content, metaDescription, parentSlug, sortOrder, status } = body
+  const { slug, title, content, metaDescription, parentSlug, sortOrder, status,
+          contentBlocks, editorVersion } = body
 
   await c.env.DB.prepare(`
     UPDATE pages
-    SET slug = ?, title = ?, content = ?, meta_description = ?,
-        parent_slug = ?, sort_order = ?, status = ?, updated_at = datetime('now')
+    SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
+        meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).bind(slug, title, content, metaDescription, parentSlug, sortOrder, status, id).run()
+  `).bind(slug, title, content, contentBlocks || null, editorVersion || 'legacy', metaDescription, parentSlug, sortOrder, status, id).run()
 
   return c.json({ success: true })
 })
@@ -111,14 +113,15 @@ adminRoutes.get('/posts/:id', async (c) => {
 
 adminRoutes.post('/posts', async (c) => {
   const body = await c.req.json()
-  const { slug, title, content, excerpt, featuredImage, status, publishedAt } = body
+  const { slug, title, content, excerpt, featuredImage, status, publishedAt,
+          contentBlocks, editorVersion } = body
 
   const id = nanoid()
 
   await c.env.DB.prepare(`
-    INSERT INTO posts (id, slug, title, content, excerpt, featured_image, status, published_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(id, slug, title, content, excerpt, featuredImage, status || 'draft', publishedAt).run()
+    INSERT INTO posts (id, slug, title, content, content_blocks, editor_version, excerpt, featured_image, status, published_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, slug, title, content, contentBlocks || null, editorVersion || 'legacy', excerpt, featuredImage, status || 'draft', publishedAt).run()
 
   return c.json({ post: { id, slug, title } }, 201)
 })
@@ -126,14 +129,15 @@ adminRoutes.post('/posts', async (c) => {
 adminRoutes.put('/posts/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { slug, title, content, excerpt, featuredImage, status, publishedAt } = body
+  const { slug, title, content, excerpt, featuredImage, status, publishedAt,
+          contentBlocks, editorVersion } = body
 
   await c.env.DB.prepare(`
     UPDATE posts
-    SET slug = ?, title = ?, content = ?, excerpt = ?, featured_image = ?,
-        status = ?, published_at = ?, updated_at = datetime('now')
+    SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
+        excerpt = ?, featured_image = ?, status = ?, published_at = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).bind(slug, title, content, excerpt, featuredImage, status, publishedAt, id).run()
+  `).bind(slug, title, content, contentBlocks || null, editorVersion || 'legacy', excerpt, featuredImage, status, publishedAt, id).run()
 
   return c.json({ success: true })
 })

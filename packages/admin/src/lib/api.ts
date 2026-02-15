@@ -214,6 +214,8 @@ export interface Page {
   slug: string
   title: string
   content: string
+  content_blocks: string | null
+  editor_version: 'legacy' | 'puck'
   meta_description: string
   parent_slug: string | null
   sort_order: number
@@ -227,6 +229,8 @@ export interface Post {
   slug: string
   title: string
   content: string
+  content_blocks: string | null
+  editor_version: 'legacy' | 'puck'
   excerpt: string
   featured_image: string | null
   status: string
