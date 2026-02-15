@@ -19,9 +19,9 @@ preview_bucket_name = "livskompass-media"
 remote = true
 
 [vars]
-SITE_URL = "https://livskompass.se"
-ADMIN_URL = "https://admin.livskompass.se"
-CORS_ORIGIN = "https://livskompass.se,https://admin.livskompass.se"
+SITE_URL = "https://livskompass-api.livskompass-config.workers.dev"
+ADMIN_URL = "https://livskompass-admin.pages.dev"
+CORS_ORIGIN = "https://livskompass-web.pages.dev,https://livskompass-admin.pages.dev,http://localhost:3000,http://localhost:3001"
 
 # Secrets (set via: wrangler secret put SECRET_NAME)
 #

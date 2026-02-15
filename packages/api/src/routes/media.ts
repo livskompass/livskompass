@@ -31,8 +31,8 @@ mediaRoutes.post('/upload', async (c) => {
     httpMetadata: { contentType: file.type }
   })
 
-  // Generate public URL (assuming R2 public access is enabled)
-  const url = `https://media.livskompass.se/${r2Key}`
+  // Generate public URL via the Worker's /media/ route
+  const url = `/media/${r2Key}`
 
   // Save to database
   await c.env.DB.prepare(`

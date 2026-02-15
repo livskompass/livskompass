@@ -46,6 +46,44 @@ app.use('*', cors({
 // Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'livskompass-api' }))
 
+// Public media serving route — serves files directly from R2
+app.get('/media/*', async (c) => {
+  const key = c.req.path.replace(/^\/media\//, '')
+  if (!key) {
+    return c.json({ error: 'Not found' }, 404)
+  }
+
+  const object = await c.env.MEDIA.get(key)
+  if (!object) {
+    return c.json({ error: 'Not found' }, 404)
+  }
+
+  // Determine content type from R2 metadata or guess from extension
+  let contentType = object.httpMetadata?.contentType
+  if (!contentType) {
+    const ext = key.split('.').pop()?.toLowerCase()
+    const mimeTypes: Record<string, string> = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      webp: 'image/webp',
+      svg: 'image/svg+xml',
+      pdf: 'application/pdf',
+      mp3: 'audio/mpeg',
+      mp4: 'video/mp4',
+      css: 'text/css',
+      js: 'application/javascript',
+    }
+    contentType = (ext && mimeTypes[ext]) || 'application/octet-stream'
+  }
+
+  c.header('Content-Type', contentType)
+  c.header('Cache-Control', 'public, max-age=86400')
+
+  return c.body(object.body as ReadableStream)
+})
+
 // Public routes
 app.route('/api/pages', pagesRoutes)
 app.route('/api/posts', postsRoutes)
