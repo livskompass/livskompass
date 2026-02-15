@@ -47,7 +47,7 @@ export default function AdminLayout() {
   const queryClient = useQueryClient()
 
   // Auto-collapse sidebar on editor pages for maximum editing space
-  const isEditorPage = /\/(sidor|nyheter)\/.+/.test(location.pathname)
+  const isEditorPage = /\/(sidor|nyheter|utbildningar|material)\/.+/.test(location.pathname)
   useEffect(() => {
     if (isEditorPage) setCollapsed(true)
   }, [isEditorPage])

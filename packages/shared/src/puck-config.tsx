@@ -44,13 +44,90 @@ function useFetchJson<T>(endpoint: string): { data: T | null; loading: boolean }
   return { data, loading }
 }
 
+// ── Static site chrome that matches the production layout ──
+// Used inside Puck preview so the editor looks exactly like the live site.
+// On the public site, the real Layout component provides the header/footer,
+// but puck:isEditing class on body lets us detect context.
+
+const navLinks = [
+  { name: "ACT", href: "/act" },
+  { name: "Utbildningar", href: "/utbildningar" },
+  { name: "Material", href: "/material" },
+  { name: "Mindfulness", href: "/mindfulness" },
+  { name: "Forskning", href: "/forskning-pa-metoden" },
+  { name: "Om Fredrik", href: "/om-fredrik-livheim" },
+  { name: "Kontakt", href: "/kontakt" },
+  { name: "Nyheter", href: "/nyhet" },
+]
+
+function SiteHeader() {
+  return (
+    <header className="bg-white shadow-sm">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <span className="text-xl font-bold text-primary-600">Livskompass</span>
+          </div>
+          <div className="hidden md:flex items-center space-x-6">
+            {navLinks.map((item) => (
+              <a key={item.name} href={item.href} className="text-gray-600 hover:text-primary-600 transition-colors whitespace-nowrap text-sm">
+                {item.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </nav>
+    </header>
+  )
+}
+
+function SiteFooter() {
+  return (
+    <footer className="bg-gray-900 text-white mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Livskompass</h3>
+            <p className="text-gray-400">ACT och mindfulness utbildningar med Fredrik Livheim</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Kontakt</h3>
+            <p className="text-gray-400">Fredrik Livheim<br />livheim@gmail.com<br />070-694 03 64</p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Länkar</h3>
+            <ul className="space-y-2">
+              {navLinks.slice(0, 5).map((item) => (
+                <li key={item.name}><a href={item.href} className="text-gray-400 hover:text-white transition-colors">{item.name}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+          <p>&copy; {new Date().getFullYear()} Livskompass. Alla rättigheter förbehållna.</p>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
 export const puckConfig: Config = {
   root: {
-    render: ({ children }: { children: React.ReactNode }) => (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {children}
-      </div>
-    ),
+    render: ({ children }: { children: React.ReactNode }) => {
+      // Detect if we're inside the Puck editor iframe
+      const isEditor = typeof window !== "undefined" && window.frameElement !== null
+      return (
+        <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+          {isEditor && <SiteHeader />}
+          <main className="flex-1">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+              {children}
+            </div>
+          </main>
+          {isEditor && <SiteFooter />}
+        </div>
+      )
+    },
   },
   categories: {
     layout: {

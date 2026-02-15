@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS courses (
   title TEXT NOT NULL,
   description TEXT,
   content TEXT,
+  content_blocks TEXT,
+  editor_version TEXT DEFAULT 'legacy',
   location TEXT,
   start_date TEXT,
   end_date TEXT,
@@ -76,6 +78,8 @@ CREATE TABLE IF NOT EXISTS products (
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
+  content_blocks TEXT,
+  editor_version TEXT DEFAULT 'legacy',
   type TEXT,
   price_sek INTEGER,
   external_url TEXT,
@@ -134,6 +138,13 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT
 );
+
+-- Migrations: add content_blocks and editor_version to courses and products
+-- (safe to re-run: ALTER TABLE ADD COLUMN is a no-op if column already exists in D1)
+ALTER TABLE courses ADD COLUMN content_blocks TEXT;
+ALTER TABLE courses ADD COLUMN editor_version TEXT DEFAULT 'legacy';
+ALTER TABLE products ADD COLUMN content_blocks TEXT;
+ALTER TABLE products ADD COLUMN editor_version TEXT DEFAULT 'legacy';
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_pages_slug ON pages(slug);

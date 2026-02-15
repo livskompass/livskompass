@@ -183,17 +183,27 @@ adminRoutes.get('/courses/:id', async (c) => {
 
 adminRoutes.post('/courses', async (c) => {
   const body = await c.req.json()
-  const { slug, title, description, content, location, startDate, endDate,
-          priceSek, maxParticipants, registrationDeadline, status } = body
+  const { slug, title, description, content, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const location = body.location
+  const startDate = body.startDate ?? body.start_date
+  const endDate = body.endDate ?? body.end_date
+  const priceSek = body.priceSek ?? body.price_sek
+  const maxParticipants = body.maxParticipants ?? body.max_participants
+  const registrationDeadline = body.registrationDeadline ?? body.registration_deadline
 
   const id = nanoid()
 
   await c.env.DB.prepare(`
-    INSERT INTO courses (id, slug, title, description, content, location, start_date,
-                        end_date, price_sek, max_participants, registration_deadline, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(id, slug, title, description, content, location, startDate, endDate,
-          priceSek, maxParticipants, registrationDeadline, status || 'active').run()
+    INSERT INTO courses (id, slug, title, description, content, content_blocks, editor_version,
+                        location, start_date, end_date, price_sek, max_participants,
+                        registration_deadline, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, slug, title, description, content || null, contentBlocks || null,
+          editorVersion || 'legacy', location || null, startDate || null, endDate || null,
+          priceSek || null, maxParticipants || null, registrationDeadline || null,
+          status || 'active').run()
 
   return c.json({ course: { id, slug, title } }, 201)
 })
@@ -201,17 +211,26 @@ adminRoutes.post('/courses', async (c) => {
 adminRoutes.put('/courses/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { slug, title, description, content, location, startDate, endDate,
-          priceSek, maxParticipants, registrationDeadline, status } = body
+  const { slug, title, description, content, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const location = body.location
+  const startDate = body.startDate ?? body.start_date
+  const endDate = body.endDate ?? body.end_date
+  const priceSek = body.priceSek ?? body.price_sek
+  const maxParticipants = body.maxParticipants ?? body.max_participants
+  const registrationDeadline = body.registrationDeadline ?? body.registration_deadline
 
   await c.env.DB.prepare(`
     UPDATE courses
-    SET slug = ?, title = ?, description = ?, content = ?, location = ?,
-        start_date = ?, end_date = ?, price_sek = ?, max_participants = ?,
-        registration_deadline = ?, status = ?
+    SET slug = ?, title = ?, description = ?, content = ?, content_blocks = ?,
+        editor_version = ?, location = ?, start_date = ?, end_date = ?,
+        price_sek = ?, max_participants = ?, registration_deadline = ?, status = ?
     WHERE id = ?
-  `).bind(slug, title, description, content, location, startDate, endDate,
-          priceSek, maxParticipants, registrationDeadline, status, id).run()
+  `).bind(slug, title, description, content || null, contentBlocks || null,
+          editorVersion || 'legacy', location || null, startDate || null, endDate || null,
+          priceSek || null, maxParticipants || null, registrationDeadline || null,
+          status, id).run()
 
   return c.json({ success: true })
 })
@@ -360,14 +379,22 @@ adminRoutes.get('/products/:id', async (c) => {
 
 adminRoutes.post('/products', async (c) => {
   const body = await c.req.json()
-  const { slug, title, description, type, priceSek, externalUrl, imageUrl, inStock, status } = body
+  const { slug, title, description, type, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const priceSek = body.priceSek ?? body.price_sek
+  const externalUrl = body.externalUrl ?? body.external_url
+  const imageUrl = body.imageUrl ?? body.image_url
+  const inStock = body.inStock ?? body.in_stock
 
   const id = nanoid()
 
   await c.env.DB.prepare(`
-    INSERT INTO products (id, slug, title, description, type, price_sek, external_url, image_url, in_stock, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(id, slug, title, description, type, priceSek, externalUrl, imageUrl, inStock ?? 1, status || 'active').run()
+    INSERT INTO products (id, slug, title, description, content_blocks, editor_version,
+                         type, price_sek, external_url, image_url, in_stock, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, slug, title, description, contentBlocks || null, editorVersion || 'legacy',
+          type, priceSek, externalUrl, imageUrl, inStock ?? 1, status || 'active').run()
 
   return c.json({ product: { id, slug, title } }, 201)
 })
@@ -375,14 +402,21 @@ adminRoutes.post('/products', async (c) => {
 adminRoutes.put('/products/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { slug, title, description, type, priceSek, externalUrl, imageUrl, inStock, status } = body
+  const { slug, title, description, type, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const priceSek = body.priceSek ?? body.price_sek
+  const externalUrl = body.externalUrl ?? body.external_url
+  const imageUrl = body.imageUrl ?? body.image_url
+  const inStock = body.inStock ?? body.in_stock
 
   await c.env.DB.prepare(`
     UPDATE products
-    SET slug = ?, title = ?, description = ?, type = ?, price_sek = ?,
-        external_url = ?, image_url = ?, in_stock = ?, status = ?
+    SET slug = ?, title = ?, description = ?, content_blocks = ?, editor_version = ?,
+        type = ?, price_sek = ?, external_url = ?, image_url = ?, in_stock = ?, status = ?
     WHERE id = ?
-  `).bind(slug, title, description, type, priceSek, externalUrl, imageUrl, inStock, status, id).run()
+  `).bind(slug, title, description, contentBlocks || null, editorVersion || 'legacy',
+          type, priceSek, externalUrl, imageUrl, inStock, status, id).run()
 
   return c.json({ success: true })
 })
