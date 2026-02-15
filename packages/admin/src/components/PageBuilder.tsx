@@ -125,13 +125,29 @@ export default function PageBuilder({ page, onSave, onDelete }: PageBuilderProps
           iframe: ({ children, document: iframeDoc }) => {
             useEffect(() => {
               if (!iframeDoc) return
-              const parentStyles = Array.from(
-                window.document.querySelectorAll('link[rel="stylesheet"], style'),
-              )
-              parentStyles.forEach((node) => {
-                const clone = node.cloneNode(true) as HTMLElement
-                iframeDoc.head.appendChild(clone)
+              // Extract actual CSS rules from all stylesheets (reliable in both dev & production)
+              let cssText = ''
+              Array.from(document.styleSheets).forEach((sheet) => {
+                try {
+                  Array.from(sheet.cssRules).forEach((rule) => {
+                    cssText += rule.cssText + '\n'
+                  })
+                } catch {
+                  // Cross-origin stylesheet - inject as link
+                  if (sheet.href) {
+                    const link = iframeDoc.createElement('link')
+                    link.rel = 'stylesheet'
+                    link.href = sheet.href
+                    iframeDoc.head.appendChild(link)
+                  }
+                }
               })
+              if (cssText) {
+                const style = iframeDoc.createElement('style')
+                style.textContent = cssText
+                iframeDoc.head.appendChild(style)
+              }
+              // Google Fonts
               const fontLink = iframeDoc.createElement('link')
               fontLink.rel = 'stylesheet'
               fontLink.href =

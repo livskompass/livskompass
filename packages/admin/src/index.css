@@ -9,6 +9,19 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
+/* Puck Editor Overrides - consistent icon sizing */
+._SidebarSection-icon_p9ck5_1 svg,
+[class*="SidebarSection"] svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Make Puck editor fill available space */
+[class*="Puck-root"],
+[class*="Puck "] {
+  height: 100% !important;
+}
+
 /* TipTap Editor Styles */
 .ProseMirror {
   @apply min-h-[300px] outline-none;

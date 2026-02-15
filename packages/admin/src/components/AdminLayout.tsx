@@ -46,6 +46,12 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
+  // Auto-collapse sidebar on editor pages for maximum editing space
+  const isEditorPage = /\/(sidor|nyheter)\/.+/.test(location.pathname)
+  useEffect(() => {
+    if (isEditorPage) setCollapsed(true)
+  }, [isEditorPage])
+
   useEffect(() => {
     localStorage.setItem('sidebar_collapsed', String(collapsed))
   }, [collapsed])
@@ -230,7 +236,10 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+        <main className={cn(
+          "flex-1 overflow-auto",
+          isEditorPage ? 'p-2' : 'p-4 md:p-6 lg:p-8'
+        )}>
           <Outlet />
         </main>
       </div>
