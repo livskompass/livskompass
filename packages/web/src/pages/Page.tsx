@@ -39,18 +39,17 @@ export default function Page() {
   }
 
   const { page, children } = data
-  // Check if content has meaningful text beyond just links and whitespace.
-  // Hub pages from WordPress often only have <a> tags as content — when we
-  // show child pages as cards, those bare links are redundant.
+  const hasChildren = children && children.length > 0
+  const hasContent = page.content
+    && page.content.replace(/&nbsp;/g, '').trim().length > 0
+  // If the content is mainly just links (like WordPress hub pages), render it
+  // as-is and skip the child cards — the links already serve as navigation.
   const strippedContent = (page.content || '')
     .replace(/&nbsp;/g, '')
     .replace(/<a[^>]*>.*?<\/a>/gi, '')
     .replace(/<[^>]+>/g, '')
     .trim()
-  const hasChildren = children && children.length > 0
-  const hasContent = page.content
-    && page.content.replace(/&nbsp;/g, '').trim().length > 0
-    && (!hasChildren || strippedContent.length > 50)
+  const showChildCards = hasChildren && (!hasContent || strippedContent.length > 50)
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -63,7 +62,7 @@ export default function Page() {
         />
       )}
 
-      {hasChildren && (
+      {showChildCards && (
         <div className={hasContent ? 'mt-12' : ''}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {children.map((child) => (

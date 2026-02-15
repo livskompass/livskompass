@@ -6,7 +6,6 @@ import Courses from './pages/Courses'
 import CourseDetail from './pages/CourseDetail'
 import Booking from './pages/Booking'
 import BookingConfirmation from './pages/BookingConfirmation'
-import Products from './pages/Products'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Contact from './pages/Contact'
@@ -22,7 +21,6 @@ function App() {
           <Route path="utbildningar/:slug" element={<CourseDetail />} />
           <Route path="utbildningar/:slug/boka" element={<Booking />} />
           <Route path="utbildningar/bekraftelse" element={<BookingConfirmation />} />
-          <Route path="material" element={<Products />} />
           <Route path="nyhet" element={<Blog />} />
           <Route path="nyhet/:slug" element={<BlogPost />} />
           <Route path="kontakt" element={<Contact />} />
