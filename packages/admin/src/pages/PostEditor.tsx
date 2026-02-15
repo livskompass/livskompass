@@ -3,6 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPost, createPost, updatePost, getMediaUrl } from '../lib/api'
 import Editor from '../components/Editor'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
+import { Label } from '../components/ui/label'
+import { Select } from '../components/ui/select'
+import { Skeleton } from '../components/ui/skeleton'
+import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 
 export default function PostEditor() {
   const { id } = useParams()
@@ -79,27 +87,35 @@ export default function PostEditor() {
 
   if (!isNew && isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary-600 border-t-transparent"></div>
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2"><Skeleton className="h-96" /></div>
+          <div className="space-y-6">
+            <Skeleton className="h-48" />
+            <Skeleton className="h-48" />
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <Link to="/nyheter" className="text-gray-500 hover:text-gray-700 mr-4">
-            &larr; Back
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/nyheter">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {isNew ? 'New post' : 'Edit post'}
-          </h1>
-        </div>
+        </Button>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+          {isNew ? 'New post' : 'Edit post'}
+        </h1>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
@@ -107,14 +123,12 @@ export default function PostEditor() {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title *
-                  </label>
-                  <input
-                    type="text"
+            <Card>
+              <CardContent className="p-6 space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
                     required
                     value={formData.title}
                     onChange={(e) => {
@@ -124,112 +138,113 @@ export default function PostEditor() {
                         slug: isNew ? generateSlug(e.target.value) : formData.slug,
                       })
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Post title"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Excerpt
-                  </label>
-                  <textarea
+                <div className="space-y-2">
+                  <Label htmlFor="excerpt">Excerpt</Label>
+                  <Textarea
+                    id="excerpt"
                     rows={3}
                     value={formData.excerpt}
                     onChange={(e) =>
                       setFormData({ ...formData, excerpt: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Short summary shown in listings..."
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Content
-                  </label>
+                <div className="space-y-2">
+                  <Label>Content</Label>
                   <Editor
                     content={formData.content}
                     onChange={(html) => setFormData({ ...formData, content: html })}
                   />
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Publishing</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
-                  <select
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Publishing</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="status">Status</Label>
+                  <Select
+                    id="status"
                     value={formData.status}
                     onChange={(e) =>
                       setFormData({ ...formData, status: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
-                  </select>
+                  </Select>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={saveMutation.isPending}
-                  className="w-full bg-primary-600 text-white py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
+                  className="w-full"
                 >
-                  {saveMutation.isPending ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-            </div>
+                  {saveMutation.isPending ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Save className="h-4 w-4 mr-2" /> Save</>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Image</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Featured image (URL)
-                </label>
-                <input
-                  type="url"
-                  value={formData.featured_image}
-                  onChange={(e) =>
-                    setFormData({ ...formData, featured_image: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="https://..."
-                />
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Featured image</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="image">Image URL</Label>
+                  <Input
+                    id="image"
+                    type="url"
+                    value={formData.featured_image}
+                    onChange={(e) =>
+                      setFormData({ ...formData, featured_image: e.target.value })
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
                 {formData.featured_image && (
                   <img
                     src={getMediaUrl(formData.featured_image)}
                     alt="Preview"
-                    className="mt-2 rounded-lg max-h-40 object-cover"
+                    className="rounded-lg max-h-40 w-full object-cover border border-gray-200"
                   />
                 )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-medium text-gray-900 mb-4">SEO</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL-slug
-                </label>
-                <input
-                  type="text"
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">SEO</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Label htmlFor="slug">URL slug</Label>
+                <Input
+                  id="slug"
                   value={formData.slug}
                   onChange={(e) =>
                     setFormData({ ...formData, slug: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400">
                   livskompass.se/nyhet/{formData.slug || 'slug'}
                 </p>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </form>

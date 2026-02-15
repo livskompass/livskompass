@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getSettings, updateSettings } from '../lib/api'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
+import { Label } from '../components/ui/label'
+import { Skeleton } from '../components/ui/skeleton'
+import { Separator } from '../components/ui/separator'
+import { Save, Loader2, Globe, Phone, CreditCard, BarChart3, CheckCircle } from 'lucide-react'
 
 export default function Settings() {
   const queryClient = useQueryClient()
@@ -50,24 +58,32 @@ export default function Settings() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary-600 border-t-transparent"></div>
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64" />
+        </div>
       </div>
     )
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Settings</h1>
+        <p className="text-gray-500 mt-1">Manage your site configuration and integrations.</p>
+      </div>
 
       {saved && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
+        <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+          <CheckCircle className="h-4 w-4 shrink-0" />
           Settings have been saved!
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
@@ -75,126 +91,130 @@ export default function Settings() {
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* General settings */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              General
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Site name
-                </label>
-                <input
-                  type="text"
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Globe className="h-4 w-4 text-gray-400" />
+                General
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="site-name">Site name</Label>
+                <Input
+                  id="site-name"
                   value={formData.site_name}
                   onChange={(e) =>
                     setFormData({ ...formData, site_name: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
+              <div className="space-y-2">
+                <Label htmlFor="site-desc">Description</Label>
+                <Textarea
+                  id="site-desc"
                   rows={2}
                   value={formData.site_description}
                   onChange={(e) =>
                     setFormData({ ...formData, site_description: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Contact settings */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Contact details
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email address
-                </label>
-                <input
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Phone className="h-4 w-4 text-gray-400" />
+                Contact details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
+                  id="email"
                   type="email"
                   value={formData.contact_email}
                   onChange={(e) =>
                     setFormData({ ...formData, contact_email: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone number
-                </label>
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone number</Label>
+                <Input
+                  id="phone"
                   type="tel"
                   value={formData.contact_phone}
                   onChange={(e) =>
                     setFormData({ ...formData, contact_phone: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Integration settings */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Integrations
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Stripe Publishable Key
-                </label>
-                <input
-                  type="text"
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-gray-400" />
+                Integrations
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="stripe-key">Stripe Publishable Key</Label>
+                <Input
+                  id="stripe-key"
                   value={formData.stripe_publishable_key}
                   onChange={(e) =>
                     setFormData({ ...formData, stripe_publishable_key: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono text-sm"
+                  className="font-mono text-sm"
                   placeholder="pk_live_..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400">
                   Your public Stripe key for payments
                 </p>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <Separator />
+
+              <div className="space-y-2">
+                <Label htmlFor="ga-id" className="flex items-center gap-2">
+                  <BarChart3 className="h-3.5 w-3.5 text-gray-400" />
                   Google Analytics ID
-                </label>
-                <input
-                  type="text"
+                </Label>
+                <Input
+                  id="ga-id"
                   value={formData.google_analytics_id}
                   onChange={(e) =>
                     setFormData({ ...formData, google_analytics_id: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono text-sm"
+                  className="font-mono text-sm"
                   placeholder="G-XXXXXXXXXX"
                 />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           <div className="flex justify-end">
-            <button
+            <Button
               type="submit"
               disabled={saveMutation.isPending}
-              className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
             >
-              {saveMutation.isPending ? 'Saving...' : 'Save settings'}
-            </button>
+              {saveMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+              ) : (
+                <><Save className="h-4 w-4 mr-2" /> Save settings</>
+              )}
+            </Button>
           </div>
         </div>
       </form>

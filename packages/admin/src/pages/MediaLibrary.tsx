@@ -1,6 +1,12 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getMedia, uploadMedia, deleteMedia, getMediaUrl } from '../lib/api'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Skeleton } from '../components/ui/skeleton'
+import { Separator } from '../components/ui/separator'
+import { Upload, Trash2, Copy, ImageIcon, FileText, Film, Music, Loader2 } from 'lucide-react'
+import { cn } from '../lib/utils'
 
 export default function MediaLibrary() {
   const queryClient = useQueryClient()
@@ -52,12 +58,21 @@ export default function MediaLibrary() {
     alert('URL copied to clipboard!')
   }
 
+  const getFileIcon = (type: string | undefined) => {
+    if (type?.startsWith('video')) return Film
+    if (type?.startsWith('audio')) return Music
+    return FileText
+  }
+
   const selected = data?.media?.find((m) => m.id === selectedMedia)
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Media library</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Media library</h1>
+          <p className="text-gray-500 mt-1">Upload and manage images, files, and media.</p>
+        </div>
         <div>
           <input
             ref={fileInputRef}
@@ -67,122 +82,146 @@ export default function MediaLibrary() {
             onChange={handleUpload}
             className="hidden"
           />
-          <button
+          <Button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
           >
-            {uploading ? 'Uploading...' : '+ Upload'}
-          </button>
+            {uploading ? (
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Uploading...</>
+            ) : (
+              <><Upload className="h-4 w-4 mr-2" /> Upload</>
+            )}
+          </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            {isLoading ? (
-              <div className="text-center py-12 text-gray-500">Loading...</div>
-            ) : data?.media && data.media.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {data.media.map((media) => (
-                  <div
-                    key={media.id}
-                    onClick={() => setSelectedMedia(media.id)}
-                    className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
-                      selectedMedia === media.id
-                        ? 'border-primary-600 ring-2 ring-primary-200'
-                        : 'border-transparent hover:border-gray-300'
-                    }`}
-                  >
-                    {media.type?.startsWith('image') ? (
-                      <img
-                        src={getMediaUrl(media.url)}
-                        alt={media.alt_text || media.filename}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <span className="text-4xl">
-                          {media.type?.startsWith('video')
-                            ? '🎬'
-                            : media.type?.startsWith('audio')
-                            ? '🎵'
-                            : '📄'}
-                        </span>
+          <Card>
+            <CardContent className="p-6">
+              {isLoading ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[...Array(8)].map((_, i) => (
+                    <Skeleton key={i} className="aspect-square rounded-lg" />
+                  ))}
+                </div>
+              ) : data?.media && data.media.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {data.media.map((media) => {
+                    const FileIcon = getFileIcon(media.type)
+                    return (
+                      <div
+                        key={media.id}
+                        onClick={() => setSelectedMedia(media.id)}
+                        className={cn(
+                          "relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all",
+                          selectedMedia === media.id
+                            ? 'border-primary-600 ring-2 ring-primary-100'
+                            : 'border-transparent hover:border-gray-300'
+                        )}
+                      >
+                        {media.type?.startsWith('image') ? (
+                          <img
+                            src={getMediaUrl(media.url)}
+                            alt={media.alt_text || media.filename}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center gap-2">
+                            <FileIcon className="h-8 w-8 text-gray-400" />
+                            <span className="text-xs text-gray-500 px-2 text-center truncate w-full">
+                              {media.filename}
+                            </span>
+                          </div>
+                        )}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent text-white text-[10px] p-2 pt-4 truncate">
+                          {media.filename}
+                        </div>
                       </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 truncate">
-                      {media.filename}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-500">
-                No files yet. Upload files to get started.
-              </div>
-            )}
-          </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <ImageIcon className="h-10 w-10 text-gray-300 mb-3" />
+                  <p className="text-gray-500 mb-1">No files yet</p>
+                  <p className="text-sm text-gray-400">Upload files to get started.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Details sidebar */}
         <div>
           {selected ? (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-medium text-gray-900 mb-4">File details</h3>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">File details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {selected.type?.startsWith('image') && (
+                  <img
+                    src={getMediaUrl(selected.url)}
+                    alt={selected.alt_text || selected.filename}
+                    className="w-full rounded-lg border border-gray-200"
+                  />
+                )}
 
-              {selected.type?.startsWith('image') && (
-                <img
-                  src={getMediaUrl(selected.url)}
-                  alt={selected.alt_text || selected.filename}
-                  className="w-full rounded-lg mb-4"
-                />
-              )}
+                <dl className="space-y-3 text-sm">
+                  <div>
+                    <dt className="text-gray-400 text-xs">Filename</dt>
+                    <dd className="font-medium text-gray-900 break-all text-sm">
+                      {selected.filename}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-400 text-xs">Type</dt>
+                    <dd className="text-gray-700">{selected.type}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-400 text-xs">Size</dt>
+                    <dd className="text-gray-700">
+                      {(selected.size_bytes / 1024).toFixed(1)} KB
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-400 text-xs">URL</dt>
+                    <dd className="font-mono text-[11px] text-gray-500 break-all">
+                      {getMediaUrl(selected.url)}
+                    </dd>
+                  </div>
+                </dl>
 
-              <dl className="space-y-3 text-sm">
-                <div>
-                  <dt className="text-gray-500">Filename</dt>
-                  <dd className="font-medium text-gray-900 break-all">
-                    {selected.filename}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500">Type</dt>
-                  <dd className="font-medium text-gray-900">{selected.type}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500">Size</dt>
-                  <dd className="font-medium text-gray-900">
-                    {(selected.size_bytes / 1024).toFixed(1)} KB
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500">URL</dt>
-                  <dd className="font-mono text-xs text-gray-600 break-all">
-                    {getMediaUrl(selected.url)}
-                  </dd>
-                </div>
-              </dl>
+                <Separator />
 
-              <div className="mt-6 space-y-2">
-                <button
-                  onClick={() => copyToClipboard(getMediaUrl(selected.url))}
-                  className="w-full bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                >
-                  Copy URL
-                </button>
-                <button
-                  onClick={() => handleDelete(selected.id, selected.filename)}
-                  className="w-full bg-red-100 text-red-700 py-2 rounded-lg font-medium hover:bg-red-200 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => copyToClipboard(getMediaUrl(selected.url))}
+                    className="w-full"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy URL
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleDelete(selected.id, selected.filename)}
+                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm p-6 text-center text-gray-500">
-              Select a file to view details
-            </div>
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <ImageIcon className="h-8 w-8 text-gray-300 mb-2" />
+                <p className="text-sm text-gray-400">Select a file to view details</p>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

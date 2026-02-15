@@ -4,6 +4,15 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { getCourse, createBooking, startCheckout } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
+import { Label } from '../components/ui/label'
+import { Separator } from '../components/ui/separator'
+import { Skeleton } from '../components/ui/skeleton'
+import { Badge } from '../components/ui/badge'
+import { ArrowLeft, Calendar, MapPin, CreditCard, Lock } from 'lucide-react'
 
 export default function Booking() {
   const { slug } = useParams<{ slug: string }>()
@@ -32,7 +41,7 @@ export default function Booking() {
       try {
         const checkout = await startCheckout(data.booking.id)
         window.location.href = checkout.checkoutUrl
-      } catch (err) {
+      } catch {
         setError('Kunde inte starta betalningen. Försök igen.')
       }
     },
@@ -44,10 +53,18 @@ export default function Booking() {
   if (isLoading) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/2 mb-6"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-        </div>
+        <Skeleton className="h-5 w-24 mb-6" />
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-5 w-64 mb-8" />
+        <Card>
+          <CardContent className="p-6">
+            <div className="space-y-3">
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-full" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -60,21 +77,28 @@ export default function Booking() {
 
   if (course.status === 'full' || course.status === 'completed') {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Kan inte boka
-        </h1>
-        <p className="text-gray-600 mb-6">
-          {course.status === 'full'
-            ? 'Denna utbildning är fullbokad.'
-            : 'Denna utbildning har redan genomförts.'}
-        </p>
-        <Link
-          to="/utbildningar"
-          className="text-primary-600 hover:text-primary-700"
-        >
-          &larr; Se andra utbildningar
-        </Link>
+      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+        <Card className="inline-block w-full">
+          <CardContent className="py-12 px-8">
+            <Badge variant={course.status === 'full' ? 'destructive' : 'secondary'} className="mb-4">
+              {course.status === 'full' ? 'Fullbokad' : 'Genomförd'}
+            </Badge>
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+              Kan inte boka
+            </h1>
+            <p className="text-gray-500 mb-6">
+              {course.status === 'full'
+                ? 'Denna utbildning är fullbokad.'
+                : 'Denna utbildning har redan genomförts.'}
+            </p>
+            <Button variant="ghost" className="text-primary-600" asChild>
+              <Link to="/utbildningar">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Se andra utbildningar
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -93,150 +117,142 @@ export default function Booking() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <Link
-        to={`/utbildningar/${slug}`}
-        className="text-primary-600 hover:text-primary-700 mb-6 inline-block"
-      >
-        &larr; Tillbaka
-      </Link>
+      <Button variant="ghost" className="mb-6 -ml-2 text-gray-600 hover:text-primary-600" asChild>
+        <Link to={`/utbildningar/${slug}`}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Tillbaka
+        </Link>
+      </Button>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Boka plats</h1>
-      <p className="text-xl text-gray-600 mb-8">{course.title}</p>
+      <p className="text-xl text-gray-500 mb-8">{course.title}</p>
 
-      <div className="bg-gray-50 rounded-lg p-4 mb-8">
-        <div className="flex justify-between mb-2">
-          <span className="text-gray-600">Datum</span>
-          <span className="font-medium">
-            {new Date(course.start_date).toLocaleDateString('sv-SE')}
-          </span>
-        </div>
-        <div className="flex justify-between mb-2">
-          <span className="text-gray-600">Plats</span>
-          <span className="font-medium">{course.location}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Pris per person</span>
-          <span className="font-medium">
-            {course.price_sek.toLocaleString('sv-SE')} kr
-          </span>
-        </div>
-      </div>
+      <Card className="mb-8">
+        <CardContent className="p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div className="flex items-center gap-2 text-gray-600">
+              <Calendar className="h-4 w-4 text-gray-400" />
+              <span>{new Date(course.start_date).toLocaleDateString('sv-SE')}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <MapPin className="h-4 w-4 text-gray-400" />
+              <span>{course.location}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <CreditCard className="h-4 w-4 text-gray-400" />
+              <span>{course.price_sek.toLocaleString('sv-SE')} kr/person</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-1">
-            Namn *
-          </label>
-          <input
-            type="text"
-            id="customerName"
-            required
-            value={formData.customerName}
-            onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Dina uppgifter</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="customerName">Namn *</Label>
+              <Input
+                type="text"
+                id="customerName"
+                required
+                value={formData.customerName}
+                onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+              />
+            </div>
 
-        <div>
-          <label htmlFor="customerEmail" className="block text-sm font-medium text-gray-700 mb-1">
-            E-post *
-          </label>
-          <input
-            type="email"
-            id="customerEmail"
-            required
-            value={formData.customerEmail}
-            onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="customerEmail">E-post *</Label>
+              <Input
+                type="email"
+                id="customerEmail"
+                required
+                value={formData.customerEmail}
+                onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
+              />
+            </div>
 
-        <div>
-          <label htmlFor="customerPhone" className="block text-sm font-medium text-gray-700 mb-1">
-            Telefon
-          </label>
-          <input
-            type="tel"
-            id="customerPhone"
-            value={formData.customerPhone}
-            onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="customerPhone">Telefon</Label>
+              <Input
+                type="tel"
+                id="customerPhone"
+                value={formData.customerPhone}
+                onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+              />
+            </div>
 
-        <div>
-          <label htmlFor="customerOrganization" className="block text-sm font-medium text-gray-700 mb-1">
-            Organisation/företag
-          </label>
-          <input
-            type="text"
-            id="customerOrganization"
-            value={formData.customerOrganization}
-            onChange={(e) => setFormData({ ...formData, customerOrganization: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="customerOrganization">Organisation/företag</Label>
+              <Input
+                type="text"
+                id="customerOrganization"
+                value={formData.customerOrganization}
+                onChange={(e) => setFormData({ ...formData, customerOrganization: e.target.value })}
+              />
+            </div>
 
-        <div>
-          <label htmlFor="participants" className="block text-sm font-medium text-gray-700 mb-1">
-            Antal deltagare *
-          </label>
-          <select
-            id="participants"
-            value={formData.participants}
-            onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          >
-            {Array.from(
-              { length: Math.min(10, course.max_participants - course.current_participants) },
-              (_, i) => i + 1
-            ).map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="participants">Antal deltagare *</Label>
+              <select
+                id="participants"
+                value={formData.participants}
+                onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
+                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+              >
+                {Array.from(
+                  { length: Math.min(10, course.max_participants - course.current_participants) },
+                  (_, i) => i + 1
+                ).map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-            Meddelande
-          </label>
-          <textarea
-            id="notes"
-            rows={3}
-            value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            placeholder="Eventuella frågor eller önskemål..."
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Meddelande</Label>
+              <Textarea
+                id="notes"
+                rows={3}
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Eventuella frågor eller önskemål..."
+              />
+            </div>
 
-        <div className="border-t pt-6">
-          <div className="flex justify-between text-lg font-semibold mb-6">
-            <span>Totalt att betala</span>
-            <span>{totalPrice.toLocaleString('sv-SE')} kr</span>
-          </div>
+            <Separator />
 
-          <button
-            type="submit"
-            disabled={bookingMutation.isPending}
-            className="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {bookingMutation.isPending ? 'Bearbetar...' : 'Gå till betalning'}
-          </button>
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Totalt att betala</span>
+              <span>{totalPrice.toLocaleString('sv-SE')} kr</span>
+            </div>
 
-          <p className="text-sm text-gray-500 text-center mt-4">
-            Du kommer att dirigeras till Stripe för säker betalning
-          </p>
-        </div>
-      </form>
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={bookingMutation.isPending}
+            >
+              {bookingMutation.isPending ? 'Bearbetar...' : 'Gå till betalning'}
+            </Button>
+
+            <p className="text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
+              <Lock className="h-3.5 w-3.5" />
+              Du kommer att dirigeras till Stripe för säker betalning
+            </p>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }

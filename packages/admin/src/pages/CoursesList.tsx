@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCourses, deleteCourse } from '../lib/api'
+import { Card, CardContent } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Badge } from '../components/ui/badge'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
+import { Skeleton } from '../components/ui/skeleton'
+import { Plus, Pencil, Trash2, GraduationCap } from 'lucide-react'
 
 export default function CoursesList() {
   const queryClient = useQueryClient()
@@ -23,109 +29,118 @@ export default function CoursesList() {
     }
   }
 
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'active': return 'success'
+      case 'full': return 'destructive'
+      case 'completed': return 'secondary'
+      case 'cancelled': return 'destructive'
+      default: return 'secondary'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'active': return 'Active'
+      case 'full': return 'Full'
+      case 'completed': return 'Completed'
+      case 'cancelled': return 'Cancelled'
+      default: return status
+    }
+  }
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Courses</h1>
-        <Link
-          to="/utbildningar/ny"
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-        >
-          + New course
-        </Link>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Courses</h1>
+          <p className="text-gray-500 mt-1">Manage training courses and workshops.</p>
+        </div>
+        <Button asChild>
+          <Link to="/utbildningar/ny">
+            <Plus className="h-4 w-4 mr-2" />
+            New course
+          </Link>
+        </Button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <Card>
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <CardContent className="p-6 space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </CardContent>
         ) : data?.courses && data.courses.length > 0 ? (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Course
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Participants
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50/50">
+                <TableHead>Course</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Participants</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {data.courses.map((course) => (
-                <tr key={course.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                <TableRow key={course.id}>
+                  <TableCell>
                     <Link
                       to={`/utbildningar/${course.id}`}
-                      className="font-medium text-gray-900 hover:text-primary-600"
+                      className="font-medium text-gray-900 hover:text-primary-600 transition-colors"
                     >
                       {course.title}
                     </Link>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  </TableCell>
+                  <TableCell className="text-gray-500 text-sm">
                     {new Date(course.start_date).toLocaleDateString('sv-SE')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  </TableCell>
+                  <TableCell className="text-gray-500 text-sm">
                     {course.location}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {course.current_participants}/{course.max_participants}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        course.status === 'full'
-                          ? 'bg-red-100 text-red-800'
-                          : course.status === 'active'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {course.status === 'full'
-                        ? 'Full'
-                        : course.status === 'active'
-                        ? 'Active'
-                        : course.status}
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm font-mono text-gray-600">
+                      {course.current_participants}/{course.max_participants}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    <Link
-                      to={`/utbildningar/${course.id}`}
-                      className="text-primary-600 hover:text-primary-700 mr-4"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(course.id, course.title)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusVariant(course.status) as "default" | "success" | "warning" | "destructive" | "secondary" | "outline"}>
+                      {getStatusLabel(course.status)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link to={`/utbildningar/${course.id}`}>
+                          <Pencil className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(course.id, course.title)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         ) : (
-          <div className="p-8 text-center text-gray-500">
-            No courses yet.{' '}
-            <Link to="/utbildningar/ny" className="text-primary-600 hover:text-primary-700">
-              Create a new course
-            </Link>
-          </div>
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <GraduationCap className="h-10 w-10 text-gray-300 mb-3" />
+            <p className="text-gray-500 mb-2">No courses yet</p>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/utbildningar/ny">Create your first course</Link>
+            </Button>
+          </CardContent>
         )}
-      </div>
+      </Card>
     </div>
   )
 }

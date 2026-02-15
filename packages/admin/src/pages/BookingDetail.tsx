@@ -1,6 +1,12 @@
 import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getBooking, refundBooking } from '../lib/api'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Badge } from '../components/ui/badge'
+import { Button } from '../components/ui/button'
+import { Separator } from '../components/ui/separator'
+import { Skeleton } from '../components/ui/skeleton'
+import { ArrowLeft, Mail, Phone, Building, Calendar, Users, CreditCard, Hash } from 'lucide-react'
 
 export default function BookingDetail() {
   const { id } = useParams()
@@ -28,164 +34,208 @@ export default function BookingDetail() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary-600 border-t-transparent"></div>
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64" />
+        </div>
       </div>
     )
   }
 
   if (!data?.booking) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">Booking not found.</p>
-        <Link to="/bokningar" className="text-primary-600 hover:text-primary-700">
-          Back to bookings
-        </Link>
-      </div>
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <p className="text-gray-500 mb-3">Booking not found.</p>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/bokningar">Back to bookings</Link>
+          </Button>
+        </CardContent>
+      </Card>
     )
   }
 
   const { booking } = data
 
+  const getPaymentVariant = (status: string) => {
+    switch (status) {
+      case 'paid': return 'success'
+      case 'pending': return 'warning'
+      case 'refunded': return 'secondary'
+      default: return 'destructive'
+    }
+  }
+
+  const getBookingVariant = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'success'
+      case 'pending': return 'warning'
+      default: return 'destructive'
+    }
+  }
+
   return (
-    <div>
-      <div className="flex items-center mb-6">
-        <Link to="/bokningar" className="text-gray-500 hover:text-gray-700 mr-4">
-          &larr; Back
-        </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Booking details</h1>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/bokningar">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Booking details</h1>
+          <p className="text-gray-500 text-sm font-mono">{booking.id}</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Customer information</h2>
-          <dl className="space-y-3">
-            <div>
-              <dt className="text-sm text-gray-500">Name</dt>
-              <dd className="font-medium text-gray-900">{booking.customer_name}</dd>
+        {/* Customer Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Customer information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start gap-3">
+              <Users className="h-4 w-4 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Name</p>
+                <p className="font-medium text-gray-900">{booking.customer_name}</p>
+              </div>
             </div>
-            <div>
-              <dt className="text-sm text-gray-500">Email</dt>
-              <dd className="font-medium text-gray-900">
-                <a href={`mailto:${booking.customer_email}`} className="text-primary-600">
+            <div className="flex items-start gap-3">
+              <Mail className="h-4 w-4 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Email</p>
+                <a href={`mailto:${booking.customer_email}`} className="font-medium text-primary-600 hover:text-primary-700">
                   {booking.customer_email}
                 </a>
-              </dd>
+              </div>
             </div>
             {booking.customer_phone && (
-              <div>
-                <dt className="text-sm text-gray-500">Phone</dt>
-                <dd className="font-medium text-gray-900">{booking.customer_phone}</dd>
+              <div className="flex items-start gap-3">
+                <Phone className="h-4 w-4 text-gray-400 mt-0.5" />
+                <div>
+                  <p className="text-sm text-gray-500">Phone</p>
+                  <p className="font-medium text-gray-900">{booking.customer_phone}</p>
+                </div>
               </div>
             )}
             {booking.customer_organization && (
-              <div>
-                <dt className="text-sm text-gray-500">Organization</dt>
-                <dd className="font-medium text-gray-900">{booking.customer_organization}</dd>
+              <div className="flex items-start gap-3">
+                <Building className="h-4 w-4 text-gray-400 mt-0.5" />
+                <div>
+                  <p className="text-sm text-gray-500">Organization</p>
+                  <p className="font-medium text-gray-900">{booking.customer_organization}</p>
+                </div>
               </div>
             )}
-          </dl>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Booking info</h2>
-          <dl className="space-y-3">
-            <div>
-              <dt className="text-sm text-gray-500">Booking number</dt>
-              <dd className="font-mono text-gray-900">{booking.id}</dd>
+        {/* Booking Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Booking info</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start gap-3">
+              <Hash className="h-4 w-4 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Booking number</p>
+                <p className="font-mono text-sm text-gray-900">{booking.id}</p>
+              </div>
             </div>
-            <div>
-              <dt className="text-sm text-gray-500">Course</dt>
-              <dd className="font-medium text-gray-900">
-                {booking.course?.title || booking.course_id}
-              </dd>
+            <div className="flex items-start gap-3">
+              <Calendar className="h-4 w-4 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Course</p>
+                <p className="font-medium text-gray-900">
+                  {booking.course?.title || booking.course_id}
+                </p>
+              </div>
             </div>
-            <div>
-              <dt className="text-sm text-gray-500">Number of participants</dt>
-              <dd className="font-medium text-gray-900">{booking.participants}</dd>
+            <div className="flex items-start gap-3">
+              <Users className="h-4 w-4 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Number of participants</p>
+                <p className="font-medium text-gray-900">{booking.participants}</p>
+              </div>
             </div>
-            <div>
-              <dt className="text-sm text-gray-500">Total</dt>
-              <dd className="font-medium text-gray-900">
-                {booking.total_price_sek?.toLocaleString('sv-SE')} kr
-              </dd>
+            <div className="flex items-start gap-3">
+              <CreditCard className="h-4 w-4 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Total</p>
+                <p className="font-semibold text-gray-900 text-lg">
+                  {booking.total_price_sek?.toLocaleString('sv-SE')} kr
+                </p>
+              </div>
             </div>
-            <div>
-              <dt className="text-sm text-gray-500">Date</dt>
-              <dd className="font-medium text-gray-900">
-                {new Date(booking.created_at).toLocaleString('sv-SE')}
-              </dd>
+            <div className="text-sm text-gray-500">
+              Created {new Date(booking.created_at).toLocaleString('sv-SE')}
             </div>
-          </dl>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Status</h2>
-          <dl className="space-y-3">
+        {/* Status */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Status</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <dt className="text-sm text-gray-500">Payment status</dt>
-              <dd>
-                <span
-                  className={`px-3 py-1 text-sm rounded-full ${
-                    booking.payment_status === 'paid'
-                      ? 'bg-green-100 text-green-800'
-                      : booking.payment_status === 'pending'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : booking.payment_status === 'refunded'
-                      ? 'bg-gray-100 text-gray-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {booking.payment_status === 'paid'
-                    ? 'Paid'
-                    : booking.payment_status === 'pending'
-                    ? 'Pending'
-                    : booking.payment_status === 'refunded'
-                    ? 'Refunded'
-                    : 'Failed'}
-                </span>
-              </dd>
+              <span className="text-sm text-gray-500">Payment status</span>
+              <Badge variant={getPaymentVariant(booking.payment_status) as "default" | "success" | "warning" | "destructive" | "secondary" | "outline"}>
+                {booking.payment_status === 'paid'
+                  ? 'Paid'
+                  : booking.payment_status === 'pending'
+                  ? 'Pending'
+                  : booking.payment_status === 'refunded'
+                  ? 'Refunded'
+                  : 'Failed'}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-sm text-gray-500">Booking status</dt>
-              <dd>
-                <span
-                  className={`px-3 py-1 text-sm rounded-full ${
-                    booking.booking_status === 'confirmed'
-                      ? 'bg-green-100 text-green-800'
-                      : booking.booking_status === 'pending'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
+              <span className="text-sm text-gray-500">Booking status</span>
+              <Badge variant={getBookingVariant(booking.booking_status) as "default" | "success" | "warning" | "destructive" | "secondary" | "outline"}>
+                {booking.booking_status === 'confirmed'
+                  ? 'Confirmed'
+                  : booking.booking_status === 'pending'
+                  ? 'Pending'
+                  : 'Cancelled'}
+              </Badge>
+            </div>
+
+            {booking.payment_status === 'paid' && (
+              <>
+                <Separator />
+                <Button
+                  variant="destructive"
+                  onClick={handleRefund}
+                  disabled={refundMutation.isPending}
+                  className="w-full"
                 >
-                  {booking.booking_status === 'confirmed'
-                    ? 'Confirmed'
-                    : booking.booking_status === 'pending'
-                    ? 'Pending'
-                    : 'Cancelled'}
-                </span>
-              </dd>
-            </div>
-          </dl>
+                  {refundMutation.isPending ? 'Processing...' : 'Issue refund'}
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
-          {booking.payment_status === 'paid' && (
-            <div className="mt-6 pt-4 border-t">
-              <button
-                onClick={handleRefund}
-                disabled={refundMutation.isPending}
-                className="w-full bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
-              >
-                {refundMutation.isPending ? 'Processing...' : 'Refund'}
-              </button>
-            </div>
-          )}
-        </div>
-
+        {/* Notes */}
         {booking.notes && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Message</h2>
-            <p className="text-gray-700 whitespace-pre-wrap">{booking.notes}</p>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Message</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                {booking.notes}
+              </p>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

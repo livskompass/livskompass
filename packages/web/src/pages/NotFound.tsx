@@ -1,30 +1,32 @@
 import { Link } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { Button } from '../components/ui/button'
+import { Home, Mail } from 'lucide-react'
 
 export default function NotFound() {
   useDocumentTitle('Sidan hittades inte')
   return (
-    <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-      <h1 className="text-6xl font-bold text-gray-300 mb-4">404</h1>
-      <h2 className="text-3xl font-bold text-gray-900 mb-4">
+    <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+      <p className="text-8xl font-bold text-gray-200 mb-4 select-none">404</p>
+      <h1 className="text-3xl font-bold text-gray-900 mb-4">
         Sidan hittades inte
-      </h2>
-      <p className="text-gray-600 mb-8">
+      </h1>
+      <p className="text-gray-500 mb-10 text-lg">
         Sidan du letar efter finns inte eller har flyttats.
       </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Link
-          to="/"
-          className="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
-        >
-          Till startsidan
-        </Link>
-        <Link
-          to="/kontakt"
-          className="inline-block border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-        >
-          Kontakta oss
-        </Link>
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <Button size="lg" asChild>
+          <Link to="/">
+            <Home className="mr-2 h-4 w-4" />
+            Till startsidan
+          </Link>
+        </Button>
+        <Button variant="outline" size="lg" asChild>
+          <Link to="/kontakt">
+            <Mail className="mr-2 h-4 w-4" />
+            Kontakta oss
+          </Link>
+        </Button>
       </div>
     </div>
   )

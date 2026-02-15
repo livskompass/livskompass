@@ -1,6 +1,20 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getBookings, getCourses, getContacts, API_BASE } from '../lib/api'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Badge } from '../components/ui/badge'
+import { Button } from '../components/ui/button'
+import { Skeleton } from '../components/ui/skeleton'
+import {
+  FileText,
+  Newspaper,
+  GraduationCap,
+  Ticket,
+  Mail,
+  ArrowRight,
+  Users,
+  TrendingUp,
+} from 'lucide-react'
 
 interface StatsResponse {
   stats: {
@@ -22,7 +36,7 @@ async function getStats(): Promise<StatsResponse> {
 }
 
 export default function Dashboard() {
-  const { data: statsData } = useQuery({
+  const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: getStats,
   })
@@ -40,135 +54,168 @@ export default function Dashboard() {
   })
 
   const stats = [
-    { name: 'Pages', value: statsData?.stats?.pages ?? 0, href: '/sidor' },
-    { name: 'Posts', value: statsData?.stats?.posts ?? 0, href: '/nyheter' },
-    { name: 'Courses', value: statsData?.stats?.courses ?? 0, href: '/utbildningar' },
-    { name: 'Bookings', value: statsData?.stats?.bookings ?? 0, href: '/bokningar' },
+    { name: 'Pages', value: statsData?.stats?.pages ?? 0, href: '/sidor', icon: FileText, color: 'text-blue-600 bg-blue-50' },
+    { name: 'Posts', value: statsData?.stats?.posts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-purple-600 bg-purple-50' },
+    { name: 'Courses', value: statsData?.stats?.courses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-emerald-600 bg-emerald-50' },
+    { name: 'Bookings', value: statsData?.stats?.bookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-orange-600 bg-orange-50' },
   ]
 
   const unreadContacts = contactsData?.contacts?.filter((c) => !c.read)?.length ?? 0
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+        <p className="text-gray-500 mt-1">Overview of your site content and activity.</p>
+      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <Link
-            key={stat.name}
-            to={stat.href}
-            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-          >
-            <p className="text-sm text-gray-500">{stat.name}</p>
-            <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+          <Link key={stat.name} to={stat.href}>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className={`p-2 rounded-lg ${stat.color}`}>
+                    <stat.icon className="h-4 w-4" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-gray-300" />
+                </div>
+                {statsLoading ? (
+                  <Skeleton className="h-8 w-16 mb-1" />
+                ) : (
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                )}
+                <p className="text-sm text-gray-500">{stat.name}</p>
+              </CardContent>
+            </Card>
           </Link>
         ))}
       </div>
 
-      {/* Alerts */}
+      {/* Unread Messages Alert */}
       {unreadContacts > 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
-          <div className="flex items-center">
-            <span className="text-yellow-600 mr-3">📩</span>
-            <div>
-              <p className="font-medium text-yellow-800">
-                {unreadContacts} unread messages
-              </p>
-              <Link
-                to="/meddelanden"
-                className="text-sm text-yellow-600 hover:text-yellow-700"
-              >
-                View messages &rarr;
-              </Link>
+        <Card className="border-yellow-200 bg-yellow-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-yellow-100 rounded-lg">
+                <Mail className="h-4 w-4 text-yellow-600" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-yellow-800">
+                  {unreadContacts} unread {unreadContacts === 1 ? 'message' : 'messages'}
+                </p>
+                <Link
+                  to="/meddelanden"
+                  className="text-sm text-yellow-700 hover:text-yellow-800 inline-flex items-center gap-1"
+                >
+                  View messages <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Recent activity */}
+      {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent bookings */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Recent bookings
-          </h2>
-          {bookingsData?.bookings && bookingsData.bookings.length > 0 ? (
-            <div className="space-y-4">
-              {bookingsData.bookings.slice(0, 5).map((booking) => (
-                <div
-                  key={booking.id}
-                  className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {booking.customer_name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {booking.participants} participants
-                    </p>
-                  </div>
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      booking.payment_status === 'paid'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                  >
-                    {booking.payment_status === 'paid' ? 'Paid' : 'Pending'}
-                  </span>
-                </div>
-              ))}
+        {/* Recent Bookings */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Ticket className="h-4 w-4 text-gray-400" />
+                Recent bookings
+              </CardTitle>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/bokningar" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">
+                  View all <ArrowRight className="h-3 w-3" />
+                </Link>
+              </Button>
             </div>
-          ) : (
-            <p className="text-gray-500">No bookings yet</p>
-          )}
-          <Link
-            to="/bokningar"
-            className="block mt-4 text-sm text-primary-600 hover:text-primary-700"
-          >
-            View all bookings &rarr;
-          </Link>
-        </div>
-
-        {/* Upcoming courses */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Upcoming courses
-          </h2>
-          {coursesData?.courses && coursesData.courses.length > 0 ? (
-            <div className="space-y-4">
-              {coursesData.courses
-                .filter((c) => new Date(c.start_date) >= new Date())
-                .slice(0, 5)
-                .map((course) => (
+          </CardHeader>
+          <CardContent>
+            {bookingsData?.bookings && bookingsData.bookings.length > 0 ? (
+              <div className="space-y-3">
+                {bookingsData.bookings.slice(0, 5).map((booking) => (
                   <div
-                    key={course.id}
-                    className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+                    key={booking.id}
+                    className="flex items-center justify-between py-2"
                   >
-                    <div>
-                      <p className="font-medium text-gray-900">{course.title}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(course.start_date).toLocaleDateString('sv-SE')} -{' '}
-                        {course.location}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {booking.customer_name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        <Users className="h-3 w-3 inline mr-1" />
+                        {booking.participants} participants
                       </p>
                     </div>
-                    <span className="text-sm text-gray-500">
-                      {course.current_participants}/{course.max_participants}
-                    </span>
+                    <Badge
+                      variant={
+                        booking.payment_status === 'paid'
+                          ? 'success'
+                          : booking.payment_status === 'pending'
+                          ? 'warning'
+                          : 'destructive'
+                      }
+                    >
+                      {booking.payment_status === 'paid' ? 'Paid' : booking.payment_status === 'pending' ? 'Pending' : 'Failed'}
+                    </Badge>
                   </div>
                 ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 text-center py-6">No bookings yet</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Upcoming Courses */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <GraduationCap className="h-4 w-4 text-gray-400" />
+                Upcoming courses
+              </CardTitle>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/utbildningar" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">
+                  Manage <ArrowRight className="h-3 w-3" />
+                </Link>
+              </Button>
             </div>
-          ) : (
-            <p className="text-gray-500">No upcoming courses</p>
-          )}
-          <Link
-            to="/utbildningar"
-            className="block mt-4 text-sm text-primary-600 hover:text-primary-700"
-          >
-            Manage courses &rarr;
-          </Link>
-        </div>
+          </CardHeader>
+          <CardContent>
+            {coursesData?.courses && coursesData.courses.length > 0 ? (
+              <div className="space-y-3">
+                {coursesData.courses
+                  .filter((c) => new Date(c.start_date) >= new Date())
+                  .slice(0, 5)
+                  .map((course) => (
+                    <div
+                      key={course.id}
+                      className="flex items-center justify-between py-2"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {course.title}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(course.start_date).toLocaleDateString('sv-SE')} &middot; {course.location}
+                        </p>
+                      </div>
+                      <span className="text-xs text-gray-500 font-mono ml-3">
+                        {course.current_participants}/{course.max_participants}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 text-center py-6">No upcoming courses</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

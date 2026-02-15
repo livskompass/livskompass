@@ -15,17 +15,26 @@ pagesRoutes.get('/', async (c) => {
   return c.json({ pages: result.results })
 })
 
-// Get page by slug
+// Get page by slug (includes child pages)
 pagesRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
 
-  const result = await c.env.DB.prepare(`
-    SELECT * FROM pages WHERE slug = ? AND status = 'published'
-  `).bind(slug).first()
+  const [pageResult, childrenResult] = await c.env.DB.batch([
+    c.env.DB.prepare(`
+      SELECT * FROM pages WHERE slug = ? AND status = 'published'
+    `).bind(slug),
+    c.env.DB.prepare(`
+      SELECT id, slug, title, meta_description, parent_slug, sort_order
+      FROM pages
+      WHERE parent_slug = ? AND status = 'published'
+      ORDER BY sort_order ASC, title ASC
+    `).bind(slug),
+  ])
 
-  if (!result) {
+  const page = pageResult.results?.[0]
+  if (!page) {
     return c.json({ error: 'Page not found' }, 404)
   }
 
-  return c.json({ page: result })
+  return c.json({ page, children: childrenResult.results || [] })
 })

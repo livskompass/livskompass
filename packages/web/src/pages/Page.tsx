@@ -1,9 +1,12 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getPage, rewriteMediaUrls } from '../lib/api'
 import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
+import { Skeleton } from '../components/ui/skeleton'
+import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
+import { ChevronRight } from 'lucide-react'
 
 export default function Page() {
   const { slug } = useParams<{ slug: string }>()
@@ -19,13 +22,13 @@ export default function Page() {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16">
-        <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded w-3/4 mb-6"></div>
-          <div className="space-y-3">
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-            <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-          </div>
+        <Skeleton className="h-10 w-3/4 mb-8" />
+        <div className="space-y-4">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-4/6" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
         </div>
       </div>
     )
@@ -35,15 +38,52 @@ export default function Page() {
     return <NotFound />
   }
 
-  const { page } = data
+  const { page, children } = data
+  // Check if content has meaningful text beyond just links and whitespace.
+  // Hub pages from WordPress often only have <a> tags as content — when we
+  // show child pages as cards, those bare links are redundant.
+  const strippedContent = (page.content || '')
+    .replace(/&nbsp;/g, '')
+    .replace(/<a[^>]*>.*?<\/a>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .trim()
+  const hasChildren = children && children.length > 0
+  const hasContent = page.content
+    && page.content.replace(/&nbsp;/g, '').trim().length > 0
+    && (!hasChildren || strippedContent.length > 50)
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">{page.title}</h1>
-      <div
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(page.content)) }}
-      />
+      <h1 className="text-4xl font-bold text-gray-900 mb-8 tracking-tight">{page.title}</h1>
+
+      {hasContent && (
+        <div
+          className="prose prose-lg max-w-none prose-headings:tracking-tight prose-a:text-primary-600"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(page.content)) }}
+        />
+      )}
+
+      {hasChildren && (
+        <div className={hasContent ? 'mt-12' : ''}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {children.map((child) => (
+              <Link key={child.id} to={`/${child.slug}`}>
+                <Card className="h-full hover:shadow-md transition-shadow group cursor-pointer">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center justify-between group-hover:text-primary-600 transition-colors">
+                      {child.title}
+                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-primary-600 transition-colors" />
+                    </CardTitle>
+                    {child.meta_description && (
+                      <CardDescription>{child.meta_description}</CardDescription>
+                    )}
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

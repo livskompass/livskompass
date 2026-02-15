@@ -4,6 +4,10 @@ import { getPost, getMediaUrl, rewriteMediaUrls } from '../lib/api'
 import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
+import { Badge } from '../components/ui/badge'
+import { Skeleton } from '../components/ui/skeleton'
+import { Button } from '../components/ui/button'
+import { ArrowLeft } from 'lucide-react'
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>()
@@ -19,15 +23,14 @@ export default function BlogPost() {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-12 bg-gray-200 rounded w-3/4 mb-8"></div>
-          <div className="h-64 bg-gray-200 rounded mb-8"></div>
-          <div className="space-y-3">
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-            <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-          </div>
+        <Skeleton className="h-5 w-32 mb-6" />
+        <Skeleton className="h-5 w-24 mb-3" />
+        <Skeleton className="h-12 w-3/4 mb-8" />
+        <Skeleton className="h-72 w-full rounded-xl mb-8" />
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-4/6" />
         </div>
       </div>
     )
@@ -41,34 +44,34 @@ export default function BlogPost() {
 
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <Link
-        to="/nyhet"
-        className="text-primary-600 hover:text-primary-700 mb-6 inline-block"
-      >
-        &larr; Alla nyheter
-      </Link>
+      <Button variant="ghost" className="mb-6 -ml-2 text-gray-600 hover:text-primary-600" asChild>
+        <Link to="/nyhet">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Alla nyheter
+        </Link>
+      </Button>
 
       <header className="mb-8">
-        <time className="text-gray-500">
+        <Badge variant="secondary" className="mb-3">
           {new Date(post.published_at).toLocaleDateString('sv-SE', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           })}
-        </time>
-        <h1 className="text-4xl font-bold text-gray-900 mt-2">{post.title}</h1>
+        </Badge>
+        <h1 className="text-4xl font-bold text-gray-900 mt-2 tracking-tight">{post.title}</h1>
       </header>
 
       {post.featured_image && (
         <img
           src={getMediaUrl(post.featured_image)}
           alt={post.title}
-          className="w-full h-auto rounded-lg mb-8"
+          className="w-full h-auto rounded-xl mb-8 shadow-sm"
         />
       )}
 
       <div
-        className="prose prose-lg max-w-none"
+        className="prose prose-lg max-w-none prose-headings:tracking-tight prose-a:text-primary-600"
         dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(post.content)) }}
       />
     </article>

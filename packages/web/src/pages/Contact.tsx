@@ -2,6 +2,12 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { submitContact } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
+import { Label } from '../components/ui/label'
+import { Mail, Phone, User, CheckCircle2 } from 'lucide-react'
 
 export default function Contact() {
   useDocumentTitle('Kontakt')
@@ -40,45 +46,32 @@ export default function Contact() {
 
   if (submitted) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <div className="bg-green-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-          <svg
-            className="w-10 h-10 text-green-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-6">
+          <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
           Tack för ditt meddelande!
         </h1>
-        <p className="text-gray-600 mb-8">
+        <p className="text-gray-500 mb-8 text-lg">
           Vi återkommer till dig så snart som möjligt.
         </p>
-        <button
-          onClick={() => setSubmitted(false)}
-          className="text-primary-600 hover:text-primary-700 font-medium"
-        >
+        <Button variant="ghost" className="text-primary-600 font-medium" onClick={() => setSubmitted(false)}>
           Skicka ett nytt meddelande
-        </button>
+        </Button>
       </div>
     )
   }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h1 className="text-4xl font-bold text-gray-900 mb-4">Kontakt</h1>
-      <p className="text-xl text-gray-600 mb-12">
-        Har du frågor om utbildningar eller vill diskutera ett samarbete?
-        Hör av dig!
-      </p>
+      <div className="mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Kontakt</h1>
+        <p className="text-xl text-gray-500 max-w-2xl">
+          Har du frågor om utbildningar eller vill diskutera ett samarbete?
+          Hör av dig!
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
@@ -87,148 +80,143 @@ export default function Contact() {
           </h2>
 
           <div className="space-y-6">
-            <div>
-              <h3 className="font-medium text-gray-900 mb-1">Fredrik Livheim</h3>
-              <p className="text-gray-600">
-                Legitimerad psykolog och ACT-utbildare
-              </p>
-            </div>
+            <Card>
+              <CardContent className="p-5 flex items-start gap-4">
+                <div className="rounded-lg bg-primary-50 p-2.5">
+                  <User className="h-5 w-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-0.5">Fredrik Livheim</h3>
+                  <p className="text-sm text-gray-500">
+                    Legitimerad psykolog och ACT-utbildare
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-            <div>
-              <h3 className="font-medium text-gray-900 mb-1">E-post</h3>
-              <a
-                href="mailto:livheim@gmail.com"
-                className="text-primary-600 hover:text-primary-700"
-              >
-                livheim@gmail.com
-              </a>
-            </div>
+            <Card>
+              <CardContent className="p-5 flex items-start gap-4">
+                <div className="rounded-lg bg-primary-50 p-2.5">
+                  <Mail className="h-5 w-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-0.5">E-post</h3>
+                  <a
+                    href="mailto:livheim@gmail.com"
+                    className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
+                  >
+                    livheim@gmail.com
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
 
-            <div>
-              <h3 className="font-medium text-gray-900 mb-1">Telefon</h3>
-              <a
-                href="tel:+46706940364"
-                className="text-primary-600 hover:text-primary-700"
-              >
-                070-694 03 64
-              </a>
-            </div>
+            <Card>
+              <CardContent className="p-5 flex items-start gap-4">
+                <div className="rounded-lg bg-primary-50 p-2.5">
+                  <Phone className="h-5 w-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-0.5">Telefon</h3>
+                  <a
+                    href="tel:+46706940364"
+                    className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
+                  >
+                    070-694 03 64
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-            Skicka meddelande
-          </h2>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Skicka meddelande</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
+                  {error}
+                </div>
+              )}
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-              {error}
-            </div>
-          )}
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Namn *</Label>
+                  <Input
+                    type="text"
+                    id="name"
+                    required
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                  />
+                </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Namn *
-              </label>
-              <input
-                type="text"
-                id="name"
-                required
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">E-post *</Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                  />
+                </div>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                E-post *
-              </label>
-              <input
-                type="email"
-                id="email"
-                required
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefon</Label>
+                  <Input
+                    type="tel"
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                  />
+                </div>
 
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Telefon
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Ämne</Label>
+                  <Input
+                    type="text"
+                    id="subject"
+                    value={formData.subject}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subject: e.target.value })
+                    }
+                  />
+                </div>
 
-            <div>
-              <label
-                htmlFor="subject"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Ämne
-              </label>
-              <input
-                type="text"
-                id="subject"
-                value={formData.subject}
-                onChange={(e) =>
-                  setFormData({ ...formData, subject: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message">Meddelande *</Label>
+                  <Textarea
+                    id="message"
+                    required
+                    rows={5}
+                    value={formData.message}
+                    onChange={(e) =>
+                      setFormData({ ...formData, message: e.target.value })
+                    }
+                  />
+                </div>
 
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Meddelande *
-              </label>
-              <textarea
-                id="message"
-                required
-                rows={5}
-                value={formData.message}
-                onChange={(e) =>
-                  setFormData({ ...formData, message: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={mutation.isPending}
-              className="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {mutation.isPending ? 'Skickar...' : 'Skicka meddelande'}
-            </button>
-          </form>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? 'Skickar...' : 'Skicka meddelande'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

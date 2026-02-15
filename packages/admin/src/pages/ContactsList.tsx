@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getContacts, markContactRead, deleteContact, Contact } from '../lib/api'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Badge } from '../components/ui/badge'
+import { Separator } from '../components/ui/separator'
+import { Skeleton } from '../components/ui/skeleton'
+import { Mail, Trash2, Reply, Clock } from 'lucide-react'
+import { cn } from '../lib/utils'
 
 export default function ContactsList() {
   const queryClient = useQueryClient()
@@ -40,36 +47,51 @@ export default function ContactsList() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Messages</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Messages</h1>
+        <p className="text-gray-500 mt-1">Contact form submissions and inquiries.</p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* List */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <Card>
             {isLoading ? (
-              <div className="p-8 text-center text-gray-500">Loading...</div>
+              <CardContent className="p-6 space-y-4">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full" />
+                ))}
+              </CardContent>
             ) : data?.contacts && data.contacts.length > 0 ? (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-gray-100">
                 {data.contacts.map((contact) => (
                   <div
                     key={contact.id}
                     onClick={() => handleSelect(contact)}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                      selectedContact?.id === contact.id ? 'bg-primary-50' : ''
-                    } ${!contact.read ? 'bg-blue-50' : ''}`}
+                    className={cn(
+                      "p-4 cursor-pointer transition-colors",
+                      selectedContact?.id === contact.id
+                        ? 'bg-primary-50/50'
+                        : !contact.read
+                        ? 'bg-blue-50/30 hover:bg-blue-50/50'
+                        : 'hover:bg-gray-50'
+                    )}
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-2">
                           {!contact.read && (
-                            <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                            <span className="w-2 h-2 bg-primary-600 rounded-full shrink-0" />
                           )}
-                          <p className="font-medium text-gray-900 truncate">
+                          <p className={cn(
+                            "text-sm truncate",
+                            !contact.read ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'
+                          )}>
                             {contact.name}
                           </p>
                         </div>
-                        <p className="text-sm text-gray-500 truncate">
+                        <p className="text-xs text-gray-500 truncate mt-0.5">
                           {contact.email}
                         </p>
                         {contact.subject && (
@@ -77,84 +99,101 @@ export default function ContactsList() {
                             {contact.subject}
                           </p>
                         )}
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">
                           {contact.message}
                         </p>
                       </div>
-                      <time className="text-xs text-gray-400 whitespace-nowrap ml-4">
-                        {new Date(contact.created_at).toLocaleDateString('sv-SE')}
-                      </time>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <time className="text-xs text-gray-400">
+                          {new Date(contact.created_at).toLocaleDateString('sv-SE')}
+                        </time>
+                        {!contact.read && (
+                          <Badge variant="default" className="text-[10px] px-1.5">New</Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center text-gray-500">
-                No messages yet.
-              </div>
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <Mail className="h-10 w-10 text-gray-300 mb-3" />
+                <p className="text-gray-500">No messages yet.</p>
+              </CardContent>
             )}
-          </div>
+          </Card>
         </div>
 
         {/* Detail */}
         <div>
           {selectedContact ? (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold text-gray-900">
-                    {selectedContact.name}
-                  </h3>
-                  <a
-                    href={`mailto:${selectedContact.email}`}
-                    className="text-sm text-primary-600 hover:text-primary-700"
-                  >
-                    {selectedContact.email}
-                  </a>
-                  {selectedContact.phone && (
-                    <p className="text-sm text-gray-500">{selectedContact.phone}</p>
-                  )}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-base">{selectedContact.name}</CardTitle>
+                    <a
+                      href={`mailto:${selectedContact.email}`}
+                      className="text-sm text-primary-600 hover:text-primary-700"
+                    >
+                      {selectedContact.email}
+                    </a>
+                    {selectedContact.phone && (
+                      <p className="text-sm text-gray-500 mt-0.5">{selectedContact.phone}</p>
+                    )}
+                  </div>
                 </div>
-                <time className="text-xs text-gray-400">
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                  <Clock className="h-3 w-3" />
                   {new Date(selectedContact.created_at).toLocaleString('sv-SE')}
-                </time>
-              </div>
+                </div>
 
-              {selectedContact.subject && (
-                <div className="mb-4">
-                  <p className="text-sm text-gray-500">Subject</p>
-                  <p className="font-medium text-gray-900">
-                    {selectedContact.subject}
+                {selectedContact.subject && (
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">Subject</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {selectedContact.subject}
+                    </p>
+                  </div>
+                )}
+
+                <Separator />
+
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">Message</p>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                    {selectedContact.message}
                   </p>
                 </div>
-              )}
 
-              <div className="mb-6">
-                <p className="text-sm text-gray-500 mb-2">Message</p>
-                <p className="text-gray-700 whitespace-pre-wrap">
-                  {selectedContact.message}
-                </p>
-              </div>
+                <Separator />
 
-              <div className="flex gap-2">
-                <a
-                  href={`mailto:${selectedContact.email}?subject=Re: ${selectedContact.subject || 'Your message'}`}
-                  className="flex-1 text-center bg-primary-600 text-white py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-                >
-                  Reply
-                </a>
-                <button
-                  onClick={() => handleDelete(selectedContact.id)}
-                  className="px-4 bg-red-100 text-red-700 py-2 rounded-lg font-medium hover:bg-red-200 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+                <div className="flex gap-2">
+                  <Button asChild className="flex-1">
+                    <a href={`mailto:${selectedContact.email}?subject=Re: ${selectedContact.subject || 'Your message'}`}>
+                      <Reply className="h-4 w-4 mr-2" />
+                      Reply
+                    </a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleDelete(selectedContact.id)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm p-6 text-center text-gray-500">
-              Select a message to read it
-            </div>
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <Mail className="h-8 w-8 text-gray-300 mb-2" />
+                <p className="text-sm text-gray-400">Select a message to read it</p>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

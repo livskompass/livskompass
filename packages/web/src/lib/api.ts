@@ -48,7 +48,7 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
 // Pages
 export const getPages = () => fetchApi<{ pages: Page[] }>('/pages')
-export const getPage = (slug: string) => fetchApi<{ page: Page }>(`/pages/${slug}`)
+export const getPage = (slug: string) => fetchApi<{ page: Page; children: Page[] }>(`/pages/${slug}`)
 
 // Posts
 export const getPosts = (limit = 10, offset = 0) =>

@@ -3,6 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCourse, createCourse, updateCourse } from '../lib/api'
 import Editor from '../components/Editor'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
+import { Label } from '../components/ui/label'
+import { Select } from '../components/ui/select'
+import { Skeleton } from '../components/ui/skeleton'
+import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 
 export default function CourseEditor() {
   const { id } = useParams()
@@ -79,27 +87,35 @@ export default function CourseEditor() {
 
   if (!isNew && isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary-600 border-t-transparent"></div>
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2"><Skeleton className="h-96" /></div>
+          <div className="space-y-6">
+            <Skeleton className="h-64" />
+            <Skeleton className="h-24" />
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <Link to="/utbildningar" className="text-gray-500 hover:text-gray-700 mr-4">
-            &larr; Back
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/utbildningar">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {isNew ? 'New course' : 'Edit course'}
-          </h1>
-        </div>
+        </Button>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+          {isNew ? 'New course' : 'Edit course'}
+        </h1>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
@@ -107,14 +123,12 @@ export default function CourseEditor() {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title *
-                  </label>
-                  <input
-                    type="text"
+            <Card>
+              <CardContent className="p-6 space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
                     required
                     value={formData.title}
                     onChange={(e) => {
@@ -124,174 +138,160 @@ export default function CourseEditor() {
                         slug: isNew ? generateSlug(e.target.value) : formData.slug,
                       })
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Course title"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Short description
-                  </label>
-                  <textarea
+                <div className="space-y-2">
+                  <Label htmlFor="desc">Short description</Label>
+                  <Textarea
+                    id="desc"
                     rows={3}
                     value={formData.description}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full description
-                  </label>
+                <div className="space-y-2">
+                  <Label>Full description</Label>
                   <Editor
                     content={formData.content}
                     onChange={(html) => setFormData({ ...formData, content: html })}
                   />
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Details</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Location *
-                  </label>
-                  <input
-                    type="text"
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location *</Label>
+                  <Input
+                    id="location"
                     required
                     value={formData.location}
                     onChange={(e) =>
                       setFormData({ ...formData, location: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Stockholm, Online, etc."
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Start date *
-                    </label>
-                    <input
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="start">Start date *</Label>
+                    <Input
+                      id="start"
                       type="date"
                       required
                       value={formData.start_date}
                       onChange={(e) =>
                         setFormData({ ...formData, start_date: e.target.value })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      End date
-                    </label>
-                    <input
+                  <div className="space-y-2">
+                    <Label htmlFor="end">End date</Label>
+                    <Input
+                      id="end"
                       type="date"
                       value={formData.end_date}
                       onChange={(e) =>
                         setFormData({ ...formData, end_date: e.target.value })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Registration deadline
-                  </label>
-                  <input
+                <div className="space-y-2">
+                  <Label htmlFor="deadline">Registration deadline</Label>
+                  <Input
+                    id="deadline"
                     type="date"
                     value={formData.registration_deadline}
                     onChange={(e) =>
                       setFormData({ ...formData, registration_deadline: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Price (SEK)
-                    </label>
-                    <input
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="price">Price (SEK)</Label>
+                    <Input
+                      id="price"
                       type="number"
                       value={formData.price_sek}
                       onChange={(e) =>
                         setFormData({ ...formData, price_sek: parseInt(e.target.value) || 0 })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Max participants
-                    </label>
-                    <input
+                  <div className="space-y-2">
+                    <Label htmlFor="max">Max participants</Label>
+                    <Input
+                      id="max"
                       type="number"
                       value={formData.max_participants}
                       onChange={(e) =>
                         setFormData({ ...formData, max_participants: parseInt(e.target.value) || 1 })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
-                  <select
+                <div className="space-y-2">
+                  <Label htmlFor="course-status">Status</Label>
+                  <Select
+                    id="course-status"
                     value={formData.status}
                     onChange={(e) =>
                       setFormData({ ...formData, status: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value="active">Active</option>
                     <option value="full">Full</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
-                  </select>
+                  </Select>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={saveMutation.isPending}
-                  className="w-full bg-primary-600 text-white py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
+                  className="w-full"
                 >
-                  {saveMutation.isPending ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-            </div>
+                  {saveMutation.isPending ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Save className="h-4 w-4 mr-2" /> Save</>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-medium text-gray-900 mb-4">SEO</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL-slug
-                </label>
-                <input
-                  type="text"
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">SEO</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Label htmlFor="slug">URL slug</Label>
+                <Input
+                  id="slug"
                   value={formData.slug}
                   onChange={(e) =>
                     setFormData({ ...formData, slug: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </form>

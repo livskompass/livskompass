@@ -1,6 +1,15 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getUsers, createUser, updateUser, deleteUser, getMe, User } from '../lib/api'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Badge } from '../components/ui/badge'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import { Select } from '../components/ui/select'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
+import { Skeleton } from '../components/ui/skeleton'
+import { Plus, Trash2, Users as UsersIcon, X, ShieldAlert } from 'lucide-react'
 
 export default function UsersList() {
   const queryClient = useQueryClient()
@@ -76,8 +85,9 @@ export default function UsersList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary-600 border-t-transparent"></div>
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-64 w-full" />
       </div>
     )
   }
@@ -85,200 +95,193 @@ export default function UsersList() {
   // Check if current user is admin
   if (currentUser?.role !== 'admin') {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
-        You do not have permission to manage users.
-      </div>
+      <Card className="border-yellow-200 bg-yellow-50">
+        <CardContent className="flex items-center gap-3 p-4">
+          <ShieldAlert className="h-5 w-5 text-yellow-600 shrink-0" />
+          <p className="text-sm text-yellow-800">
+            You do not have permission to manage users.
+          </p>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-        >
-          + Add user
-        </button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Users</h1>
+          <p className="text-gray-500 mt-1">Manage admin access and roles.</p>
+        </div>
+        <Button onClick={() => setShowAddForm(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add user
+        </Button>
       </div>
 
       {/* Add user form */}
       {showAddForm && (
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Add new user</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Enter the user's email address. They will be able to sign in with Google
-            the next time they visit admin.
-          </p>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Add new user</CardTitle>
+                <CardDescription>
+                  Enter the user's email address. They will be able to sign in with Google
+                  the next time they visit admin.
+                </CardDescription>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => { setShowAddForm(false); setError('') }}>
+                <X className="h-4 w-4" />
+              </Button>
             </div>
-          )}
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+                {error}
+              </div>
+            )}
 
-          <form onSubmit={handleAddUser} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email address *
-              </label>
-              <input
-                type="email"
-                required
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="name@example.com"
-              />
-            </div>
+            <form onSubmit={handleAddUser} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email address *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="name@example.com"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name
-              </label>
-              <input
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="First Last"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="First Last"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Role
-              </label>
-              <select
-                value={newRole}
-                onChange={(e) => setNewRole(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="editor">Editor</option>
-                <option value="admin">Administrator</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1">
-                Administrators can manage other users.
-              </p>
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="role">Role</Label>
+                <Select
+                  id="role"
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                >
+                  <option value="editor">Editor</option>
+                  <option value="admin">Administrator</option>
+                </Select>
+                <p className="text-xs text-gray-500">
+                  Administrators can manage other users.
+                </p>
+              </div>
 
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                disabled={createMutation.isPending}
-                className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
-              >
-                {createMutation.isPending ? 'Adding...' : 'Add'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddForm(false)
-                  setError('')
-                }}
-                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" disabled={createMutation.isPending}>
+                  {createMutation.isPending ? 'Adding...' : 'Add user'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => { setShowAddForm(false); setError('') }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       )}
 
       {/* Users list */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Created
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50/50">
+              <TableHead>User</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data?.users?.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
+              <TableRow key={user.id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
                     {user.avatar_url ? (
                       <img
                         src={user.avatar_url}
                         alt=""
-                        className="w-10 h-10 rounded-full mr-3"
+                        className="w-9 h-9 rounded-full"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                        <span className="text-gray-500 font-medium">
+                      <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                        <span className="text-gray-500 font-medium text-sm">
                           {user.name?.[0] || user.email[0].toUpperCase()}
                         </span>
                       </div>
                     )}
                     <div>
-                      <div className="font-medium text-gray-900">
-                        {user.name || 'Unknown'}
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900 text-sm">
+                          {user.name || 'Unknown'}
+                        </span>
                         {user.id === currentUser?.id && (
-                          <span className="ml-2 text-xs text-primary-600">(you)</span>
+                          <Badge variant="outline" className="text-[10px]">You</Badge>
                         )}
                       </div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
+                      <div className="text-xs text-gray-500">{user.email}</div>
                     </div>
                   </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <select
+                </TableCell>
+                <TableCell>
+                  <Select
                     value={user.role}
                     onChange={(e) => handleRoleChange(user, e.target.value)}
                     disabled={user.id === currentUser?.id}
-                    className={`text-sm border border-gray-300 rounded px-2 py-1 ${
-                      user.id === currentUser?.id
-                        ? 'bg-gray-100 cursor-not-allowed'
-                        : ''
-                    }`}
+                    className="w-32 h-8 text-xs"
                   >
                     <option value="editor">Editor</option>
                     <option value="admin">Administrator</option>
-                  </select>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  </Select>
+                </TableCell>
+                <TableCell className="text-gray-500 text-sm">
                   {user.created_at
                     ? new Date(user.created_at).toLocaleDateString('sv-SE')
-                    : '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    : '--'}
+                </TableCell>
+                <TableCell className="text-right">
                   {user.id !== currentUser?.id && (
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDelete(user)}
-                      className="text-red-600 hover:text-red-900"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
-                      Delete
-                    </button>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   )}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
             {(!data?.users || data.users.length === 0) && (
-              <tr>
-                <td
-                  colSpan={4}
-                  className="px-6 py-8 text-center text-gray-500"
-                >
-                  No users found
-                </td>
-              </tr>
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8">
+                  <UsersIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-gray-500">No users found</p>
+                </TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   )
 }
