@@ -18,11 +18,11 @@ export const puckConfig: Config = {
       components: ["Columns", "SeparatorBlock"],
     },
     content: {
-      title: "Innehåll",
+      title: "Content",
       components: ["Hero", "RichText", "ImageBlock", "Accordion"],
     },
     marketing: {
-      title: "Marknadsföring",
+      title: "Marketing",
       components: ["CTABanner", "CardGrid", "Testimonial", "ButtonGroup"],
     },
     media: {
@@ -30,7 +30,7 @@ export const puckConfig: Config = {
       components: ["ImageGallery", "VideoEmbed"],
     },
     advanced: {
-      title: "Avancerat",
+      title: "Advanced",
       components: ["ContactFormBlock"],
     },
   },
@@ -38,7 +38,7 @@ export const puckConfig: Config = {
     // ============ LAYOUT ============
 
     SeparatorBlock: {
-      label: "Avskiljare",
+      label: "Separator",
       defaultProps: {
         variant: "line",
         spacing: "medium",
@@ -49,34 +49,34 @@ export const puckConfig: Config = {
         variant: {
           type: "select",
           options: [
-            { label: "Linje", value: "line" },
-            { label: "Punkter", value: "dots" },
-            { label: "Bara mellanrum", value: "space-only" },
+            { label: "Line", value: "line" },
+            { label: "Dots", value: "dots" },
+            { label: "Space only", value: "space-only" },
           ],
         },
         spacing: {
           type: "select",
           options: [
-            { label: "Liten", value: "small" },
+            { label: "Small", value: "small" },
             { label: "Medium", value: "medium" },
-            { label: "Stor", value: "large" },
-            { label: "Extra stor", value: "extra-large" },
+            { label: "Large", value: "large" },
+            { label: "Extra large", value: "extra-large" },
           ],
         },
         lineColor: {
           type: "select",
           options: [
-            { label: "Ljus", value: "light" },
+            { label: "Light", value: "light" },
             { label: "Medium", value: "medium" },
-            { label: "Mörk", value: "dark" },
+            { label: "Dark", value: "dark" },
           ],
         },
         maxWidth: {
           type: "select",
           options: [
-            { label: "Smal", value: "narrow" },
+            { label: "Narrow", value: "narrow" },
             { label: "Medium", value: "medium" },
-            { label: "Hel bredd", value: "full" },
+            { label: "Full width", value: "full" },
           ],
         },
       },
@@ -105,7 +105,7 @@ export const puckConfig: Config = {
     // ============ CONTENT ============
 
     Hero: {
-      label: "Hjältebanner",
+      label: "Hero",
       defaultProps: {
         heading: "Rubrik här",
         subheading: "Underrubrik här",
@@ -126,25 +126,25 @@ export const puckConfig: Config = {
           type: "select",
           options: [
             { label: "Gradient", value: "gradient" },
-            { label: "Bild", value: "image" },
-            { label: "Enfärgad", value: "solid" },
+            { label: "Image", value: "image" },
+            { label: "Solid", value: "solid" },
           ],
         },
         backgroundColor: {
           type: "select",
           options: [
-            { label: "Primär (blå)", value: "primary" },
-            { label: "Mörk", value: "dark" },
-            { label: "Ljus", value: "light" },
+            { label: "Primary (blue)", value: "primary" },
+            { label: "Dark", value: "dark" },
+            { label: "Light", value: "light" },
           ],
         },
         backgroundImage: { type: "text" },
         textAlignment: {
           type: "radio",
           options: [
-            { label: "Vänster", value: "left" },
+            { label: "Left", value: "left" },
             { label: "Center", value: "center" },
-            { label: "Höger", value: "right" },
+            { label: "Right", value: "right" },
           ],
         },
         ctaPrimaryText: { type: "text" },
@@ -154,8 +154,8 @@ export const puckConfig: Config = {
         fullHeight: {
           type: "radio",
           options: [
-            { label: "Full viewhöjd", value: "full-viewport" },
-            { label: "Automatisk", value: "auto" },
+            { label: "Full viewport", value: "full-viewport" },
+            { label: "Auto", value: "auto" },
           ],
         },
       },
@@ -192,9 +192,9 @@ export const puckConfig: Config = {
     },
 
     RichText: {
-      label: "Fritext",
+      label: "Rich Text",
       defaultProps: {
-        content: "<p>Skriv ditt innehåll här...</p>",
+        content: "<p>Write your content here...</p>",
         maxWidth: "medium",
       },
       fields: {
@@ -202,9 +202,9 @@ export const puckConfig: Config = {
         maxWidth: {
           type: "select",
           options: [
-            { label: "Smal (65ch)", value: "narrow" },
+            { label: "Narrow (65ch)", value: "narrow" },
             { label: "Medium (80ch)", value: "medium" },
-            { label: "Hel bredd", value: "full" },
+            { label: "Full width", value: "full" },
           ],
         },
       },
@@ -220,7 +220,7 @@ export const puckConfig: Config = {
     },
 
     ImageBlock: {
-      label: "Bild",
+      label: "Image",
       defaultProps: {
         src: "",
         alt: "",
@@ -237,25 +237,25 @@ export const puckConfig: Config = {
         size: {
           type: "select",
           options: [
-            { label: "Liten (50%)", value: "small" },
+            { label: "Small (50%)", value: "small" },
             { label: "Medium (75%)", value: "medium" },
-            { label: "Hel bredd", value: "full" },
+            { label: "Full width", value: "full" },
           ],
         },
         alignment: {
           type: "radio",
           options: [
-            { label: "Vänster", value: "left" },
+            { label: "Left", value: "left" },
             { label: "Center", value: "center" },
-            { label: "Höger", value: "right" },
+            { label: "Right", value: "right" },
           ],
         },
         rounded: {
           type: "radio",
           options: [
-            { label: "Ingen", value: "none" },
-            { label: "Liten", value: "small" },
-            { label: "Stor", value: "large" },
+            { label: "None", value: "none" },
+            { label: "Small", value: "small" },
+            { label: "Large", value: "large" },
           ],
         },
         link: { type: "text" },
@@ -275,7 +275,7 @@ export const puckConfig: Config = {
               />
             ) : (
               <div className={`w-full aspect-video bg-gray-100 flex items-center justify-center text-gray-400 ${roundedMap[rounded as keyof typeof roundedMap] || "rounded-lg"}`}>
-                Välj en bild
+                Select an image
               </div>
             )}
             {caption && (
@@ -294,7 +294,7 @@ export const puckConfig: Config = {
     // ============ MARKETING ============
 
     CTABanner: {
-      label: "CTA-banner",
+      label: "CTA Banner",
       defaultProps: {
         heading: "Redo att börja?",
         description: "Boka din plats på nästa utbildning",
@@ -313,31 +313,31 @@ export const puckConfig: Config = {
         variant: {
           type: "select",
           options: [
-            { label: "Primär", value: "primary" },
-            { label: "Sekundär", value: "secondary" },
+            { label: "Primary", value: "primary" },
+            { label: "Secondary", value: "secondary" },
             { label: "Outline", value: "outline" },
           ],
         },
         backgroundColor: {
           type: "select",
           options: [
-            { label: "Primär (blå)", value: "primary" },
-            { label: "Mörk", value: "dark" },
-            { label: "Ljus", value: "light" },
+            { label: "Primary (blue)", value: "primary" },
+            { label: "Dark", value: "dark" },
+            { label: "Light", value: "light" },
           ],
         },
         alignment: {
           type: "radio",
           options: [
-            { label: "Vänster", value: "left" },
+            { label: "Left", value: "left" },
             { label: "Center", value: "center" },
           ],
         },
         fullWidth: {
           type: "radio",
           options: [
-            { label: "Ja", value: true },
-            { label: "Nej", value: false },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
           ],
         },
       },
@@ -369,7 +369,7 @@ export const puckConfig: Config = {
     },
 
     ButtonGroup: {
-      label: "Knappar",
+      label: "Buttons",
       defaultProps: {
         buttons: [{ text: "Primär knapp", link: "/", variant: "primary" }],
         alignment: "center",
@@ -385,8 +385,8 @@ export const puckConfig: Config = {
             variant: {
               type: "select",
               options: [
-                { label: "Primär", value: "primary" },
-                { label: "Sekundär", value: "secondary" },
+                { label: "Primary", value: "primary" },
+                { label: "Secondary", value: "secondary" },
                 { label: "Outline", value: "outline" },
               ],
             },
@@ -395,24 +395,24 @@ export const puckConfig: Config = {
         alignment: {
           type: "radio",
           options: [
-            { label: "Vänster", value: "left" },
+            { label: "Left", value: "left" },
             { label: "Center", value: "center" },
-            { label: "Höger", value: "right" },
+            { label: "Right", value: "right" },
           ],
         },
         direction: {
           type: "radio",
           options: [
-            { label: "Horisontell", value: "horizontal" },
-            { label: "Vertikal", value: "vertical" },
+            { label: "Horizontal", value: "horizontal" },
+            { label: "Vertical", value: "vertical" },
           ],
         },
         size: {
           type: "select",
           options: [
-            { label: "Liten", value: "small" },
+            { label: "Small", value: "small" },
             { label: "Medium", value: "medium" },
-            { label: "Stor", value: "large" },
+            { label: "Large", value: "large" },
           ],
         },
       },
@@ -446,10 +446,10 @@ export const puckConfig: Config = {
     // Each has minimal config so the Puck editor recognizes them.
 
     Accordion: {
-      label: "Dragspel / FAQ",
+      label: "Accordion / FAQ",
       defaultProps: {
         heading: "",
-        items: [{ question: "Fråga här", answer: "Svar här" }],
+        items: [{ question: "Question here", answer: "Answer here" }],
         defaultOpen: "none",
         style: "bordered",
       },
@@ -465,16 +465,16 @@ export const puckConfig: Config = {
         defaultOpen: {
           type: "select",
           options: [
-            { label: "Ingen", value: "none" },
-            { label: "Första", value: "first" },
-            { label: "Alla", value: "all" },
+            { label: "None", value: "none" },
+            { label: "First", value: "first" },
+            { label: "All", value: "all" },
           ],
         },
         style: {
           type: "select",
           options: [
-            { label: "Standard", value: "default" },
-            { label: "Kantlinje", value: "bordered" },
+            { label: "Default", value: "default" },
+            { label: "Bordered", value: "bordered" },
             { label: "Minimal", value: "minimal" },
           ],
         },
@@ -500,7 +500,7 @@ export const puckConfig: Config = {
     },
 
     CardGrid: {
-      label: "Kortrutnät",
+      label: "Card Grid",
       defaultProps: {
         heading: "",
         subheading: "",
@@ -517,18 +517,18 @@ export const puckConfig: Config = {
         source: {
           type: "select",
           options: [
-            { label: "Manuella kort", value: "manual" },
-            { label: "Utbildningar", value: "courses" },
-            { label: "Produkter", value: "products" },
+            { label: "Manual cards", value: "manual" },
+            { label: "Courses", value: "courses" },
+            { label: "Products", value: "products" },
           ],
         },
         maxItems: { type: "number" },
         columns: {
           type: "select",
           options: [
-            { label: "2 kolumner", value: 2 },
-            { label: "3 kolumner", value: 3 },
-            { label: "4 kolumner", value: 4 },
+            { label: "2 columns", value: 2 },
+            { label: "3 columns", value: 3 },
+            { label: "4 columns", value: 4 },
           ],
         },
         manualCards: {
@@ -544,16 +544,16 @@ export const puckConfig: Config = {
         showBadge: {
           type: "radio",
           options: [
-            { label: "Ja", value: true },
-            { label: "Nej", value: false },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
           ],
         },
         cardStyle: {
           type: "select",
           options: [
-            { label: "Standard", value: "default" },
-            { label: "Kantlinje", value: "bordered" },
-            { label: "Skugga", value: "shadow" },
+            { label: "Default", value: "default" },
+            { label: "Bordered", value: "bordered" },
+            { label: "Shadow", value: "shadow" },
           ],
         },
       },
@@ -583,7 +583,7 @@ export const puckConfig: Config = {
               ))}
               {(!manualCards || (manualCards as Array<unknown>).length === 0) && (
                 <div className="col-span-full text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-                  Lägg till kort via inställningarna
+                  Add cards via settings
                 </div>
               )}
             </div>
@@ -593,7 +593,7 @@ export const puckConfig: Config = {
     },
 
     Testimonial: {
-      label: "Citat / Omdöme",
+      label: "Testimonial",
       defaultProps: {
         quote: "Ett fantastiskt citat här...",
         author: "",
@@ -609,9 +609,9 @@ export const puckConfig: Config = {
         style: {
           type: "select",
           options: [
-            { label: "Kort", value: "card" },
+            { label: "Card", value: "card" },
             { label: "Minimal", value: "minimal" },
-            { label: "Framhävd", value: "featured" },
+            { label: "Featured", value: "featured" },
           ],
         },
       },
@@ -690,7 +690,7 @@ export const puckConfig: Config = {
               </div>
             ) : (
               <div className={`${ratioMap[aspectRatio as keyof typeof ratioMap] || "aspect-video"} w-full rounded-lg bg-gray-100 flex items-center justify-center text-gray-400`}>
-                Klistra in en video-URL
+                Paste a video URL
               </div>
             )}
             {caption && <figcaption className="text-sm text-gray-500 mt-2 text-center">{caption}</figcaption>}
@@ -700,7 +700,7 @@ export const puckConfig: Config = {
     },
 
     ImageGallery: {
-      label: "Bildgalleri",
+      label: "Image Gallery",
       defaultProps: {
         images: [],
         columns: 3,
@@ -719,26 +719,26 @@ export const puckConfig: Config = {
         columns: {
           type: "select",
           options: [
-            { label: "2 kolumner", value: 2 },
-            { label: "3 kolumner", value: 3 },
-            { label: "4 kolumner", value: 4 },
+            { label: "2 columns", value: 2 },
+            { label: "3 columns", value: 3 },
+            { label: "4 columns", value: 4 },
           ],
         },
         gap: {
           type: "select",
           options: [
-            { label: "Liten", value: "small" },
+            { label: "Small", value: "small" },
             { label: "Medium", value: "medium" },
-            { label: "Stor", value: "large" },
+            { label: "Large", value: "large" },
           ],
         },
         aspectRatio: {
           type: "select",
           options: [
-            { label: "Kvadrat", value: "square" },
-            { label: "Landskap", value: "landscape" },
-            { label: "Porträtt", value: "portrait" },
-            { label: "Automatisk", value: "auto" },
+            { label: "Square", value: "square" },
+            { label: "Landscape", value: "landscape" },
+            { label: "Portrait", value: "portrait" },
+            { label: "Auto", value: "auto" },
           ],
         },
       },
@@ -761,7 +761,7 @@ export const puckConfig: Config = {
             ))}
             {(!images || (images as Array<unknown>).length === 0) && (
               <div className="col-span-full text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-                Lägg till bilder via inställningarna
+                Add images via settings
               </div>
             )}
           </div>
@@ -772,7 +772,7 @@ export const puckConfig: Config = {
     // ============ ADVANCED ============
 
     ContactFormBlock: {
-      label: "Kontaktformulär",
+      label: "Contact Form",
       defaultProps: {
         heading: "Kontakta oss",
         description: "Har du frågor? Hör av dig så återkommer vi så snart vi kan.",
@@ -785,15 +785,15 @@ export const puckConfig: Config = {
         showPhone: {
           type: "radio",
           options: [
-            { label: "Ja", value: true },
-            { label: "Nej", value: false },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
           ],
         },
         showSubject: {
           type: "radio",
           options: [
-            { label: "Ja", value: true },
-            { label: "Nej", value: false },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
           ],
         },
       },
@@ -837,7 +837,7 @@ export const puckConfig: Config = {
     },
 
     Columns: {
-      label: "Kolumner",
+      label: "Columns",
       defaultProps: {
         layout: "50-50",
         gap: "medium",
@@ -857,24 +857,24 @@ export const puckConfig: Config = {
         gap: {
           type: "select",
           options: [
-            { label: "Liten", value: "small" },
+            { label: "Small", value: "small" },
             { label: "Medium", value: "medium" },
-            { label: "Stor", value: "large" },
+            { label: "Large", value: "large" },
           ],
         },
         verticalAlignment: {
           type: "select",
           options: [
-            { label: "Topp", value: "top" },
+            { label: "Top", value: "top" },
             { label: "Center", value: "center" },
-            { label: "Botten", value: "bottom" },
+            { label: "Bottom", value: "bottom" },
           ],
         },
         stackOnMobile: {
           type: "radio",
           options: [
-            { label: "Ja", value: true },
-            { label: "Nej", value: false },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
           ],
         },
       },
@@ -894,7 +894,7 @@ export const puckConfig: Config = {
           <div className={`grid ${layoutMap[layout as string] || layoutMap["50-50"]} ${gapMap[gap as keyof typeof gapMap] || gapMap.medium} ${alignMap[verticalAlignment as keyof typeof alignMap] || alignMap.top}`}>
             {Array.from({ length: colCount }).map((_, i) => (
               <div key={i} className="min-h-[100px] border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center justify-center text-gray-400 text-sm">
-                Kolumn {i + 1} — dra block hit
+                Column {i + 1} — drop blocks here
               </div>
             ))}
           </div>

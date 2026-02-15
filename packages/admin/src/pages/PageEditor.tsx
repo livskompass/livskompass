@@ -75,7 +75,7 @@ export default function PageEditor() {
       navigate('/sidor')
     },
     onError: (err: Error) => {
-      setError(err.message || 'Kunde inte spara sidan')
+      setError(err.message || 'Could not save the page')
     },
   })
 
@@ -150,14 +150,14 @@ export default function PageEditor() {
           <Button variant="ghost" size="sm" asChild>
             <Link to="/sidor">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka
+              Back
             </Link>
           </Button>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            {isNew ? 'Ny sida' : 'Redigera sida'}
+            {isNew ? 'New page' : 'Edit page'}
           </h1>
           <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">
-            Blockbyggare
+            Block builder
           </span>
         </div>
 
@@ -182,14 +182,14 @@ export default function PageEditor() {
         <Button variant="ghost" size="sm" asChild>
           <Link to="/sidor">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Tillbaka
+            Back
           </Link>
         </Button>
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-          {isNew ? 'Ny sida' : 'Redigera sida'}
+          {isNew ? 'New page' : 'Edit page'}
         </h1>
         <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">
-          Klassisk redigerare
+          Classic editor
         </span>
       </div>
 
@@ -205,7 +205,7 @@ export default function PageEditor() {
           <div className="flex items-center gap-2">
             <Blocks className="h-5 w-5 text-primary-600" />
             <span className="text-sm text-primary-800">
-              Uppgradera till blockbyggaren for att dra och slappa innehall
+              Upgrade to the block builder for drag and drop content
             </span>
           </div>
           <Button
@@ -214,7 +214,7 @@ export default function PageEditor() {
             onClick={() => setEditorMode('puck')}
             className="border-primary-300 text-primary-700 hover:bg-primary-100"
           >
-            Uppgradera till blockbyggaren
+            Upgrade to block builder
           </Button>
         </div>
       )}
@@ -226,7 +226,7 @@ export default function PageEditor() {
             <Card>
               <CardContent className="p-6 space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Titel *</Label>
+                  <Label htmlFor="title">Title *</Label>
                   <Input
                     id="title"
                     required
@@ -238,12 +238,12 @@ export default function PageEditor() {
                         slug: isNew ? generateSlug(e.target.value) : formData.slug,
                       })
                     }}
-                    placeholder="Sidtitel"
+                    placeholder="Page title"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Innehall</Label>
+                  <Label>Content</Label>
                   <Editor
                     content={formData.content}
                     onChange={(html) => setFormData({ ...formData, content: html })}
@@ -257,7 +257,7 @@ export default function PageEditor() {
           <div className="space-y-6">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Publicering</CardTitle>
+                <CardTitle className="text-sm font-medium">Publishing</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -269,8 +269,8 @@ export default function PageEditor() {
                       setFormData({ ...formData, status: e.target.value })
                     }
                   >
-                    <option value="draft">Utkast</option>
-                    <option value="published">Publicerad</option>
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
                   </Select>
                 </div>
 
@@ -280,9 +280,9 @@ export default function PageEditor() {
                   className="w-full"
                 >
                   {saveMutation.isPending ? (
-                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Sparar...</>
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
                   ) : (
-                    <><Save className="h-4 w-4 mr-2" /> Spara</>
+                    <><Save className="h-4 w-4 mr-2" /> Save</>
                   )}
                 </Button>
               </CardContent>
@@ -308,7 +308,7 @@ export default function PageEditor() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="meta">Metabeskrivning</Label>
+                  <Label htmlFor="meta">Meta description</Label>
                   <Textarea
                     id="meta"
                     rows={3}
@@ -316,7 +316,7 @@ export default function PageEditor() {
                     onChange={(e) =>
                       setFormData({ ...formData, meta_description: e.target.value })
                     }
-                    placeholder="Kort beskrivning for sokresultat..."
+                    placeholder="Short description for search results..."
                   />
                 </div>
               </CardContent>
@@ -324,11 +324,11 @@ export default function PageEditor() {
 
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Hierarki</CardTitle>
+                <CardTitle className="text-sm font-medium">Hierarchy</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="parent">Foraldrasida (slug)</Label>
+                  <Label htmlFor="parent">Parent page (slug)</Label>
                   <Input
                     id="parent"
                     value={formData.parent_slug}
@@ -338,12 +338,12 @@ export default function PageEditor() {
                     placeholder="t.ex. mindfulness"
                   />
                   <p className="text-xs text-gray-400">
-                    Lamna tomt for toppniva
+                    Leave empty for top level
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sort">Sorteringsordning</Label>
+                  <Label htmlFor="sort">Sort order</Label>
                   <Input
                     id="sort"
                     type="number"
@@ -353,7 +353,7 @@ export default function PageEditor() {
                     }
                   />
                   <p className="text-xs text-gray-400">
-                    Lagre nummer visas forst
+                    Lower numbers appear first
                   </p>
                 </div>
               </CardContent>

@@ -95,11 +95,11 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
         config={puckConfig}
         data={initialData}
         onPublish={handlePublish}
-        headerTitle={title || 'Ny sida'}
+        headerTitle={title || 'New page'}
         viewports={[
-          { width: 360, label: 'Mobil', icon: 'Smartphone' as any },
-          { width: 768, label: 'Surfplatta' },
-          { width: 1280, label: 'Dator', icon: 'Monitor' as any },
+          { width: 360, label: 'Mobile', icon: 'Smartphone' as any },
+          { width: 768, label: 'Tablet' },
+          { width: 1280, label: 'Desktop', icon: 'Monitor' as any },
         ]}
         overrides={{
           // Inject Tailwind CSS into the preview iframe so blocks render correctly
@@ -129,7 +129,7 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
           headerActions: ({ children }) => (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <Label className="text-xs font-medium text-gray-500 whitespace-nowrap">Titel</Label>
+                <Label className="text-xs font-medium text-gray-500 whitespace-nowrap">Title</Label>
                 <Input
                   value={title}
                   onChange={(e) => {
@@ -137,7 +137,7 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
                     if (!page?.id) setSlug(generateSlug(e.target.value))
                   }}
                   className="h-7 w-48 text-xs"
-                  placeholder="Sidtitel"
+                  placeholder="Page title"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -156,8 +156,8 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
                   onChange={(e) => setStatus(e.target.value)}
                   className="h-7 text-xs"
                 >
-                  <option value="draft">Utkast</option>
-                  <option value="published">Publicerad</option>
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
                 </Select>
               </div>
               {children}
