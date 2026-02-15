@@ -8,11 +8,7 @@ interface BlockRendererProps {
 export default function BlockRenderer({ data }: BlockRendererProps) {
   try {
     const parsed = JSON.parse(data)
-    return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <Render config={puckConfig} data={parsed} />
-      </div>
-    )
+    return <Render config={puckConfig} data={parsed} />
   } catch {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center text-gray-500">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { logout, setAuthToken, getMe } from '../lib/api'
@@ -17,6 +17,8 @@ import {
   Menu,
   X,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { Button } from './ui/button'
@@ -37,9 +39,16 @@ const navigation = [
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(() =>
+    localStorage.getItem('sidebar_collapsed') === 'true'
+  )
   const location = useLocation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  useEffect(() => {
+    localStorage.setItem('sidebar_collapsed', String(collapsed))
+  }, [collapsed])
 
   const { data: meData } = useQuery({
     queryKey: ['me'],
@@ -71,19 +80,25 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 w-64 bg-gray-950 flex flex-col transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static",
+          "fixed inset-y-0 left-0 z-30 bg-gray-950 flex flex-col transform transition-all duration-200 ease-in-out lg:translate-x-0 lg:static",
+          collapsed ? 'w-16' : 'w-64',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-5 border-b border-gray-800">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+        <div className={cn(
+          "flex items-center justify-between h-16 border-b border-gray-800",
+          collapsed ? 'px-3' : 'px-5'
+        )}>
+          <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
+            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center shrink-0">
               <span className="text-white font-bold text-sm">L</span>
             </div>
-            <span className="text-lg font-semibold text-white tracking-tight">
-              Livskompass
-            </span>
+            {!collapsed && (
+              <span className="text-lg font-semibold text-white tracking-tight truncate">
+                Livskompass
+              </span>
+            )}
           </Link>
           <button
             className="lg:hidden text-gray-400 hover:text-white transition-colors"
@@ -94,7 +109,10 @@ export default function AdminLayout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className={cn(
+          "flex-1 py-4 space-y-1 overflow-y-auto",
+          collapsed ? 'px-2' : 'px-3'
+        )}>
           {navigation
             .filter((item) => !item.adminOnly || isAdmin)
             .map((item) => {
@@ -105,8 +123,10 @@ export default function AdminLayout() {
                   key={item.name}
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
+                  title={collapsed ? item.name : undefined}
                   className={cn(
-                    "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
+                    "group flex items-center rounded-lg text-sm font-medium transition-all duration-150",
+                    collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5',
                     isActive
                       ? 'bg-gray-800 text-white'
                       : 'text-gray-400 hover:bg-gray-900 hover:text-gray-200'
@@ -116,9 +136,13 @@ export default function AdminLayout() {
                     "h-[18px] w-[18px] shrink-0",
                     isActive ? 'text-primary-400' : 'text-gray-500 group-hover:text-gray-400'
                   )} />
-                  {item.name}
-                  {isActive && (
-                    <ChevronRight className="ml-auto h-4 w-4 text-gray-600" />
+                  {!collapsed && (
+                    <>
+                      {item.name}
+                      {isActive && (
+                        <ChevronRight className="ml-auto h-4 w-4 text-gray-600" />
+                      )}
+                    </>
                   )}
                 </Link>
               )
@@ -128,8 +152,8 @@ export default function AdminLayout() {
         <Separator className="bg-gray-800" />
 
         {/* User / Logout */}
-        <div className="p-3">
-          {currentUser && (
+        <div className={cn("p-3", collapsed && 'px-2')}>
+          {currentUser && !collapsed && (
             <div className="flex items-center gap-3 px-3 py-2 mb-2">
               {currentUser.avatar_url ? (
                 <img
@@ -156,10 +180,32 @@ export default function AdminLayout() {
           )}
           <button
             onClick={() => logoutMutation.mutate()}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 rounded-lg text-sm font-medium transition-all duration-150"
+            title={collapsed ? 'Log out' : undefined}
+            className={cn(
+              "w-full flex items-center text-gray-400 hover:bg-gray-900 hover:text-gray-200 rounded-lg text-sm font-medium transition-all duration-150",
+              collapsed ? 'justify-center py-2.5' : 'gap-3 px-3 py-2.5'
+            )}
           >
             <LogOut className="h-[18px] w-[18px] text-gray-500" />
-            Log out
+            {!collapsed && 'Log out'}
+          </button>
+
+          {/* Collapse toggle (desktop only) */}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className={cn(
+              "hidden lg:flex w-full items-center text-gray-500 hover:bg-gray-900 hover:text-gray-300 rounded-lg text-sm font-medium transition-all duration-150 mt-1",
+              collapsed ? 'justify-center py-2.5' : 'gap-3 px-3 py-2.5'
+            )}
+          >
+            {collapsed ? (
+              <ChevronsRight className="h-[18px] w-[18px]" />
+            ) : (
+              <>
+                <ChevronsLeft className="h-[18px] w-[18px]" />
+                Collapse
+              </>
+            )}
           </button>
         </div>
       </aside>

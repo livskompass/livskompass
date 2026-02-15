@@ -1,13 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Puck, type Data } from '@puckeditor/core'
 import '@puckeditor/core/puck.css'
 import { puckConfig, emptyPuckData } from '@livskompass/shared'
-// Media base URL for resolving image paths in the editor
-// Will be used when media picker is integrated
-// import { MEDIA_BASE } from '../lib/api'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Select } from './ui/select'
+import { Button } from './ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from './ui/dialog'
+import { Settings, Trash2 } from 'lucide-react'
 
 interface PageBuilderProps {
   page: {
@@ -30,17 +37,20 @@ interface PageBuilderProps {
     content_blocks: string
     editor_version: string
   }) => void
+  onDelete?: () => void
 }
 
-export default function PageBuilder({ page, onSave }: PageBuilderProps) {
+export default function PageBuilder({ page, onSave, onDelete }: PageBuilderProps) {
   const [title, setTitle] = useState(page?.title || '')
   const [slug, setSlug] = useState(page?.slug || '')
   const [metaDescription, setMetaDescription] = useState(page?.meta_description || '')
   const [parentSlug, setParentSlug] = useState(page?.parent_slug || '')
   const [sortOrder, setSortOrder] = useState(page?.sort_order || 0)
   const [status, setStatus] = useState(page?.status || 'draft')
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const settingsRef = useRef<HTMLDivElement>(null)
 
-  // Keep metadata in sync if page prop changes (e.g. from async load)
   useEffect(() => {
     if (page) {
       setTitle(page.title)
@@ -52,6 +62,17 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
     }
   }, [page])
 
+  useEffect(() => {
+    if (!settingsOpen) return
+    function handleClickOutside(e: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [settingsOpen])
+
   const generateSlug = (t: string) =>
     t
       .replace(/[åÅ]/g, (c) => (c === 'å' ? 'a' : 'A'))
@@ -61,7 +82,6 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
-  // Parse initial puck data
   const initialData = useMemo<Data>(() => {
     if (page?.content_blocks) {
       try {
@@ -102,11 +122,9 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
           { width: 1280, label: 'Desktop', icon: 'Monitor' as any },
         ]}
         overrides={{
-          // Inject Tailwind CSS into the preview iframe so blocks render correctly
           iframe: ({ children, document: iframeDoc }) => {
             useEffect(() => {
               if (!iframeDoc) return
-              // Find the main Tailwind stylesheet from the parent and inject it
               const parentStyles = Array.from(
                 window.document.querySelectorAll('link[rel="stylesheet"], style'),
               )
@@ -114,57 +132,163 @@ export default function PageBuilder({ page, onSave }: PageBuilderProps) {
                 const clone = node.cloneNode(true) as HTMLElement
                 iframeDoc.head.appendChild(clone)
               })
-              // Also inject Google Fonts
               const fontLink = iframeDoc.createElement('link')
               fontLink.rel = 'stylesheet'
               fontLink.href =
                 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
               iframeDoc.head.appendChild(fontLink)
-              // Set base font
               iframeDoc.body.style.fontFamily = "'Inter', system-ui, sans-serif"
             }, [iframeDoc])
             return <>{children}</>
           },
-          // Add page metadata fields in the header actions area
           headerActions: ({ children }) => (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Label className="text-xs font-medium text-gray-500 whitespace-nowrap">Title</Label>
-                <Input
-                  value={title}
-                  onChange={(e) => {
-                    setTitle(e.target.value)
-                    if (!page?.id) setSlug(generateSlug(e.target.value))
-                  }}
-                  className="h-7 w-48 text-xs"
-                  placeholder="Page title"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Label className="text-xs font-medium text-gray-500 whitespace-nowrap">Slug</Label>
-                <Input
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  className="h-7 w-32 text-xs"
-                  placeholder="url-slug"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Label className="text-xs font-medium text-gray-500 whitespace-nowrap">Status</Label>
-                <Select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="h-7 text-xs"
+            <div className="flex items-center gap-2">
+              {/* Status badge */}
+              <span
+                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                  status === 'published'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-yellow-100 text-yellow-700'
+                }`}
+              >
+                {status === 'published' ? 'Published' : 'Draft'}
+              </span>
+
+              {/* Settings dropdown */}
+              <div ref={settingsRef} className="relative">
+                <button
+                  onClick={() => setSettingsOpen(!settingsOpen)}
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                  title="Page settings"
                 >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                </Select>
+                  <Settings className="h-4 w-4" />
+                </button>
+
+                {settingsOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    <div className="p-4 space-y-4">
+                      <h3 className="text-sm font-semibold text-gray-900">Page settings</h3>
+
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-xs text-gray-500 mb-1 block">Title</Label>
+                          <Input
+                            value={title}
+                            onChange={(e) => {
+                              setTitle(e.target.value)
+                              if (!page?.id) setSlug(generateSlug(e.target.value))
+                            }}
+                            className="h-8 text-sm"
+                            placeholder="Page title"
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="text-xs text-gray-500 mb-1 block">Slug</Label>
+                          <Input
+                            value={slug}
+                            onChange={(e) => setSlug(e.target.value)}
+                            className="h-8 text-sm"
+                            placeholder="url-slug"
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="text-xs text-gray-500 mb-1 block">Status</Label>
+                          <Select
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            className="h-8 text-sm"
+                          >
+                            <option value="draft">Draft</option>
+                            <option value="published">Published</option>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label className="text-xs text-gray-500 mb-1 block">Meta description</Label>
+                          <textarea
+                            value={metaDescription}
+                            onChange={(e) => setMetaDescription(e.target.value)}
+                            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                            rows={2}
+                            placeholder="SEO description..."
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs text-gray-500 mb-1 block">Parent slug</Label>
+                            <Input
+                              value={parentSlug}
+                              onChange={(e) => setParentSlug(e.target.value)}
+                              className="h-8 text-sm"
+                              placeholder="parent-slug"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs text-gray-500 mb-1 block">Sort order</Label>
+                            <Input
+                              type="number"
+                              value={sortOrder}
+                              onChange={(e) => setSortOrder(Number(e.target.value))}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {onDelete && (
+                        <div className="border-t border-gray-100 pt-3">
+                          <button
+                            onClick={() => {
+                              setSettingsOpen(false)
+                              setDeleteOpen(true)
+                            }}
+                            className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Delete page
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* Puck's built-in Publish/Save button */}
               {children}
             </div>
           ),
         }}
       />
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete page</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete &quot;{title}&quot;? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setDeleteOpen(false)
+                onDelete?.()
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

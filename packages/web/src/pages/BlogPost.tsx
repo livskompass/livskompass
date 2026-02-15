@@ -44,33 +44,38 @@ export default function BlogPost() {
   const postAny = post as any
 
   return (
-    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <Button variant="ghost" className="mb-6 -ml-2 text-gray-600 hover:text-primary-600" asChild>
-        <Link to="/nyhet">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          All posts
-        </Link>
-      </Button>
+    <article>
+      {/* Post chrome: back button, date, title, featured image */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
+        <Button variant="ghost" className="mb-6 -ml-2 text-gray-600 hover:text-primary-600" asChild>
+          <Link to="/nyhet">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            All posts
+          </Link>
+        </Button>
 
-      <header className="mb-8">
-        <Badge variant="secondary" className="mb-3">
-          {new Date(post.published_at).toLocaleDateString('sv-SE', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </Badge>
-        <h1 className="text-4xl font-bold text-gray-900 mt-2 tracking-tight">{post.title}</h1>
-      </header>
+        <header className="mb-8">
+          <Badge variant="secondary" className="mb-3">
+            {new Date(post.published_at).toLocaleDateString('sv-SE', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </Badge>
+          <h1 className="text-4xl font-bold text-gray-900 mt-2 tracking-tight">{post.title}</h1>
+        </header>
 
-      {post.featured_image && (
-        <img
-          src={getMediaUrl(post.featured_image)}
-          alt={post.title}
-          className="w-full h-auto rounded-xl mb-8 shadow-sm"
-        />
-      )}
+        {post.featured_image && (
+          <img
+            src={getMediaUrl(post.featured_image)}
+            alt={post.title}
+            className="w-full h-auto rounded-xl mb-8 shadow-sm"
+          />
+        )}
+      </div>
 
+      {/* Content blocks - root.render in puckConfig provides the container,
+          matching the CMS editor preview exactly */}
       {postAny.content_blocks ? (
         <BlockRenderer data={postAny.content_blocks} />
       ) : (

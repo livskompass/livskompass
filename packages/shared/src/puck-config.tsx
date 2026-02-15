@@ -1,4 +1,5 @@
 import type { Config, Data } from "@puckeditor/core"
+import React from "react"
 
 // Puck configuration for Livskompass CMS page builder.
 // Tier 1 blocks use extracted component files for reuse on the public frontend.
@@ -12,6 +13,13 @@ export const emptyPuckData: Data = {
 }
 
 export const puckConfig: Config = {
+  root: {
+    render: ({ children }: { children: React.ReactNode }) => (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {children}
+      </div>
+    ),
+  },
   categories: {
     layout: {
       title: "Layout",
@@ -212,7 +220,7 @@ export const puckConfig: Config = {
         const widthMap = { narrow: "max-w-[65ch]", medium: "max-w-[80ch]", full: "max-w-none" }
         return (
           <div
-            className={`prose prose-lg ${widthMap[maxWidth as keyof typeof widthMap] || "max-w-[80ch]"} prose-headings:tracking-tight prose-a:text-primary-600`}
+            className={`prose prose-lg mx-auto ${widthMap[maxWidth as keyof typeof widthMap] || "max-w-[80ch]"} prose-headings:tracking-tight prose-a:text-primary-600`}
             dangerouslySetInnerHTML={{ __html: content }}
           />
         )

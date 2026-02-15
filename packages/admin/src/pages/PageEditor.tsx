@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPage, createPage, updatePage } from '../lib/api'
+import { getPage, createPage, updatePage, deletePage } from '../lib/api'
 import PageBuilder from '../components/PageBuilder'
 import { Button } from '../components/ui/button'
 import { Skeleton } from '../components/ui/skeleton'
@@ -33,6 +33,17 @@ export default function PageEditor() {
     },
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: () => deletePage(id!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-pages'] })
+      navigate('/sidor')
+    },
+    onError: (err: Error) => {
+      setError(err.message || 'Could not delete the page')
+    },
+  })
+
   const handlePuckSave = (saveData: {
     title: string
     slug: string
@@ -51,15 +62,7 @@ export default function PageEditor() {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Skeleton className="h-96" />
-          </div>
-          <div className="space-y-6">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-48" />
-          </div>
-        </div>
+        <Skeleton className="h-96" />
       </div>
     )
   }
@@ -89,9 +92,6 @@ export default function PageEditor() {
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
           {isNew ? 'New page' : 'Edit page'}
         </h1>
-        <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">
-          Block builder
-        </span>
       </div>
 
       {error && (
@@ -103,6 +103,7 @@ export default function PageEditor() {
       <PageBuilder
         page={isNew ? null : pageData}
         onSave={handlePuckSave}
+        onDelete={!isNew ? () => deleteMutation.mutate() : undefined}
       />
     </div>
   )
