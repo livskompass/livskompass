@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getPost } from '../lib/api'
+import { getPost, getMediaUrl, rewriteMediaUrls } from '../lib/api'
 import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
@@ -61,7 +61,7 @@ export default function BlogPost() {
 
       {post.featured_image && (
         <img
-          src={post.featured_image}
+          src={getMediaUrl(post.featured_image)}
           alt={post.title}
           className="w-full h-auto rounded-lg mb-8"
         />
@@ -69,7 +69,7 @@ export default function BlogPost() {
 
       <div
         className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(post.content)) }}
       />
     </article>
   )

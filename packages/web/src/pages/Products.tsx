@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getProducts } from '../lib/api'
+import { getProducts, getMediaUrl } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Products() {
@@ -51,7 +51,7 @@ export default function Products() {
                     >
                       {product.image_url && (
                         <img
-                          src={product.image_url}
+                          src={getMediaUrl(product.image_url)}
                           alt={product.title}
                           className="w-full h-48 object-cover"
                         />

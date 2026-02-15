@@ -425,8 +425,9 @@ adminRoutes.post('/media/upload', async (c) => {
     httpMetadata: { contentType: file.type }
   })
 
-  // Generate public URL via the Worker's /media/ route
-  const url = `/media/${r2Key}`
+  // Generate absolute public URL via the Worker's /media/ route
+  const siteUrl = c.env.SITE_URL.replace(/\/$/, '')
+  const url = `${siteUrl}/media/${r2Key}`
 
   // Save to database
   await c.env.DB.prepare(`
@@ -458,7 +459,14 @@ adminRoutes.get('/media', async (c) => {
 
   const result = await c.env.DB.prepare(query).bind(...params).all()
 
-  return c.json({ media: result.results })
+  // Ensure all media URLs are absolute (DB may contain relative URLs from older uploads)
+  const siteUrl = c.env.SITE_URL.replace(/\/$/, '')
+  const media = result.results.map((item: any) => ({
+    ...item,
+    url: item.url && !item.url.startsWith('http') ? `${siteUrl}${item.url}` : item.url,
+  }))
+
+  return c.json({ media })
 })
 
 // Delete media

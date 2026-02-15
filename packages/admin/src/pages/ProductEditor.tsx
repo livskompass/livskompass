@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getProduct, createProduct, updateProduct } from '../lib/api'
+import { getProduct, createProduct, updateProduct, getMediaUrl } from '../lib/api'
 
 export default function ProductEditor() {
   const { id } = useParams()
@@ -178,7 +178,7 @@ export default function ProductEditor() {
                 />
                 {formData.image_url && (
                   <img
-                    src={formData.image_url}
+                    src={getMediaUrl(formData.image_url)}
                     alt="Preview"
                     className="mt-2 rounded-lg max-h-40 object-cover"
                   />

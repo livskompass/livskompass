@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getPage } from '../lib/api'
+import { getPage, rewriteMediaUrls } from '../lib/api'
 import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
@@ -42,7 +42,7 @@ export default function Page() {
       <h1 className="text-4xl font-bold text-gray-900 mb-8">{page.title}</h1>
       <div
         className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(page.content)) }}
       />
     </div>
   )

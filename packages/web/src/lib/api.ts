@@ -1,5 +1,34 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
+// Derive the media base URL from API_BASE by stripping the /api suffix.
+// In production: "https://livskompass-api.livskompass-config.workers.dev"
+// In dev: "" (empty string, so relative /media/... paths resolve to the dev proxy)
+const MEDIA_BASE = API_BASE.replace(/\/api$/, '')
+
+export function getMediaUrl(url: string): string {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `${MEDIA_BASE}${url}`
+}
+
+/**
+ * Rewrites relative /media/ URLs inside HTML content to absolute URLs.
+ * This handles img src, anchor href, and any other attributes that
+ * reference /media/ paths in content authored via the CMS (TipTap)
+ * or imported from WordPress.
+ */
+export function rewriteMediaUrls(html: string): string {
+  if (!html || !MEDIA_BASE) return html
+  // Match src="/media/...", href="/media/...", url(/media/...) patterns
+  return html.replace(
+    /(src|href|poster)=(["'])(\/media\/)/g,
+    `$1=$2${MEDIA_BASE}/media/`
+  ).replace(
+    /url\(\s*(["']?)(\/media\/)/g,
+    `url($1${MEDIA_BASE}/media/`
+  )
+}
+
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,

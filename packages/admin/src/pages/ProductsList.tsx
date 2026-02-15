@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getProducts, deleteProduct } from '../lib/api'
+import { getProducts, deleteProduct, getMediaUrl } from '../lib/api'
 
 export default function ProductsList() {
   const queryClient = useQueryClient()
@@ -66,7 +66,7 @@ export default function ProductsList() {
                     <div className="flex items-center">
                       {product.image_url && (
                         <img
-                          src={product.image_url}
+                          src={getMediaUrl(product.image_url)}
                           alt=""
                           className="h-10 w-10 rounded object-cover mr-3"
                         />

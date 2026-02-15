@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getPosts } from '../lib/api'
+import { getPosts, getMediaUrl } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Blog() {
@@ -39,7 +39,7 @@ export default function Blog() {
             >
               {post.featured_image && (
                 <img
-                  src={post.featured_image}
+                  src={getMediaUrl(post.featured_image)}
                   alt={post.title}
                   className="w-full h-48 object-cover"
                 />

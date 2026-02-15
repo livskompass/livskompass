@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getCourse } from '../lib/api'
+import { getCourse, rewriteMediaUrls } from '../lib/api'
 import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
@@ -86,7 +86,7 @@ export default function CourseDetail() {
 
       <div
         className="prose prose-lg max-w-none mb-8"
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(course.content) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(course.content)) }}
       />
 
       {course.status !== 'full' && course.status !== 'completed' && (

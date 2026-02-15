@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPost, createPost, updatePost } from '../lib/api'
+import { getPost, createPost, updatePost, getMediaUrl } from '../lib/api'
 import Editor from '../components/Editor'
 
 export default function PostEditor() {
@@ -203,7 +203,7 @@ export default function PostEditor() {
                 />
                 {formData.featured_image && (
                   <img
-                    src={formData.featured_image}
+                    src={getMediaUrl(formData.featured_image)}
                     alt="Preview"
                     className="mt-2 rounded-lg max-h-40 object-cover"
                   />

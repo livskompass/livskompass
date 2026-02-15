@@ -1,5 +1,21 @@
 export const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
+// Derive the media base URL from API_BASE by stripping the /api suffix.
+// In production: "https://livskompass-api.livskompass-config.workers.dev/api" -> "https://livskompass-api.livskompass-config.workers.dev"
+// In dev: "/api" -> "" (relative URLs work as-is since same origin)
+export const MEDIA_BASE = API_BASE.replace(/\/api$/, '')
+
+/**
+ * Converts a potentially relative media URL to an absolute URL.
+ * Relative paths like "/media/uploads/image.jpg" are prepended with MEDIA_BASE
+ * so they resolve to the correct API worker domain in production.
+ */
+export function getMediaUrl(url: string): string {
+  if (!url) return ''
+  if (url.startsWith('http')) return url // already absolute
+  return `${MEDIA_BASE}${url}`
+}
+
 let authToken: string | null = localStorage.getItem('admin_token')
 
 export function setAuthToken(token: string | null) {

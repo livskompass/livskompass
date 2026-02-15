@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getMedia, uploadMedia, deleteMedia } from '../lib/api'
+import { getMedia, uploadMedia, deleteMedia, getMediaUrl } from '../lib/api'
 
 export default function MediaLibrary() {
   const queryClient = useQueryClient()
@@ -96,7 +96,7 @@ export default function MediaLibrary() {
                   >
                     {media.type?.startsWith('image') ? (
                       <img
-                        src={media.url}
+                        src={getMediaUrl(media.url)}
                         alt={media.alt_text || media.filename}
                         className="w-full h-full object-cover"
                       />
@@ -133,7 +133,7 @@ export default function MediaLibrary() {
 
               {selected.type?.startsWith('image') && (
                 <img
-                  src={selected.url}
+                  src={getMediaUrl(selected.url)}
                   alt={selected.alt_text || selected.filename}
                   className="w-full rounded-lg mb-4"
                 />
@@ -159,14 +159,14 @@ export default function MediaLibrary() {
                 <div>
                   <dt className="text-gray-500">URL</dt>
                   <dd className="font-mono text-xs text-gray-600 break-all">
-                    {selected.url}
+                    {getMediaUrl(selected.url)}
                   </dd>
                 </div>
               </dl>
 
               <div className="mt-6 space-y-2">
                 <button
-                  onClick={() => copyToClipboard(selected.url)}
+                  onClick={() => copyToClipboard(getMediaUrl(selected.url))}
                   className="w-full bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                 >
                   Copy URL

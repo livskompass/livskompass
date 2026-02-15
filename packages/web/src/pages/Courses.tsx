@@ -59,15 +59,20 @@ export default function Courses() {
                     <div>
                       <p className="font-medium text-gray-900">Datum</p>
                       <p>
-                        {new Date(course.start_date).toLocaleDateString('sv-SE')}
-                        {course.end_date !== course.start_date && (
-                          <> - {new Date(course.end_date).toLocaleDateString('sv-SE')}</>
-                        )}
+                        {course.start_date
+                          ? <>
+                              {new Date(course.start_date).toLocaleDateString('sv-SE')}
+                              {course.end_date && course.end_date !== course.start_date && (
+                                <> - {new Date(course.end_date).toLocaleDateString('sv-SE')}</>
+                              )}
+                            </>
+                          : 'Kontakta oss'
+                        }
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">Pris</p>
-                      <p>{course.price_sek.toLocaleString('sv-SE')} kr</p>
+                      <p>{course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : 'Kontakta oss'}</p>
                     </div>
                   </div>
 
