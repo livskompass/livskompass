@@ -1,0 +1,35 @@
+name = "livskompass-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "livskompass-db"
+database_id = "c4e8245c-5901-4211-bf96-231e4a944636"
+preview_database_id = "c4e8245c-5901-4211-bf96-231e4a944636"
+remote = true
+
+# R2 Storage
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "livskompass-media"
+preview_bucket_name = "livskompass-media"
+remote = true
+
+[vars]
+SITE_URL = "https://livskompass.se"
+ADMIN_URL = "https://admin.livskompass.se"
+CORS_ORIGIN = "https://livskompass.se,https://admin.livskompass.se"
+
+# Secrets (set via: wrangler secret put SECRET_NAME)
+#
+# Required secrets:
+# - STRIPE_SECRET_KEY          : Stripe secret key for payments
+# - STRIPE_WEBHOOK_SECRET      : Stripe webhook signing secret
+#
+# Google OAuth secrets:
+# - GOOGLE_CLIENT_ID           : Google OAuth client ID
+# - GOOGLE_CLIENT_SECRET       : Google OAuth client secret
+# - INITIAL_ADMIN_EMAIL        : Email of the first admin user (e.g., livheim@gmail.com)

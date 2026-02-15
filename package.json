@@ -1,0 +1,20 @@
+{
+  "name": "livskompass",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "dev:web": "npm run dev --workspace=@livskompass/web",
+    "dev:admin": "npm run dev --workspace=@livskompass/admin",
+    "dev:api": "npm run dev --workspace=@livskompass/api",
+    "deploy:api": "npm run deploy --workspace=@livskompass/api"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "packageManager": "npm@10.0.0"
+}

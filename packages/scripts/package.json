@@ -1,0 +1,15 @@
+{
+  "name": "@livskompass/scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate": "node migrate-wordpress.mjs",
+    "migrate:dry-run": "node migrate-wordpress.mjs --dry-run",
+    "migrate:pages": "node migrate-wordpress.mjs --pages-only",
+    "migrate:media": "node migrate-wordpress.mjs --media-only"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.3.0",
+    "nanoid": "^5.0.0"
+  }
+}
