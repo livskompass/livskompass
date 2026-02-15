@@ -7,7 +7,11 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8787',
+        target: process.env.API_TARGET || 'https://livskompass-api.livskompass-config.workers.dev',
+        changeOrigin: true,
+      },
+      '/media': {
+        target: process.env.API_TARGET || 'https://livskompass-api.livskompass-config.workers.dev',
         changeOrigin: true,
       },
     },
