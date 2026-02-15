@@ -9,17 +9,44 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-/* Puck Editor Overrides - consistent icon sizing */
-._SidebarSection-icon_p9ck5_1 svg,
-[class*="SidebarSection"] svg {
+/* ===== Puck Editor Overrides ===== */
+
+/* Consistent 18px icon sizing across all panels */
+[class*="SidebarSection"] svg,
+[class*="Nav_"] svg {
   width: 18px !important;
   height: 18px !important;
 }
 
-/* Make Puck editor fill available space */
+/* Fill available space */
 [class*="Puck-root"],
-[class*="Puck "] {
+[class*="PuckLayout_"] {
   height: 100% !important;
+}
+
+/* Right sidebar → floating overlay panel instead of fixed column */
+@media (min-width: 638px) {
+  /* Remove right sidebar from grid flow so preview gets full width */
+  [class*="PuckLayout-inner"] {
+    --puck-right-side-bar-width: 0px !important;
+  }
+
+  /* Float the right sidebar as an overlay */
+  [class*="Sidebar--right"] {
+    position: absolute !important;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px !important;
+    z-index: 20;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+    border-left: 1px solid #e5e7eb;
+  }
+
+  /* Hide the resize handle for the floating panel */
+  [class*="Sidebar--right"] + [class*="Sidebar-resizeHandle"] {
+    display: none !important;
+  }
 }
 
 /* TipTap Editor Styles */
