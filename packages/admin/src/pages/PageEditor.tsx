@@ -1,17 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPage, createPage, updatePage } from '../lib/api'
-import Editor from '../components/Editor'
 import PageBuilder from '../components/PageBuilder'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Textarea } from '../components/ui/textarea'
-import { Label } from '../components/ui/label'
-import { Select } from '../components/ui/select'
 import { Skeleton } from '../components/ui/skeleton'
-import { ArrowLeft, Save, Loader2, Blocks } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 export default function PageEditor() {
   const { id } = useParams()
@@ -19,18 +13,6 @@ export default function PageEditor() {
   const queryClient = useQueryClient()
   const isNew = !id
 
-  // Determine which editor to use
-  const [editorMode, setEditorMode] = useState<'legacy' | 'puck' | null>(null)
-
-  const [formData, setFormData] = useState({
-    title: '',
-    slug: '',
-    content: '',
-    meta_description: '',
-    parent_slug: '',
-    sort_order: 0,
-    status: 'draft',
-  })
   const [error, setError] = useState('')
 
   const { data, isLoading } = useQuery({
@@ -38,34 +20,6 @@ export default function PageEditor() {
     queryFn: () => getPage(id!),
     enabled: !!id,
   })
-
-  useEffect(() => {
-    if (data?.page) {
-      setFormData({
-        title: data.page.title,
-        slug: data.page.slug,
-        content: data.page.content || '',
-        meta_description: data.page.meta_description || '',
-        parent_slug: data.page.parent_slug || '',
-        sort_order: data.page.sort_order || 0,
-        status: data.page.status,
-      })
-      // Detect editor version from existing data
-      const page = data.page as any
-      if (page.editor_version === 'puck') {
-        setEditorMode('puck')
-      } else {
-        setEditorMode('legacy')
-      }
-    }
-  }, [data])
-
-  // New pages default to Puck
-  useEffect(() => {
-    if (isNew && editorMode === null) {
-      setEditorMode('puck')
-    }
-  }, [isNew, editorMode])
 
   const saveMutation = useMutation({
     mutationFn: (saveData: any) =>
@@ -79,15 +33,6 @@ export default function PageEditor() {
     },
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    saveMutation.mutate({
-      ...formData,
-      editor_version: 'legacy',
-    })
-  }
-
   const handlePuckSave = (saveData: {
     title: string
     slug: string
@@ -100,16 +45,6 @@ export default function PageEditor() {
   }) => {
     setError('')
     saveMutation.mutate(saveData)
-  }
-
-  const generateSlug = (title: string) => {
-    return title
-      .replace(/[åÅ]/g, (c) => c === 'å' ? 'a' : 'A')
-      .replace(/[äÄ]/g, (c) => c === 'ä' ? 'a' : 'A')
-      .replace(/[öÖ]/g, (c) => c === 'ö' ? 'o' : 'O')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
   }
 
   if (!isNew && isLoading) {
@@ -129,55 +64,21 @@ export default function PageEditor() {
     )
   }
 
-  // ── Puck editor mode ───────────────────────────────────────────────
-  if (editorMode === 'puck') {
-    const pageData = data?.page
-      ? {
-          id: (data.page as any).id,
-          title: data.page.title,
-          slug: data.page.slug,
-          meta_description: data.page.meta_description || '',
-          parent_slug: data.page.parent_slug || '',
-          sort_order: data.page.sort_order || 0,
-          status: data.page.status,
-          content_blocks: (data.page as any).content_blocks || null,
-        }
-      : null
+  const pageData = data?.page
+    ? {
+        id: (data.page as any).id,
+        title: data.page.title,
+        slug: data.page.slug,
+        meta_description: data.page.meta_description || '',
+        parent_slug: data.page.parent_slug || '',
+        sort_order: data.page.sort_order || 0,
+        status: data.page.status,
+        content_blocks: (data.page as any).content_blocks || null,
+      }
+    : null
 
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/sidor">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            {isNew ? 'New page' : 'Edit page'}
-          </h1>
-          <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">
-            Block builder
-          </span>
-        </div>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-
-        <PageBuilder
-          page={isNew ? null : pageData}
-          onSave={handlePuckSave}
-        />
-      </div>
-    )
-  }
-
-  // ── Legacy TipTap editor mode ──────────────────────────────────────
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/sidor">
@@ -188,8 +89,8 @@ export default function PageEditor() {
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
           {isNew ? 'New page' : 'Edit page'}
         </h1>
-        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">
-          Classic editor
+        <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">
+          Block builder
         </span>
       </div>
 
@@ -199,168 +100,10 @@ export default function PageEditor() {
         </div>
       )}
 
-      {/* Upgrade banner */}
-      {!isNew && editorMode === 'legacy' && (
-        <div className="bg-primary-50 border border-primary-200 rounded-lg px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Blocks className="h-5 w-5 text-primary-600" />
-            <span className="text-sm text-primary-800">
-              Upgrade to the block builder for drag and drop content
-            </span>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setEditorMode('puck')}
-            className="border-primary-300 text-primary-700 hover:bg-primary-100"
-          >
-            Upgrade to block builder
-          </Button>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardContent className="p-6 space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title *</Label>
-                  <Input
-                    id="title"
-                    required
-                    value={formData.title}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        title: e.target.value,
-                        slug: isNew ? generateSlug(e.target.value) : formData.slug,
-                      })
-                    }}
-                    placeholder="Page title"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Content</Label>
-                  <Editor
-                    content={formData.content}
-                    onChange={(html) => setFormData({ ...formData, content: html })}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Publishing</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    id="status"
-                    value={formData.status}
-                    onChange={(e) =>
-                      setFormData({ ...formData, status: e.target.value })
-                    }
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                  </Select>
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={saveMutation.isPending}
-                  className="w-full"
-                >
-                  {saveMutation.isPending ? (
-                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
-                  ) : (
-                    <><Save className="h-4 w-4 mr-2" /> Save</>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">SEO</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="slug">URL-slug</Label>
-                  <Input
-                    id="slug"
-                    value={formData.slug}
-                    onChange={(e) =>
-                      setFormData({ ...formData, slug: e.target.value })
-                    }
-                  />
-                  <p className="text-xs text-gray-400">
-                    livskompass.se/{formData.slug || 'slug'}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="meta">Meta description</Label>
-                  <Textarea
-                    id="meta"
-                    rows={3}
-                    value={formData.meta_description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, meta_description: e.target.value })
-                    }
-                    placeholder="Short description for search results..."
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Hierarchy</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="parent">Parent page (slug)</Label>
-                  <Input
-                    id="parent"
-                    value={formData.parent_slug}
-                    onChange={(e) =>
-                      setFormData({ ...formData, parent_slug: e.target.value })
-                    }
-                    placeholder="t.ex. mindfulness"
-                  />
-                  <p className="text-xs text-gray-400">
-                    Leave empty for top level
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="sort">Sort order</Label>
-                  <Input
-                    id="sort"
-                    type="number"
-                    value={formData.sort_order}
-                    onChange={(e) =>
-                      setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })
-                    }
-                  />
-                  <p className="text-xs text-gray-400">
-                    Lower numbers appear first
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </form>
+      <PageBuilder
+        page={isNew ? null : pageData}
+        onSave={handlePuckSave}
+      />
     </div>
   )
 }

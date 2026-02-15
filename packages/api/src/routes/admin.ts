@@ -55,15 +55,19 @@ adminRoutes.get('/pages/:id', async (c) => {
 // Create page
 adminRoutes.post('/pages', async (c) => {
   const body = await c.req.json()
-  const { slug, title, content, metaDescription, parentSlug, sortOrder, status,
-          contentBlocks, editorVersion } = body
+  const { slug, title, content, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const metaDescription = body.metaDescription ?? body.meta_description
+  const parentSlug = body.parentSlug ?? body.parent_slug
+  const sortOrder = body.sortOrder ?? body.sort_order
 
   const id = nanoid()
 
   await c.env.DB.prepare(`
     INSERT INTO pages (id, slug, title, content, content_blocks, editor_version, meta_description, parent_slug, sort_order, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(id, slug, title, content, contentBlocks || null, editorVersion || 'legacy', metaDescription, parentSlug, sortOrder || 0, status || 'draft').run()
+  `).bind(id, slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', metaDescription || null, parentSlug || null, sortOrder || 0, status || 'draft').run()
 
   return c.json({ page: { id, slug, title } }, 201)
 })
@@ -72,15 +76,19 @@ adminRoutes.post('/pages', async (c) => {
 adminRoutes.put('/pages/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { slug, title, content, metaDescription, parentSlug, sortOrder, status,
-          contentBlocks, editorVersion } = body
+  const { slug, title, content, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const metaDescription = body.metaDescription ?? body.meta_description
+  const parentSlug = body.parentSlug ?? body.parent_slug
+  const sortOrder = body.sortOrder ?? body.sort_order
 
   await c.env.DB.prepare(`
     UPDATE pages
     SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
         meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).bind(slug, title, content, contentBlocks || null, editorVersion || 'legacy', metaDescription, parentSlug, sortOrder, status, id).run()
+  `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', metaDescription || null, parentSlug || null, sortOrder || 0, status, id).run()
 
   return c.json({ success: true })
 })
@@ -113,15 +121,18 @@ adminRoutes.get('/posts/:id', async (c) => {
 
 adminRoutes.post('/posts', async (c) => {
   const body = await c.req.json()
-  const { slug, title, content, excerpt, featuredImage, status, publishedAt,
-          contentBlocks, editorVersion } = body
+  const { slug, title, content, excerpt, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const featuredImage = body.featuredImage ?? body.featured_image
+  const publishedAt = body.publishedAt ?? body.published_at
 
   const id = nanoid()
 
   await c.env.DB.prepare(`
     INSERT INTO posts (id, slug, title, content, content_blocks, editor_version, excerpt, featured_image, status, published_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(id, slug, title, content, contentBlocks || null, editorVersion || 'legacy', excerpt, featuredImage, status || 'draft', publishedAt).run()
+  `).bind(id, slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', excerpt || null, featuredImage || null, status || 'draft', publishedAt || null).run()
 
   return c.json({ post: { id, slug, title } }, 201)
 })
@@ -129,15 +140,18 @@ adminRoutes.post('/posts', async (c) => {
 adminRoutes.put('/posts/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { slug, title, content, excerpt, featuredImage, status, publishedAt,
-          contentBlocks, editorVersion } = body
+  const { slug, title, content, excerpt, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const featuredImage = body.featuredImage ?? body.featured_image
+  const publishedAt = body.publishedAt ?? body.published_at
 
   await c.env.DB.prepare(`
     UPDATE posts
     SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
         excerpt = ?, featured_image = ?, status = ?, published_at = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).bind(slug, title, content, contentBlocks || null, editorVersion || 'legacy', excerpt, featuredImage, status, publishedAt, id).run()
+  `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', excerpt || null, featuredImage || null, status, publishedAt || null, id).run()
 
   return c.json({ success: true })
 })

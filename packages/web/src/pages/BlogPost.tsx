@@ -1,9 +1,9 @@
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getPost, getMediaUrl, rewriteMediaUrls } from '../lib/api'
-import { sanitizeHtml } from '../lib/sanitize'
+import { getPost, getMediaUrl } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
+import BlockRenderer from '../components/BlockRenderer'
 import { Badge } from '../components/ui/badge'
 import { Skeleton } from '../components/ui/skeleton'
 import { Button } from '../components/ui/button'
@@ -41,13 +41,14 @@ export default function BlogPost() {
   }
 
   const { post } = data
+  const postAny = post as any
 
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <Button variant="ghost" className="mb-6 -ml-2 text-gray-600 hover:text-primary-600" asChild>
         <Link to="/nyhet">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Alla nyheter
+          All posts
         </Link>
       </Button>
 
@@ -70,10 +71,11 @@ export default function BlogPost() {
         />
       )}
 
-      <div
-        className="prose prose-lg max-w-none prose-headings:tracking-tight prose-a:text-primary-600"
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(post.content)) }}
-      />
+      {postAny.content_blocks ? (
+        <BlockRenderer data={postAny.content_blocks} />
+      ) : (
+        <div className="text-gray-500 text-center py-8">No content available.</div>
+      )}
     </article>
   )
 }
