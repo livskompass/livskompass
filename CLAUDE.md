@@ -16,8 +16,9 @@ WordPress to Cloudflare migration for livskompass.se (Swedish ACT/mindfulness tr
 ## Project Structure
 ```
 packages/web/    → Public frontend (React + Vite + Tailwind)
-packages/admin/  → CMS admin panel (React + Vite + TipTap)
+packages/admin/  → CMS admin panel (React + Vite + Puck visual editor)
 packages/api/    → Cloudflare Workers backend (Hono)
+packages/shared/ → Shared Puck block components + config (used by admin + web)
 ```
 
 ## Key Files
@@ -31,10 +32,41 @@ packages/api/    → Cloudflare Workers backend (Hono)
 - Phase 1 (Setup): DONE
 - Phase 2 (Backend API): DONE + bug fixes applied
 - Phase 3 (Booking/Payments): DONE (webhook, refund, race condition all fixed)
-- Phase 4 (Admin CMS): DONE + shadcn/ui redesign
+- Phase 4 (Admin CMS): DONE — Puck visual editor for ALL content types (pages, posts, courses, products)
 - Phase 5 (Public Frontend): DONE + shadcn/ui redesign
 - Phase 6 (WordPress Migration): DONE (72 pages, 10 posts, ~534 media, 7 courses, 6 products)
 - Phase 7 (Launch): IN PROGRESS (CI/CD done, domain setup TODO)
+
+## CMS Architecture (Puck Visual Editor)
+
+All four content types (pages, posts, courses, products) use the **Puck** (`@puckeditor/core` v0.21.1) drag-and-drop visual page builder. Legacy TipTap editor is removed for pages/posts; courses/products upgraded from form-based editing to Puck.
+
+### How it works
+- **Shared blocks** in `packages/shared/src/puck-config.tsx` — 16 block components in 6 categories
+- **Admin editors** use `<Puck>` component: `PageBuilder.tsx`, `PostBuilder.tsx`, `CourseBuilder.tsx`, `ProductBuilder.tsx`
+- **Public rendering** via `<Render>` from `@puckeditor/core` in `BlockRenderer.tsx`
+- Content stored as JSON in `content_blocks` column, `editor_version` = `'puck'`
+- Metadata (title, slug, status, dates, prices) edited via **settings dropdown** (gear icon) in the Puck header bar
+
+### Block categories
+| Category | Blocks |
+|---|---|
+| Layout | Columns, Separator |
+| Content | Hero, Rich Text, Image, Accordion/FAQ |
+| Marketing | CTA Banner, Card Grid, Testimonial, Buttons |
+| Dynamic Content | Post Grid, Page Cards, Navigation Menu |
+| Media | Image Gallery, Video |
+| Advanced | Contact Form |
+
+### Key files
+- `packages/shared/src/puck-config.tsx` — All block definitions, root.render with site chrome
+- `packages/shared/src/types.ts` — Block prop interfaces
+- `packages/admin/src/components/PageBuilder.tsx` — Page editor (Puck)
+- `packages/admin/src/components/PostBuilder.tsx` — Post editor (Puck)
+- `packages/admin/src/components/CourseBuilder.tsx` — Course editor (Puck)
+- `packages/admin/src/components/ProductBuilder.tsx` — Product editor (Puck)
+- `packages/web/src/components/BlockRenderer.tsx` — Public Puck block renderer
+- `packages/admin/src/index.css` — Puck CSS overrides (icons, floating panel)
 
 ## Deployment
 
@@ -69,7 +101,144 @@ Both frontends use **shadcn/ui** as the UI component library foundation:
 
 ---
 
-## SESSION HANDOFF - 2026-02-15
+## SESSION HANDOFF - 2026-02-15 (Evening) — Puck CMS Visual Editor
+
+### What was done this session
+
+**Puck Visual Editor — Unified CMS for ALL Content Types:**
+
+The entire admin CMS was transformed from a mix of form-based editors (TipTap + static forms) into a unified drag-and-drop visual page builder using Puck. Every content type now uses the same visual editing experience.
+
+#### 1. Collapsible Admin Sidebar
+- `AdminLayout.tsx`: Sidebar toggles between `w-64` (expanded) and `w-16` (collapsed) via ChevronsLeft/ChevronsRight button
+- State persists in localStorage (`sidebar_collapsed`)
+- Auto-collapses on all editor pages (`/sidor/`, `/nyheter/`, `/utbildningar/`, `/material/` + ID)
+- Editor pages get minimal `p-2` padding for maximum Puck space
+
+#### 2. Pages & Posts → Puck Visual Editor
+- `PageBuilder.tsx` and `PostBuilder.tsx` — Full Puck integration replacing the old header-bar form
+- All metadata (title, slug, status, excerpt, featured image, etc.) moved to a **settings dropdown** triggered by a gear icon in the Puck header
+- Status badge (Draft=yellow, Published=green) shown in header
+- Delete button with confirmation dialog inside settings dropdown
+- `onPublish` handler gathers all metadata + serialized Puck JSON and saves via API
+- `PageEditor.tsx` and `PostEditor.tsx` simplified to just data-fetching wrappers
+
+#### 3. Courses & Products → Puck Visual Editor (NEW)
+- **CourseBuilder.tsx** (new file) — Full Puck editor with course-specific settings dropdown:
+  - Title, Slug, Status (active/full/completed/cancelled), Location, Start date, End date, Registration deadline, Price (SEK), Max participants, Description
+  - Status badge: active=green, full=blue, completed=gray, cancelled=red
+- **ProductBuilder.tsx** (new file) — Full Puck editor with product-specific settings dropdown:
+  - Title, Slug, Status (active/inactive), Type (book/cd/cards/app/download), Price, In stock, External URL, Image URL (with preview), Description
+- `CourseEditor.tsx` and `ProductEditor.tsx` rewritten as data-fetching wrappers (same pattern as PageEditor/PostEditor)
+- **Database migration**: `ALTER TABLE courses/products ADD COLUMN content_blocks TEXT, editor_version TEXT` — executed on production D1
+
+#### 4. API Updated for Puck Content Blocks
+- `admin.ts`: Course and product create/update endpoints now handle `content_blocks` and `editor_version`
+- Both camelCase and snake_case field names accepted via nullish coalescing (`body.startDate ?? body.start_date`)
+- `schema.sql` updated with new columns and migration ALTER TABLE statements
+
+#### 5. CSS Injection for Production-Matching Preview
+- Puck renders content in an iframe. CSS was NOT injected initially → content looked unstyled
+- **Fix**: `document.styleSheets` API extracts all CSS rules from parent window and injects as `<style>` into iframe
+- Cross-origin stylesheets (Google Fonts) injected as `<link>` elements
+- Google Fonts Inter loaded in iframe body
+- This runs via `overrides.iframe` callback in all 4 builder components
+
+#### 6. Site Chrome in Puck Preview
+- `puck-config.tsx` `root.render` detects editor context via `window.frameElement !== null`
+- In editor: renders full site header (Livskompass logo + nav links) and footer (contact info, links, copyright)
+- On public site: only renders the `max-w-4xl` content container (Layout.tsx provides the real chrome)
+- Nav links match production: ACT, Utbildningar, Material, Mindfulness, Forskning, Om Fredrik, Kontakt, Nyheter
+
+#### 7. Floating Right Panel
+- Puck's default right sidebar (field editor) was taking space from the preview
+- CSS override: `--puck-right-side-bar-width: 0px !important` + `position: absolute` on right panel
+- Right panel now floats as an overlay with shadow, preview gets full width
+- Resize handle hidden
+
+#### 8. Consistent Icon Sizing
+- All Puck panel icons and admin sidebar icons forced to 18px via CSS:
+  ```css
+  [class*="SidebarSection"] svg, [class*="Nav_"] svg { width: 18px !important; height: 18px !important; }
+  ```
+
+#### 9. Custom Select Component
+- Native `<select>` dropdown chevron fixed with `appearance-none` + custom SVG chevron-down icon
+
+#### 10. Dynamic Content Blocks (Composable CMS)
+New blocks added to `puck-config.tsx` for embedding live data:
+- **PostGrid** — Fetches latest N posts from API, displays as card grid with image, date, excerpt. Configurable columns, count, show/hide toggles.
+- **PageCards** — Shows pages as linked cards. Auto-fetches child pages by `parentSlug` or manual entry. Three styles: card, list, minimal pills.
+- **NavigationMenu** — Build visual nav menus with label+link items. Four styles: pills, underline, buttons, minimal. Horizontal/vertical layout.
+- **CardGrid extended** — Now supports `source: "posts"` and `source: "pages"` in addition to manual/courses/products. Auto-fetches data from API.
+- **API connectivity**: `window.__PUCK_API_BASE__` set in both admin and web `main.tsx`. Shared `useFetchJson` hook in puck-config.tsx handles data fetching with loading states and cleanup.
+
+#### 11. BlogPost.tsx Double-Wrapping Fix
+- Post chrome (back button, date, title, image) separated into its own container
+- BlockRenderer renders Puck blocks separately (root.render handles its own container)
+- Prevents double max-w-4xl wrapping
+
+### Commits (chronological)
+1. `c6d59a2` — Improve CMS editor UX: collapsible sidebar, settings dropdown, delete
+2. `1ea0ca1` — Fix CMS editor: proper CSS injection, auto-collapse sidebar, consistent icons
+3. `55906b6` — Make right sidebar a floating overlay for full-width preview
+4. `a95a051` — Add dynamic content blocks: PostGrid, PageCards, NavigationMenu
+5. `d8b0149` — Convert courses and products to Puck visual editor, add site chrome to preview
+
+### Files modified/created this session
+```
+NEW:  packages/admin/src/components/CourseBuilder.tsx
+NEW:  packages/admin/src/components/ProductBuilder.tsx
+MOD:  packages/admin/src/components/PageBuilder.tsx     (rewritten for Puck)
+MOD:  packages/admin/src/components/PostBuilder.tsx     (rewritten for Puck)
+MOD:  packages/admin/src/components/AdminLayout.tsx     (collapsible sidebar)
+MOD:  packages/admin/src/components/ui/select.tsx       (custom chevron)
+MOD:  packages/admin/src/pages/PageEditor.tsx           (simplified wrapper)
+MOD:  packages/admin/src/pages/PostEditor.tsx           (simplified wrapper)
+MOD:  packages/admin/src/pages/CourseEditor.tsx          (rewritten for Puck)
+MOD:  packages/admin/src/pages/ProductEditor.tsx         (rewritten for Puck)
+MOD:  packages/admin/src/main.tsx                       (window.__PUCK_API_BASE__)
+MOD:  packages/admin/src/index.css                      (Puck CSS overrides)
+MOD:  packages/web/src/main.tsx                         (window.__PUCK_API_BASE__)
+MOD:  packages/web/src/pages/BlogPost.tsx               (fix double-wrapping)
+MOD:  packages/web/src/components/BlockRenderer.tsx      (transparent pass-through)
+MOD:  packages/shared/src/puck-config.tsx               (site chrome, dynamic blocks, API helpers)
+MOD:  packages/shared/src/types.ts                      (new block prop interfaces)
+MOD:  packages/api/src/routes/admin.ts                  (content_blocks for courses/products)
+MOD:  packages/api/schema.sql                           (content_blocks + editor_version columns)
+```
+
+### What still needs to be done
+
+**Before launch (blockers):**
+1. Domain setup — livskompass.se not connected to Cloudflare yet
+2. Stripe configuration — STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET not set
+3. Google OAuth production test — redirect URIs added but login not verified on production
+4. WordPress redirect mapping (301s for old URLs)
+5. Content quality — 4 empty/placeholder pages need content or deletion
+
+**CMS improvements:**
+- Verify CSS injection works on production (Tailwind classes rendering in Puck iframe)
+- Puck inline editing (editing directly on components instead of sidebar) — Puck v0.21 limitation
+- Media picker integration (browse R2 media from within Puck field editors)
+- Undo/redo verification in Puck
+- Mobile editor responsiveness
+
+**Should fix before launch:**
+- Email notifications (booking confirmation, contact form alerts)
+- File upload type/size validation
+- Admin CRUD input validation
+- Brand alignment (colors, fonts, logo)
+
+**Post-launch:**
+- Rate limiting, session cleanup, security headers
+- Blog pagination, search, accessibility
+- Google Analytics integration, sitemap.xml, robots.txt
+- Abandoned booking cleanup (Cron Trigger)
+
+---
+
+## SESSION HANDOFF - 2026-02-15 (Morning)
 
 ### What was done this session
 
