@@ -460,7 +460,13 @@ CORS_ORIGIN = "https://livskompass.se,https://admin.livskompass.se"
 
 ### packages/web & packages/admin
 
-API is proxied through Vite dev server - no environment variables needed in development.
+**Production builds** use `.env.production`:
+```
+VITE_API_URL=https://livskompass-api.livskompass-config.workers.dev/api
+```
+
+**Local dev** proxies `/api` and `/media` to the production API by default (no env vars needed).
+Override with `API_TARGET=http://localhost:8787` to use a local API.
 
 ---
 
@@ -553,13 +559,15 @@ wrangler secret put INITIAL_ADMIN_EMAIL
 ```bash
 # From project root
 npm install
-npm run dev
-```
 
-This starts:
-- **API:** http://localhost:8787
-- **Web:** http://localhost:3000
-- **Admin:** http://localhost:3001
+# Start frontends (proxy to production API by default)
+npm run dev -w packages/web    # http://localhost:3000
+npm run dev -w packages/admin  # http://localhost:3001
+
+# Or start with local API:
+cd packages/api && npx wrangler dev --remote  # http://localhost:8787 (uses production DB)
+API_TARGET=http://localhost:8787 npm run dev -w packages/web
+```
 
 ### Step 8: Configure Stripe Webhook
 
@@ -570,23 +578,37 @@ This starts:
 
 ### Step 9: Deploy to Production
 
-```bash
-# Deploy API
-cd packages/api
-wrangler deploy
+Deployment is automated via GitHub Actions. Push to `main` triggers:
+- API Worker deploy
+- Web frontend build + deploy to Cloudflare Pages
+- Admin frontend build + deploy to Cloudflare Pages
 
-# Deploy Web & Admin to Cloudflare Pages
-# Connect GitHub repo to Cloudflare Pages
-# Set build command: npm run build
-# Set output directory: packages/web/dist (public site)
-# Create separate project for admin: packages/admin/dist
+**GitHub Secrets required:**
+| Secret | Value |
+|--------|-------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Workers/Pages/R2 permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+
+**Manual deploy** (if needed):
+```bash
+cd packages/api && npx wrangler deploy
+cd packages/web && npx wrangler pages deploy dist --project-name=livskompass-web
+cd packages/admin && npx wrangler pages deploy dist --project-name=livskompass-admin
 ```
 
-### Step 10: Configure DNS
+### Current Production URLs
+
+| Service | URL |
+|---------|-----|
+| Web | https://livskompass-web.pages.dev |
+| Admin | https://livskompass-admin.pages.dev |
+| API | https://livskompass-api.livskompass-config.workers.dev |
+
+### Step 10: Configure DNS (TODO)
 
 - Point livskompass.se to Cloudflare Pages (public site)
 - Point admin.livskompass.se to Cloudflare Pages (admin panel)
-- API is served from the same domain via Workers
+- API served via Workers route on the main domain
 
 ### Step 11: Migrate WordPress Content
 
@@ -659,37 +681,51 @@ wrangler d1 execute livskompass-db --command "SELECT * FROM users"
 - [x] Installed all npm dependencies
 
 ### Phase 2: Backend API ✅
-- [x] Created all API routes (pages, posts, courses, bookings, products, media, contact)
-- [x] Implemented Google OAuth authentication
-- [x] Session-based auth with database storage
-- [x] User management (admins can add/remove users)
-- [x] Implemented admin CRUD operations
-- [x] Stripe checkout integration code
-- [x] R2 media upload endpoints
+- [x] All API routes (pages, posts, courses, bookings, products, media, contact)
+- [x] Google OAuth authentication + session management
+- [x] Admin CRUD with GET-by-ID endpoints
+- [x] Stripe webhook handler (checkout.session.completed/expired, payment_intent.failed)
+- [x] Admin refund endpoint with Stripe integration
+- [x] Booking race condition fix (atomic UPDATE)
+- [x] Media routes secured under admin auth
+- [x] Course status filter (hides draft/cancelled from public)
+- [x] Pages endpoint returns child pages for hub page rendering
 
 ### Phase 3: Public Frontend ✅
-- [x] Layout component with header/footer
-- [x] Home page with courses and news
-- [x] Course listing and detail pages
-- [x] Booking flow with Stripe integration
-- [x] Products/material page
-- [x] Blog listing and post pages
-- [x] Contact form
-- [x] 404 page
+- [x] shadcn/ui component library (button, card, badge, input, textarea, label, separator, skeleton)
+- [x] Dynamic navigation with dropdown menus (fetches child pages from API)
+- [x] Hub pages render child pages as card grids
+- [x] Media URL rewriting for cross-origin images
+- [x] HTML sanitization with DOMPurify
+- [x] Dynamic page titles, scroll-to-top, active nav highlighting
+- [x] Mobile hamburger navigation
 
 ### Phase 4: Admin CMS ✅
-- [x] Login page with Google OAuth
-- [x] OAuth callback handler
-- [x] Dashboard with stats
-- [x] Page editor with WYSIWYG (TipTap)
-- [x] Post editor
-- [x] Course manager
-- [x] Booking viewer
-- [x] Product manager
-- [x] Media library with R2 upload
-- [x] Contact messages inbox
-- [x] User management page (admin only)
-- [x] Settings page
+- [x] shadcn/ui component library (button, card, badge, input, textarea, label, table, separator, skeleton, dialog, select)
+- [x] All 17 admin pages redesigned with shadcn/ui
+- [x] TipTap WYSIWYG editor
+- [x] Media library with R2 upload and preview
+
+### Phase 5: WordPress Migration ✅
+- [x] 72 pages migrated with parent_slug hierarchy
+- [x] 10 blog posts with featured images
+- [x] ~534 media files uploaded to R2
+- [x] 7 courses extracted from WordPress page content
+- [x] 6 products extracted from WordPress page content
+- [x] Internal links fixed in migrated content
+
+### Phase 6: CI/CD ✅
+- [x] GitHub Actions workflow (auto-deploy on push to main)
+- [x] Three parallel jobs: API Worker, Web Pages, Admin Pages
+- [x] `.env.production` files for build-time API URL
+- [x] Local dev proxies to production API
+
+### Phase 7: Launch (IN PROGRESS)
+- [ ] Connect livskompass.se domain to Cloudflare
+- [ ] Configure Stripe keys (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET)
+- [ ] Test Google OAuth on production
+- [ ] WordPress 301 redirect mapping
+- [ ] Brand alignment (colors, fonts, logo)
 
 ---
 

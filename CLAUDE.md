@@ -27,18 +27,122 @@ packages/api/    → Cloudflare Workers backend (Hono)
 - `packages/api/schema.sql` - D1 database schema
 - `packages/api/wrangler.toml` - Cloudflare config
 
-## Current Status (updated 2026-02-12)
+## Current Status (updated 2026-02-15)
 - Phase 1 (Setup): DONE
-- Phase 2 (Backend API): DONE + bug fixes applied (see below)
+- Phase 2 (Backend API): DONE + bug fixes applied
 - Phase 3 (Booking/Payments): DONE (webhook, refund, race condition all fixed)
-- Phase 4 (Admin CMS): DONE + bug fixes applied
-- Phase 5 (Public Frontend): DONE + bug fixes applied
-- Phase 6 (WordPress Migration): TODO
-- Phase 7 (Launch): TODO
+- Phase 4 (Admin CMS): DONE + shadcn/ui redesign
+- Phase 5 (Public Frontend): DONE + shadcn/ui redesign
+- Phase 6 (WordPress Migration): DONE (72 pages, 10 posts, ~534 media, 7 courses, 6 products)
+- Phase 7 (Launch): IN PROGRESS (CI/CD done, domain setup TODO)
+
+## Deployment
+
+### URLs
+- **Web**: https://livskompass-web.pages.dev
+- **Admin**: https://livskompass-admin.pages.dev
+- **API**: https://livskompass-api.livskompass-config.workers.dev
+- **GitHub**: https://github.com/livskompass/livskompass
+
+### CI/CD
+GitHub Actions auto-deploys all three services on push to `main`:
+- `.github/workflows/deploy.yml` — 3 parallel jobs (api, web, admin)
+- GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+- Build env vars: `VITE_API_URL` set in `.env.production` files
+
+### Local Development
+```bash
+npm install
+npm run dev -w packages/web    # http://localhost:3000 (proxies to production API)
+npm run dev -w packages/admin  # http://localhost:3001 (proxies to production API)
+
+# To develop against a local API instead:
+API_TARGET=http://localhost:8787 npm run dev -w packages/web
+```
+
+## UI System
+Both frontends use **shadcn/ui** as the UI component library foundation:
+- `packages/web/src/components/ui/` — button, card, badge, input, textarea, label, separator, skeleton
+- `packages/admin/src/components/ui/` — button, card, badge, input, textarea, label, table, separator, skeleton, dialog, select
+- Utility: `cn()` from `lib/utils.ts` (clsx + tailwind-merge)
+
+---
+
+## SESSION HANDOFF - 2026-02-15
+
+### What was done this session
+
+**WordPress Migration (Phase 6 COMPLETE):**
+1. Migrated all 72 pages from WordPress XML export to D1
+2. Migrated all 10 blog posts with featured images
+3. Migrated ~534 media files from WordPress to R2 (via Worker endpoint that downloads from WP and uploads to R2)
+4. Extracted 7 courses from WordPress page content into courses table
+5. Extracted 6 products from WordPress page content into products table
+6. Set `parent_slug` relationships for page hierarchy (WordPress parent-child structure)
+7. Fixed internal links in migrated content
+
+**Media URL System:**
+- Problem: Media URLs stored as `/media/...` resolve to wrong domain (Pages vs Workers)
+- Solution: `getMediaUrl()` helper derives `MEDIA_BASE` from `API_BASE` by stripping `/api` suffix
+- `rewriteMediaUrls()` rewrites relative `/media/` paths in HTML content (dangerouslySetInnerHTML)
+- API upload endpoints now store absolute URLs using SITE_URL
+- Files: `packages/web/src/lib/api.ts`, `packages/admin/src/lib/api.ts`
+
+**shadcn/ui Redesign:**
+- Redesigned all 11 web pages and all 17 admin pages with shadcn/ui components
+- Created UI component libraries in both packages
+- Dependencies added: class-variance-authority, clsx, tailwind-merge, lucide-react
+
+**Navigation Fix:**
+- `Layout.tsx`: Correct Swedish labels, dynamic dropdown menus
+- Dropdowns fetch child pages from API via `parent_slug` matching
+- Desktop: hover-to-open dropdowns with chevron indicators
+- Mobile: expandable child lists with separate chevron button
+- Nav items: ACT, Utbildningar, Material, Mindfulness, Forskning på metoden, Om Fredrik Livheim, Kontakt, Nyheter
+
+**Hub Pages with Child Page Cards:**
+- API `GET /api/pages/:slug` now returns `children` array (pages where parent_slug = slug)
+- `Page.tsx` renders child pages as clickable card grid with ChevronRight icons
+- Smart content detection: hides bare link-list content when child cards are shown
+- Hub pages affected: forskning-pa-metoden, act, mindfulness, material, utbildningar
+
+**CI/CD Pipeline:**
+- `.github/workflows/deploy.yml` — auto-deploys on push to main
+- Three parallel jobs: Deploy API Worker, Deploy Web, Deploy Admin
+- GitHub Secrets configured: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+- `.env.production` files set `VITE_API_URL` for both frontends
+
+**Local Dev → Production:**
+- Vite proxy targets changed from `localhost:8787` to production API
+- Both web and admin dev servers proxy `/api` and `/media` to production Worker
+- Override with `API_TARGET=http://localhost:8787` for local API development
+
+### What still needs to be done
+
+**Before launch (blockers):**
+1. Domain setup — livskompass.se not connected to Cloudflare yet
+2. Stripe configuration — STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET not set
+3. Google OAuth production test — redirect URIs added but login not verified on production
+4. WordPress redirect mapping (301s for old URLs)
+5. Content quality — 4 empty/placeholder pages need content or deletion
+
+**Should fix before launch:**
+- Email notifications (booking confirmation, contact form alerts)
+- File upload type/size validation
+- Admin CRUD input validation
+- Brand alignment (colors, fonts, logo)
+
+**Post-launch:**
+- Rate limiting, session cleanup, security headers
+- Blog pagination, search, accessibility
+- Google Analytics integration, sitemap.xml, robots.txt
+- Abandoned booking cleanup (Cron Trigger)
+
+---
 
 ## SESSION HANDOFF - 2026-02-12
 
-### What was done this session
+### What was done this session (2026-02-12)
 
 **Backend (ALL COMPLETE - validated by ux_reviewer):**
 1. Stripe webhook handler (`webhooks.ts`) - signature verification, idempotent, handles completed/expired/failed
