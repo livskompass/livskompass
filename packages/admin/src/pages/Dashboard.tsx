@@ -18,11 +18,11 @@ import {
 
 interface StatsResponse {
   stats: {
-    pages: number
-    posts: number
-    courses: number
-    bookings: number
-    contacts: number
+    publishedPages: number
+    publishedPosts: number
+    activeCourses: number
+    paidBookings: number
+    unreadContacts: number
   }
 }
 
@@ -54,10 +54,10 @@ export default function Dashboard() {
   })
 
   const stats = [
-    { name: 'Pages', value: statsData?.stats?.pages ?? 0, href: '/sidor', icon: FileText, color: 'text-blue-600 bg-blue-50' },
-    { name: 'Posts', value: statsData?.stats?.posts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-purple-600 bg-purple-50' },
-    { name: 'Courses', value: statsData?.stats?.courses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-emerald-600 bg-emerald-50' },
-    { name: 'Bookings', value: statsData?.stats?.bookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-orange-600 bg-orange-50' },
+    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/sidor', icon: FileText, color: 'text-blue-600 bg-blue-50' },
+    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-purple-600 bg-purple-50' },
+    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-emerald-600 bg-emerald-50' },
+    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-orange-600 bg-orange-50' },
   ]
 
   const unreadContacts = contactsData?.contacts?.filter((c) => !c.read)?.length ?? 0
