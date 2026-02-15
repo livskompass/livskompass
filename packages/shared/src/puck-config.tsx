@@ -12,6 +12,38 @@ export const emptyPuckData: Data = {
   zones: {},
 }
 
+// ── Shared helpers for dynamic blocks that fetch data from the API ──
+
+function getApiBase(): string {
+  return (typeof window !== "undefined" && (window as any).__PUCK_API_BASE__) || "/api"
+}
+
+function getMediaBase(): string {
+  return getApiBase().replace(/\/api$/, "")
+}
+
+function resolveMediaUrl(url: string): string {
+  if (!url) return ""
+  if (url.startsWith("http")) return url
+  return `${getMediaBase()}${url}`
+}
+
+function useFetchJson<T>(endpoint: string): { data: T | null; loading: boolean } {
+  const [data, setData] = React.useState<T | null>(null)
+  const [loading, setLoading] = React.useState(!!endpoint)
+  React.useEffect(() => {
+    if (!endpoint) { setLoading(false); return }
+    let cancelled = false
+    setLoading(true)
+    fetch(`${getApiBase()}${endpoint}`)
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled) { setData(d as T); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [endpoint])
+  return { data, loading }
+}
+
 export const puckConfig: Config = {
   root: {
     render: ({ children }: { children: React.ReactNode }) => (
@@ -36,6 +68,10 @@ export const puckConfig: Config = {
     media: {
       title: "Media",
       components: ["ImageGallery", "VideoEmbed"],
+    },
+    dynamic: {
+      title: "Dynamic Content",
+      components: ["PostGrid", "PageCards", "NavigationMenu"],
     },
     advanced: {
       title: "Advanced",
@@ -515,6 +551,7 @@ export const puckConfig: Config = {
         source: "manual",
         maxItems: 3,
         columns: 3,
+        parentSlug: "",
         manualCards: [],
         showBadge: false,
         cardStyle: "default",
@@ -526,10 +563,13 @@ export const puckConfig: Config = {
           type: "select",
           options: [
             { label: "Manual cards", value: "manual" },
+            { label: "Latest posts", value: "posts" },
+            { label: "Pages (by parent)", value: "pages" },
             { label: "Courses", value: "courses" },
             { label: "Products", value: "products" },
           ],
         },
+        parentSlug: { type: "text" },
         maxItems: { type: "number" },
         columns: {
           type: "select",
@@ -565,8 +605,42 @@ export const puckConfig: Config = {
           ],
         },
       },
-      render: ({ heading, subheading, columns, manualCards }) => {
+      render: ({ heading, subheading, columns, source, maxItems, manualCards, parentSlug }) => {
         const colMap = { 2: "md:grid-cols-2", 3: "md:grid-cols-2 lg:grid-cols-3", 4: "md:grid-cols-2 lg:grid-cols-4" }
+        const limit = (maxItems as number) || 6
+
+        // Fetch dynamic data when source is not manual
+        const postsResult = useFetchJson<{ posts: Array<{ slug: string; title: string; excerpt: string; featured_image: string | null; published_at: string }> }>(
+          source === "posts" ? `/posts?limit=${limit}` : ""
+        )
+        const pagesResult = useFetchJson<{ page: { title: string }; children: Array<{ slug: string; title: string; meta_description: string }> }>(
+          source === "pages" && parentSlug ? `/pages/${parentSlug}` : ""
+        )
+
+        // Build cards array from the selected source
+        let cards: Array<{ title: string; description: string; image: string; link: string; badge: string }> = []
+        if (source === "posts" && postsResult.data?.posts) {
+          cards = postsResult.data.posts.slice(0, limit).map((p) => ({
+            title: p.title,
+            description: p.excerpt || "",
+            image: p.featured_image ? resolveMediaUrl(p.featured_image) : "",
+            link: `/nyhet/${p.slug}`,
+            badge: p.published_at ? new Date(p.published_at).toLocaleDateString("sv-SE") : "",
+          }))
+        } else if (source === "pages" && pagesResult.data?.children) {
+          cards = pagesResult.data.children.slice(0, limit).map((p) => ({
+            title: p.title,
+            description: p.meta_description || "",
+            image: "",
+            link: `/${p.slug}`,
+            badge: "",
+          }))
+        } else if (source === "manual") {
+          cards = (manualCards as typeof cards) || []
+        }
+
+        const loading = (source === "posts" && postsResult.loading) || (source === "pages" && pagesResult.loading)
+
         return (
           <div>
             {heading && (
@@ -575,26 +649,41 @@ export const puckConfig: Config = {
                 {subheading && <p className="text-gray-500 text-lg">{subheading}</p>}
               </div>
             )}
-            <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-6`}>
-              {(manualCards as Array<{ title: string; description: string; image: string; link: string; badge: string }>)?.map((card, i) => (
-                <div key={i} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                  {card.image && (
-                    <div className="aspect-video overflow-hidden">
-                      <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+            {loading ? (
+              <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-6`}>
+                {Array.from({ length: limit > 3 ? 3 : limit }).map((_, i) => (
+                  <div key={i} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden animate-pulse">
+                    <div className="aspect-video bg-gray-100" />
+                    <div className="p-6 space-y-3">
+                      <div className="h-5 bg-gray-100 rounded w-3/4" />
+                      <div className="h-4 bg-gray-100 rounded w-full" />
                     </div>
-                  )}
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{card.title}</h3>
-                    {card.description && <p className="text-sm text-gray-500">{card.description}</p>}
                   </div>
-                </div>
-              ))}
-              {(!manualCards || (manualCards as Array<unknown>).length === 0) && (
-                <div className="col-span-full text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-                  Add cards via settings
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-6`}>
+                {cards.map((card, i) => (
+                  <a key={i} href={card.link || "#"} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow block group">
+                    {card.image && (
+                      <div className="aspect-video overflow-hidden">
+                        <img src={card.image} alt={card.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      {card.badge && <span className="text-xs text-gray-400 mb-1 block">{card.badge}</span>}
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">{card.title}</h3>
+                      {card.description && <p className="text-sm text-gray-500 line-clamp-2">{card.description}</p>}
+                    </div>
+                  </a>
+                ))}
+                {cards.length === 0 && (
+                  <div className="col-span-full text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                    {source === "manual" ? "Add cards via settings" : source === "pages" ? "Set a parent slug to load child pages" : `No ${source} found`}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )
       },
@@ -840,6 +929,315 @@ export const puckConfig: Config = {
               <div className="h-10 w-32 rounded-lg bg-primary-600" />
             </div>
           </div>
+        )
+      },
+    },
+
+    // ============ DYNAMIC CONTENT ============
+
+    PostGrid: {
+      label: "Post Grid",
+      defaultProps: {
+        heading: "",
+        subheading: "",
+        count: 3,
+        columns: 3,
+        showImage: true,
+        showExcerpt: true,
+        showDate: true,
+        cardStyle: "default",
+      },
+      fields: {
+        heading: { type: "text" },
+        subheading: { type: "text" },
+        count: { type: "number", min: 1, max: 12 },
+        columns: {
+          type: "select",
+          options: [
+            { label: "2 columns", value: 2 },
+            { label: "3 columns", value: 3 },
+            { label: "4 columns", value: 4 },
+          ],
+        },
+        showImage: {
+          type: "radio",
+          options: [
+            { label: "Yes", value: true },
+            { label: "No", value: false },
+          ],
+        },
+        showExcerpt: {
+          type: "radio",
+          options: [
+            { label: "Yes", value: true },
+            { label: "No", value: false },
+          ],
+        },
+        showDate: {
+          type: "radio",
+          options: [
+            { label: "Yes", value: true },
+            { label: "No", value: false },
+          ],
+        },
+        cardStyle: {
+          type: "select",
+          options: [
+            { label: "Default", value: "default" },
+            { label: "Minimal", value: "minimal" },
+            { label: "Featured", value: "featured" },
+          ],
+        },
+      },
+      render: ({ heading, subheading, count, columns, showImage, showExcerpt, showDate }) => {
+        const limit = (count as number) || 3
+        const { data, loading } = useFetchJson<{ posts: Array<{ slug: string; title: string; excerpt: string; featured_image: string | null; published_at: string }> }>(`/posts?limit=${limit}`)
+        const colMap = { 2: "md:grid-cols-2", 3: "md:grid-cols-2 lg:grid-cols-3", 4: "md:grid-cols-2 lg:grid-cols-4" }
+        const posts = data?.posts || []
+
+        return (
+          <div>
+            {(heading || subheading) && (
+              <div className="mb-8">
+                {heading && <h2 className="text-3xl font-bold text-gray-900 mb-2">{heading}</h2>}
+                {subheading && <p className="text-lg text-gray-500">{subheading}</p>}
+              </div>
+            )}
+            {loading ? (
+              <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-6`}>
+                {Array.from({ length: limit > 3 ? 3 : limit }).map((_, i) => (
+                  <div key={i} className="rounded-xl border border-gray-200 bg-white overflow-hidden animate-pulse">
+                    {showImage && <div className="aspect-video bg-gray-100" />}
+                    <div className="p-5 space-y-3">
+                      <div className="h-4 bg-gray-100 rounded w-1/3" />
+                      <div className="h-5 bg-gray-100 rounded w-3/4" />
+                      <div className="h-4 bg-gray-100 rounded w-full" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : posts.length > 0 ? (
+              <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-6`}>
+                {posts.map((post) => (
+                  <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-all group block">
+                    {showImage && post.featured_image && (
+                      <div className="aspect-video overflow-hidden">
+                        <img src={resolveMediaUrl(post.featured_image)} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                    )}
+                    <div className="p-5">
+                      {showDate && post.published_at && (
+                        <span className="text-xs font-medium text-gray-400 mb-1 block">
+                          {new Date(post.published_at).toLocaleDateString("sv-SE", { year: "numeric", month: "long", day: "numeric" })}
+                        </span>
+                      )}
+                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors mb-1">{post.title}</h3>
+                      {showExcerpt && post.excerpt && (
+                        <p className="text-sm text-gray-500 line-clamp-2">{post.excerpt}</p>
+                      )}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                No posts found
+              </div>
+            )}
+          </div>
+        )
+      },
+    },
+
+    PageCards: {
+      label: "Page Cards",
+      defaultProps: {
+        heading: "",
+        parentSlug: "",
+        manualPages: [],
+        columns: 3,
+        showDescription: true,
+        style: "card",
+      },
+      fields: {
+        heading: { type: "text" },
+        parentSlug: { type: "text" },
+        manualPages: {
+          type: "array",
+          arrayFields: {
+            title: { type: "text" },
+            description: { type: "text" },
+            slug: { type: "text" },
+            icon: { type: "text" },
+          },
+        },
+        columns: {
+          type: "select",
+          options: [
+            { label: "2 columns", value: 2 },
+            { label: "3 columns", value: 3 },
+            { label: "4 columns", value: 4 },
+          ],
+        },
+        showDescription: {
+          type: "radio",
+          options: [
+            { label: "Yes", value: true },
+            { label: "No", value: false },
+          ],
+        },
+        style: {
+          type: "select",
+          options: [
+            { label: "Card", value: "card" },
+            { label: "List", value: "list" },
+            { label: "Minimal", value: "minimal" },
+          ],
+        },
+      },
+      render: ({ heading, parentSlug, manualPages, columns, showDescription, style }) => {
+        const { data, loading } = useFetchJson<{ page: { title: string }; children: Array<{ slug: string; title: string; meta_description: string }> }>(
+          parentSlug ? `/pages/${parentSlug}` : ""
+        )
+
+        const manual = manualPages as Array<{ title: string; description: string; slug: string; icon: string }> || []
+        const pages = parentSlug && data?.children
+          ? data.children.map((p) => ({ title: p.title, description: p.meta_description || "", slug: p.slug, icon: "" }))
+          : manual
+
+        const colMap = { 2: "md:grid-cols-2", 3: "md:grid-cols-2 lg:grid-cols-3", 4: "md:grid-cols-2 lg:grid-cols-4" }
+
+        if (loading && parentSlug) {
+          return (
+            <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-4`}>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-24 rounded-xl border border-gray-200 bg-white animate-pulse" />
+              ))}
+            </div>
+          )
+        }
+
+        if (style === "list") {
+          return (
+            <div>
+              {heading && <h2 className="text-2xl font-bold text-gray-900 mb-4">{heading}</h2>}
+              <div className="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
+                {pages.map((page, i) => (
+                  <a key={i} href={`/${page.slug}`} className="flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors group">
+                    <div>
+                      <h3 className="font-medium text-gray-900 group-hover:text-primary-600 transition-colors">{page.title}</h3>
+                      {showDescription && page.description && <p className="text-sm text-gray-500 mt-0.5">{page.description}</p>}
+                    </div>
+                    <svg className="w-5 h-5 text-gray-400 group-hover:text-primary-600 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        if (style === "minimal") {
+          return (
+            <div>
+              {heading && <h2 className="text-2xl font-bold text-gray-900 mb-4">{heading}</h2>}
+              <div className="flex flex-wrap gap-3">
+                {pages.map((page, i) => (
+                  <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:border-primary-300 hover:text-primary-600 transition-colors">
+                    {page.title}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        return (
+          <div>
+            {heading && <h2 className="text-2xl font-bold text-gray-900 mb-6">{heading}</h2>}
+            <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-4`}>
+              {pages.map((page, i) => (
+                <a key={i} href={`/${page.slug}`} className="rounded-xl border border-gray-200 bg-white p-5 hover:shadow-md hover:border-primary-200 transition-all group block">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors mb-1">{page.title}</h3>
+                  {showDescription && page.description && <p className="text-sm text-gray-500 line-clamp-2">{page.description}</p>}
+                </a>
+              ))}
+              {pages.length === 0 && (
+                <div className="col-span-full text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                  {parentSlug ? "No child pages found" : "Add pages manually or set a parent slug"}
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      },
+    },
+
+    NavigationMenu: {
+      label: "Navigation Menu",
+      defaultProps: {
+        items: [{ label: "Home", link: "/" }],
+        layout: "horizontal",
+        style: "pills",
+        alignment: "center",
+      },
+      fields: {
+        items: {
+          type: "array",
+          arrayFields: {
+            label: { type: "text" },
+            link: { type: "text" },
+          },
+        },
+        layout: {
+          type: "radio",
+          options: [
+            { label: "Horizontal", value: "horizontal" },
+            { label: "Vertical", value: "vertical" },
+          ],
+        },
+        style: {
+          type: "select",
+          options: [
+            { label: "Pills", value: "pills" },
+            { label: "Underline", value: "underline" },
+            { label: "Buttons", value: "buttons" },
+            { label: "Minimal", value: "minimal" },
+          ],
+        },
+        alignment: {
+          type: "radio",
+          options: [
+            { label: "Left", value: "left" },
+            { label: "Center", value: "center" },
+            { label: "Right", value: "right" },
+          ],
+        },
+      },
+      render: ({ items, layout, style, alignment }) => {
+        const menuItems = items as Array<{ label: string; link: string }> || []
+        const alignMap = { left: "justify-start", center: "justify-center", right: "justify-end" }
+        const isVertical = layout === "vertical"
+
+        const styleMap: Record<string, string> = {
+          pills: "px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-primary-50 hover:text-primary-600 font-medium text-sm transition-colors",
+          underline: "px-3 py-2 border-b-2 border-transparent hover:border-primary-500 text-gray-700 hover:text-primary-600 font-medium text-sm transition-colors",
+          buttons: "px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600 font-medium text-sm transition-colors",
+          minimal: "px-2 py-1 text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors",
+        }
+
+        return (
+          <nav>
+            <div className={`flex ${isVertical ? "flex-col gap-1" : `flex-wrap gap-2 ${alignMap[alignment as keyof typeof alignMap] || "justify-center"}`}`}>
+              {menuItems.map((item, i) => (
+                <a key={i} href={item.link || "#"} className={styleMap[style as string] || styleMap.pills}>
+                  {item.label}
+                </a>
+              ))}
+              {menuItems.length === 0 && (
+                <span className="text-gray-400 text-sm">Add menu items via settings</span>
+              )}
+            </div>
+          </nav>
         )
       },
     },

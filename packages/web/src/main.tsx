@@ -1,5 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+
+// Expose API base for shared Puck blocks that fetch dynamic content
+;(window as any).__PUCK_API_BASE__ = import.meta.env.VITE_API_URL || '/api'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
 import './index.css'

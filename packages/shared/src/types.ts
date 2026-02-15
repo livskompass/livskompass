@@ -123,3 +123,38 @@ export interface ContactFormBlockProps {
   showPhone: boolean
   showSubject: boolean
 }
+
+export interface PostGridProps {
+  heading: string
+  subheading: string
+  count: number
+  columns: 2 | 3 | 4
+  showImage: boolean
+  showExcerpt: boolean
+  showDate: boolean
+  cardStyle: 'default' | 'minimal' | 'featured'
+}
+
+export interface PageCardsProps {
+  heading: string
+  parentSlug: string
+  manualPages: Array<{
+    title: string
+    description: string
+    slug: string
+    icon: string
+  }>
+  columns: 2 | 3 | 4
+  showDescription: boolean
+  style: 'card' | 'list' | 'minimal'
+}
+
+export interface NavigationMenuProps {
+  items: Array<{
+    label: string
+    link: string
+  }>
+  layout: 'horizontal' | 'vertical'
+  style: 'pills' | 'underline' | 'buttons' | 'minimal'
+  alignment: 'left' | 'center' | 'right'
+}
