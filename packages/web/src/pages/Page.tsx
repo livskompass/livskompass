@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getPage } from '../lib/api'
+import { getPage, rewriteMediaUrls } from '../lib/api'
+import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
@@ -72,10 +73,17 @@ export default function Page() {
     )
   }
 
-  // Fallback: show title and child cards for pages without content
+  // Fallback: render legacy HTML content with media URL rewriting
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <h1 className="text-4xl font-bold text-gray-900 mb-8 tracking-tight">{page.title}</h1>
+
+      {page.content && (
+        <div
+          className="prose prose-lg max-w-none mb-10 prose-headings:tracking-tight prose-a:text-primary-600"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(page.content)) }}
+        />
+      )}
 
       {hasChildren && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

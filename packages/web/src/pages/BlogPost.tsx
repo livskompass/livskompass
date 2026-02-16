@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getPost, getMediaUrl } from '../lib/api'
+import { getPost, getMediaUrl, rewriteMediaUrls } from '../lib/api'
+import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
@@ -74,10 +75,16 @@ export default function BlogPost() {
         )}
       </div>
 
-      {/* Content blocks - root.render in puckConfig provides the container,
-          matching the CMS editor preview exactly */}
+      {/* Content: Puck blocks if available, otherwise legacy HTML */}
       {postAny.content_blocks ? (
         <BlockRenderer data={postAny.content_blocks} />
+      ) : post.content ? (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <div
+            className="prose prose-lg max-w-none prose-headings:tracking-tight prose-a:text-primary-600"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(post.content)) }}
+          />
+        </div>
       ) : (
         <div className="text-gray-500 text-center py-8">No content available.</div>
       )}
