@@ -51,7 +51,7 @@ export default function BlogPost() {
         <Button variant="ghost" className="mb-6 -ml-2 text-gray-600 hover:text-primary-600" asChild>
           <Link to="/nyhet">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            All posts
+            Alla inlägg
           </Link>
         </Button>
 
@@ -86,7 +86,7 @@ export default function BlogPost() {
           />
         </div>
       ) : (
-        <div className="text-gray-500 text-center py-8">No content available.</div>
+        <div className="text-gray-500 text-center py-8">Inget innehåll tillgängligt.</div>
       )}
     </article>
   )

@@ -28,6 +28,20 @@ function resolveMediaUrl(url: string): string {
   return `${getMediaBase()}${url}`
 }
 
+/** Rewrite relative /media/ URLs inside HTML strings to absolute URLs */
+function rewriteHtmlMediaUrls(html: string): string {
+  if (!html) return html
+  const base = getMediaBase()
+  if (!base) return html
+  return html.replace(
+    /(src|href|poster)=(["'])(\/media\/)/g,
+    `$1=$2${base}/media/`
+  ).replace(
+    /url\(\s*(["']?)(\/media\/)/g,
+    `url($1${base}/media/`
+  )
+}
+
 function useFetchJson<T>(endpoint: string): { data: T | null; loading: boolean } {
   const [data, setData] = React.useState<T | null>(null)
   const [loading, setLoading] = React.useState(!!endpoint)
@@ -334,7 +348,7 @@ export const puckConfig: Config = {
         return (
           <div
             className={`prose prose-lg mx-auto ${widthMap[maxWidth as keyof typeof widthMap] || "max-w-[80ch]"} prose-headings:tracking-tight prose-a:text-primary-600`}
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: rewriteHtmlMediaUrls(content) }}
           />
         )
       },
@@ -390,7 +404,7 @@ export const puckConfig: Config = {
           <figure className={`${sizeMap[size as keyof typeof sizeMap] || "max-w-full"} ${alignMap[alignment as keyof typeof alignMap] || "mx-auto"}`}>
             {src ? (
               <img
-                src={src}
+                src={resolveMediaUrl(src)}
                 alt={alt || ""}
                 className={`w-full h-auto ${roundedMap[rounded as keyof typeof roundedMap] || "rounded-lg"}`}
               />
