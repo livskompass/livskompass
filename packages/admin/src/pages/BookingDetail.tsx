@@ -138,7 +138,7 @@ export default function BookingDetail() {
         {/* Booking Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Booking info</CardTitle>
+            <CardTitle className="text-base">Booking information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-start gap-3">
@@ -160,7 +160,7 @@ export default function BookingDetail() {
             <div className="flex items-start gap-3">
               <Users className="h-4 w-4 text-gray-400 mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Number of participants</p>
+                <p className="text-sm text-gray-500">Participants</p>
                 <p className="font-medium text-gray-900">{booking.participants}</p>
               </div>
             </div>

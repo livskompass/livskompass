@@ -46,7 +46,7 @@ export default function Settings() {
       setTimeout(() => setSaved(false), 3000)
     },
     onError: (err: Error) => {
-      setError(err.message || 'Could not save settings')
+      setError(err.message || 'Failed to save settings')
     },
   })
 
@@ -72,13 +72,13 @@ export default function Settings() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Settings</h1>
-        <p className="text-gray-500 mt-1">Manage your site configuration and integrations.</p>
+        <p className="text-gray-500 mt-1">Manage site configuration and integrations.</p>
       </div>
 
       {saved && (
         <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
           <CheckCircle className="h-4 w-4 shrink-0" />
-          Settings have been saved!
+          Settings saved!
         </div>
       )}
 

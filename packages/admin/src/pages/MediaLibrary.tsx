@@ -70,7 +70,7 @@ export default function MediaLibrary() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Media library</h1>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Media Library</h1>
           <p className="text-gray-500 mt-1">Upload and manage images, files, and media.</p>
         </div>
         <div>

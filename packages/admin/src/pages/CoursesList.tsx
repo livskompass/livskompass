@@ -54,7 +54,7 @@ export default function CoursesList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Courses</h1>
-          <p className="text-gray-500 mt-1">Manage training courses and workshops.</p>
+          <p className="text-gray-500 mt-1">Manage courses and workshops.</p>
         </div>
         <Button asChild>
           <Link to="/utbildningar/ny">

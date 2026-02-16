@@ -34,7 +34,7 @@ export default function ProductsList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Products</h1>
-          <p className="text-gray-500 mt-1">Manage books, CDs, and other materials.</p>
+          <p className="text-gray-500 mt-1">Manage books, CDs, and other products.</p>
         </div>
         <Button asChild>
           <Link to="/material/ny">

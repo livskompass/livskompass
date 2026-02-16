@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Puck, type Data } from '@puckeditor/core'
 import '@puckeditor/core/puck.css'
-import { puckConfig, emptyPuckData } from '@livskompass/shared'
+import { puckConfig, emptyPuckData, injectPreviewCSS } from '@livskompass/shared'
 import { getMediaUrl } from '../lib/api'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -141,35 +141,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
           iframe: ({ children, document: iframeDoc }) => {
             useEffect(() => {
               if (!iframeDoc) return
-              // Extract actual CSS rules from all stylesheets (reliable in both dev & production)
-              let cssText = ''
-              Array.from(document.styleSheets).forEach((sheet) => {
-                try {
-                  Array.from(sheet.cssRules).forEach((rule) => {
-                    cssText += rule.cssText + '\n'
-                  })
-                } catch {
-                  // Cross-origin stylesheet - inject as link
-                  if (sheet.href) {
-                    const link = iframeDoc.createElement('link')
-                    link.rel = 'stylesheet'
-                    link.href = sheet.href
-                    iframeDoc.head.appendChild(link)
-                  }
-                }
-              })
-              if (cssText) {
-                const style = iframeDoc.createElement('style')
-                style.textContent = cssText
-                iframeDoc.head.appendChild(style)
-              }
-              // Google Fonts
-              const fontLink = iframeDoc.createElement('link')
-              fontLink.rel = 'stylesheet'
-              fontLink.href =
-                'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
-              iframeDoc.head.appendChild(fontLink)
-              iframeDoc.body.style.fontFamily = "'Inter', system-ui, sans-serif"
+              injectPreviewCSS(iframeDoc)
             }, [iframeDoc])
             return <>{children}</>
           },

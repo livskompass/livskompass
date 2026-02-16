@@ -34,7 +34,7 @@ export default function PagesList() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Pages</h1>
-          <p className="text-gray-500 mt-1">Manage your site pages.</p>
+          <p className="text-gray-500 mt-1">Manage your web pages.</p>
         </div>
         <Button asChild>
           <Link to="/sidor/ny">

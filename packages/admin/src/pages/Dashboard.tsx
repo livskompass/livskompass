@@ -66,7 +66,7 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Overview of your site content and activity.</p>
+        <p className="text-gray-500 mt-1">Overview of your website content and activity.</p>
       </div>
 
       {/* Stats Grid */}
@@ -103,7 +103,7 @@ export default function Dashboard() {
               </div>
               <div className="flex-1">
                 <p className="font-medium text-yellow-800">
-                  {unreadContacts} unread {unreadContacts === 1 ? 'message' : 'messages'}
+                  {unreadContacts} {unreadContacts === 1 ? 'unread message' : 'unread messages'}
                 </p>
                 <Link
                   to="/meddelanden"

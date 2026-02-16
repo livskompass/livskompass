@@ -40,7 +40,7 @@ export default function UsersList() {
       setError('')
     },
     onError: (err: Error) => {
-      setError(err.message || 'Could not add user')
+      setError(err.message || 'Failed to add user')
     },
   })
 
@@ -99,7 +99,7 @@ export default function UsersList() {
         <CardContent className="flex items-center gap-3 p-4">
           <ShieldAlert className="h-5 w-5 text-yellow-600 shrink-0" />
           <p className="text-sm text-yellow-800">
-            You do not have permission to manage users.
+            You don't have permission to manage users.
           </p>
         </CardContent>
       </Card>
@@ -127,8 +127,8 @@ export default function UsersList() {
               <div>
                 <CardTitle>Add new user</CardTitle>
                 <CardDescription>
-                  Enter the user's email address. They will be able to sign in with Google
-                  the next time they visit admin.
+                  Enter the user's email address. They can sign in with Google
+                  next time they visit admin.
                 </CardDescription>
               </div>
               <Button variant="ghost" size="icon" onClick={() => { setShowAddForm(false); setError('') }}>
@@ -184,7 +184,7 @@ export default function UsersList() {
 
               <div className="flex gap-3 pt-2">
                 <Button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? 'Adding...' : 'Add user'}
+                  {createMutation.isPending ? 'Adding...' : 'Add'}
                 </Button>
                 <Button
                   type="button"

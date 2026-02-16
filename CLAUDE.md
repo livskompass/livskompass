@@ -11,7 +11,7 @@ WordPress to Cloudflare migration for livskompass.se (Swedish ACT/mindfulness tr
 - **Payments**: Stripe
 - **Auth**: Google OAuth 2.0
 - **Monorepo**: Turborepo (npm workspaces)
-- **Language**: Swedish only (all UI text in Swedish)
+- **Language**: Admin UI in English, public-facing content in Swedish
 
 ## Project Structure
 ```
@@ -374,7 +374,7 @@ See ux_reviewer section below for all 43 findings (14 security, 12 UX, 12 archit
 2. Frontend and backend devs MUST get plan approval before writing any code.
 3. The ux_reviewer validates all plans and implementations - look for security holes, UX issues, accessibility gaps, and architectural risks.
 4. Read PLAN.md and README.md before starting any work.
-5. All UI text must be in Swedish.
+5. Admin UI text in English; public-facing content in Swedish.
 6. Follow existing code patterns and conventions.
 
 ## Activity Log

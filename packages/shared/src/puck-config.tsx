@@ -68,21 +68,23 @@ const navLinks = [
   { name: "Utbildningar", href: "/utbildningar" },
   { name: "Material", href: "/material" },
   { name: "Mindfulness", href: "/mindfulness" },
-  { name: "Forskning", href: "/forskning-pa-metoden" },
-  { name: "Om Fredrik", href: "/om-fredrik-livheim" },
+  { name: "Forskning på metoden", href: "/forskning-pa-metoden" },
+  { name: "Om Fredrik Livheim", href: "/om-fredrik-livheim" },
   { name: "Kontakt", href: "/kontakt" },
   { name: "Nyheter", href: "/nyhet" },
 ]
 
 function SiteHeader() {
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-sm relative z-40">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <span className="text-xl font-bold text-primary-600">Livskompass</span>
+          <div className="flex">
+            <a href="/" className="flex items-center">
+              <span className="text-xl font-bold text-primary-600">Livskompass</span>
+            </a>
           </div>
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-6">
             {navLinks.map((item) => (
               <a key={item.name} href={item.href} className="text-gray-600 hover:text-primary-600 transition-colors whitespace-nowrap text-sm">
                 {item.name}
@@ -97,7 +99,7 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="bg-gray-900 text-white mt-auto">
+    <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -111,7 +113,7 @@ function SiteFooter() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Länkar</h3>
             <ul className="space-y-2">
-              {navLinks.slice(0, 5).map((item) => (
+              {navLinks.map((item) => (
                 <li key={item.name}><a href={item.href} className="text-gray-400 hover:text-white transition-colors">{item.name}</a></li>
               ))}
             </ul>
