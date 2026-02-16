@@ -45,32 +45,7 @@ export default function Page() {
 
   // Render Puck blocks if available
   if (pageAny.content_blocks) {
-    return (
-      <div>
-        <BlockRenderer data={pageAny.content_blocks} />
-        {hasChildren && (
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {children.map((child: any) => (
-                <Link key={child.id} to={`/${child.slug}`}>
-                  <Card className="h-full hover:shadow-md transition-shadow group cursor-pointer">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center justify-between group-hover:text-primary-600 transition-colors">
-                        {child.title}
-                        <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-primary-600 transition-colors" />
-                      </CardTitle>
-                      {child.meta_description && (
-                        <CardDescription>{child.meta_description}</CardDescription>
-                      )}
-                    </CardHeader>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    )
+    return <BlockRenderer data={pageAny.content_blocks} />
   }
 
   // Fallback: render legacy HTML content with media URL rewriting

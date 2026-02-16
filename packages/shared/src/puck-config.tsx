@@ -136,9 +136,7 @@ export const puckConfig: Config = {
         <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
           {isEditor && <SiteHeader />}
           <main className="flex-1">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-              {children}
-            </div>
+            {children}
           </main>
           {isEditor && <SiteFooter />}
         </div>
@@ -223,17 +221,19 @@ export const puckConfig: Config = {
         const colorMap = { light: "border-gray-200", medium: "border-gray-300", dark: "border-gray-500" }
 
         return (
-          <div className={`${spacingMap[spacing as keyof typeof spacingMap] || "py-8"} mx-auto ${widthMap[maxWidth as keyof typeof widthMap] || "max-w-full"}`}>
-            {variant === "line" && (
-              <hr className={`border-t ${colorMap[lineColor as keyof typeof colorMap] || "border-gray-200"}`} />
-            )}
-            {variant === "dots" && (
-              <div className="flex justify-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-                <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-                <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-              </div>
-            )}
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className={`${spacingMap[spacing as keyof typeof spacingMap] || "py-8"} mx-auto ${widthMap[maxWidth as keyof typeof widthMap] || "max-w-full"}`}>
+              {variant === "line" && (
+                <hr className={`border-t ${colorMap[lineColor as keyof typeof colorMap] || "border-gray-200"}`} />
+              )}
+              {variant === "dots" && (
+                <div className="flex justify-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                </div>
+              )}
+            </div>
           </div>
         )
       },
@@ -348,10 +348,12 @@ export const puckConfig: Config = {
       render: ({ content, maxWidth }) => {
         const widthMap = { narrow: "max-w-[65ch]", medium: "max-w-[80ch]", full: "max-w-none" }
         return (
-          <div
-            className={`prose prose-lg mx-auto ${widthMap[maxWidth as keyof typeof widthMap] || "max-w-[80ch]"} prose-headings:tracking-tight prose-a:text-primary-600`}
-            dangerouslySetInnerHTML={{ __html: rewriteHtmlMediaUrls(content) }}
-          />
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div
+              className={`prose prose-lg mx-auto ${widthMap[maxWidth as keyof typeof widthMap] || "max-w-[80ch]"} prose-headings:tracking-tight prose-a:text-primary-600`}
+              dangerouslySetInnerHTML={{ __html: rewriteHtmlMediaUrls(content) }}
+            />
+          </div>
         )
       },
     },
@@ -421,10 +423,12 @@ export const puckConfig: Config = {
           </figure>
         )
 
-        if (link) {
-          return <a href={link}>{img}</a>
-        }
-        return img
+        const content = link ? <a href={link}>{img}</a> : img
+        return (
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {content}
+          </div>
+        )
       },
     },
 
@@ -487,7 +491,7 @@ export const puckConfig: Config = {
         const alignClass = alignment === "center" ? "text-center" : "text-left"
 
         return (
-          <section className={`py-16 px-8 rounded-xl ${bgMap[backgroundColor as keyof typeof bgMap] || bgMap.primary}`}>
+          <section className={`py-12 md:py-16 px-8 ${bgMap[backgroundColor as keyof typeof bgMap] || bgMap.primary}`}>
             <div className={`max-w-3xl mx-auto ${alignClass}`}>
               <h2 className="text-3xl font-bold mb-4">{heading}</h2>
               {description && <p className="text-lg mb-8 opacity-90">{description}</p>}
@@ -564,16 +568,18 @@ export const puckConfig: Config = {
         }
 
         return (
-          <div className={`flex flex-wrap gap-3 ${alignMap[alignment as keyof typeof alignMap] || "justify-center"} ${dirMap[direction as keyof typeof dirMap] || "flex-row"}`}>
-            {(buttons as Array<{ text: string; link: string; variant: string }>)?.map((btn, i) => (
-              <a
-                key={i}
-                href={btn.link || "#"}
-                className={`inline-flex items-center justify-center font-medium rounded-lg transition-colors ${sizeMap[size as keyof typeof sizeMap] || sizeMap.medium} ${variantMap[btn.variant as keyof typeof variantMap] || variantMap.primary}`}
-              >
-                {btn.text}
-              </a>
-            ))}
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className={`flex flex-wrap gap-3 ${alignMap[alignment as keyof typeof alignMap] || "justify-center"} ${dirMap[direction as keyof typeof dirMap] || "flex-row"}`}>
+              {(buttons as Array<{ text: string; link: string; variant: string }>)?.map((btn, i) => (
+                <a
+                  key={i}
+                  href={btn.link || "#"}
+                  className={`inline-flex items-center justify-center font-medium rounded-lg transition-colors ${sizeMap[size as keyof typeof sizeMap] || sizeMap.medium} ${variantMap[btn.variant as keyof typeof variantMap] || variantMap.primary}`}
+                >
+                  {btn.text}
+                </a>
+              ))}
+            </div>
           </div>
         )
       },
@@ -618,18 +624,20 @@ export const puckConfig: Config = {
       },
       render: ({ heading, items, defaultOpen }) => {
         return (
-          <div className="space-y-4">
-            {heading && <h2 className="text-2xl font-bold text-gray-900 mb-6">{heading}</h2>}
-            <div className="divide-y divide-gray-200 border border-gray-200 rounded-lg">
-              {(items as Array<{ question: string; answer: string }>)?.map((item, i) => (
-                <details key={i} open={defaultOpen === "all" || (defaultOpen === "first" && i === 0)} className="group">
-                  <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                    {item.question}
-                    <span className="ml-2 text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-                  </summary>
-                  <div className="px-4 pb-4 text-gray-600">{item.answer}</div>
-                </details>
-              ))}
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+            <div className="space-y-4">
+              {heading && <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">{heading}</h2>}
+              <div className="divide-y divide-gray-200 border border-gray-200 rounded-xl">
+                {(items as Array<{ question: string; answer: string }>)?.map((item, i) => (
+                  <details key={i} open={defaultOpen === "all" || (defaultOpen === "first" && i === 0)} className="group">
+                    <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
+                      {item.question}
+                      <span className="ml-2 text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <div className="px-4 pb-4 text-gray-600">{item.answer}</div>
+                  </details>
+                ))}
+              </div>
             </div>
           </div>
         )
@@ -735,10 +743,10 @@ export const puckConfig: Config = {
         const loading = (source === "posts" && postsResult.loading) || (source === "pages" && pagesResult.loading)
 
         return (
-          <div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
             {heading && (
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">{heading}</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">{heading}</h2>
                 {subheading && <p className="text-gray-500 text-lg">{subheading}</p>}
               </div>
             )}
@@ -808,23 +816,27 @@ export const puckConfig: Config = {
       render: ({ quote, author, role, style }) => {
         if (style === "minimal") {
           return (
-            <blockquote className="border-l-4 border-primary-500 pl-6 py-2">
-              <p className="text-lg italic text-gray-700">{quote}</p>
-              {author && <footer className="mt-3 text-sm text-gray-500">— {author}{role && `, ${role}`}</footer>}
-            </blockquote>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <blockquote className="border-l-4 border-primary-500 pl-6 py-2">
+                <p className="text-lg italic text-gray-700">{quote}</p>
+                {author && <footer className="mt-3 text-sm text-gray-500">— {author}{role && `, ${role}`}</footer>}
+              </blockquote>
+            </div>
           )
         }
         return (
-          <div className="bg-gray-50 rounded-xl p-8 border border-gray-100">
-            <p className="text-lg text-gray-700 italic mb-4">"{quote}"</p>
-            {author && (
-              <div className="flex items-center gap-3">
-                <div>
-                  <div className="font-medium text-gray-900">{author}</div>
-                  {role && <div className="text-sm text-gray-500">{role}</div>}
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+            <div className="bg-gray-50 rounded-xl p-8 border border-gray-100">
+              <p className="text-lg text-gray-700 italic mb-4">"{quote}"</p>
+              {author && (
+                <div className="flex items-center gap-3">
+                  <div>
+                    <div className="font-medium text-gray-900">{author}</div>
+                    {role && <div className="text-sm text-gray-500">{role}</div>}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )
       },
@@ -867,24 +879,26 @@ export const puckConfig: Config = {
         }
 
         return (
-          <figure>
-            {embedUrl ? (
-              <div className={`${ratioMap[aspectRatio as keyof typeof ratioMap] || "aspect-video"} w-full rounded-lg overflow-hidden bg-gray-100`}>
-                <iframe
-                  src={embedUrl}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  title={caption || "Video"}
-                />
-              </div>
-            ) : (
-              <div className={`${ratioMap[aspectRatio as keyof typeof ratioMap] || "aspect-video"} w-full rounded-lg bg-gray-100 flex items-center justify-center text-gray-400`}>
-                Paste a video URL
-              </div>
-            )}
-            {caption && <figcaption className="text-sm text-gray-500 mt-2 text-center">{caption}</figcaption>}
-          </figure>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <figure>
+              {embedUrl ? (
+                <div className={`${ratioMap[aspectRatio as keyof typeof ratioMap] || "aspect-video"} w-full rounded-lg overflow-hidden bg-gray-100`}>
+                  <iframe
+                    src={embedUrl}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title={caption || "Video"}
+                  />
+                </div>
+              ) : (
+                <div className={`${ratioMap[aspectRatio as keyof typeof ratioMap] || "aspect-video"} w-full rounded-lg bg-gray-100 flex items-center justify-center text-gray-400`}>
+                  Paste a video URL
+                </div>
+              )}
+              {caption && <figcaption className="text-sm text-gray-500 mt-2 text-center">{caption}</figcaption>}
+            </figure>
+          </div>
         )
       },
     },
@@ -938,22 +952,24 @@ export const puckConfig: Config = {
         const ratioMap = { square: "aspect-square", landscape: "aspect-video", portrait: "aspect-[3/4]", auto: "" }
 
         return (
-          <div className={`grid ${colMap[columns as keyof typeof colMap] || colMap[3]} ${gapMap[gap as keyof typeof gapMap] || gapMap.medium}`}>
-            {(images as Array<{ src: string; alt: string; caption: string }>)?.map((img, i) => (
-              <figure key={i} className="overflow-hidden rounded-lg">
-                <img
-                  src={img.src}
-                  alt={img.alt || ""}
-                  className={`w-full object-cover ${ratioMap[aspectRatio as keyof typeof ratioMap] || ""}`}
-                />
-                {img.caption && <figcaption className="text-xs text-gray-500 mt-1">{img.caption}</figcaption>}
-              </figure>
-            ))}
-            {(!images || (images as Array<unknown>).length === 0) && (
-              <div className="col-span-full text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-                Add images via settings
-              </div>
-            )}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+            <div className={`grid ${colMap[columns as keyof typeof colMap] || colMap[3]} ${gapMap[gap as keyof typeof gapMap] || gapMap.medium}`}>
+              {(images as Array<{ src: string; alt: string; caption: string }>)?.map((img, i) => (
+                <figure key={i} className="overflow-hidden rounded-lg">
+                  <img
+                    src={resolveMediaUrl(img.src)}
+                    alt={img.alt || ""}
+                    className={`w-full object-cover ${ratioMap[aspectRatio as keyof typeof ratioMap] || ""}`}
+                  />
+                  {img.caption && <figcaption className="text-xs text-gray-500 mt-1">{img.caption}</figcaption>}
+                </figure>
+              ))}
+              {(!images || (images as Array<unknown>).length === 0) && (
+                <div className="col-span-full text-center py-12 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                  Add images via settings
+                </div>
+              )}
+            </div>
           </div>
         )
       },
@@ -989,9 +1005,9 @@ export const puckConfig: Config = {
       },
       render: ({ heading, description, showPhone, showSubject }) => {
         return (
-          <div className="max-w-2xl mx-auto">
-            {heading && <h2 className="text-2xl font-bold text-gray-900 mb-2">{heading}</h2>}
-            {description && <p className="text-gray-500 mb-6">{description}</p>}
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+            {heading && <h2 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">{heading}</h2>}
+            {description && <p className="text-gray-600 mb-6">{description}</p>}
             <div className="space-y-4 p-6 bg-gray-50 rounded-xl border border-gray-200">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -1089,10 +1105,10 @@ export const puckConfig: Config = {
         const posts = data?.posts || []
 
         return (
-          <div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
             {(heading || subheading) && (
               <div className="mb-8">
-                {heading && <h2 className="text-3xl font-bold text-gray-900 mb-2">{heading}</h2>}
+                {heading && <h2 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">{heading}</h2>}
                 {subheading && <p className="text-lg text-gray-500">{subheading}</p>}
               </div>
             )}
@@ -1112,7 +1128,7 @@ export const puckConfig: Config = {
             ) : posts.length > 0 ? (
               <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-6`}>
                 {posts.map((post) => (
-                  <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-all group block">
+                  <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow group block">
                     {showImage && post.featured_image && (
                       <div className="aspect-video overflow-hidden">
                         <img src={resolveMediaUrl(post.featured_image)} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -1202,18 +1218,20 @@ export const puckConfig: Config = {
 
         if (loading && parentSlug) {
           return (
-            <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-4`}>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-24 rounded-xl border border-gray-200 bg-white animate-pulse" />
-              ))}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+              <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-4`}>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-24 rounded-xl border border-gray-200 bg-white animate-pulse" />
+                ))}
+              </div>
             </div>
           )
         }
 
         if (style === "list") {
           return (
-            <div>
-              {heading && <h2 className="text-2xl font-bold text-gray-900 mb-4">{heading}</h2>}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+              {heading && <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">{heading}</h2>}
               <div className="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
                 {pages.map((page, i) => (
                   <a key={i} href={`/${page.slug}`} className="flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors group">
@@ -1231,8 +1249,8 @@ export const puckConfig: Config = {
 
         if (style === "minimal") {
           return (
-            <div>
-              {heading && <h2 className="text-2xl font-bold text-gray-900 mb-4">{heading}</h2>}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+              {heading && <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">{heading}</h2>}
               <div className="flex flex-wrap gap-3">
                 {pages.map((page, i) => (
                   <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:border-primary-300 hover:text-primary-600 transition-colors">
@@ -1245,8 +1263,8 @@ export const puckConfig: Config = {
         }
 
         return (
-          <div>
-            {heading && <h2 className="text-2xl font-bold text-gray-900 mb-6">{heading}</h2>}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+            {heading && <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">{heading}</h2>}
             <div className={`grid grid-cols-1 ${colMap[columns as keyof typeof colMap] || colMap[3]} gap-4`}>
               {pages.map((page, i) => (
                 <a key={i} href={`/${page.slug}`} className="rounded-xl border border-gray-200 bg-white p-5 hover:shadow-md hover:border-primary-200 transition-all group block">
@@ -1319,18 +1337,20 @@ export const puckConfig: Config = {
         }
 
         return (
-          <nav>
-            <div className={`flex ${isVertical ? "flex-col gap-1" : `flex-wrap gap-2 ${alignMap[alignment as keyof typeof alignMap] || "justify-center"}`}`}>
-              {menuItems.map((item, i) => (
-                <a key={i} href={item.link || "#"} className={styleMap[style as string] || styleMap.pills}>
-                  {item.label}
-                </a>
-              ))}
-              {menuItems.length === 0 && (
-                <span className="text-gray-400 text-sm">Add menu items via settings</span>
-              )}
-            </div>
-          </nav>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <nav>
+              <div className={`flex ${isVertical ? "flex-col gap-1" : `flex-wrap gap-2 ${alignMap[alignment as keyof typeof alignMap] || "justify-center"}`}`}>
+                {menuItems.map((item, i) => (
+                  <a key={i} href={item.link || "#"} className={styleMap[style as string] || styleMap.pills}>
+                    {item.label}
+                  </a>
+                ))}
+                {menuItems.length === 0 && (
+                  <span className="text-gray-400 text-sm">Add menu items via settings</span>
+                )}
+              </div>
+            </nav>
+          </div>
         )
       },
     },
@@ -1390,12 +1410,14 @@ export const puckConfig: Config = {
         const colCount = (layout as string)?.includes("33-33-33") ? 3 : 2
 
         return (
-          <div className={`grid ${layoutMap[layout as string] || layoutMap["50-50"]} ${gapMap[gap as keyof typeof gapMap] || gapMap.medium} ${alignMap[verticalAlignment as keyof typeof alignMap] || alignMap.top}`}>
-            {Array.from({ length: colCount }).map((_, i) => (
-              <div key={i} className="min-h-[100px] border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center justify-center text-gray-400 text-sm">
-                Column {i + 1} — drop blocks here
-              </div>
-            ))}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+            <div className={`grid ${layoutMap[layout as string] || layoutMap["50-50"]} ${gapMap[gap as keyof typeof gapMap] || gapMap.medium} ${alignMap[verticalAlignment as keyof typeof alignMap] || alignMap.top}`}>
+              {Array.from({ length: colCount }).map((_, i) => (
+                <div key={i} className="min-h-[100px] border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center justify-center text-gray-400 text-sm">
+                  Column {i + 1} — drop blocks here
+                </div>
+              ))}
+            </div>
           </div>
         )
       },

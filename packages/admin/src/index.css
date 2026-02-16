@@ -24,6 +24,14 @@ body {
   height: 100% !important;
 }
 
+/* Ensure Puck header bar renders above the canvas/preview area
+   so that settings dropdowns are not hidden behind the iframe */
+[class*="PuckLayout-header"],
+[class*="Header-"] {
+  z-index: 100 !important;
+  position: relative;
+}
+
 /* Right sidebar → floating overlay panel instead of fixed column */
 @media (min-width: 638px) {
   /* Remove right sidebar from grid flow so preview gets full width */

@@ -50,6 +50,8 @@ export default function PageBuilder({ page, onSave, onDelete }: PageBuilderProps
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const settingsRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [dropdownStyle, setDropdownStyle] = useState({ top: 0, right: 0 })
 
   useEffect(() => {
     if (page) {
@@ -143,9 +145,16 @@ export default function PageBuilder({ page, onSave, onDelete }: PageBuilderProps
               </span>
 
               {/* Settings dropdown */}
-              <div ref={settingsRef} className="relative">
+              <div ref={settingsRef} className="relative z-[999]">
                 <button
-                  onClick={() => setSettingsOpen(!settingsOpen)}
+                  ref={buttonRef}
+                  onClick={() => {
+                    if (!settingsOpen && buttonRef.current) {
+                      const rect = buttonRef.current.getBoundingClientRect()
+                      setDropdownStyle({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
+                    }
+                    setSettingsOpen(!settingsOpen)
+                  }}
                   className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                   title="Page settings"
                 >
@@ -153,7 +162,7 @@ export default function PageBuilder({ page, onSave, onDelete }: PageBuilderProps
                 </button>
 
                 {settingsOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                  <div className="fixed w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-[80vh] overflow-y-auto" style={{ top: dropdownStyle.top, right: dropdownStyle.right }}>
                     <div className="p-4 space-y-4">
                       <h3 className="text-sm font-semibold text-gray-900">Page settings</h3>
 
