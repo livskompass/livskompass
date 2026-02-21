@@ -2,11 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 body {
-  @apply antialiased bg-gray-100;
-  font-family: 'Inter', sans-serif;
+  @apply antialiased bg-neutral-100;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Heading font utility */
+.font-heading {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+/* Micro-interactions (match web) */
+.card-hover {
+  @apply transition-all duration-200;
+}
+@media (hover: hover) {
+  .card-hover:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+  .card-hover:hover img {
+    @apply scale-[1.03];
+    transition: transform 500ms ease;
+  }
+}
+
+button:active,
+a[role="button"]:active {
+  @apply scale-[0.98];
+}
+
+.link-animated {
+  @apply underline decoration-primary-300/0 underline-offset-4 decoration-2
+         hover:decoration-primary-500 transition-colors;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: fadeInUp 0.3s ease-out;
 }
 
 /* ===== Puck Editor Overrides ===== */
@@ -48,7 +83,7 @@ body {
     width: 300px !important;
     z-index: 20;
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
-    border-left: 1px solid #e5e7eb;
+    border-left: 1px solid #EBE8E0;
   }
 
   /* Hide the resize handle for the floating panel */
@@ -87,7 +122,7 @@ body {
 }
 
 .ProseMirror blockquote {
-  @apply border-l-4 border-gray-300 pl-4 italic my-4;
+  @apply border-l-4 border-neutral-300 pl-4 italic my-4;
 }
 
 .ProseMirror a {

@@ -21,9 +21,9 @@ const maxWidthMap = {
 } as const
 
 const colorMap = {
-  light: 'border-gray-200',
-  medium: 'border-gray-300',
-  dark: 'border-gray-500',
+  light: 'border-neutral-200',
+  medium: 'border-neutral-300',
+  dark: 'border-neutral-500',
 } as const
 
 export function SeparatorBlock({
@@ -41,18 +41,15 @@ export function SeparatorBlock({
       )}
     >
       {variant === 'line' && (
-        <hr
-          className={cn('border-t', colorMap[lineColor])}
-        />
+        <hr className={cn('border-t', colorMap[lineColor])} />
       )}
       {variant === 'dots' && (
         <div className="flex justify-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-          <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-          <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
+          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
+          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
         </div>
       )}
-      {/* space-only renders just the spacing, no visible element */}
     </div>
   )
 }

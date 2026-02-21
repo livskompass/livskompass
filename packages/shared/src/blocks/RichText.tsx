@@ -1,4 +1,5 @@
 import { cn } from '../ui/utils'
+import { rewriteHtmlMediaUrls } from '../helpers'
 
 export interface RichTextProps {
   content: string
@@ -17,7 +18,7 @@ export function RichText({
 }: RichTextProps) {
   if (!content) {
     return (
-      <div className="py-8 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+      <div className="py-8 text-center text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
         Klicka för att lägga till text...
       </div>
     )
@@ -26,10 +27,10 @@ export function RichText({
   return (
     <div
       className={cn(
-        'prose prose-lg prose-headings:tracking-tight prose-a:text-primary-600',
+        'prose prose-lg prose-headings:font-heading prose-headings:tracking-tight prose-a:text-primary-600 prose-neutral',
         maxWidthMap[maxWidth]
       )}
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: rewriteHtmlMediaUrls(content) }}
     />
   )
 }

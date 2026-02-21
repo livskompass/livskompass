@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { getCourse, createBooking, startCheckout } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { CourseContext } from '../lib/context'
 import NotFound from './NotFound'
+import BlockRenderer from '../components/BlockRenderer'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -14,7 +16,26 @@ import { Skeleton } from '../components/ui/skeleton'
 import { Badge } from '../components/ui/badge'
 import { ArrowLeft, Calendar, MapPin, CreditCard, Lock } from 'lucide-react'
 
-export default function Booking() {
+function BookingSkeleton() {
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-16">
+      <Skeleton className="h-5 w-24 mb-6" />
+      <Skeleton className="h-8 w-48 mb-2" />
+      <Skeleton className="h-5 w-64 mb-8" />
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default function BookingPage() {
   const { slug } = useParams<{ slug: string }>()
 
   const [formData, setFormData] = useState({
@@ -50,46 +71,40 @@ export default function Booking() {
     },
   })
 
-  if (isLoading) {
+  if (isLoading) return <BookingSkeleton />
+  if (!data?.course) return <NotFound />
+
+  const { course } = data
+  const courseAny = course as any
+
+  // If course has custom booking page content_blocks, render via Puck with context
+  // (This is a future feature — courses can customize their booking page layout)
+  if (courseAny.booking_blocks) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16">
-        <Skeleton className="h-5 w-24 mb-6" />
-        <Skeleton className="h-8 w-48 mb-2" />
-        <Skeleton className="h-5 w-64 mb-8" />
-        <Card>
-          <CardContent className="p-6">
-            <div className="space-y-3">
-              <Skeleton className="h-5 w-full" />
-              <Skeleton className="h-5 w-full" />
-              <Skeleton className="h-5 w-full" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <CourseContext.Provider value={courseAny}>
+        <BlockRenderer data={courseAny.booking_blocks} />
+      </CourseContext.Provider>
     )
   }
 
-  if (!data?.course) {
-    return <NotFound />
-  }
+  // Default booking form (same as old Booking.tsx)
+  const available = (course.max_participants || 0) - (course.current_participants || 0)
 
-  const { course } = data
-
-  if (course.status === 'full' || course.status === 'completed') {
+  if (course.status === 'full' || course.status === 'completed' || available <= 0) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-24 text-center">
         <Card className="inline-block w-full">
           <CardContent className="py-12 px-8">
-            <Badge variant={course.status === 'full' ? 'destructive' : 'secondary'} className="mb-4">
-              {course.status === 'full' ? 'Fullbokad' : 'Genomförd'}
+            <Badge variant={course.status === 'completed' ? 'secondary' : 'destructive'} className="mb-4">
+              {course.status === 'completed' ? 'Genomförd' : 'Fullbokad'}
             </Badge>
             <h1 className="text-3xl font-bold text-gray-900 mb-3">
               Kan inte boka
             </h1>
             <p className="text-gray-500 mb-6">
-              {course.status === 'full'
-                ? 'Denna utbildning är fullbokad.'
-                : 'Denna utbildning har redan genomförts.'}
+              {course.status === 'completed'
+                ? 'Denna utbildning har redan genomförts.'
+                : 'Denna utbildning är fullbokad.'}
             </p>
             <Button variant="ghost" className="text-primary-600" asChild>
               <Link to="/utbildningar">
@@ -106,14 +121,14 @@ export default function Booking() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-
     bookingMutation.mutate({
       courseId: course.id,
       ...formData,
     })
   }
 
-  const totalPrice = course.price_sek * formData.participants
+  const priceSek = course.price_sek || 0
+  const totalPrice = priceSek * formData.participants
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -130,17 +145,21 @@ export default function Booking() {
       <Card className="mb-8">
         <CardContent className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div className="flex items-center gap-2 text-gray-600">
-              <Calendar className="h-4 w-4 text-gray-400" />
-              <span>{new Date(course.start_date).toLocaleDateString('sv-SE')}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600">
-              <MapPin className="h-4 w-4 text-gray-400" />
-              <span>{course.location}</span>
-            </div>
+            {course.start_date && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <Calendar className="h-4 w-4 text-gray-400" />
+                <span>{new Date(course.start_date).toLocaleDateString('sv-SE')}</span>
+              </div>
+            )}
+            {course.location && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <MapPin className="h-4 w-4 text-gray-400" />
+                <span>{course.location}</span>
+              </div>
+            )}
             <div className="flex items-center gap-2 text-gray-600">
               <CreditCard className="h-4 w-4 text-gray-400" />
-              <span>{course.price_sek.toLocaleString('sv-SE')} kr/person</span>
+              <span>{priceSek.toLocaleString('sv-SE')} kr/person</span>
             </div>
           </div>
         </CardContent>
@@ -209,7 +228,7 @@ export default function Booking() {
                 className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
               >
                 {Array.from(
-                  { length: Math.min(10, course.max_participants - course.current_participants) },
+                  { length: Math.min(10, available) },
                   (_, i) => i + 1
                 ).map((num) => (
                   <option key={num} value={num}>

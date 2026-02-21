@@ -2,25 +2,21 @@ import React, { Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 
-const Home = React.lazy(() => import('./pages/Home'))
-const Page = React.lazy(() => import('./pages/Page'))
-const Courses = React.lazy(() => import('./pages/Courses'))
+const UniversalPage = React.lazy(() => import('./pages/UniversalPage'))
 const CourseDetail = React.lazy(() => import('./pages/CourseDetail'))
-const Booking = React.lazy(() => import('./pages/Booking'))
+const BookingPage = React.lazy(() => import('./pages/BookingPage'))
 const BookingConfirmation = React.lazy(() => import('./pages/BookingConfirmation'))
-const Blog = React.lazy(() => import('./pages/Blog'))
-const BlogPost = React.lazy(() => import('./pages/BlogPost'))
-const Contact = React.lazy(() => import('./pages/Contact'))
+const PostDetail = React.lazy(() => import('./pages/PostDetail'))
 const NotFound = React.lazy(() => import('./pages/NotFound'))
 
 function PageLoader() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
       <div className="animate-pulse space-y-4">
-        <div className="h-10 bg-gray-100 rounded w-3/4" />
-        <div className="h-4 bg-gray-100 rounded w-full" />
-        <div className="h-4 bg-gray-100 rounded w-5/6" />
-        <div className="h-4 bg-gray-100 rounded w-4/6" />
+        <div className="h-10 bg-neutral-100 rounded w-3/4" />
+        <div className="h-4 bg-neutral-100 rounded w-full" />
+        <div className="h-4 bg-neutral-100 rounded w-5/6" />
+        <div className="h-4 bg-neutral-100 rounded w-4/6" />
       </div>
     </div>
   )
@@ -31,15 +27,27 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Suspense fallback={<PageLoader />}><Home /></Suspense>} />
-          <Route path="utbildningar" element={<Suspense fallback={<PageLoader />}><Courses /></Suspense>} />
+          {/* Home: block-based page with slug "hem" */}
+          <Route index element={<Suspense fallback={<PageLoader />}><UniversalPage slug="hem" /></Suspense>} />
+
+          {/* Listing pages: block-based pages */}
+          <Route path="utbildningar" element={<Suspense fallback={<PageLoader />}><UniversalPage slug="utbildningar" /></Suspense>} />
+          <Route path="nyhet" element={<Suspense fallback={<PageLoader />}><UniversalPage slug="nyhet" /></Suspense>} />
+          <Route path="kontakt" element={<Suspense fallback={<PageLoader />}><UniversalPage slug="kontakt" /></Suspense>} />
+          <Route path="material" element={<Suspense fallback={<PageLoader />}><UniversalPage slug="material" /></Suspense>} />
+
+          {/* Detail pages: context-wrapped renderers */}
           <Route path="utbildningar/:slug" element={<Suspense fallback={<PageLoader />}><CourseDetail /></Suspense>} />
-          <Route path="utbildningar/:slug/boka" element={<Suspense fallback={<PageLoader />}><Booking /></Suspense>} />
+          <Route path="utbildningar/:slug/boka" element={<Suspense fallback={<PageLoader />}><BookingPage /></Suspense>} />
           <Route path="utbildningar/bekraftelse" element={<Suspense fallback={<PageLoader />}><BookingConfirmation /></Suspense>} />
-          <Route path="nyhet" element={<Suspense fallback={<PageLoader />}><Blog /></Suspense>} />
-          <Route path="nyhet/:slug" element={<Suspense fallback={<PageLoader />}><BlogPost /></Suspense>} />
-          <Route path="kontakt" element={<Suspense fallback={<PageLoader />}><Contact /></Suspense>} />
-          <Route path=":slug" element={<Suspense fallback={<PageLoader />}><Page /></Suspense>} />
+
+          {/* Blog detail */}
+          <Route path="nyhet/:slug" element={<Suspense fallback={<PageLoader />}><PostDetail /></Suspense>} />
+
+          {/* Catch-all: generic page by slug */}
+          <Route path=":slug" element={<Suspense fallback={<PageLoader />}><UniversalPage /></Suspense>} />
+
+          {/* 404 */}
           <Route path="*" element={<Suspense fallback={<PageLoader />}><NotFound /></Suspense>} />
         </Route>
       </Routes>

@@ -2,8 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 body {
-  @apply antialiased;
+  @apply antialiased bg-neutral-50 text-neutral-700;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Heading font utility */
+.font-heading {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+/* Micro-interactions */
+.card-hover {
+  @apply transition-all duration-200;
+}
+@media (hover: hover) {
+  .card-hover:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+  .card-hover:hover img {
+    @apply scale-[1.03];
+    transition: transform 500ms ease;
+  }
+}
+
+button:active,
+a[role="button"]:active {
+  @apply scale-[0.98];
+}
+
+.link-animated {
+  @apply underline decoration-primary-300/0 underline-offset-4 decoration-2
+         hover:decoration-primary-500 transition-colors;
+}
+
+/* Page entrance animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Mobile menu entrance */
+@keyframes menuEnter {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 600px; }
+}
+.animate-menu-enter {
+  animation: menuEnter 0.2s ease-out;
+  overflow: hidden;
+}
+
+/* Warm skeleton pulse */
+@keyframes warmPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-warm-pulse {
+  animation: warmPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

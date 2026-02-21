@@ -87,6 +87,19 @@ export const submitContact = (data: ContactFormData) =>
     body: JSON.stringify(data),
   })
 
+// Inline editing (requires admin session cookie)
+export const patchPageBlocks = (pageId: string, contentBlocks: string, updatedAt?: string) =>
+  fetch(`${API_BASE}/admin/pages/${pageId}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content_blocks: contentBlocks, updated_at: updatedAt }),
+  }).then(async (res) => {
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Failed to save')
+    return data as { success: boolean; page: Page }
+  })
+
 // Types
 export interface Page {
   id: string

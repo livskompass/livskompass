@@ -14,14 +14,14 @@ export interface CTABannerProps {
 
 const bgMap: Record<string, string> = {
   primary: 'bg-primary-600 text-white',
-  dark: 'bg-gray-900 text-white',
-  light: 'bg-gray-50 text-gray-900 border border-gray-200',
+  dark: 'bg-neutral-900 text-white',
+  light: 'bg-neutral-100 text-neutral-900 border border-neutral-200',
 }
 
 const buttonStyleMap: Record<string, string> = {
   primary: 'bg-white text-primary-700 hover:bg-primary-50',
-  dark: 'bg-white text-gray-900 hover:bg-gray-100',
-  light: 'bg-primary-600 text-white hover:bg-primary-700',
+  dark: 'bg-white text-neutral-900 hover:bg-neutral-100',
+  light: 'bg-primary-500 text-white hover:bg-primary-600',
 }
 
 export function CTABanner({
@@ -43,7 +43,7 @@ export function CTABanner({
           alignment === 'center' ? 'text-center' : 'text-left'
         )}
       >
-        <h2 className="text-3xl font-bold mb-4">{heading}</h2>
+        <h2 className="font-heading text-3xl font-bold mb-4">{heading}</h2>
         {description && (
           <p className="text-lg mb-8 opacity-90">{description}</p>
         )}
@@ -51,7 +51,7 @@ export function CTABanner({
           <a
             href={buttonLink || '#'}
             className={cn(
-              'inline-flex items-center justify-center h-12 px-8 font-semibold text-base rounded-lg transition-colors',
+              'inline-flex items-center justify-center h-11 px-8 font-semibold text-base rounded-lg transition-colors',
               btnStyle
             )}
           >

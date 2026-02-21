@@ -3,6 +3,7 @@ import { cn } from '../ui/utils'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card'
 import { Badge } from '../ui/badge'
 import { Calendar, MapPin } from 'lucide-react'
+import { getApiBase } from '../helpers'
 
 export interface ManualCard {
   title: string
@@ -62,10 +63,11 @@ export function CardGrid({
   useEffect(() => {
     if (source === 'manual') return
 
+    const base = getApiBase()
     const endpointMap: Record<string, string> = {
-      courses: '/api/courses',
-      products: '/api/products',
-      posts: '/api/posts?limit=' + maxItems,
+      courses: `${base}/courses`,
+      products: `${base}/products`,
+      posts: `${base}/posts?limit=${maxItems}`,
     }
 
     const endpoint = endpointMap[source]
@@ -85,7 +87,7 @@ export function CardGrid({
   const renderManualCards = () =>
     manualCards.slice(0, maxItems).map((card, i) => (
       <a key={i} href={card.link || '#'} className="block group">
-        <Card className={cn('h-full hover:shadow-md transition-all duration-200', cardStyleMap[cardStyle])}>
+        <Card className={cn('h-full card-hover', cardStyleMap[cardStyle])}>
           {card.image && (
             <div className="aspect-video overflow-hidden rounded-t-xl">
               <img
@@ -101,7 +103,7 @@ export function CardGrid({
                 {card.badge}
               </Badge>
             )}
-            <CardTitle className="text-xl group-hover:text-primary-600 transition-colors">
+            <CardTitle className="font-heading text-xl group-hover:text-primary-600 transition-colors">
               {card.title}
             </CardTitle>
             {card.description && (
@@ -127,7 +129,7 @@ export function CardGrid({
 
       return (
         <a key={item.id} href={`${linkBase}${item.slug}`} className="block group">
-          <Card className={cn('h-full hover:shadow-md transition-all duration-200', cardStyleMap[cardStyle])}>
+          <Card className={cn('h-full card-hover', cardStyleMap[cardStyle])}>
             {image && (
               <div className="aspect-video overflow-hidden rounded-t-xl">
                 <img
@@ -151,7 +153,7 @@ export function CardGrid({
                   {new Date(item.published_at).toLocaleDateString('sv-SE')}
                 </Badge>
               )}
-              <CardTitle className="text-xl group-hover:text-primary-600 transition-colors">
+              <CardTitle className="font-heading text-xl group-hover:text-primary-600 transition-colors">
                 {item.title}
               </CardTitle>
               {description && (
@@ -162,16 +164,16 @@ export function CardGrid({
             </CardHeader>
             {source === 'courses' && (item.location || item.start_date) && (
               <CardContent>
-                <div className="flex flex-col gap-2 text-sm text-gray-500">
+                <div className="flex flex-col gap-2 text-sm text-neutral-500">
                   {item.location && (
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <MapPin className="h-4 w-4 text-neutral-400" />
                       <span>{item.location}</span>
                     </div>
                   )}
                   {item.start_date && (
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <Calendar className="h-4 w-4 text-neutral-400" />
                       <span>
                         {new Date(item.start_date).toLocaleDateString('sv-SE')}
                       </span>
@@ -189,19 +191,19 @@ export function CardGrid({
   const isEmpty = cards.length === 0
 
   return (
-    <section className="py-12">
+    <section className="py-16 md:py-20">
       {(heading || subheading) && (
         <div className="text-center mb-10">
           {heading && (
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">{heading}</h2>
+            <h2 className="font-heading text-3xl font-bold text-neutral-900 mb-3">{heading}</h2>
           )}
           {subheading && (
-            <p className="text-gray-500 text-lg">{subheading}</p>
+            <p className="text-neutral-600 text-lg">{subheading}</p>
           )}
         </div>
       )}
       {isEmpty ? (
-        <div className="py-8 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+        <div className="py-8 text-center text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
           {source === 'manual'
             ? 'Lägg till kort i inställningarna...'
             : 'Laddar...'}

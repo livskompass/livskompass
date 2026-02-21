@@ -1,160 +1,36 @@
 // Block prop interfaces for Puck components
+// Re-exports from individual block files for backwards compatibility
 
-export interface HeroProps {
-  heading: string
-  subheading: string
-  variant: 'gradient' | 'image' | 'solid'
-  backgroundColor: string
-  backgroundImage?: string
-  textAlignment: 'left' | 'center' | 'right'
-  ctaPrimaryText: string
-  ctaPrimaryLink: string
-  ctaSecondaryText: string
-  ctaSecondaryLink: string
-  fullHeight: 'full-viewport' | 'auto'
-}
+export type { HeroProps } from './blocks/Hero'
+export type { RichTextProps } from './blocks/RichText'
+export type { ImageBlockProps } from './blocks/ImageBlock'
+export type { CardGridProps } from './blocks/CardGrid'
+export type { AccordionProps } from './blocks/Accordion'
+export type { CTABannerProps } from './blocks/CTABanner'
+export type { ColumnsProps } from './blocks/Columns'
+export type { SeparatorBlockProps } from './blocks/SeparatorBlock'
+export type { ButtonGroupProps } from './blocks/ButtonGroup'
+export type { TestimonialProps } from './blocks/Testimonial'
+export type { VideoEmbedProps } from './blocks/VideoEmbed'
+export type { ImageGalleryProps } from './blocks/ImageGallery'
+export type { PostGridProps } from './blocks/PostGrid'
+export type { PageCardsProps } from './blocks/PageCards'
+export type { NavigationMenuProps } from './blocks/NavigationMenu'
 
-export interface RichTextProps {
-  content: string
-  maxWidth: 'narrow' | 'medium' | 'full'
-}
+// New block types
+export type { PageHeaderProps } from './blocks/PageHeader'
+export type { SpacerProps } from './blocks/Spacer'
+export type { PersonCardProps } from './blocks/PersonCard'
+export type { FeatureGridProps } from './blocks/FeatureGrid'
+export type { StatsCounterProps } from './blocks/StatsCounter'
+export type { PricingTableProps } from './blocks/PricingTable'
+export type { CourseListProps } from './blocks/CourseList'
+export type { ProductListProps } from './blocks/ProductList'
+export type { CourseInfoProps } from './blocks/CourseInfo'
+export type { BookingCTAProps } from './blocks/BookingCTA'
+export type { PostHeaderProps } from './blocks/PostHeader'
+export type { ContactFormProps } from './blocks/ContactForm'
+export type { BookingFormProps } from './blocks/BookingForm'
 
-export interface ImageBlockProps {
-  src: string
-  alt: string
-  caption: string
-  size: 'small' | 'medium' | 'full'
-  alignment: 'left' | 'center' | 'right'
-  rounded: 'none' | 'small' | 'large'
-  link: string
-}
-
-export interface CardGridProps {
-  heading: string
-  subheading: string
-  source: 'courses' | 'products' | 'manual'
-  maxItems: number
-  columns: 2 | 3 | 4
-  manualCards: Array<{
-    title: string
-    description: string
-    image: string
-    link: string
-    badge: string
-  }>
-  showBadge: boolean
-  cardStyle: 'default' | 'bordered' | 'shadow'
-}
-
-export interface AccordionProps {
-  heading: string
-  items: Array<{
-    question: string
-    answer: string
-  }>
-  defaultOpen: 'none' | 'first' | 'all'
-  style: 'default' | 'bordered' | 'minimal'
-}
-
-export interface CTABannerProps {
-  heading: string
-  description: string
-  buttonText: string
-  buttonLink: string
-  variant: 'primary' | 'secondary' | 'outline'
-  backgroundColor: string
-  alignment: 'left' | 'center'
-  fullWidth: boolean
-}
-
-export interface ColumnsProps {
-  layout: '50-50' | '33-33-33' | '66-33' | '33-66' | '25-50-25'
-  gap: 'small' | 'medium' | 'large'
-  verticalAlignment: 'top' | 'center' | 'bottom'
-  stackOnMobile: boolean
-}
-
-export interface SeparatorBlockProps {
-  variant: 'line' | 'dots' | 'space-only'
-  spacing: 'small' | 'medium' | 'large' | 'extra-large'
-  lineColor: 'light' | 'medium' | 'dark'
-  maxWidth: 'narrow' | 'medium' | 'full'
-}
-
-export interface ButtonGroupProps {
-  buttons: Array<{
-    text: string
-    link: string
-    variant: 'primary' | 'secondary' | 'outline'
-  }>
-  alignment: 'left' | 'center' | 'right'
-  direction: 'horizontal' | 'vertical'
-  size: 'small' | 'medium' | 'large'
-}
-
-export interface TestimonialProps {
-  quote: string
-  author: string
-  role: string
-  avatar: string
-  style: 'card' | 'minimal' | 'featured'
-}
-
-export interface VideoEmbedProps {
-  url: string
-  aspectRatio: '16:9' | '4:3' | '1:1'
-  caption: string
-}
-
-export interface ImageGalleryProps {
-  images: Array<{
-    src: string
-    alt: string
-    caption: string
-  }>
-  columns: 2 | 3 | 4
-  gap: 'small' | 'medium' | 'large'
-  aspectRatio: 'square' | 'landscape' | 'portrait' | 'auto'
-}
-
-export interface ContactFormBlockProps {
-  heading: string
-  description: string
-  showPhone: boolean
-  showSubject: boolean
-}
-
-export interface PostGridProps {
-  heading: string
-  subheading: string
-  count: number
-  columns: 2 | 3 | 4
-  showImage: boolean
-  showExcerpt: boolean
-  showDate: boolean
-  cardStyle: 'default' | 'minimal' | 'featured'
-}
-
-export interface PageCardsProps {
-  heading: string
-  parentSlug: string
-  manualPages: Array<{
-    title: string
-    description: string
-    slug: string
-    icon: string
-  }>
-  columns: 2 | 3 | 4
-  showDescription: boolean
-  style: 'card' | 'list' | 'minimal'
-}
-
-export interface NavigationMenuProps {
-  items: Array<{
-    label: string
-    link: string
-  }>
-  layout: 'horizontal' | 'vertical'
-  style: 'pills' | 'underline' | 'buttons' | 'minimal'
-  alignment: 'left' | 'center' | 'right'
-}
+// Context types
+export type { CourseContextValue, PostContextValue } from './context'

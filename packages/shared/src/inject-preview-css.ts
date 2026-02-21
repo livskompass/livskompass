@@ -1,3 +1,5 @@
+import { fontUrl } from './design-tokens'
+
 /**
  * Inject CSS into Puck editor iframe, filtering out admin-specific rules
  * so the preview matches the public frontend.
@@ -35,13 +37,19 @@ export function injectPreviewCSS(iframeDoc: Document) {
     style.textContent = cssText
     iframeDoc.head.appendChild(style)
   }
-  // Reset body background to white (admin has bg-gray-100)
-  iframeDoc.body.style.backgroundColor = 'white'
-  // Google Fonts
-  const fontLink = iframeDoc.createElement('link')
-  fontLink.rel = 'stylesheet'
-  fontLink.href =
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
-  iframeDoc.head.appendChild(fontLink)
+
+  // Set body background to neutral-50 (warm off-white)
+  iframeDoc.body.style.backgroundColor = '#FAFAF7'
   iframeDoc.body.style.fontFamily = "'Inter', system-ui, sans-serif"
+
+  // Load Fraunces + Inter fonts
+  const fontsLink = iframeDoc.createElement('link')
+  fontsLink.rel = 'stylesheet'
+  fontsLink.href = fontUrl
+  iframeDoc.head.appendChild(fontsLink)
+
+  // Inject font-heading utility
+  const extraCSS = iframeDoc.createElement('style')
+  extraCSS.textContent = `.font-heading { font-family: 'Fraunces', Georgia, serif; }`
+  iframeDoc.head.appendChild(extraCSS)
 }

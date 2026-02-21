@@ -91,8 +91,8 @@ export default function BookingConfirmation() {
         <h1 className="text-3xl font-bold text-gray-900 mb-3">
           Behandlar betalning...
         </h1>
-        <p className="text-gray-500 text-lg">
-          Vänligen behandlar vi din bokning. Detta tar normalt bara några sekunder.
+        <p className="text-gray-500 text-lg" aria-live="polite">
+          Vi behandlar din bokning. Vänligen vänta...
         </p>
       </div>
     )
@@ -107,9 +107,8 @@ export default function BookingConfirmation() {
         <h1 className="text-3xl font-bold text-gray-900 mb-3">
           Tack för din bokning!
         </h1>
-        <p className="text-gray-500 mb-8 text-lg">
-          Din bokning är bekräftad. Du kommer att få en bekräftelse via e-post
-          med all information om utbildningen.
+        <p className="text-gray-500 mb-8 text-lg" aria-live="polite">
+          Din bokning är bekräftad. Spara ditt bokningsnummer. Kontakta oss vid frågor.
         </p>
         <Card className="text-left mb-8">
           <CardContent className="p-5">

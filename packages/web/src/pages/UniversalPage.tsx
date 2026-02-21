@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getPage, rewriteMediaUrls } from '../lib/api'
 import { sanitizeHtml } from '../lib/sanitize'
@@ -9,8 +9,24 @@ import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
 
-export default function Page() {
-  const { slug } = useParams<{ slug: string }>()
+function PageSkeleton() {
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-16">
+      <Skeleton className="h-10 w-3/4 mb-8" />
+      <div className="space-y-4">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+        <Skeleton className="h-4 w-4/6" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+    </div>
+  )
+}
+
+export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
+  const { slug: paramSlug } = useParams()
+  const slug = propSlug || paramSlug
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['page', slug],
@@ -20,35 +36,17 @@ export default function Page() {
 
   useDocumentTitle(data?.page?.title)
 
-  if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <Skeleton className="h-10 w-3/4 mb-8" />
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-4/6" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !data?.page) {
-    return <NotFound />
-  }
+  if (isLoading) return <PageSkeleton />
+  if (error || !data?.page) return <NotFound />
 
   const { page, children } = data
-  const pageAny = page as any
-  const hasChildren = children && children.length > 0
 
-  // Render Puck blocks if available
-  if (pageAny.content_blocks) {
-    return <BlockRenderer data={pageAny.content_blocks} />
+  // Puck blocks: render through BlockRenderer
+  if (page.content_blocks) {
+    return <BlockRenderer data={page.content_blocks} />
   }
 
-  // Fallback: render legacy HTML content with media URL rewriting
+  // Legacy fallback: old HTML content with child page cards
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <h1 className="text-4xl font-bold text-gray-900 mb-8 tracking-tight">{page.title}</h1>
@@ -60,9 +58,9 @@ export default function Page() {
         />
       )}
 
-      {hasChildren && (
+      {children && children.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {children.map((child: any) => (
+          {children.map((child) => (
             <Link key={child.id} to={`/${child.slug}`}>
               <Card className="h-full hover:shadow-md transition-shadow group cursor-pointer">
                 <CardHeader>

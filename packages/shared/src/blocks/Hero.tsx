@@ -17,14 +17,14 @@ export interface HeroProps {
 
 const bgColorMap = {
   primary: 'bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900',
-  dark: 'bg-gray-900',
-  light: 'bg-gray-100',
+  dark: 'bg-neutral-900',
+  light: 'bg-neutral-100',
 } as const
 
 const solidBgMap = {
   primary: 'bg-primary-700',
-  dark: 'bg-gray-900',
-  light: 'bg-gray-100',
+  dark: 'bg-neutral-900',
+  light: 'bg-neutral-100',
 } as const
 
 const alignmentMap = {
@@ -47,8 +47,8 @@ export function Hero({
   fullHeight = 'auto',
 }: HeroProps) {
   const isLight = variant === 'solid' && backgroundColor === 'light'
-  const textColor = isLight ? 'text-gray-900' : 'text-white'
-  const subTextColor = isLight ? 'text-gray-600' : 'text-white/80'
+  const textColor = isLight ? 'text-neutral-900' : 'text-white'
+  const subTextColor = isLight ? 'text-neutral-600' : 'text-white/80'
 
   const sectionBg =
     variant === 'gradient'
@@ -78,12 +78,9 @@ export function Hero({
           : undefined
       }
     >
-      {/* SVG pattern overlay for gradient variant */}
       {variant === 'gradient' && (
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptMC0zMHY2aDZ2LTZoLTZ6bTAgMTJ2Nmg2di02aC02em0wIDEydjZoNnYtNmgtNnptLTEyLTZ2Nmg2di02aC02em0wIDEydjZoNnYtNmgtNnptMCAxMnY2aDZ2LTZoLTZ6bTAtMzZ2Nmg2di02aC02em0tMTIgMjR2Nmg2di02aC02em0wIDEydjZoNnYtNmgtNnptMC0yNHY2aDZ2LTZoLTZ6bTAtMTJ2Nmg2di02aC02eiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
       )}
-
-      {/* Dark overlay for image variant */}
       {variant === 'image' && (
         <div className="absolute inset-0 bg-black/40" />
       )}
@@ -94,7 +91,7 @@ export function Hero({
           alignmentMap[textAlignment]
         )}
       >
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+        <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
           {heading}
         </h1>
         {subheading && (
@@ -116,13 +113,13 @@ export function Hero({
               textAlignment === 'right' && 'justify-end'
             )}
           >
-            {ctaPrimaryText && (
+            {ctaPrimaryText && ctaPrimaryLink && (
               <a
-                href={ctaPrimaryLink || '#'}
+                href={ctaPrimaryLink}
                 className={cn(
-                  'inline-flex items-center justify-center whitespace-nowrap rounded-lg font-semibold text-base h-12 px-8 transition-colors',
+                  'inline-flex items-center justify-center whitespace-nowrap rounded-lg font-semibold text-base h-12 px-8 transition-all active:scale-[0.98]',
                   isLight
-                    ? 'bg-primary-600 text-white hover:bg-primary-700'
+                    ? 'bg-primary-500 text-white hover:bg-primary-600'
                     : 'bg-white text-primary-700 hover:bg-primary-50'
                 )}
               >
@@ -130,13 +127,13 @@ export function Hero({
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             )}
-            {ctaSecondaryText && (
+            {ctaSecondaryText && ctaSecondaryLink && (
               <a
-                href={ctaSecondaryLink || '#'}
+                href={ctaSecondaryLink}
                 className={cn(
-                  'inline-flex items-center justify-center whitespace-nowrap rounded-lg font-semibold text-base h-12 px-8 transition-colors',
+                  'inline-flex items-center justify-center whitespace-nowrap rounded-lg font-semibold text-base h-12 px-8 transition-all active:scale-[0.98]',
                   isLight
-                    ? 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-50'
                     : 'border-2 border-white/80 text-white hover:bg-white/10 bg-transparent'
                 )}
               >

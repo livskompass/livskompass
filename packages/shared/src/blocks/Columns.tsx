@@ -1,4 +1,4 @@
-import { DropZone } from '@puckeditor/core'
+import React, { createContext, useContext } from 'react'
 import { cn } from '../ui/utils'
 
 export interface ColumnsProps {
@@ -6,6 +6,7 @@ export interface ColumnsProps {
   gap: 'small' | 'medium' | 'large'
   verticalAlignment: 'top' | 'center' | 'bottom'
   stackOnMobile: boolean
+  id?: string
 }
 
 const gapMap = {
@@ -27,16 +28,21 @@ const layoutGridMap: Record<string, string> = {
   '33-66': 'md:grid-cols-[1fr_2fr]',
 }
 
-function isThreeColumn(layout: string) {
-  return layout === '33-33-33'
-}
+/**
+ * Context for rendering zone content.
+ * PuckRenderer (web) provides a function that resolves zone data from the Puck JSON.
+ * The Puck editor (admin) overrides Columns with a DropZone-based version instead.
+ */
+export const ZoneRenderContext = createContext<((zoneId: string) => React.ReactNode) | null>(null)
 
 export function Columns({
   layout = '50-50',
   gap = 'medium',
   verticalAlignment = 'top',
+  id,
 }: ColumnsProps) {
-  const threeCol = isThreeColumn(layout)
+  const renderZone = useContext(ZoneRenderContext)
+  const threeCol = layout === '33-33-33'
 
   return (
     <div
@@ -48,14 +54,14 @@ export function Columns({
       )}
     >
       <div className="min-h-[60px]">
-        <DropZone zone="column-1" disallow={['Columns']} />
+        {renderZone?.(`${id}:column-1`)}
       </div>
       <div className="min-h-[60px]">
-        <DropZone zone="column-2" disallow={['Columns']} />
+        {renderZone?.(`${id}:column-2`)}
       </div>
       {threeCol && (
         <div className="min-h-[60px]">
-          <DropZone zone="column-3" disallow={['Columns']} />
+          {renderZone?.(`${id}:column-3`)}
         </div>
       )}
     </div>

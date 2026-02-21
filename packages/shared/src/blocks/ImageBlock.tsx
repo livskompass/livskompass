@@ -1,5 +1,6 @@
 import { cn } from '../ui/utils'
 import { ImageIcon } from 'lucide-react'
+import { resolveMediaUrl } from '../helpers'
 
 export interface ImageBlockProps {
   src: string
@@ -40,8 +41,8 @@ export function ImageBlock({
 }: ImageBlockProps) {
   if (!src) {
     return (
-      <div className="py-12 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-        <ImageIcon className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+      <div className="py-12 text-center text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
+        <ImageIcon className="h-12 w-12 mx-auto mb-2 text-neutral-300" />
         <p>Välj en bild...</p>
       </div>
     )
@@ -49,8 +50,9 @@ export function ImageBlock({
 
   const img = (
     <img
-      src={src}
+      src={resolveMediaUrl(src)}
       alt={alt}
+      loading="lazy"
       className={cn('w-full h-auto', roundedMap[rounded])}
     />
   )
@@ -67,7 +69,7 @@ export function ImageBlock({
     <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
       {wrappedImg}
       {caption && (
-        <figcaption className="mt-2 text-sm text-gray-500 text-center">
+        <figcaption className="mt-2 text-sm text-neutral-500 text-center">
           {caption}
         </figcaption>
       )}

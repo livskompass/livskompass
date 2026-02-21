@@ -1,12 +1,14 @@
 import React from 'react'
 import { puckConfig } from '@livskompass/shared'
+import { ZoneRenderContext } from '../../../shared/src/blocks/Columns'
 
 /**
  * Lightweight Puck data renderer that replaces @puckeditor/core's <Render>.
  * Reads the Puck JSON structure and renders each block using the render
  * functions already defined in puckConfig — no Puck runtime needed.
  *
- * This eliminates ~300-400KB of @puckeditor/core from the public bundle.
+ * Supports zone-based components (e.g. Columns) by providing zone content
+ * via ZoneRenderContext.
  */
 
 interface PuckItem {
@@ -39,7 +41,21 @@ export default function PuckRenderer({ data }: { data: PuckData }) {
     | React.FC<any>
     | undefined
 
-  const content = renderItems(data.content)
+  // Zone renderer: resolves zone content from data.zones
+  const renderZone = React.useCallback(
+    (zoneId: string): React.ReactNode => {
+      const zoneItems = data.zones?.[zoneId] || []
+      if (zoneItems.length === 0) return null
+      return <>{renderItems(zoneItems)}</>
+    },
+    [data.zones]
+  )
+
+  const content = (
+    <ZoneRenderContext.Provider value={renderZone}>
+      {renderItems(data.content)}
+    </ZoneRenderContext.Provider>
+  )
 
   if (RootRender) {
     return <RootRender {...data.root?.props}>{content}</RootRender>

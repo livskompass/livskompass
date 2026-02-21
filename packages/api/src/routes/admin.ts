@@ -93,6 +93,35 @@ adminRoutes.put('/pages/:id', async (c) => {
   return c.json({ success: true })
 })
 
+// Partial update page (for inline editing)
+adminRoutes.patch('/pages/:id', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const updatedAt = body.updatedAt ?? body.updated_at
+
+  // Conflict detection: compare updated_at timestamp
+  if (updatedAt) {
+    const existing = await c.env.DB.prepare(
+      `SELECT updated_at FROM pages WHERE id = ?`
+    ).bind(id).first<{ updated_at: string }>()
+
+    if (existing && existing.updated_at !== updatedAt) {
+      return c.json({ error: 'conflict', message: 'Page was modified by another user' }, 409)
+    }
+  }
+
+  if (contentBlocks !== undefined) {
+    await c.env.DB.prepare(`
+      UPDATE pages SET content_blocks = ?, editor_version = 'puck', updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(contentBlocks, id).run()
+  }
+
+  const page = await c.env.DB.prepare(`SELECT * FROM pages WHERE id = ?`).bind(id).first()
+  return c.json({ success: true, page })
+})
+
 // Delete page
 adminRoutes.delete('/pages/:id', async (c) => {
   const id = c.req.param('id')

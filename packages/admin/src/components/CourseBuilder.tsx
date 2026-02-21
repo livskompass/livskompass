@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Puck, type Data } from '@puckeditor/core'
 import '@puckeditor/core/puck.css'
-import { puckConfig, emptyPuckData, injectPreviewCSS } from '@livskompass/shared'
+import { emptyPuckData, injectPreviewCSS } from '@livskompass/shared'
+import { getFilteredPuckConfig } from '../lib/puck-filter'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Select } from './ui/select'
@@ -14,7 +15,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from './ui/dialog'
-import { Settings, Trash2 } from 'lucide-react'
+import { Settings, Trash2, ExternalLink } from 'lucide-react'
 
 interface CourseBuilderProps {
   course: {
@@ -151,7 +152,7 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
   return (
     <div className="h-[calc(100vh-4rem)]">
       <Puck
-        config={puckConfig}
+        config={getFilteredPuckConfig('course')}
         data={initialData}
         onPublish={handlePublish}
         headerTitle={title || 'New course'}
@@ -170,6 +171,20 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
           },
           headerActions: ({ children }) => (
             <div className="flex items-center gap-2">
+              {/* View on site */}
+              {course?.id && slug && (
+                <a
+                  href={`${window.location.origin.replace('admin', 'web')}/utbildningar/${slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors text-xs font-medium"
+                  title="View on site"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  View
+                </a>
+              )}
+
               {/* Status badge */}
               <span
                 className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${badge.className}`}
