@@ -5,6 +5,7 @@ import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
+import { defaultHomeTemplate } from '@livskompass/shared'
 import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
@@ -41,9 +42,21 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
 
   const { page, children } = data
 
-  // Puck blocks: render through BlockRenderer
+  // Puck blocks: render through BlockRenderer (skip empty Puck documents)
   if (page.content_blocks) {
-    return <BlockRenderer data={page.content_blocks} />
+    try {
+      const parsed = JSON.parse(page.content_blocks)
+      if (parsed.content && parsed.content.length > 0) {
+        return <BlockRenderer data={page.content_blocks} />
+      }
+    } catch {
+      // Invalid JSON — fall through to legacy/default
+    }
+  }
+
+  // Homepage with empty blocks: use default template
+  if (slug === 'home-2' && (!page.content || page.content.trim() === '')) {
+    return <BlockRenderer data={defaultHomeTemplate} />
   }
 
   // Legacy fallback: old HTML content with child page cards

@@ -13,6 +13,69 @@ export const defaultCourseTemplate = JSON.stringify({
   zones: {},
 })
 
+export const defaultHomeTemplate = JSON.stringify({
+  content: [
+    {
+      type: 'Hero',
+      props: {
+        id: 'hero',
+        heading: 'ACT och Mindfulness',
+        subheading: 'Utbildningar och verktyg för att hantera stress och leva ett rikare liv',
+        variant: 'gradient',
+        textAlignment: 'center',
+        ctaPrimaryText: 'Se utbildningar',
+        ctaPrimaryLink: '/utbildningar',
+        ctaSecondaryText: 'Vad är ACT?',
+        ctaSecondaryLink: '/act',
+        fullHeight: 'auto',
+      },
+    },
+    {
+      type: 'CourseList',
+      props: {
+        id: 'courses',
+        heading: 'Kommande utbildningar',
+        maxItems: 3,
+        columns: 3,
+        showBookButton: true,
+        compactMode: false,
+      },
+    },
+    {
+      type: 'SeparatorBlock',
+      props: { id: 'sep-1', variant: 'space-only', spacing: 'medium', lineColor: 'light', maxWidth: 'full' },
+    },
+    {
+      type: 'PostGrid',
+      props: {
+        id: 'posts',
+        heading: 'Senaste nytt',
+        subheading: '',
+        count: 3,
+        columns: 3,
+        showImage: true,
+        showExcerpt: true,
+        showDate: true,
+        cardStyle: 'default',
+      },
+    },
+    {
+      type: 'CTABanner',
+      props: {
+        id: 'cta',
+        heading: 'Vill du veta mer?',
+        description: 'Kontakta oss för frågor om utbildningar, material eller samarbeten.',
+        buttonText: 'Kontakta oss',
+        buttonLink: '/kontakt',
+        variant: 'dark',
+        alignment: 'center',
+      },
+    },
+  ],
+  root: { props: {} },
+  zones: {},
+})
+
 export const defaultPostTemplate = JSON.stringify({
   content: [
     { type: 'PostHeader', props: { id: 'post-header', showBackLink: true, backLinkText: 'Alla inlägg', backLinkUrl: '/nyhet' } },
