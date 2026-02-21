@@ -191,6 +191,30 @@ export const markContactRead = (id: string) =>
 export const deleteContact = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/contacts/${id}`, { method: 'DELETE' })
 
+// Site settings (header/footer)
+export interface SiteHeaderConfig {
+  logoText: string
+  navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
+  ctaButton?: { text: string; href: string }
+}
+
+export interface SiteFooterConfig {
+  companyName: string
+  tagline: string
+  contact: { email: string; phone: string }
+  columns: { heading: string; links: { label: string; href: string }[] }[]
+  copyright: string
+}
+
+export const getSiteSettings = () =>
+  fetchApi<{ header: SiteHeaderConfig | null; footer: SiteFooterConfig | null }>('/admin/site-settings')
+
+export const updateSiteSettings = (data: { header?: SiteHeaderConfig; footer?: SiteFooterConfig }) =>
+  fetchApi<{ success: boolean }>('/admin/site-settings', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+
 // Settings
 export const getSettings = () => fetchApi<{ settings: Record<string, string> }>('/admin/settings')
 export const updateSettings = (settings: Record<string, string>) =>

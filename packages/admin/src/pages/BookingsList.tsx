@@ -35,7 +35,7 @@ export default function BookingsList() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Bookings</h1>
+        <h1 className="text-h3 text-stone-900">Bookings</h1>
         <p className="text-stone-500 mt-1">View and manage course bookings.</p>
       </div>
 

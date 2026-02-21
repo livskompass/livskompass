@@ -17,6 +17,7 @@ import {
   DialogFooter,
 } from './ui/dialog'
 import { Settings, Trash2, ExternalLink } from 'lucide-react'
+import { cn } from '../lib/utils'
 
 interface ProductBuilderProps {
   product: {
@@ -166,10 +167,10 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
 
               {/* Status badge */}
               <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
                   status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-yellow-100 text-yellow-700'
+                    ? 'bg-forest-50 text-forest-700 border-forest-200'
+                    : 'bg-amber-50 text-amber-600 border-amber-200'
                 }`}
               >
                 {status === 'active' ? 'Active' : 'Inactive'}
@@ -186,125 +187,132 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                     }
                     setSettingsOpen(!settingsOpen)
                   }}
-                  className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors"
+                  className={cn(
+                    "inline-flex items-center justify-center h-8 w-8 rounded-lg border transition-all duration-150",
+                    settingsOpen
+                      ? "border-forest-300 bg-forest-50 text-forest-700"
+                      : "border-stone-200 bg-white text-stone-500 hover:bg-stone-50 hover:text-stone-700"
+                  )}
                   title="Product settings"
                 >
                   <Settings className="h-4 w-4" />
                 </button>
 
                 {settingsOpen && (
-                  <div className="fixed w-80 bg-white rounded-lg shadow-xl border border-stone-200 z-[9999] max-h-[80vh] overflow-y-auto" style={{ top: dropdownStyle.top, right: dropdownStyle.right }}>
-                    <div className="p-4 space-y-4">
-                      <h3 className="text-sm font-semibold text-stone-900">Product settings</h3>
+                  <div className="fixed w-80 bg-white rounded-2xl shadow-xl border border-stone-200 z-[9999] max-h-[80vh] overflow-y-auto animate-scale-in origin-top-right" style={{ top: dropdownStyle.top, right: dropdownStyle.right }}>
+                    <div className="p-5 space-y-5">
+                      <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Product settings</h3>
 
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">Title</Label>
+                          <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Title</Label>
                           <Input
                             value={title}
                             onChange={(e) => {
                               setTitle(e.target.value)
                               if (!product?.id) setSlug(generateSlug(e.target.value))
                             }}
-                            className="h-8 text-sm"
+                            className="h-9 text-sm"
                             placeholder="Product title"
                           />
                         </div>
 
                         <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">Slug</Label>
+                          <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Slug</Label>
                           <Input
                             value={slug}
                             onChange={(e) => setSlug(e.target.value)}
-                            className="h-8 text-sm"
+                            className="h-9 text-sm"
                             placeholder="url-slug"
                           />
                         </div>
 
-                        <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">Status</Label>
-                          <Select
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className="h-8 text-sm"
-                          >
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                          </Select>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Status</Label>
+                            <Select
+                              value={status}
+                              onChange={(e) => setStatus(e.target.value)}
+                              className="h-9 text-sm"
+                            >
+                              <option value="active">Active</option>
+                              <option value="inactive">Inactive</option>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Type</Label>
+                            <Select
+                              value={type}
+                              onChange={(e) => setType(e.target.value)}
+                              className="h-9 text-sm"
+                            >
+                              <option value="book">Book</option>
+                              <option value="cd">CD</option>
+                              <option value="cards">Cards</option>
+                              <option value="app">App</option>
+                              <option value="download">Download</option>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Price (SEK)</Label>
+                            <Input
+                              type="number"
+                              value={priceSek}
+                              onChange={(e) => setPriceSek(Number(e.target.value))}
+                              className="h-9 text-sm"
+                              placeholder="0 for free"
+                              min={0}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium text-stone-700 mb-1.5 block">In stock</Label>
+                            <Input
+                              type="number"
+                              value={inStock}
+                              onChange={(e) => setInStock(Number(e.target.value))}
+                              className="h-9 text-sm"
+                              placeholder="0"
+                              min={0}
+                            />
+                          </div>
                         </div>
 
                         <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">Type</Label>
-                          <Select
-                            value={type}
-                            onChange={(e) => setType(e.target.value)}
-                            className="h-8 text-sm"
-                          >
-                            <option value="book">Book</option>
-                            <option value="cd">CD</option>
-                            <option value="cards">Cards</option>
-                            <option value="app">App</option>
-                            <option value="download">Download</option>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">Price (SEK)</Label>
-                          <Input
-                            type="number"
-                            value={priceSek}
-                            onChange={(e) => setPriceSek(Number(e.target.value))}
-                            className="h-8 text-sm"
-                            placeholder="0 for free"
-                            min={0}
-                          />
-                        </div>
-
-                        <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">In stock</Label>
-                          <Input
-                            type="number"
-                            value={inStock}
-                            onChange={(e) => setInStock(Number(e.target.value))}
-                            className="h-8 text-sm"
-                            placeholder="0"
-                            min={0}
-                          />
-                        </div>
-
-                        <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">External URL</Label>
+                          <Label className="text-sm font-medium text-stone-700 mb-1.5 block">External URL</Label>
                           <Input
                             value={externalUrl}
                             onChange={(e) => setExternalUrl(e.target.value)}
-                            className="h-8 text-sm"
+                            className="h-9 text-sm"
                             placeholder="https://example.com/buy"
                           />
                         </div>
 
                         <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">Image URL</Label>
+                          <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Image URL</Label>
                           <Input
                             value={imageUrl}
                             onChange={(e) => setImageUrl(e.target.value)}
-                            className="h-8 text-sm"
+                            className="h-9 text-sm"
                             placeholder="/media/uploads/image.jpg"
                           />
                           {imageUrl && (
                             <img
                               src={getMediaUrl(imageUrl)}
                               alt=""
-                              className="mt-2 w-full h-32 rounded-md object-cover border border-stone-200"
+                              className="mt-2 w-full h-32 rounded-lg object-cover border border-stone-200"
                             />
                           )}
                         </div>
 
                         <div>
-                          <Label className="text-xs text-stone-500 mb-1 block">Description</Label>
+                          <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Description</Label>
                           <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-forest-500 resize-none"
+                            className="w-full rounded-md border-[1.5px] border-stone-300 bg-white px-3 py-2 text-sm focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 resize-none transition-colors"
                             rows={2}
                             placeholder="Short description for listings..."
                           />
@@ -312,13 +320,13 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                       </div>
 
                       {onDelete && (
-                        <div className="border-t border-stone-100 pt-3">
+                        <div className="border-t border-stone-200 pt-4">
                           <button
                             onClick={() => {
                               setSettingsOpen(false)
                               setDeleteOpen(true)
                             }}
-                            className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 transition-colors"
+                            className="flex items-center justify-center gap-2 w-full text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg px-4 py-2.5 transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
                             Delete product

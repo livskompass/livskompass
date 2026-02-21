@@ -95,10 +95,10 @@ export default function UsersList() {
   // Check if current user is admin
   if (currentUser?.role !== 'admin') {
     return (
-      <Card className="border-yellow-200 bg-yellow-50">
+      <Card className="border-amber-200 bg-amber-50">
         <CardContent className="flex items-center gap-3 p-4">
-          <ShieldAlert className="h-5 w-5 text-yellow-600 shrink-0" />
-          <p className="text-sm text-yellow-800">
+          <ShieldAlert className="h-5 w-5 text-amber-500 shrink-0" />
+          <p className="text-sm text-stone-700">
             You don't have permission to manage users.
           </p>
         </CardContent>
@@ -110,7 +110,7 @@ export default function UsersList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Users</h1>
+          <h1 className="text-h3 text-stone-900">Users</h1>
           <p className="text-stone-500 mt-1">Manage admin access and roles.</p>
         </div>
         <Button onClick={() => setShowAddForm(true)}>

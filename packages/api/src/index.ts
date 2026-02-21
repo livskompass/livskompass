@@ -84,6 +84,24 @@ app.get('/media/*', async (c) => {
   return c.body(object.body as ReadableStream)
 })
 
+// Public site-settings endpoint (header/footer JSON, cached)
+app.get('/api/site-settings', async (c) => {
+  const result = await c.env.DB.prepare(
+    `SELECT key, value FROM settings WHERE key IN ('site_header', 'site_footer')`
+  ).all()
+
+  const settings: Record<string, any> = {}
+  result.results?.forEach((row: any) => {
+    try { settings[row.key] = JSON.parse(row.value) } catch { settings[row.key] = null }
+  })
+
+  c.header('Cache-Control', 'public, max-age=300')
+  return c.json({
+    header: settings.site_header || null,
+    footer: settings.site_footer || null,
+  })
+})
+
 // Public routes
 app.route('/api/pages', pagesRoutes)
 app.route('/api/posts', postsRoutes)

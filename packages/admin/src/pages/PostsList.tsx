@@ -33,7 +33,7 @@ export default function PostsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Posts</h1>
+          <h1 className="text-h3 text-stone-900">Posts</h1>
           <p className="text-stone-500 mt-1">Manage your blog posts.</p>
         </div>
         <Button asChild>

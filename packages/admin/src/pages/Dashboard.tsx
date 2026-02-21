@@ -54,10 +54,10 @@ export default function Dashboard() {
   })
 
   const stats = [
-    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/sidor', icon: FileText, color: 'text-blue-600 bg-blue-50' },
-    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-purple-600 bg-purple-50' },
-    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-emerald-600 bg-emerald-50' },
-    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-orange-600 bg-orange-50' },
+    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/sidor', icon: FileText, color: 'text-forest-600 bg-forest-50' },
+    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-forest-700 bg-forest-50' },
+    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-forest-500 bg-forest-50' },
+    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-amber-500 bg-amber-50' },
   ]
 
   const unreadContacts = contactsData?.contacts?.filter((c) => !c.read)?.length ?? 0
@@ -65,7 +65,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Dashboard</h1>
+        <h1 className="text-h3 text-stone-900">Dashboard</h1>
         <p className="text-stone-500 mt-1">Overview of your website content and activity.</p>
       </div>
 
@@ -95,19 +95,19 @@ export default function Dashboard() {
 
       {/* Unread Messages Alert */}
       {unreadContacts > 0 && (
-        <Card className="border-yellow-200 bg-yellow-50">
+        <Card className="border-amber-200 bg-amber-50">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Mail className="h-4 w-4 text-yellow-600" />
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <Mail className="h-4 w-4 text-amber-500" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-yellow-800">
+                <p className="font-medium text-stone-800">
                   {unreadContacts} {unreadContacts === 1 ? 'unread message' : 'unread messages'}
                 </p>
                 <Link
                   to="/meddelanden"
-                  className="text-sm text-yellow-700 hover:text-yellow-800 inline-flex items-center gap-1"
+                  className="text-sm text-amber-600 hover:text-amber-500 inline-flex items-center gap-1"
                 >
                   View messages <ArrowRight className="h-3 w-3" />
                 </Link>

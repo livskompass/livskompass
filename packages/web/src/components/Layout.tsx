@@ -1,56 +1,63 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getPages, type Page } from '../lib/api'
+import { getSiteSettings, type SiteHeaderConfig, type SiteFooterConfig } from '../lib/api'
 
 interface NavItem {
   name: string
   href: string
-  parentSlug?: string
   children?: { name: string; href: string }[]
 }
 
-// UX MF-5: Reduced to 6 visible items. Mindfulness + Forskning + Om Fredrik grouped under "Om oss"
-const baseNavigation: NavItem[] = [
-  { name: 'ACT', href: '/act', parentSlug: 'act' },
-  { name: 'Utbildningar', href: '/utbildningar', parentSlug: 'utbildningar' },
-  { name: 'Material', href: '/material', parentSlug: 'material' },
-  {
-    name: 'Om oss',
-    href: '/mindfulness',
-    children: [
-      { name: 'Mindfulness', href: '/mindfulness' },
-      { name: 'Forskning på metoden', href: '/forskning-pa-metoden' },
-      { name: 'Om Fredrik Livheim', href: '/om-fredrik-livheim' },
-    ],
-  },
-  { name: 'Kontakt', href: '/kontakt' },
-  { name: 'Nyheter', href: '/nyhet' },
-]
+// Fallback values used when no site settings are saved in the DB
+const defaultHeaderConfig: SiteHeaderConfig = {
+  logoText: 'Livskompass',
+  navItems: [
+    { label: 'ACT', href: '/act' },
+    { label: 'Utbildningar', href: '/utbildningar' },
+    { label: 'Material', href: '/material' },
+    {
+      label: 'Om oss',
+      href: '#',
+      children: [
+        { label: 'Mindfulness', href: '/mindfulness' },
+        { label: 'Forskning på metoden', href: '/forskning-pa-metoden' },
+        { label: 'Om Fredrik Livheim', href: '/om-fredrik-livheim' },
+      ],
+    },
+    { label: 'Kontakt', href: '/kontakt' },
+    { label: 'Nyheter', href: '/nyhet' },
+  ],
+}
 
-const footerNavigation = [
-  { name: 'ACT', href: '/act' },
-  { name: 'Utbildningar', href: '/utbildningar' },
-  { name: 'Material', href: '/material' },
-  { name: 'Mindfulness', href: '/mindfulness' },
-  { name: 'Forskning', href: '/forskning-pa-metoden' },
-  { name: 'Om Fredrik', href: '/om-fredrik-livheim' },
-  { name: 'Kontakt', href: '/kontakt' },
-  { name: 'Nyheter', href: '/nyhet' },
-]
+const defaultFooterConfig: SiteFooterConfig = {
+  companyName: 'Livskompass',
+  tagline: 'ACT och mindfulness utbildningar med Fredrik Livheim',
+  contact: { email: 'livheim@gmail.com', phone: '070-694 03 64' },
+  columns: [
+    {
+      heading: 'Länkar',
+      links: [
+        { label: 'ACT', href: '/act' },
+        { label: 'Utbildningar', href: '/utbildningar' },
+        { label: 'Material', href: '/material' },
+        { label: 'Mindfulness', href: '/mindfulness' },
+        { label: 'Forskning', href: '/forskning-pa-metoden' },
+        { label: 'Om Fredrik', href: '/om-fredrik-livheim' },
+        { label: 'Kontakt', href: '/kontakt' },
+        { label: 'Nyheter', href: '/nyhet' },
+      ],
+    },
+  ],
+  copyright: '© {year} Livskompass. Alla rättigheter förbehållna.',
+}
 
-function buildNavigation(pages: Page[]): NavItem[] {
-  return baseNavigation.map((item) => {
-    // "Om oss" has static children — don't override them with page children
-    if (item.children && !item.parentSlug) return item
-
-    if (!item.parentSlug) return item
-    const children = pages
-      .filter((p) => p.parent_slug === item.parentSlug)
-      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-      .map((p) => ({ name: p.title, href: `/${p.slug}` }))
-    return children.length > 0 ? { ...item, children } : item
-  })
+function configToNavItems(config: SiteHeaderConfig): NavItem[] {
+  return config.navItems.map((item) => ({
+    name: item.label,
+    href: item.href,
+    children: item.children?.map((child) => ({ name: child.label, href: child.href })),
+  }))
 }
 
 // ---------------------------------------------------------------------------
@@ -207,13 +214,15 @@ export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
 
-  const { data: pagesData } = useQuery({
-    queryKey: ['pages'],
-    queryFn: getPages,
+  const { data: siteData } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: getSiteSettings,
     staleTime: 5 * 60 * 1000,
   })
 
-  const navigation = pagesData?.pages ? buildNavigation(pagesData.pages) : baseNavigation
+  const headerConfig = siteData?.header || defaultHeaderConfig
+  const footerConfig = siteData?.footer || defaultFooterConfig
+  const navigation = configToNavItems(headerConfig)
 
   useEffect(() => { window.scrollTo(0, 0) }, [location.pathname])
   useEffect(() => { setMobileMenuOpen(false) }, [location.pathname])
@@ -253,7 +262,7 @@ export default function Layout() {
                   className="font-display text-forest-950"
                   style={{ fontSize: '1.375rem', letterSpacing: '-0.01em' }}
                 >
-                  Livskompass
+                  {headerConfig.logoText}
                 </span>
               </Link>
             </div>
@@ -320,37 +329,38 @@ export default function Layout() {
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div>
-              <span className="font-display text-xl text-white block mb-4">Livskompass</span>
+              <span className="font-display text-xl text-white block mb-4">{footerConfig.companyName}</span>
               <p className="text-stone-400 leading-relaxed text-[0.9375rem]">
-                ACT och mindfulness utbildningar med Fredrik Livheim
+                {footerConfig.tagline}
               </p>
             </div>
             <div>
               <h3 className="text-h4 mb-4">Kontakt</h3>
               <p className="text-stone-400 leading-relaxed text-[0.9375rem]">
-                Fredrik Livheim<br />
-                livheim@gmail.com<br />
-                070-694 03 64
+                {footerConfig.contact.email}<br />
+                {footerConfig.contact.phone}
               </p>
             </div>
-            <div>
-              <h3 className="text-h4 mb-4">Länkar</h3>
-              <ul className="space-y-2" aria-label="Sidlänkar">
-                {footerNavigation.map((item) => (
-                  <li key={item.name}>
-                    <Link
-                      to={item.href}
-                      className="text-stone-400 hover:text-white transition-colors duration-200 text-[0.9375rem]"
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {footerConfig.columns.map((col) => (
+              <div key={col.heading}>
+                <h3 className="text-h4 mb-4">{col.heading}</h3>
+                <ul className="space-y-2" aria-label={col.heading}>
+                  {col.links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        to={link.href}
+                        className="text-stone-400 hover:text-white transition-colors duration-200 text-[0.9375rem]"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
           <div className="mt-12 pt-8 border-t border-stone-800 text-center text-stone-500 text-caption">
-            <p>&copy; {new Date().getFullYear()} Livskompass. Alla rättigheter förbehållna.</p>
+            <p>{footerConfig.copyright.replace('{year}', String(new Date().getFullYear()))}</p>
           </div>
         </div>
       </footer>

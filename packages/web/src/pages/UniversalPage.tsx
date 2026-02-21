@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getPage, rewriteMediaUrls } from '../lib/api'
@@ -5,7 +6,8 @@ import { sanitizeHtml } from '../lib/sanitize'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
-import { defaultHomeTemplate } from '@livskompass/shared'
+import { setPageEditData } from '../components/InlineEditProvider'
+import { defaultHomeTemplate, defaultPageTemplate } from '@livskompass/shared'
 import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
@@ -37,6 +39,18 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
 
   useDocumentTitle(data?.page?.title)
 
+  // Register page data for inline editing
+  useEffect(() => {
+    if (data?.page?.id && data.page.content_blocks) {
+      setPageEditData({
+        pageId: String(data.page.id),
+        contentBlocks: data.page.content_blocks,
+        updatedAt: data.page.updated_at || '',
+      })
+    }
+    return () => setPageEditData(null)
+  }, [data?.page?.id, data?.page?.content_blocks, data?.page?.updated_at])
+
   if (isLoading) return <PageSkeleton />
   if (error || !data?.page) return <NotFound />
 
@@ -54,9 +68,17 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
     }
   }
 
-  // Homepage with empty blocks: use default template
+  // Homepage with empty blocks: use default home template
   if (slug === 'home-2' && (!page.content || page.content.trim() === '')) {
     return <BlockRenderer data={defaultHomeTemplate} />
+  }
+
+  // Non-home pages with no content_blocks: use default page template
+  if (!page.content_blocks && (!page.content || page.content.trim() === '')) {
+    const template = defaultPageTemplate
+      .replace('__PAGE_TITLE__', page.title || 'Sida')
+      .replace('__LEGACY_CONTENT__', '<p></p>')
+    return <BlockRenderer data={template} />
   }
 
   // Legacy fallback: old HTML content with child page cards

@@ -1,14 +1,14 @@
 import React from 'react'
-import { puckConfig } from '@livskompass/shared'
-import { ZoneRenderContext } from '../../../shared/src/blocks/Columns'
+import { puckConfig, InlineEditBlockContext, ZoneRenderContext } from '@livskompass/shared'
+import { useInlineEdit } from './InlineEditProvider'
 
 /**
  * Lightweight Puck data renderer that replaces @puckeditor/core's <Render>.
  * Reads the Puck JSON structure and renders each block using the render
  * functions already defined in puckConfig — no Puck runtime needed.
  *
- * Supports zone-based components (e.g. Columns) by providing zone content
- * via ZoneRenderContext.
+ * When an admin is viewing the page, each block is wrapped in an
+ * InlineEditBlockContext so text-bearing blocks can enable contentEditable.
  */
 
 interface PuckItem {
@@ -36,7 +36,44 @@ function renderItems(items: PuckItem[]) {
   })
 }
 
+function RenderItemWithContext({
+  item,
+  index,
+  saveBlockProp,
+}: {
+  item: PuckItem
+  index: number
+  saveBlockProp: (blockIndex: number, propName: string, value: string) => void
+}) {
+  const comp = components[item.type]
+  if (!comp?.render) return null
+  const Fn = comp.render
+  return (
+    <InlineEditBlockContext.Provider
+      value={{ isAdmin: true, blockIndex: index, saveBlockProp }}
+    >
+      <Fn {...item.props} />
+    </InlineEditBlockContext.Provider>
+  )
+}
+
+function renderItemsWithContext(
+  items: PuckItem[],
+  saveBlockProp: (blockIndex: number, propName: string, value: string) => void,
+) {
+  return items.map((item, i) => (
+    <RenderItemWithContext
+      key={item.props?.id || `${item.type}-${i}`}
+      item={item}
+      index={i}
+      saveBlockProp={saveBlockProp}
+    />
+  ))
+}
+
 export default function PuckRenderer({ data }: { data: PuckData }) {
+  const { isAdmin, saveBlockProp } = useInlineEdit()
+
   const RootRender = (puckConfig.root as any)?.render as
     | React.FC<any>
     | undefined
@@ -48,10 +85,14 @@ export default function PuckRenderer({ data }: { data: PuckData }) {
       if (zoneItems.length === 0) return null
       return <>{renderItems(zoneItems)}</>
     },
-    [data.zones]
+    [data.zones],
   )
 
-  const content = (
+  const content = isAdmin ? (
+    <ZoneRenderContext.Provider value={renderZone}>
+      {renderItemsWithContext(data.content, saveBlockProp)}
+    </ZoneRenderContext.Provider>
+  ) : (
     <ZoneRenderContext.Provider value={renderZone}>
       {renderItems(data.content)}
     </ZoneRenderContext.Provider>

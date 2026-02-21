@@ -49,7 +49,7 @@ export default function ContactsList() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Messages</h1>
+        <h1 className="text-h3 text-stone-900">Messages</h1>
         <p className="text-stone-500 mt-1">Contact form submissions and inquiries.</p>
       </div>
 
@@ -74,7 +74,7 @@ export default function ContactsList() {
                       selectedContact?.id === contact.id
                         ? 'bg-forest-50/50'
                         : !contact.read
-                        ? 'bg-blue-50/30 hover:bg-blue-50/50'
+                        ? 'bg-forest-50/30 hover:bg-forest-50/50'
                         : 'hover:bg-stone-50'
                     )}
                   >

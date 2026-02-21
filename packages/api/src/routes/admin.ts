@@ -601,6 +601,54 @@ adminRoutes.put('/settings', async (c) => {
   return c.json({ success: true })
 })
 
+// ============ SITE SETTINGS (header/footer) ============
+
+adminRoutes.get('/site-settings', async (c) => {
+  const result = await c.env.DB.prepare(
+    `SELECT key, value FROM settings WHERE key IN ('site_header', 'site_footer')`
+  ).all()
+
+  const settings: Record<string, any> = {}
+  result.results?.forEach((row: any) => {
+    try { settings[row.key] = JSON.parse(row.value) } catch { settings[row.key] = null }
+  })
+
+  return c.json({
+    header: settings.site_header || null,
+    footer: settings.site_footer || null,
+  })
+})
+
+adminRoutes.put('/site-settings', async (c) => {
+  const role = c.get('userRole')
+  if (role !== 'admin') {
+    return c.json({ error: 'Only admins can modify site settings' }, 403)
+  }
+
+  const body = await c.req.json()
+  const { header, footer } = body
+
+  const statements: any[] = []
+  if (header !== undefined) {
+    statements.push(
+      c.env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)`)
+        .bind('site_header', JSON.stringify(header))
+    )
+  }
+  if (footer !== undefined) {
+    statements.push(
+      c.env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)`)
+        .bind('site_footer', JSON.stringify(footer))
+    )
+  }
+
+  if (statements.length > 0) {
+    await c.env.DB.batch(statements)
+  }
+
+  return c.json({ success: true })
+})
+
 // ============ DASHBOARD STATS ============
 
 adminRoutes.get('/stats', async (c) => {

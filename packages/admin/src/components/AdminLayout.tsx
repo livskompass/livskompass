@@ -24,13 +24,21 @@ import { cn } from '../lib/utils'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+interface NavItem {
+  name: string
+  href: string
+  icon: typeof LayoutDashboard
+  adminOnly?: boolean
+  dividerAfter?: boolean
+}
+
+const navigation: NavItem[] = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, dividerAfter: true },
   { name: 'Pages', href: '/sidor', icon: FileText },
   { name: 'Posts', href: '/nyheter', icon: Newspaper },
   { name: 'Courses', href: '/utbildningar', icon: GraduationCap },
   { name: 'Bookings', href: '/bokningar', icon: Ticket },
-  { name: 'Products', href: '/material', icon: ShoppingBag },
+  { name: 'Products', href: '/material', icon: ShoppingBag, dividerAfter: true },
   { name: 'Media', href: '/media', icon: Image },
   { name: 'Messages', href: '/meddelanden', icon: Mail },
   { name: 'Users', href: '/anvandare', icon: Users, adminOnly: true },
@@ -78,7 +86,7 @@ export default function AdminLayout() {
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 lg:hidden"
+          className="fixed inset-0 bg-stone-950/60 backdrop-blur-sm z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -125,32 +133,41 @@ export default function AdminLayout() {
               const isActive = location.pathname === item.href ||
                 (item.href !== '/dashboard' && location.pathname.startsWith(item.href))
               return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  title={collapsed ? item.name : undefined}
-                  className={cn(
-                    "group flex items-center rounded-lg text-sm font-medium transition-all duration-150",
-                    collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5',
-                    isActive
-                      ? 'bg-stone-800 text-white'
-                      : 'text-stone-400 hover:bg-stone-900 hover:text-stone-200'
+                <div key={item.name}>
+                  <Link
+                    to={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    title={collapsed ? item.name : undefined}
+                    className={cn(
+                      "group flex items-center rounded-lg text-sm font-medium transition-all duration-150 relative",
+                      collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5',
+                      isActive
+                        ? 'bg-forest-900/30 text-white'
+                        : 'text-stone-400 hover:bg-stone-800/60 hover:text-stone-200'
+                    )}
+                  >
+                    {isActive && !collapsed && (
+                      <span className="absolute left-0 inset-y-1.5 w-[3px] bg-forest-400 rounded-full" />
+                    )}
+                    <item.icon className={cn(
+                      "h-[18px] w-[18px] shrink-0 transition-colors duration-150",
+                      isActive ? 'text-forest-400' : 'text-stone-500 group-hover:text-stone-400'
+                    )} />
+                    {!collapsed && (
+                      <>
+                        <span className="transition-opacity duration-150">{item.name}</span>
+                        {isActive && (
+                          <ChevronRight className="ml-auto h-4 w-4 text-forest-500/60" />
+                        )}
+                      </>
+                    )}
+                  </Link>
+                  {item.dividerAfter && (
+                    <div className={cn("my-2", collapsed ? 'mx-2' : 'mx-3')}>
+                      <div className="h-px bg-stone-800/80" />
+                    </div>
                   )}
-                >
-                  <item.icon className={cn(
-                    "h-[18px] w-[18px] shrink-0",
-                    isActive ? 'text-forest-400' : 'text-stone-500 group-hover:text-stone-400'
-                  )} />
-                  {!collapsed && (
-                    <>
-                      {item.name}
-                      {isActive && (
-                        <ChevronRight className="ml-auto h-4 w-4 text-stone-600" />
-                      )}
-                    </>
-                  )}
-                </Link>
+                </div>
               )
             })}
         </nav>

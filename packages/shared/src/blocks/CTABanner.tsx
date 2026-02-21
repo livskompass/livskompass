@@ -6,10 +6,8 @@ export interface CTABannerProps {
   description: string
   buttonText: string
   buttonLink: string
-  variant: 'primary' | 'secondary' | 'outline'
-  backgroundColor: string
+  backgroundColor: 'primary' | 'dark' | 'light'
   alignment: 'left' | 'center'
-  fullWidth: boolean
 }
 
 const bgMap: Record<string, string> = {

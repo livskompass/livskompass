@@ -19,15 +19,17 @@ export const defaultHomeTemplate = JSON.stringify({
       type: 'Hero',
       props: {
         id: 'hero',
+        preset: 'centered',
         heading: 'ACT och Mindfulness',
         subheading: 'Utbildningar och verktyg för att hantera stress och leva ett rikare liv',
-        variant: 'gradient',
-        textAlignment: 'center',
+        bgStyle: 'gradient',
         ctaPrimaryText: 'Se utbildningar',
         ctaPrimaryLink: '/utbildningar',
         ctaSecondaryText: 'Vad är ACT?',
         ctaSecondaryLink: '/act',
-        fullHeight: 'auto',
+        image: '',
+        backgroundImage: '',
+        overlayDarkness: 'medium',
       },
     },
     {
@@ -67,8 +69,35 @@ export const defaultHomeTemplate = JSON.stringify({
         description: 'Kontakta oss för frågor om utbildningar, material eller samarbeten.',
         buttonText: 'Kontakta oss',
         buttonLink: '/kontakt',
-        variant: 'dark',
+        backgroundColor: 'dark',
         alignment: 'center',
+      },
+    },
+  ],
+  root: { props: {} },
+  zones: {},
+})
+
+export const defaultPageTemplate = JSON.stringify({
+  content: [
+    {
+      type: 'PageHeader',
+      props: {
+        id: 'page-header',
+        heading: '__PAGE_TITLE__',
+        subheading: '',
+        alignment: 'left',
+        size: 'large',
+        showDivider: true,
+        breadcrumbs: [],
+      },
+    },
+    {
+      type: 'RichText',
+      props: {
+        id: 'content',
+        content: '__LEGACY_CONTENT__',
+        maxWidth: 'medium',
       },
     },
   ],

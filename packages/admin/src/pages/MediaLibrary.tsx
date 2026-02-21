@@ -70,7 +70,7 @@ export default function MediaLibrary() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Media Library</h1>
+          <h1 className="text-h3 text-stone-900">Media Library</h1>
           <p className="text-stone-500 mt-1">Upload and manage images, files, and media.</p>
         </div>
         <div>
@@ -114,9 +114,9 @@ export default function MediaLibrary() {
                         key={media.id}
                         onClick={() => setSelectedMedia(media.id)}
                         className={cn(
-                          "relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all",
+                          "relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-fast shadow-sm hover:shadow-md",
                           selectedMedia === media.id
-                            ? 'border-forest-600 ring-2 ring-forest-100'
+                            ? 'border-forest-500 ring-[3px] ring-forest-500/10'
                             : 'border-transparent hover:border-stone-300'
                         )}
                       >
@@ -134,7 +134,7 @@ export default function MediaLibrary() {
                             </span>
                           </div>
                         )}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent text-white text-[10px] p-2 pt-4 truncate">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-950/60 to-transparent text-white text-[10px] p-2 pt-4 truncate">
                           {media.filename}
                         </div>
                       </div>
@@ -164,7 +164,7 @@ export default function MediaLibrary() {
                   <img
                     src={getMediaUrl(selected.url)}
                     alt={selected.alt_text || selected.filename}
-                    className="w-full rounded-lg border border-stone-200"
+                    className="w-full rounded-xl border border-stone-200"
                   />
                 )}
 

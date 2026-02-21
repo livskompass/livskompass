@@ -35,11 +35,15 @@
   --tracking-body: 0;
   --tracking-overline: 0.08em;
 
+  --color-forest-950-rgb: 10, 26, 16;
+
   --surface-primary:       #F8F6F2;
   --surface-secondary:     #EFECE7;
   --surface-elevated:      #FFFFFF;
   --surface-glass:         rgba(248, 246, 242, 0.72);
   --surface-glass-border:  rgba(200, 196, 188, 0.25);
+  --surface-overlay:       rgba(10, 26, 16, 0.6);
+  --surface-overlay-heavy: rgba(10, 26, 16, 0.8);
 
   --gradient-hero:    linear-gradient(145deg, #0A1A10 0%, #1C3D29 45%, #275137 100%);
   --gradient-section: linear-gradient(180deg, var(--surface-primary) 0%, var(--surface-secondary) 100%);
@@ -209,6 +213,27 @@ body {
 [class*="Header-"] {
   z-index: 100 !important;
   position: relative;
+  border-bottom: 1px solid #E2DFD9;
+}
+
+/* Left sidebar: clean category headers and hover states */
+[class*="SidebarSection-title"] {
+  font-family: var(--font-body) !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: #8A847A !important;
+  padding: 8px 12px 4px !important;
+}
+[class*="ComponentList-item"],
+[class*="SidebarSection-content"] button {
+  border-radius: 6px !important;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+[class*="ComponentList-item"]:hover,
+[class*="SidebarSection-content"] button:hover {
+  background-color: #ECF5EF !important;
 }
 
 /* Right sidebar → floating overlay panel instead of fixed column */
@@ -222,10 +247,20 @@ body {
     right: 0;
     top: 0;
     bottom: 0;
-    width: 300px !important;
+    width: 320px !important;
     z-index: 20;
-    box-shadow: -4px 0 24px rgba(10, 26, 16, 0.12);
+    background: #FFFFFF;
+    box-shadow: -8px 0 32px rgba(10, 26, 16, 0.08), -2px 0 8px rgba(10, 26, 16, 0.04);
     border-left: 1px solid #E2DFD9;
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [class*="Sidebar--right"][style*="display: none"],
+  [class*="Sidebar--right"]:empty {
+    transform: translateX(24px);
+    opacity: 0;
   }
 
   [class*="Sidebar--right"] + [class*="Sidebar-resizeHandle"] {
@@ -233,16 +268,31 @@ body {
   }
 }
 
-/* TipTap Editor Styles */
-.ProseMirror {
-  @apply min-h-[300px] outline-none;
+/* Puck field labels — consistent V2 styling */
+[class*="FieldLabel-label"] {
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  color: #575249 !important;
 }
-.ProseMirror p { @apply mb-4; }
-.ProseMirror h1 { @apply text-3xl font-bold mb-4; }
-.ProseMirror h2 { @apply text-2xl font-bold mb-3; }
-.ProseMirror h3 { @apply text-xl font-bold mb-2; }
-.ProseMirror ul { @apply list-disc ml-6 mb-4; }
-.ProseMirror ol { @apply list-decimal ml-6 mb-4; }
-.ProseMirror blockquote { @apply border-l-4 border-stone-300 pl-4 italic my-4; }
-.ProseMirror a { @apply text-forest-600 underline; }
-.ProseMirror img { @apply max-w-full h-auto rounded; }
+
+/* Puck field inputs — match admin V2 input style */
+[class*="Puck-root"] input[type="text"],
+[class*="Puck-root"] input[type="number"],
+[class*="Puck-root"] input[type="url"],
+[class*="Puck-root"] select,
+[class*="Puck-root"] textarea {
+  border-width: 1.5px !important;
+  border-color: #C8C4BC !important;
+  border-radius: 10px !important;
+  font-family: var(--font-body) !important;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+[class*="Puck-root"] input:focus,
+[class*="Puck-root"] select:focus,
+[class*="Puck-root"] textarea:focus {
+  border-color: #5C9873 !important;
+  box-shadow: 0 0 0 3px rgba(62, 123, 87, 0.1) !important;
+  outline: none !important;
+}
+

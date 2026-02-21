@@ -98,8 +98,10 @@ export function injectPreviewCSS(iframeDoc: Document) {
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
-    .reveal { opacity: 1; transform: none; }
-    .reveal-visible { opacity: 1; transform: none; }
+    .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .reveal-visible { opacity: 1 !important; transform: none !important; }
+    .reveal-stagger-1, .reveal-stagger-2, .reveal-stagger-3,
+    .reveal-stagger-4, .reveal-stagger-5 { transition-delay: 0ms !important; }
   `
   iframeDoc.head.appendChild(extraCSS)
 }

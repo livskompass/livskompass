@@ -13,7 +13,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-stone-950/50 backdrop-blur-sm animate-fade-in"
         onClick={() => onOpenChange(false)}
       />
       <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -30,7 +30,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "relative z-50 w-full max-w-lg rounded-lg border border-stone-200 bg-white p-6 shadow-lg animate-in fade-in-0 zoom-in-95",
+      "relative z-50 w-full max-w-lg rounded-2xl border border-stone-200 bg-white p-6 shadow-xl animate-scale-in",
       className
     )}
     {...props}

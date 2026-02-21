@@ -86,7 +86,7 @@ export default function BookingDetail() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Booking details</h1>
+          <h1 className="text-h3 text-stone-900">Booking details</h1>
           <p className="text-stone-500 text-sm font-mono">{booking.id}</p>
         </div>
       </div>

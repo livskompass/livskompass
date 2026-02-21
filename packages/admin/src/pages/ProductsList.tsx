@@ -33,7 +33,7 @@ export default function ProductsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Products</h1>
+          <h1 className="text-h3 text-stone-900">Products</h1>
           <p className="text-stone-500 mt-1">Manage books, CDs, and other products.</p>
         </div>
         <Button asChild>

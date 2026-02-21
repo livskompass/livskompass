@@ -38,30 +38,93 @@ export const emptyPuckData: Data = {
   zones: {},
 }
 
-// ── Site chrome for Puck editor preview ──
+// ── Site settings types + hook for Puck preview chrome ──
 
-const navLinks = [
-  { name: 'ACT', href: '/act' },
-  { name: 'Utbildningar', href: '/utbildningar' },
-  { name: 'Material', href: '/material' },
-  { name: 'Om oss', href: '/mindfulness' },
-  { name: 'Kontakt', href: '/kontakt' },
-  { name: 'Nyheter', href: '/nyhet' },
-]
+interface SiteHeaderConfig {
+  logoText: string
+  navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
+  ctaButton?: { text: string; href: string }
+}
 
-// Footer uses expanded links (matches Layout.tsx footerNavigation)
-const footerNavLinks = [
-  { name: 'ACT', href: '/act' },
-  { name: 'Utbildningar', href: '/utbildningar' },
-  { name: 'Material', href: '/material' },
-  { name: 'Mindfulness', href: '/mindfulness' },
-  { name: 'Forskning', href: '/forskning-pa-metoden' },
-  { name: 'Om Fredrik', href: '/om-fredrik-livheim' },
-  { name: 'Kontakt', href: '/kontakt' },
-  { name: 'Nyheter', href: '/nyhet' },
-]
+interface SiteFooterConfig {
+  companyName: string
+  tagline: string
+  contact: { email: string; phone: string }
+  columns: { heading: string; links: { label: string; href: string }[] }[]
+  copyright: string
+}
+
+const defaultHeader: SiteHeaderConfig = {
+  logoText: 'Livskompass',
+  navItems: [
+    { label: 'ACT', href: '/act' },
+    { label: 'Utbildningar', href: '/utbildningar' },
+    { label: 'Material', href: '/material' },
+    { label: 'Om oss', href: '#', children: [
+      { label: 'Mindfulness', href: '/mindfulness' },
+      { label: 'Forskning på metoden', href: '/forskning-pa-metoden' },
+      { label: 'Om Fredrik Livheim', href: '/om-fredrik-livheim' },
+    ] },
+    { label: 'Kontakt', href: '/kontakt' },
+    { label: 'Nyheter', href: '/nyhet' },
+  ],
+}
+
+const defaultFooter: SiteFooterConfig = {
+  companyName: 'Livskompass',
+  tagline: 'ACT och mindfulness utbildningar med Fredrik Livheim',
+  contact: { email: 'livheim@gmail.com', phone: '070-694 03 64' },
+  columns: [
+    {
+      heading: 'Länkar',
+      links: [
+        { label: 'ACT', href: '/act' },
+        { label: 'Utbildningar', href: '/utbildningar' },
+        { label: 'Material', href: '/material' },
+        { label: 'Mindfulness', href: '/mindfulness' },
+        { label: 'Forskning', href: '/forskning-pa-metoden' },
+        { label: 'Om Fredrik', href: '/om-fredrik-livheim' },
+        { label: 'Kontakt', href: '/kontakt' },
+        { label: 'Nyheter', href: '/nyhet' },
+      ],
+    },
+  ],
+  copyright: '© {year} Livskompass. Alla rättigheter förbehållna.',
+}
+
+let _cachedHeader: SiteHeaderConfig | null = null
+let _cachedFooter: SiteFooterConfig | null = null
+let _fetchPromise: Promise<void> | null = null
+
+function fetchSiteSettings() {
+  if (_fetchPromise) return _fetchPromise
+  const apiBase = (typeof window !== 'undefined' && (window as any).__PUCK_API_BASE__) || '/api'
+  _fetchPromise = fetch(`${apiBase}/site-settings`)
+    .then((r) => r.json())
+    .then((data: any) => {
+      if (data.header) _cachedHeader = data.header
+      if (data.footer) _cachedFooter = data.footer
+    })
+    .catch(() => { /* use defaults */ })
+  return _fetchPromise
+}
+
+function useSiteSettings() {
+  const [header, setHeader] = React.useState<SiteHeaderConfig>(_cachedHeader || defaultHeader)
+  const [footer, setFooter] = React.useState<SiteFooterConfig>(_cachedFooter || defaultFooter)
+
+  React.useEffect(() => {
+    fetchSiteSettings().then(() => {
+      setHeader(_cachedHeader || defaultHeader)
+      setFooter(_cachedFooter || defaultFooter)
+    })
+  }, [])
+
+  return { header, footer }
+}
 
 function SiteHeader() {
+  const { header } = useSiteSettings()
   return (
     <header
       className="sticky top-0 z-50"
@@ -73,17 +136,26 @@ function SiteHeader() {
       }}
     >
       <nav style={{ maxWidth: 'var(--width-wide, 1440px)', marginInline: 'auto', paddingInline: 'var(--container-px, 1rem)' }}>
-        <div className="flex justify-between" style={{ height: '72px' }}>
+        <div className="flex justify-between h-16 lg:h-[72px]">
           <div className="flex items-center">
             <a href="/">
-              <span className="font-display text-forest-950" style={{ fontSize: '1.375rem', letterSpacing: '-0.01em' }}>Livskompass</span>
+              <span className="font-display text-forest-950" style={{ fontSize: '1.375rem', letterSpacing: '-0.01em' }}>{header.logoText}</span>
             </a>
           </div>
           <div className="hidden lg:flex items-center space-x-7">
-            {navLinks.map((item) => (
-              <a key={item.name} href={item.href} className="text-stone-600 hover:text-forest-600 transition-colors duration-200 whitespace-nowrap" style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
-                {item.name}
-              </a>
+            {header.navItems.map((item) => (
+              item.children && item.children.length > 0 ? (
+                <span key={item.label} className="inline-flex items-center gap-1 text-stone-600 whitespace-nowrap" style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
+                  {item.label}
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </span>
+              ) : (
+                <a key={item.label} href={item.href} className="text-stone-600 hover:text-forest-600 transition-colors duration-200 whitespace-nowrap" style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
+                  {item.label}
+                </a>
+              )
             ))}
           </div>
         </div>
@@ -93,29 +165,32 @@ function SiteHeader() {
 }
 
 function SiteFooter() {
+  const { footer } = useSiteSettings()
   return (
     <footer className="bg-stone-950 text-white">
       <div style={{ maxWidth: 'var(--width-content, 1280px)', marginInline: 'auto', paddingInline: 'var(--container-px, 1rem)', paddingTop: 'var(--section-md, 4rem)', paddingBottom: 'var(--section-sm, 3rem)' }}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <span className="font-display text-xl text-white block mb-4">Livskompass</span>
-            <p className="text-stone-400 leading-relaxed" style={{ fontSize: '0.9375rem' }}>ACT och mindfulness utbildningar med Fredrik Livheim</p>
+            <span className="font-display text-xl text-white block mb-4">{footer.companyName}</span>
+            <p className="text-stone-400 leading-relaxed" style={{ fontSize: '0.9375rem' }}>{footer.tagline}</p>
           </div>
           <div>
             <h3 className="text-h4 mb-4">Kontakt</h3>
-            <p className="text-stone-400 leading-relaxed" style={{ fontSize: '0.9375rem' }}>Fredrik Livheim<br />livheim@gmail.com<br />070-694 03 64</p>
+            <p className="text-stone-400 leading-relaxed" style={{ fontSize: '0.9375rem' }}>{footer.contact.email}<br />{footer.contact.phone}</p>
           </div>
-          <div>
-            <h3 className="text-h4 mb-4">Länkar</h3>
-            <ul className="space-y-2">
-              {footerNavLinks.map((item) => (
-                <li key={item.name}><a href={item.href} className="text-stone-400 hover:text-white transition-colors duration-200" style={{ fontSize: '0.9375rem' }}>{item.name}</a></li>
-              ))}
-            </ul>
-          </div>
+          {footer.columns.map((col) => (
+            <div key={col.heading}>
+              <h3 className="text-h4 mb-4">{col.heading}</h3>
+              <ul className="space-y-2">
+                {col.links.map((link) => (
+                  <li key={link.href}><a href={link.href} className="text-stone-400 hover:text-white transition-colors duration-200" style={{ fontSize: '0.9375rem' }}>{link.label}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
         <div className="mt-12 pt-8 border-t border-stone-800 text-center text-stone-500 text-caption">
-          <p>&copy; {new Date().getFullYear()} Livskompass. Alla rättigheter förbehållna.</p>
+          <p>{footer.copyright.replace('{year}', String(new Date().getFullYear()))}</p>
         </div>
       </div>
     </footer>
@@ -181,14 +256,120 @@ export const puckConfig: Config = {
     // ── Content ──
     Hero: {
       label: 'Hero',
-      defaultProps: { heading: 'Rubrik här', subheading: 'Underrubrik här', variant: 'gradient', backgroundImage: '', textAlignment: 'center', ctaPrimaryText: '', ctaPrimaryLink: '', ctaSecondaryText: '', ctaSecondaryLink: '', fullHeight: 'auto' },
+      defaultProps: {
+        preset: 'centered',
+        heading: 'Rubrik här',
+        subheading: 'Underrubrik här',
+        bgStyle: 'gradient',
+        ctaPrimaryText: '',
+        ctaPrimaryLink: '',
+        ctaSecondaryText: '',
+        ctaSecondaryLink: '',
+        image: '',
+        backgroundImage: '',
+        overlayDarkness: 'medium',
+      },
       fields: {
-        heading: { type: 'text' }, subheading: { type: 'textarea' },
-        variant: { type: 'select', options: [{ label: 'Gradient', value: 'gradient' }, { label: 'Image', value: 'image' }, { label: 'Light', value: 'light' }] },
-        backgroundImage: { type: 'text' },
-        textAlignment: { type: 'radio', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
-        ctaPrimaryText: { type: 'text' }, ctaPrimaryLink: { type: 'text' }, ctaSecondaryText: { type: 'text' }, ctaSecondaryLink: { type: 'text' },
-        fullHeight: { type: 'radio', options: [{ label: 'Full viewport', value: 'full-viewport' }, { label: 'Auto', value: 'auto' }] },
+        preset: {
+          type: 'select',
+          label: 'Preset',
+          options: [
+            { label: 'Centered', value: 'centered' },
+            { label: 'Split Image Right', value: 'split-right' },
+            { label: 'Split Image Left', value: 'split-left' },
+            { label: 'Full Image', value: 'full-image' },
+            { label: 'Minimal', value: 'minimal' },
+          ],
+        },
+        heading: { type: 'text', label: 'Heading' },
+        subheading: { type: 'textarea', label: 'Subheading' },
+        bgStyle: {
+          type: 'select',
+          label: 'Background',
+          options: [
+            { label: 'Gradient', value: 'gradient' },
+            { label: 'Forest green', value: 'forest' },
+            { label: 'Dark stone', value: 'stone' },
+          ],
+        },
+        ctaPrimaryText: { type: 'text', label: 'Primary button text' },
+        ctaPrimaryLink: { type: 'text', label: 'Primary button link' },
+        ctaSecondaryText: { type: 'text', label: 'Secondary button text' },
+        ctaSecondaryLink: { type: 'text', label: 'Secondary button link' },
+        image: { type: 'text', label: 'Image URL' },
+        backgroundImage: { type: 'text', label: 'Background image URL' },
+        overlayDarkness: {
+          type: 'select',
+          label: 'Overlay darkness',
+          options: [
+            { label: 'Light', value: 'light' },
+            { label: 'Medium', value: 'medium' },
+            { label: 'Heavy', value: 'heavy' },
+          ],
+        },
+      },
+      resolveFields: (data: any) => {
+        const p = data.props?.preset || 'centered'
+        const base = {
+          preset: {
+            type: 'select' as const,
+            label: 'Preset',
+            options: [
+              { label: 'Centered', value: 'centered' },
+              { label: 'Split Image Right', value: 'split-right' },
+              { label: 'Split Image Left', value: 'split-left' },
+              { label: 'Full Image', value: 'full-image' },
+              { label: 'Minimal', value: 'minimal' },
+            ],
+          },
+          heading: { type: 'text' as const, label: 'Heading' },
+          subheading: { type: 'textarea' as const, label: 'Subheading' },
+        }
+        if (p === 'centered') {
+          return {
+            ...base,
+            bgStyle: {
+              type: 'select' as const,
+              label: 'Background',
+              options: [
+                { label: 'Gradient', value: 'gradient' },
+                { label: 'Forest green', value: 'forest' },
+                { label: 'Dark stone', value: 'stone' },
+              ],
+            },
+            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
+            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link' },
+          }
+        }
+        if (p === 'split-right' || p === 'split-left') {
+          return {
+            ...base,
+            image: { type: 'text' as const, label: 'Image URL' },
+            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+          }
+        }
+        if (p === 'full-image') {
+          return {
+            ...base,
+            backgroundImage: { type: 'text' as const, label: 'Background image URL' },
+            overlayDarkness: {
+              type: 'select' as const,
+              label: 'Overlay darkness',
+              options: [
+                { label: 'Light', value: 'light' },
+                { label: 'Medium', value: 'medium' },
+                { label: 'Heavy', value: 'heavy' },
+              ],
+            },
+            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+          }
+        }
+        // minimal — just heading + subheading
+        return base
       },
       render: Hero as any,
     },
@@ -238,12 +419,13 @@ export const puckConfig: Config = {
     },
     PageHeader: {
       label: 'Page Header',
-      defaultProps: { heading: 'Rubrik', subheading: '', alignment: 'left', size: 'large', showDivider: false },
+      defaultProps: { heading: 'Rubrik', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [] },
       fields: {
         heading: { type: 'text' }, subheading: { type: 'textarea' },
         alignment: { type: 'radio', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         size: { type: 'radio', options: [{ label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
         showDivider: { type: 'radio', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        breadcrumbs: { type: 'array', arrayFields: { label: { type: 'text' }, href: { type: 'text' } } },
       },
       render: PageHeader as any,
     },
@@ -282,15 +464,15 @@ export const puckConfig: Config = {
     // ── Marketing ──
     CTABanner: {
       label: 'CTA Banner',
-      defaultProps: { heading: 'Redo att börja?', description: 'Boka din plats på nästa utbildning', buttonText: 'Boka nu', buttonLink: '/utbildningar', variant: 'primary', backgroundColor: 'primary', alignment: 'center', fullWidth: true },
+      defaultProps: { heading: 'Redo att börja?', description: 'Boka din plats på nästa utbildning', buttonText: 'Boka nu', buttonLink: '/utbildningar', backgroundColor: 'primary', alignment: 'center' },
       fields: {
         heading: { type: 'text' }, description: { type: 'textarea' }, buttonText: { type: 'text' }, buttonLink: { type: 'text' },
         backgroundColor: { type: 'select', options: [{ label: 'Primary (green)', value: 'primary' }, { label: 'Dark', value: 'dark' }, { label: 'Light', value: 'light' }] },
         alignment: { type: 'radio', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
       },
-      render: ({ heading, description, buttonText, buttonLink, variant, backgroundColor, alignment, fullWidth }: any) => (
+      render: ({ heading, description, buttonText, buttonLink, backgroundColor, alignment }: any) => (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} variant={variant} backgroundColor={backgroundColor} alignment={alignment} fullWidth={fullWidth} />
+          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} backgroundColor={backgroundColor} alignment={alignment} />
         </div>
       ),
     },

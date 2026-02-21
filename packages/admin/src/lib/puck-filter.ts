@@ -57,9 +57,9 @@ function ColumnsEditor({
 export function getFilteredPuckConfig(editorType: EditorType): Config {
   const hiddenComponents: Record<EditorType, string[]> = {
     page: ['CourseInfo', 'BookingCTA', 'PostHeader', 'BookingForm'],
-    course: ['PostHeader'],
-    post: ['CourseInfo', 'BookingCTA', 'BookingForm'],
-    product: ['CourseInfo', 'BookingCTA', 'PostHeader', 'BookingForm'],
+    course: ['Hero', 'PostHeader'],
+    post: ['Hero', 'CourseInfo', 'BookingCTA', 'BookingForm'],
+    product: ['Hero', 'CourseInfo', 'BookingCTA', 'PostHeader', 'BookingForm'],
   }
 
   const hidden = new Set(hiddenComponents[editorType])

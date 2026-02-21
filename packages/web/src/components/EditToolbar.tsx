@@ -1,17 +1,13 @@
-import { ExternalLink, X } from 'lucide-react'
+import { ExternalLink, X, Check, Loader2, AlertCircle } from 'lucide-react'
 
 interface EditToolbarProps {
   onHide: () => void
+  savingStatus: 'idle' | 'saving' | 'saved' | 'error'
 }
 
 const ADMIN_URL = import.meta.env.VITE_ADMIN_URL || ''
 
-/**
- * Floating toolbar shown at the bottom of the page when an admin visits the public site.
- * Shows a link to the CMS editor for the current page.
- * Requires shared domain cookie authentication (.livskompass.se).
- */
-export default function EditToolbar({ onHide }: EditToolbarProps) {
+export default function EditToolbar({ onHide, savingStatus }: EditToolbarProps) {
   const getCmsUrl = () => {
     if (!ADMIN_URL) return null
     const path = window.location.pathname
@@ -31,6 +27,33 @@ export default function EditToolbar({ onHide }: EditToolbarProps) {
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
       <div className="flex items-center gap-1 rounded-full bg-stone-900/80 backdrop-blur-md px-2 py-1.5 shadow-2xl border border-white/10">
+        {/* Save status indicator */}
+        {savingStatus !== 'idle' && (
+          <>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium">
+              {savingStatus === 'saving' && (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 text-white/60 animate-spin" />
+                  <span className="text-white/60">Sparar...</span>
+                </>
+              )}
+              {savingStatus === 'saved' && (
+                <>
+                  <Check className="h-3.5 w-3.5 text-forest-300" />
+                  <span className="text-forest-300">Sparat</span>
+                </>
+              )}
+              {savingStatus === 'error' && (
+                <>
+                  <AlertCircle className="h-3.5 w-3.5 text-[#E96B63]" />
+                  <span className="text-[#E96B63]">Fel vid sparning</span>
+                </>
+              )}
+            </div>
+            <div className="w-px h-5 bg-white/20" />
+          </>
+        )}
+
         <a
           href={cmsUrl}
           target="_blank"
