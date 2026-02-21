@@ -149,11 +149,17 @@ ALTER TABLE products ADD COLUMN editor_version TEXT DEFAULT 'legacy';
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_pages_slug ON pages(slug);
 CREATE INDEX IF NOT EXISTS idx_pages_status ON pages(status);
+CREATE INDEX IF NOT EXISTS idx_pages_parent_slug ON pages(parent_slug);
 CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
+CREATE INDEX IF NOT EXISTS idx_courses_slug ON courses(slug);
 CREATE INDEX IF NOT EXISTS idx_courses_status ON courses(status);
+CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
 CREATE INDEX IF NOT EXISTS idx_bookings_course ON bookings(course_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_email ON bookings(customer_email);
+CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(payment_status);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_media_r2_key ON media(r2_key);
+CREATE INDEX IF NOT EXISTS idx_contacts_read ON contacts(read);

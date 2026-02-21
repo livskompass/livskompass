@@ -8,6 +8,10 @@ export interface CourseListProps {
   columns: 2 | 3
   showBookButton: boolean
   compactMode: boolean
+  readMoreText: string
+  bookButtonText: string
+  fullLabel: string
+  emptyText: string
 }
 
 interface Course {
@@ -41,6 +45,10 @@ export function CourseList({
   columns = 2,
   showBookButton = true,
   compactMode = false,
+  readMoreText = 'Läs mer',
+  bookButtonText = 'Boka plats',
+  fullLabel = 'Fullbokad',
+  emptyText = 'Det finns inga utbildningar planerade just nu.',
 }: CourseListProps) {
   const { data, loading } = useFetchJson<{ courses: Course[] }>('/courses')
   const courses = data?.courses || []
@@ -69,7 +77,7 @@ export function CourseList({
             const isFull = course.status === 'full'
             const spotsLeft = course.max_participants - course.current_participants
             return (
-              <div key={course.slug} className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+              <div key={course.slug} className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span className={cn(
@@ -78,7 +86,7 @@ export function CourseList({
                         ? 'bg-amber-50 text-amber-700'
                         : 'bg-forest-50 text-forest-700'
                     )}>
-                      {isFull ? 'Fullbokad' : `${spotsLeft} platser kvar`}
+                      {isFull ? fullLabel : `${spotsLeft} platser kvar`}
                     </span>
                   </div>
                   <h3 className="text-h4 text-stone-800 mb-2">{course.title}</h3>
@@ -107,14 +115,14 @@ export function CourseList({
                         href={`/utbildningar/${course.slug}`}
                         className="inline-flex items-center h-9 px-4 text-sm font-medium text-forest-600 hover:text-forest-700 hover:bg-forest-50 rounded-full transition-colors"
                       >
-                        Läs mer
+                        {readMoreText}
                       </a>
                       {showBookButton && !isFull && (
                         <a
                           href={`/utbildningar/${course.slug}/boka`}
-                          className="inline-flex items-center h-9 px-4 text-sm font-medium bg-forest-500 text-white hover:bg-forest-600 rounded-full transition-colors"
+                          className="inline-flex items-center h-9 px-4 text-sm font-medium bg-forest-500 text-white hover:bg-forest-600 rounded-full transition-all active:scale-[0.97]"
                         >
-                          Boka plats
+                          {bookButtonText}
                           <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                         </a>
                       )}
@@ -127,7 +135,7 @@ export function CourseList({
         </div>
       ) : (
         <div className="text-center py-16 text-stone-400 border-2 border-dashed border-stone-200 rounded-xl">
-          Det finns inga utbildningar planerade just nu.
+          {emptyText}
         </div>
       )}
     </div>

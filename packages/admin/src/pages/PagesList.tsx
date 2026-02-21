@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPages, deletePage } from '../lib/api'
@@ -6,10 +7,12 @@ import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Plus, Pencil, Trash2, FileText } from 'lucide-react'
 
 export default function PagesList() {
   const queryClient = useQueryClient()
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-pages'],
@@ -22,12 +25,6 @@ export default function PagesList() {
       queryClient.invalidateQueries({ queryKey: ['admin-pages'] })
     },
   })
-
-  const handleDelete = (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      deleteMutation.mutate(id)
-    }
-  }
 
   return (
     <div className="space-y-6">
@@ -54,7 +51,7 @@ export default function PagesList() {
         ) : data?.pages && data.pages.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50/50">
+              <TableRow className="bg-stone-50">
                 <TableHead>Title</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
@@ -90,7 +87,7 @@ export default function PagesList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(page.id, page.title)}
+                        onClick={() => setDeleteTarget({ id: page.id, title: page.title })}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -111,6 +108,17 @@ export default function PagesList() {
           </CardContent>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete page"
+        description={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id)
+        }}
+      />
     </div>
   )
 }

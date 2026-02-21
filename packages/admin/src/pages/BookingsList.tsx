@@ -49,7 +49,7 @@ export default function BookingsList() {
         ) : data?.bookings && data.bookings.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50/50">
+              <TableRow className="bg-stone-50">
                 <TableHead>Customer</TableHead>
                 <TableHead>Course</TableHead>
                 <TableHead>Participants</TableHead>
@@ -71,7 +71,7 @@ export default function BookingsList() {
                     </div>
                   </TableCell>
                   <TableCell className="text-stone-600 text-sm">
-                    {booking.course?.title || booking.course_id}
+                    {booking.course_title || booking.course_id}
                   </TableCell>
                   <TableCell className="text-stone-600 text-sm font-mono">
                     {booking.participants}

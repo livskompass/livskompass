@@ -9,6 +9,7 @@ import { Label } from '../components/ui/label'
 import { Select } from '../components/ui/select'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Plus, Trash2, Users as UsersIcon, X, ShieldAlert } from 'lucide-react'
 
 export default function UsersList() {
@@ -18,6 +19,8 @@ export default function UsersList() {
   const [newName, setNewName] = useState('')
   const [newRole, setNewRole] = useState('editor')
   const [error, setError] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<User | null>(null)
+  const [roleChangeTarget, setRoleChangeTarget] = useState<{ user: User; newRole: string } | null>(null)
 
   const { data: meData } = useQuery({
     queryKey: ['me'],
@@ -70,15 +73,11 @@ export default function UsersList() {
   }
 
   const handleRoleChange = (user: User, newRole: string) => {
-    if (window.confirm(`Change role for ${user.email} to ${newRole}?`)) {
-      updateMutation.mutate({ id: user.id, data: { role: newRole } })
-    }
+    setRoleChangeTarget({ user, newRole })
   }
 
   const handleDelete = (user: User) => {
-    if (window.confirm(`Remove user ${user.email}? They will no longer be able to sign in.`)) {
-      deleteMutation.mutate(user.id)
-    }
+    setDeleteTarget(user)
   }
 
   const currentUser = meData?.user
@@ -203,7 +202,7 @@ export default function UsersList() {
       <Card>
         <Table>
           <TableHeader>
-            <TableRow className="bg-stone-50/50">
+            <TableRow className="bg-stone-50">
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Created</TableHead>
@@ -282,6 +281,31 @@ export default function UsersList() {
           </TableBody>
         </Table>
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Remove user"
+        description={`Remove ${deleteTarget?.email}? They will no longer be able to sign in.`}
+        confirmLabel="Remove"
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id)
+        }}
+      />
+
+      <ConfirmDialog
+        open={!!roleChangeTarget}
+        onOpenChange={(open) => !open && setRoleChangeTarget(null)}
+        title="Change role"
+        description={`Change role for ${roleChangeTarget?.user.email} to ${roleChangeTarget?.newRole}?`}
+        confirmLabel="Change role"
+        variant="default"
+        onConfirm={() => {
+          if (roleChangeTarget) {
+            updateMutation.mutate({ id: roleChangeTarget.user.id, data: { role: roleChangeTarget.newRole } })
+          }
+        }}
+      />
     </div>
   )
 }

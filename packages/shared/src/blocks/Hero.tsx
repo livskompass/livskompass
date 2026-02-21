@@ -134,7 +134,7 @@ export function Hero({
           </div>
           <div className={cn('lg:col-span-2', imageFirst ? 'lg:order-1' : 'lg:order-2')}>
             {image ? (
-              <img src={image} alt="" className="w-full h-auto rounded-xl object-cover shadow-lg reveal" style={{ aspectRatio: '4 / 3' }} />
+              <img src={image} alt="" loading="lazy" className="w-full h-auto rounded-xl object-cover shadow-lg reveal" style={{ aspectRatio: '4 / 3' }} />
             ) : (
               <div className="w-full rounded-xl bg-stone-200 reveal" style={{ aspectRatio: '4 / 3' }} />
             )}

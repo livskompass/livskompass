@@ -85,7 +85,7 @@
 
 /* Admin body — uses secondary surface for sidebar distinction */
 body {
-  @apply antialiased bg-stone-100;
+  @apply antialiased bg-stone-50;
   font-family: var(--font-body);
 }
 
@@ -294,5 +294,31 @@ body {
   border-color: #5C9873 !important;
   box-shadow: 0 0 0 3px rgba(62, 123, 87, 0.1) !important;
   outline: none !important;
+}
+
+/* Puck publish/save button — use forest green instead of Puck's default blue */
+[class*="Header-"] button[class*="Button--primary"],
+[class*="PuckLayout-header"] button[type="button"]:last-child {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  border-radius: 10px !important;
+}
+
+/* Puck header bar bg */
+[class*="PuckLayout-header"],
+[class*="Header-"] {
+  background: #FFFFFF !important;
+}
+
+/* Puck left sidebar bg */
+[class*="Sidebar--left"] {
+  background: #F8F6F2 !important;
+  border-right: 1px solid #E2DFD9 !important;
+}
+
+/* Puck action bar at bottom (drag overlay/toolbar) */
+[class*="ActionBar-"] {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(10, 26, 16, 0.08), 0 2px 4px rgba(10, 26, 16, 0.06) !important;
 }
 

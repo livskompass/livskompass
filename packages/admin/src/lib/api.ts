@@ -283,6 +283,7 @@ export interface Course {
 export interface Booking {
   id: string
   course_id: string
+  course_title?: string
   customer_name: string
   customer_email: string
   customer_phone: string
@@ -295,7 +296,6 @@ export interface Booking {
   booking_status: string
   notes: string
   created_at: string
-  course?: Course
 }
 
 export interface Product {

@@ -652,21 +652,21 @@ adminRoutes.put('/site-settings', async (c) => {
 // ============ DASHBOARD STATS ============
 
 adminRoutes.get('/stats', async (c) => {
-  const [pages, posts, courses, bookings, contacts] = await Promise.all([
-    c.env.DB.prepare(`SELECT COUNT(*) as count FROM pages WHERE status = 'published'`).first(),
-    c.env.DB.prepare(`SELECT COUNT(*) as count FROM posts WHERE status = 'published'`).first(),
-    c.env.DB.prepare(`SELECT COUNT(*) as count FROM courses WHERE status = 'active'`).first(),
-    c.env.DB.prepare(`SELECT COUNT(*) as count FROM bookings WHERE payment_status = 'paid'`).first(),
-    c.env.DB.prepare(`SELECT COUNT(*) as count FROM contacts WHERE read = 0`).first(),
+  const results = await c.env.DB.batch([
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM pages WHERE status = 'published'`),
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM posts WHERE status = 'published'`),
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM courses WHERE status = 'active'`),
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM bookings WHERE payment_status = 'paid'`),
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM contacts WHERE read = 0`),
   ])
 
   return c.json({
     stats: {
-      publishedPages: pages?.count || 0,
-      publishedPosts: posts?.count || 0,
-      activeCourses: courses?.count || 0,
-      paidBookings: bookings?.count || 0,
-      unreadContacts: contacts?.count || 0,
+      publishedPages: (results[0].results?.[0] as { count: number } | undefined)?.count ?? 0,
+      publishedPosts: (results[1].results?.[0] as { count: number } | undefined)?.count ?? 0,
+      activeCourses: (results[2].results?.[0] as { count: number } | undefined)?.count ?? 0,
+      paidBookings: (results[3].results?.[0] as { count: number } | undefined)?.count ?? 0,
+      unreadContacts: (results[4].results?.[0] as { count: number } | undefined)?.count ?? 0,
     }
   })
 })

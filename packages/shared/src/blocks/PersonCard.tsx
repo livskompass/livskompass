@@ -27,7 +27,7 @@ export function PersonCard({
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
         <div className="flex flex-col md:flex-row gap-8 items-start">
           {resolvedImage ? (
-            <img src={resolvedImage} alt={name} className="w-48 h-48 rounded-xl object-cover flex-shrink-0" />
+            <img src={resolvedImage} alt={name} loading="lazy" className="w-48 h-48 rounded-xl object-cover flex-shrink-0" />
           ) : (
             <div className="w-48 h-48 rounded-xl bg-forest-100 flex items-center justify-center flex-shrink-0">
               <span className="font-display text-4xl text-forest-600">{name.charAt(0)}</span>
@@ -61,7 +61,7 @@ export function PersonCard({
     <div className="max-w-sm mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden text-center p-8">
         {resolvedImage ? (
-          <img src={resolvedImage} alt={name} className="w-32 h-32 rounded-full object-cover mx-auto mb-4" />
+          <img src={resolvedImage} alt={name} loading="lazy" className="w-32 h-32 rounded-full object-cover mx-auto mb-4" />
         ) : (
           <div className="w-32 h-32 rounded-full bg-forest-100 flex items-center justify-center mx-auto mb-4">
             <span className="font-display text-3xl text-forest-600">{name.charAt(0)}</span>

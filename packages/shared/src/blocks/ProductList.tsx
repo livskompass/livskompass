@@ -6,6 +6,10 @@ export interface ProductListProps {
   heading: string
   filterType: string
   columns: 2 | 3
+  buyButtonText: string
+  freeLabel: string
+  outOfStockLabel: string
+  emptyText: string
 }
 
 interface Product {
@@ -33,6 +37,10 @@ export function ProductList({
   heading = '',
   filterType = '',
   columns = 3,
+  buyButtonText = 'Köp',
+  freeLabel = 'Gratis',
+  outOfStockLabel = 'Slut i lager',
+  emptyText = 'Inga produkter hittades.',
 }: ProductListProps) {
   const { data, loading } = useFetchJson<{ products: Product[] }>('/products')
   const allProducts = data?.products || []
@@ -101,10 +109,10 @@ export function ProductList({
                             {product.price_sek.toLocaleString('sv-SE')} kr
                           </span>
                         ) : (
-                          <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">Gratis</span>
+                          <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">{freeLabel}</span>
                         )}
                         {!product.in_stock ? (
-                          <span className="text-xs text-stone-400 font-medium">Slut i lager</span>
+                          <span className="text-xs text-stone-400 font-medium">{outOfStockLabel}</span>
                         ) : product.external_url ? (
                           <a
                             href={product.external_url}
@@ -112,7 +120,7 @@ export function ProductList({
                             rel="noopener noreferrer"
                             className="inline-flex items-center h-9 px-4 text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 rounded-full transition-colors"
                           >
-                            Köp
+                            {buyButtonText}
                             <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
                           </a>
                         ) : null}
@@ -126,7 +134,7 @@ export function ProductList({
         </div>
       ) : (
         <div className="text-center py-16 text-stone-400 border-2 border-dashed border-stone-200 rounded-xl">
-          Inga produkter hittades.
+          {emptyText}
         </div>
       )}
     </div>

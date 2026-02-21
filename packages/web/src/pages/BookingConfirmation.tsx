@@ -30,7 +30,7 @@ export default function BookingConfirmation() {
       <div className="max-w-2xl mx-auto px-4 py-24 text-center">
         <Card>
           <CardContent className="py-12">
-            <h1 className="text-3xl font-bold text-stone-900 mb-4">
+            <h1 className="text-h2 text-stone-900 mb-4">
               Ingen bokning hittades
             </h1>
             <Button variant="ghost" className="text-forest-600" asChild>
@@ -53,7 +53,7 @@ export default function BookingConfirmation() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 mb-6">
               <AlertTriangle className="h-8 w-8 text-yellow-600" />
             </div>
-            <h1 className="text-3xl font-bold text-stone-900 mb-3">
+            <h1 className="text-h2 text-stone-900 mb-3">
               Betalning avbruten
             </h1>
             <p className="text-stone-500 mb-8 text-lg">
@@ -88,7 +88,7 @@ export default function BookingConfirmation() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-24 text-center">
         <Loader2 className="h-12 w-12 text-forest-600 animate-spin mx-auto mb-6" />
-        <h1 className="text-3xl font-bold text-stone-900 mb-3">
+        <h1 className="text-h2 text-stone-900 mb-3">
           Behandlar betalning...
         </h1>
         <p className="text-stone-500 text-lg" aria-live="polite">
@@ -104,7 +104,7 @@ export default function BookingConfirmation() {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-6">
           <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
-        <h1 className="text-3xl font-bold text-stone-900 mb-3">
+        <h1 className="text-h2 text-stone-900 mb-3">
           Tack för din bokning!
         </h1>
         <p className="text-stone-500 mb-8 text-lg" aria-live="polite">
@@ -138,7 +138,7 @@ export default function BookingConfirmation() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
             <XCircle className="h-8 w-8 text-red-600" />
           </div>
-          <h1 className="text-3xl font-bold text-stone-900 mb-3">
+          <h1 className="text-h2 text-stone-900 mb-3">
             Något gick fel
           </h1>
           <p className="text-stone-500 mb-8 text-lg">

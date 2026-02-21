@@ -6,6 +6,11 @@ import { Calendar, MapPin, CreditCard, AlertCircle, ArrowRight } from 'lucide-re
 export interface BookingFormProps {
   showOrganization: boolean
   showNotes: boolean
+  submitButtonText: string
+  processingText: string
+  fullMessage: string
+  completedMessage: string
+  totalLabel: string
 }
 
 function Placeholder() {
@@ -25,6 +30,11 @@ function formatDate(date: string): string {
 export function BookingForm({
   showOrganization = true,
   showNotes = true,
+  submitButtonText = 'Gå till betalning',
+  processingText = 'Bearbetar...',
+  fullMessage = 'Denna utbildning är fullbokad.',
+  completedMessage = 'Denna utbildning har genomförts.',
+  totalLabel = 'Totalt',
 }: BookingFormProps) {
   const course = useCourseData()
   const isEditor = typeof window !== 'undefined' && window.frameElement !== null
@@ -52,7 +62,7 @@ export function BookingForm({
       <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
         <div className="bg-stone-100 rounded-xl p-8 text-center">
           <p className="text-stone-500">
-            {isFull ? 'Denna utbildning är fullbokad.' : 'Denna utbildning har genomförts.'}
+            {isFull ? fullMessage : completedMessage}
           </p>
         </div>
       </div>
@@ -202,7 +212,7 @@ export function BookingForm({
 
           {/* Price summary */}
           <div className="bg-stone-50 rounded-lg p-4 flex items-center justify-between">
-            <span className="text-stone-600 font-medium">Totalt</span>
+            <span className="text-stone-600 font-medium">{totalLabel}</span>
             <span className="font-display text-h3 text-stone-800">
               {totalPrice.toLocaleString('sv-SE')} kr
             </span>
@@ -213,7 +223,7 @@ export function BookingForm({
             disabled={status === 'submitting' || isEditor}
             className="w-full inline-flex items-center justify-center h-12 bg-amber-500 text-white hover:bg-amber-600 font-semibold rounded-full transition-colors disabled:opacity-50 text-base"
           >
-            {status === 'submitting' ? 'Bearbetar...' : 'Gå till betalning'}
+            {status === 'submitting' ? processingText : submitButtonText}
             <ArrowRight className="ml-2 h-4 w-4" />
           </button>
         </form>

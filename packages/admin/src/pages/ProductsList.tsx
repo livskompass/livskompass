@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getProducts, deleteProduct, getMediaUrl } from '../lib/api'
@@ -6,10 +7,12 @@ import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Plus, Pencil, Trash2, ShoppingBag } from 'lucide-react'
 
 export default function ProductsList() {
   const queryClient = useQueryClient()
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-products'],
@@ -22,12 +25,6 @@ export default function ProductsList() {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] })
     },
   })
-
-  const handleDelete = (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      deleteMutation.mutate(id)
-    }
-  }
 
   return (
     <div className="space-y-6">
@@ -54,7 +51,7 @@ export default function ProductsList() {
         ) : data?.products && data.products.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50/50">
+              <TableRow className="bg-stone-50">
                 <TableHead>Product</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Price</TableHead>
@@ -107,7 +104,7 @@ export default function ProductsList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(product.id, product.title)}
+                        onClick={() => setDeleteTarget({ id: product.id, title: product.title })}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -128,6 +125,17 @@ export default function ProductsList() {
           </CardContent>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete product"
+        description={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id)
+        }}
+      />
     </div>
   )
 }

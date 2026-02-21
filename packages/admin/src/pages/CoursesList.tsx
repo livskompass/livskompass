@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCourses, deleteCourse } from '../lib/api'
@@ -6,10 +7,12 @@ import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Plus, Pencil, Trash2, GraduationCap } from 'lucide-react'
 
 export default function CoursesList() {
   const queryClient = useQueryClient()
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-courses'],
@@ -22,12 +25,6 @@ export default function CoursesList() {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
     },
   })
-
-  const handleDelete = (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      deleteMutation.mutate(id)
-    }
-  }
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -74,7 +71,7 @@ export default function CoursesList() {
         ) : data?.courses && data.courses.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50/50">
+              <TableRow className="bg-stone-50">
                 <TableHead>Course</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Location</TableHead>
@@ -120,7 +117,7 @@ export default function CoursesList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(course.id, course.title)}
+                        onClick={() => setDeleteTarget({ id: course.id, title: course.title })}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -141,6 +138,17 @@ export default function CoursesList() {
           </CardContent>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete course"
+        description={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id)
+        }}
+      />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import InlineEditProvider from './components/InlineEditProvider'
 
 const UniversalPage = React.lazy(() => import('./pages/UniversalPage'))
 const CourseDetail = React.lazy(() => import('./pages/CourseDetail'))
@@ -25,6 +26,7 @@ function PageLoader() {
 function App() {
   return (
     <BrowserRouter>
+      <InlineEditProvider>
       <Routes>
         <Route path="/" element={<Layout />}>
           {/* Home: page with slug "home-2" (from WordPress migration) */}
@@ -51,6 +53,7 @@ function App() {
           <Route path="*" element={<Suspense fallback={<PageLoader />}><NotFound /></Suspense>} />
         </Route>
       </Routes>
+      </InlineEditProvider>
     </BrowserRouter>
   )
 }

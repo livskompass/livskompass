@@ -12,6 +12,9 @@ export interface ContactFormProps {
   contactTitle: string
   contactEmail: string
   contactPhone: string
+  submitButtonText: string
+  successHeading: string
+  successMessage: string
 }
 
 export function ContactForm({
@@ -24,6 +27,9 @@ export function ContactForm({
   contactTitle = 'Legitimerad psykolog och ACT-utbildare',
   contactEmail = 'livheim@gmail.com',
   contactPhone = '070-694 03 64',
+  submitButtonText = 'Skicka meddelande',
+  successHeading = 'Tack för ditt meddelande!',
+  successMessage = 'Vi återkommer så snart vi kan.',
 }: ContactFormProps) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
@@ -118,9 +124,9 @@ export function ContactForm({
       <button
         type="submit"
         disabled={status === 'submitting' || isEditor}
-        className="inline-flex items-center h-11 px-6 bg-forest-500 text-white hover:bg-forest-600 font-semibold rounded-full transition-colors disabled:opacity-50"
+        className="inline-flex items-center h-12 px-7 bg-forest-500 text-white hover:bg-forest-600 font-semibold rounded-full transition-colors disabled:opacity-50"
       >
-        {status === 'submitting' ? 'Skickar...' : 'Skicka meddelande'}
+        {status === 'submitting' ? 'Skickar...' : submitButtonText}
         <Send className="ml-2 h-4 w-4" />
       </button>
     </form>
@@ -131,8 +137,8 @@ export function ContactForm({
       <div className="mx-auto" style={{ maxWidth: '42rem', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
         <div className="bg-forest-50 border border-forest-200 rounded-xl p-8 text-center">
           <CheckCircle className="h-12 w-12 text-forest-500 mx-auto mb-4" />
-          <h3 className="text-h3 text-forest-800 mb-2">Tack för ditt meddelande!</h3>
-          <p className="text-forest-600">Vi återkommer så snart vi kan.</p>
+          <h3 className="text-h3 text-forest-800 mb-2">{successHeading}</h3>
+          <p className="text-forest-600">{successMessage}</p>
         </div>
       </div>
     )

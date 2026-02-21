@@ -5,6 +5,12 @@ import { MapPin, Calendar, CreditCard, Users, Clock } from 'lucide-react'
 export interface CourseInfoProps {
   showDeadline: boolean
   layout: 'grid' | 'stacked'
+  locationLabel: string
+  dateLabel: string
+  priceLabel: string
+  spotsLabel: string
+  deadlineLabel: string
+  fullLabel: string
 }
 
 function formatDate(date: string): string {
@@ -32,6 +38,12 @@ function Placeholder() {
 export function CourseInfo({
   showDeadline = true,
   layout = 'grid',
+  locationLabel = 'Plats',
+  dateLabel = 'Datum',
+  priceLabel = 'Pris',
+  spotsLabel = 'Platser',
+  deadlineLabel = 'Sista anmälningsdag',
+  fullLabel = 'Fullbokad',
 }: CourseInfoProps) {
   const course = useCourseData()
 
@@ -41,14 +53,14 @@ export function CourseInfo({
   const isFull = course.status === 'full'
 
   const items = [
-    { icon: MapPin, label: 'Plats', value: course.location },
-    { icon: Calendar, label: 'Datum', value: course.start_date ? `${formatDate(course.start_date)} – ${formatDate(course.end_date)}` : '' },
-    { icon: CreditCard, label: 'Pris', value: course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '' },
-    { icon: Users, label: 'Platser', value: isFull ? 'Fullbokad' : `${spotsLeft} av ${course.max_participants} kvar` },
+    { icon: MapPin, label: locationLabel, value: course.location },
+    { icon: Calendar, label: dateLabel, value: course.start_date ? `${formatDate(course.start_date)} – ${formatDate(course.end_date)}` : '' },
+    { icon: CreditCard, label: priceLabel, value: course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '' },
+    { icon: Users, label: spotsLabel, value: isFull ? fullLabel : `${spotsLeft} av ${course.max_participants} kvar` },
   ]
 
   if (showDeadline && course.registration_deadline) {
-    items.push({ icon: Clock, label: 'Sista anmälningsdag', value: formatDate(course.registration_deadline) })
+    items.push({ icon: Clock, label: deadlineLabel, value: formatDate(course.registration_deadline) })
   }
 
   if (layout === 'stacked') {
@@ -82,7 +94,7 @@ export function CourseInfo({
               <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{item.label}</div>
               <div className={cn(
                 'font-medium',
-                item.label === 'Platser' && isFull ? 'text-amber-600' : 'text-stone-800'
+                item.label === spotsLabel && isFull ? 'text-amber-600' : 'text-stone-800'
               )}>{item.value}</div>
             </div>
           ))}

@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Skeleton } from '../components/ui/skeleton'
 import { Separator } from '../components/ui/separator'
-import { Upload, Trash2, Copy, ImageIcon, FileText, Film, Music, Loader2 } from 'lucide-react'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
+import { Upload, Trash2, Copy, Check, ImageIcon, FileText, Film, Music, Loader2 } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 export default function MediaLibrary() {
@@ -13,6 +14,8 @@ export default function MediaLibrary() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; filename: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-media'],
@@ -47,15 +50,10 @@ export default function MediaLibrary() {
     }
   }
 
-  const handleDelete = (id: string, filename: string) => {
-    if (window.confirm(`Are you sure you want to delete "${filename}"?`)) {
-      deleteMutation.mutate(id)
-    }
-  }
-
   const copyToClipboard = (url: string) => {
     navigator.clipboard.writeText(url)
-    alert('URL copied to clipboard!')
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   const getFileIcon = (type: string | undefined) => {
@@ -199,14 +197,17 @@ export default function MediaLibrary() {
                   <Button
                     variant="outline"
                     onClick={() => copyToClipboard(getMediaUrl(selected.url))}
-                    className="w-full"
+                    className={cn("w-full", copied && "border-forest-300 text-forest-700")}
                   >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy URL
+                    {copied ? (
+                      <><Check className="h-4 w-4 mr-2" /> Copied!</>
+                    ) : (
+                      <><Copy className="h-4 w-4 mr-2" /> Copy URL</>
+                    )}
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => handleDelete(selected.id, selected.filename)}
+                    onClick={() => setDeleteTarget({ id: selected.id, filename: selected.filename })}
                     className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
@@ -225,6 +226,17 @@ export default function MediaLibrary() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete file"
+        description={`Are you sure you want to delete "${deleteTarget?.filename}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget.id)
+        }}
+      />
     </div>
   )
 }

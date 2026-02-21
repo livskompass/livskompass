@@ -7,6 +7,7 @@ import { getMediaUrl } from '../lib/api'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Select } from './ui/select'
+import { Textarea } from './ui/textarea'
 import { Button } from './ui/button'
 import {
   Dialog,
@@ -309,10 +310,10 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
 
                         <div>
                           <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Description</Label>
-                          <textarea
+                          <Textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full rounded-md border-[1.5px] border-stone-300 bg-white px-3 py-2 text-sm focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 resize-none transition-colors"
+                            className="min-h-0 resize-none"
                             rows={2}
                             placeholder="Short description for listings..."
                           />

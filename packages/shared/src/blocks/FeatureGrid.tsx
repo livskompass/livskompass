@@ -56,19 +56,19 @@ export function FeatureGrid({
           const IconComponent = iconMap[item.icon?.toLowerCase()] || Star
           const stagger = `reveal reveal-stagger-${Math.min(i + 1, 5)}`
           return style === 'cards' ? (
-            <div key={i} className={`bg-white rounded-xl border border-stone-200 shadow-sm p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ${stagger}`}>
-              <div className="w-12 h-12 rounded-xl bg-forest-50 flex items-center justify-center mb-4">
+            <div key={i} className={`group bg-white rounded-xl border border-stone-200 shadow-sm p-6 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 ${stagger}`}>
+              <div className="w-12 h-12 rounded-xl bg-forest-50 group-hover:bg-forest-100 flex items-center justify-center mb-4 transition-colors duration-300">
                 <IconComponent className="h-6 w-6 text-forest-600" />
               </div>
-              <h3 className="font-semibold text-stone-800 mb-2">{item.title}</h3>
+              <h3 className="font-semibold text-stone-800 mb-2 group-hover:text-forest-700 transition-colors">{item.title}</h3>
               <p className="text-sm text-stone-500 leading-relaxed">{item.description}</p>
             </div>
           ) : (
-            <div key={i} className={`text-center ${stagger}`}>
-              <div className="w-12 h-12 rounded-full bg-forest-50 flex items-center justify-center mx-auto mb-4">
+            <div key={i} className={`text-center group ${stagger}`}>
+              <div className="w-12 h-12 rounded-full bg-forest-50 group-hover:bg-forest-100 flex items-center justify-center mx-auto mb-4 transition-colors duration-300">
                 <IconComponent className="h-6 w-6 text-forest-600" />
               </div>
-              <h3 className="font-semibold text-stone-800 mb-2">{item.title}</h3>
+              <h3 className="font-semibold text-stone-800 mb-2 group-hover:text-forest-700 transition-colors">{item.title}</h3>
               <p className="text-sm text-stone-500 leading-relaxed">{item.description}</p>
             </div>
           )

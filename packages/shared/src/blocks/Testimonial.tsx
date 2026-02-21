@@ -20,7 +20,7 @@ export function Testimonial({
   if (style === 'minimal') {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-        <blockquote className="border-l-4 border-forest-400 pl-6 py-2">
+        <blockquote className="border-l-[3px] border-forest-400 pl-6 py-2">
           <p className="text-lg italic text-stone-700 leading-relaxed">{quote}</p>
           {author && (
             <footer className="mt-3 text-sm text-stone-500">
@@ -35,11 +35,12 @@ export function Testimonial({
   if (style === 'featured') {
     return (
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        <div className="bg-forest-50 rounded-xl p-8 md:p-12 border border-forest-100 relative reveal">
+        <div className="bg-forest-50 rounded-2xl p-8 md:p-12 border border-forest-100 relative overflow-hidden reveal">
+          <div className="absolute top-0 right-0 w-48 h-48 pointer-events-none" style={{ background: 'radial-gradient(circle at 100% 0%, rgba(62, 123, 87, 0.08) 0%, transparent 70%)' }} />
           <Quote className="absolute top-6 left-6 h-10 w-10 text-forest-200" />
           <blockquote className="relative z-10">
             <p className="font-display text-h3 text-stone-800 italic leading-relaxed mb-6">
-              "{quote}"
+              &ldquo;{quote}&rdquo;
             </p>
             {author && (
               <footer className="flex items-center gap-3">
@@ -60,7 +61,7 @@ export function Testimonial({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      <div className="bg-white rounded-xl p-8 border border-stone-200 shadow-sm border-l-4 border-l-amber-400 reveal">
+      <div className="bg-white rounded-xl p-8 border border-stone-200 shadow-sm border-l-[3px] border-l-amber-400 reveal">
         <p className="text-lg text-stone-700 italic mb-4 leading-relaxed">"{quote}"</p>
         {author && (
           <div className="flex items-center gap-3">

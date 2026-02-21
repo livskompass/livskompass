@@ -1,7 +1,13 @@
 import { useCallback, useRef } from 'react'
+import DOMPurify from 'dompurify'
 import { cn } from '../ui/utils'
 import { rewriteHtmlMediaUrls } from '../helpers'
 import { useInlineEditBlock } from '../context'
+
+function sanitize(html: string): string {
+  if (typeof window === 'undefined') return html
+  return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
+}
 
 export interface RichTextProps {
   content: string
@@ -61,7 +67,7 @@ export function RichText({
   return (
     <div
       className={baseClass}
-      dangerouslySetInnerHTML={{ __html: rewriteHtmlMediaUrls(content) }}
+      dangerouslySetInnerHTML={{ __html: sanitize(rewriteHtmlMediaUrls(content)) }}
     />
   )
 }

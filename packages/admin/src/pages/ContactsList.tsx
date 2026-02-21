@@ -6,12 +6,14 @@ import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Separator } from '../components/ui/separator'
 import { Skeleton } from '../components/ui/skeleton'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Mail, Trash2, Reply, Clock } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 export default function ContactsList() {
   const queryClient = useQueryClient()
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-contacts'],
@@ -41,9 +43,7 @@ export default function ContactsList() {
   }
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this message?')) {
-      deleteMutation.mutate(id)
-    }
+    setDeleteId(id)
   }
 
   return (
@@ -197,6 +197,17 @@ export default function ContactsList() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        title="Delete message"
+        description="Are you sure you want to delete this message? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteId) deleteMutation.mutate(deleteId)
+        }}
+      />
     </div>
   )
 }

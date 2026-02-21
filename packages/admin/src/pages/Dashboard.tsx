@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getBookings, getCourses, getContacts, API_BASE } from '../lib/api'
+import { getBookings, getCourses, API_BASE } from '../lib/api'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
@@ -48,10 +48,6 @@ export default function Dashboard() {
     queryKey: ['admin-courses'],
     queryFn: getCourses,
   })
-  const { data: contactsData } = useQuery({
-    queryKey: ['admin-contacts'],
-    queryFn: getContacts,
-  })
 
   const stats = [
     { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/sidor', icon: FileText, color: 'text-forest-600 bg-forest-50' },
@@ -60,7 +56,7 @@ export default function Dashboard() {
     { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-amber-500 bg-amber-50' },
   ]
 
-  const unreadContacts = contactsData?.contacts?.filter((c) => !c.read)?.length ?? 0
+  const unreadContacts = statsData?.stats?.unreadContacts ?? 0
 
   return (
     <div className="space-y-8">

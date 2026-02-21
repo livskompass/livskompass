@@ -54,6 +54,7 @@ export function PostHeader({
         <img
           src={resolveMediaUrl(post.featured_image)}
           alt={post.title}
+          loading="lazy"
           className="w-full rounded-xl object-cover max-h-[28rem]"
         />
       )}

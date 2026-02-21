@@ -98,7 +98,7 @@ export default function BookingPage() {
             <Badge variant={course.status === 'completed' ? 'secondary' : 'destructive'} className="mb-4">
               {course.status === 'completed' ? 'Genomförd' : 'Fullbokad'}
             </Badge>
-            <h1 className="text-3xl font-bold text-stone-900 mb-3">
+            <h1 className="text-h2 text-stone-900 mb-3">
               Kan inte boka
             </h1>
             <p className="text-stone-500 mb-6">
@@ -139,7 +139,7 @@ export default function BookingPage() {
         </Link>
       </Button>
 
-      <h1 className="text-3xl font-bold text-stone-900 mb-2">Boka plats</h1>
+      <h1 className="text-h2 text-stone-900 mb-2">Boka plats</h1>
       <p className="text-xl text-stone-500 mb-8">{course.title}</p>
 
       <Card className="mb-8">
@@ -225,7 +225,7 @@ export default function BookingPage() {
                 id="participants"
                 value={formData.participants}
                 onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
-                className="flex h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2"
+                className="flex h-12 w-full px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
               >
                 {Array.from(
                   { length: Math.min(10, available) },

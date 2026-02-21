@@ -14,6 +14,8 @@ export interface PricingTableProps {
     ctaLink: string
   }>
   columns: 2 | 3
+  highlightLabel: string
+  emptyText: string
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-3' }
@@ -22,12 +24,14 @@ export function PricingTable({
   heading = '',
   items = [],
   columns = 2,
+  highlightLabel = 'Populärt val',
+  emptyText = 'Lägg till priser i inställningarna...',
 }: PricingTableProps) {
   if (items.length === 0) {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
         <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-          Lägg till priser i inställningarna...
+          {emptyText}
         </div>
       </div>
     )
@@ -45,14 +49,17 @@ export function PricingTable({
           <div
             key={i}
             className={cn(
-              'rounded-xl p-8 flex flex-col',
+              'rounded-xl p-8 flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-1',
               item.highlighted
-                ? 'bg-white border-2 border-amber-400 shadow-lg ring-1 ring-amber-100'
-                : 'bg-white border border-stone-200 shadow-sm'
+                ? 'bg-white border-2 border-amber-400 shadow-lg hover:shadow-xl'
+                : 'bg-white border border-stone-200 shadow-sm hover:shadow-md'
             )}
           >
             {item.highlighted && (
-              <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Populärt val</span>
+              <>
+                <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: 'radial-gradient(circle at 100% 0%, rgba(176, 131, 80, 0.08) 0%, transparent 70%)' }} />
+                <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">{highlightLabel}</span>
+              </>
             )}
             <h3 className="text-h4 text-stone-800">{item.name}</h3>
             <div className="mt-4 mb-2">
@@ -78,7 +85,7 @@ export function PricingTable({
               <a
                 href={item.ctaLink || '#'}
                 className={cn(
-                  'mt-auto inline-flex items-center justify-center h-11 px-6 rounded-full font-semibold text-sm transition-all w-full active:scale-[0.98]',
+                  'mt-auto inline-flex items-center justify-center h-12 px-7 rounded-full font-semibold text-sm transition-all w-full active:scale-[0.98]',
                   item.highlighted
                     ? 'bg-amber-500 text-white hover:bg-amber-600'
                     : 'bg-forest-500 text-white hover:bg-forest-600'

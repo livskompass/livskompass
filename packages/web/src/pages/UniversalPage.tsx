@@ -84,7 +84,7 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
   // Legacy fallback: old HTML content with child page cards
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h1 className="text-4xl font-bold text-stone-900 mb-8 tracking-tight">{page.title}</h1>
+      <h1 className="text-h1 text-forest-950 mb-8">{page.title}</h1>
 
       {page.content && (
         <div

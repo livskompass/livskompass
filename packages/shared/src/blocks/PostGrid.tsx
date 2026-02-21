@@ -9,6 +9,7 @@ export interface PostGridProps {
   showExcerpt: boolean
   showDate: boolean
   cardStyle: 'default' | 'minimal' | 'featured'
+  emptyText: string
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
@@ -29,6 +30,7 @@ export function PostGrid({
   showImage = true,
   showExcerpt = true,
   showDate = true,
+  emptyText = 'Inga inlägg hittades',
 }: PostGridProps) {
   const limit = count || 3
   const { data, loading } = useFetchJson<{ posts: Post[] }>(`/posts?limit=${limit}`)
@@ -81,7 +83,7 @@ export function PostGrid({
         </div>
       ) : (
         <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-          Inga inlägg hittades
+          {emptyText}
         </div>
       )}
     </div>

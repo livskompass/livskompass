@@ -8,22 +8,25 @@ postsRoutes.get('/', async (c) => {
   const limit = parseInt(c.req.query('limit') || '10')
   const offset = parseInt(c.req.query('offset') || '0')
 
-  const result = await c.env.DB.prepare(`
-    SELECT id, slug, title, excerpt, featured_image, published_at
-    FROM posts
-    WHERE status = 'published'
-    ORDER BY published_at DESC
-    LIMIT ? OFFSET ?
-  `).bind(limit, offset).all()
+  const [result, countResult] = await c.env.DB.batch([
+    c.env.DB.prepare(`
+      SELECT id, slug, title, excerpt, featured_image, published_at
+      FROM posts
+      WHERE status = 'published'
+      ORDER BY published_at DESC
+      LIMIT ? OFFSET ?
+    `).bind(limit, offset),
+    c.env.DB.prepare(`
+      SELECT COUNT(*) as total FROM posts WHERE status = 'published'
+    `),
+  ])
 
-  const countResult = await c.env.DB.prepare(`
-    SELECT COUNT(*) as total FROM posts WHERE status = 'published'
-  `).first()
+  const total = (countResult.results?.[0] as { total: number } | undefined)?.total ?? 0
 
   c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
   return c.json({
     posts: result.results,
-    total: countResult?.total || 0,
+    total,
     limit,
     offset
   })

@@ -88,13 +88,14 @@ export function CardGrid({
   const renderManualCards = () =>
     manualCards.slice(0, maxItems).map((card, i) => (
       <a key={i} href={card.link || '#'} className="block group">
-        <Card className={cn('h-full hover:shadow-md hover:-translate-y-1 transition-all duration-300', cardStyleMap[cardStyle])}>
+        <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle])}>
           {card.image && (
             <div className="aspect-video overflow-hidden rounded-t-xl">
               <img
                 src={card.image}
                 alt={card.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
           )}
@@ -130,13 +131,14 @@ export function CardGrid({
 
       return (
         <a key={item.id} href={`${linkBase}${item.slug}`} className="block group">
-          <Card className={cn('h-full hover:shadow-md hover:-translate-y-1 transition-all duration-300', cardStyleMap[cardStyle])}>
+          <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle])}>
             {image && (
               <div className="aspect-video overflow-hidden rounded-t-xl">
                 <img
                   src={image}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
             )}
@@ -192,7 +194,7 @@ export function CardGrid({
   const isEmpty = cards.length === 0
 
   return (
-    <section ref={revealRef} style={{ paddingBlock: 'var(--section-md)' }}>
+    <section ref={revealRef} style={{ paddingBlock: 'var(--section-md)', maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
       {(heading || subheading) && (
         <div className="text-center mb-10 reveal">
           {heading && (

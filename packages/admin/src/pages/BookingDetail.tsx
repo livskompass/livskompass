@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getBooking, refundBooking } from '../lib/api'
@@ -6,11 +7,13 @@ import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { Separator } from '../components/ui/separator'
 import { Skeleton } from '../components/ui/skeleton'
+import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { ArrowLeft, Mail, Phone, Building, Calendar, Users, CreditCard, Hash } from 'lucide-react'
 
 export default function BookingDetail() {
   const { id } = useParams()
   const queryClient = useQueryClient()
+  const [refundOpen, setRefundOpen] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-booking', id],
@@ -25,12 +28,6 @@ export default function BookingDetail() {
       queryClient.invalidateQueries({ queryKey: ['admin-bookings'] })
     },
   })
-
-  const handleRefund = () => {
-    if (window.confirm('Are you sure you want to issue a refund? This cannot be undone.')) {
-      refundMutation.mutate()
-    }
-  }
 
   if (isLoading) {
     return (
@@ -153,7 +150,7 @@ export default function BookingDetail() {
               <div>
                 <p className="text-sm text-stone-500">Course</p>
                 <p className="font-medium text-stone-900">
-                  {booking.course?.title || booking.course_id}
+                  {booking.course_title || booking.course_id}
                 </p>
               </div>
             </div>
@@ -213,7 +210,7 @@ export default function BookingDetail() {
                 <Separator />
                 <Button
                   variant="destructive"
-                  onClick={handleRefund}
+                  onClick={() => setRefundOpen(true)}
                   disabled={refundMutation.isPending}
                   className="w-full"
                 >
@@ -238,6 +235,16 @@ export default function BookingDetail() {
           </Card>
         )}
       </div>
+
+      <ConfirmDialog
+        open={refundOpen}
+        onOpenChange={setRefundOpen}
+        title="Issue refund"
+        description="Are you sure you want to issue a full refund? This action cannot be undone."
+        confirmLabel="Issue refund"
+        loading={refundMutation.isPending}
+        onConfirm={() => refundMutation.mutate()}
+      />
     </div>
   )
 }

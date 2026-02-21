@@ -7,6 +7,8 @@ export interface PageCardsProps {
   columns: 2 | 3 | 4
   showDescription: boolean
   style: 'card' | 'list' | 'minimal'
+  emptyText: string
+  emptyManualText: string
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
@@ -23,6 +25,8 @@ export function PageCards({
   columns = 3,
   showDescription = true,
   style = 'card',
+  emptyText = 'Inga undersidor hittades',
+  emptyManualText = 'Lägg till sidor manuellt eller ange en föräldersida',
 }: PageCardsProps) {
   const { data, loading } = useFetchJson<PageData>(parentSlug ? `/pages/${parentSlug}` : '')
 
@@ -90,7 +94,7 @@ export function PageCards({
         ))}
         {pages.length === 0 && (
           <div className="col-span-full text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-            {parentSlug ? 'Inga undersidor hittades' : 'Lägg till sidor manuellt eller ange en föräldersida'}
+            {parentSlug ? emptyText : emptyManualText}
           </div>
         )}
       </div>
