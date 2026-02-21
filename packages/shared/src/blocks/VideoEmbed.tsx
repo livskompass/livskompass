@@ -32,10 +32,10 @@ export function VideoEmbed({
   const ratio = ratioMap[aspectRatio] || 'aspect-video'
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <figure>
         {embedUrl ? (
-          <div className={`${ratio} w-full rounded-xl overflow-hidden bg-neutral-100`}>
+          <div className={`${ratio} w-full rounded-xl overflow-hidden bg-stone-100`}>
             <iframe
               src={embedUrl}
               className="w-full h-full"
@@ -45,11 +45,11 @@ export function VideoEmbed({
             />
           </div>
         ) : (
-          <div className={`${ratio} w-full rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-400`}>
+          <div className={`${ratio} w-full rounded-xl bg-stone-100 flex items-center justify-center text-stone-400`}>
             Klistra in en video-URL
           </div>
         )}
-        {caption && <figcaption className="text-sm text-neutral-500 mt-2 text-center">{caption}</figcaption>}
+        {caption && <figcaption className="text-sm text-stone-500 mt-2 text-center">{caption}</figcaption>}
       </figure>
     </div>
   )

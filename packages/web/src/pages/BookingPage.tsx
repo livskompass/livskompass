@@ -98,15 +98,15 @@ export default function BookingPage() {
             <Badge variant={course.status === 'completed' ? 'secondary' : 'destructive'} className="mb-4">
               {course.status === 'completed' ? 'Genomförd' : 'Fullbokad'}
             </Badge>
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            <h1 className="text-3xl font-bold text-stone-900 mb-3">
               Kan inte boka
             </h1>
-            <p className="text-gray-500 mb-6">
+            <p className="text-stone-500 mb-6">
               {course.status === 'completed'
                 ? 'Denna utbildning har redan genomförts.'
                 : 'Denna utbildning är fullbokad.'}
             </p>
-            <Button variant="ghost" className="text-primary-600" asChild>
+            <Button variant="ghost" className="text-forest-600" asChild>
               <Link to="/utbildningar">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Se andra utbildningar
@@ -132,33 +132,33 @@ export default function BookingPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <Button variant="ghost" className="mb-6 -ml-2 text-gray-600 hover:text-primary-600" asChild>
+      <Button variant="ghost" className="mb-6 -ml-2 text-stone-600 hover:text-forest-600" asChild>
         <Link to={`/utbildningar/${slug}`}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Tillbaka
         </Link>
       </Button>
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Boka plats</h1>
-      <p className="text-xl text-gray-500 mb-8">{course.title}</p>
+      <h1 className="text-3xl font-bold text-stone-900 mb-2">Boka plats</h1>
+      <p className="text-xl text-stone-500 mb-8">{course.title}</p>
 
       <Card className="mb-8">
         <CardContent className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
             {course.start_date && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <Calendar className="h-4 w-4 text-gray-400" />
+              <div className="flex items-center gap-2 text-stone-600">
+                <Calendar className="h-4 w-4 text-stone-400" />
                 <span>{new Date(course.start_date).toLocaleDateString('sv-SE')}</span>
               </div>
             )}
             {course.location && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="h-4 w-4 text-gray-400" />
+              <div className="flex items-center gap-2 text-stone-600">
+                <MapPin className="h-4 w-4 text-stone-400" />
                 <span>{course.location}</span>
               </div>
             )}
-            <div className="flex items-center gap-2 text-gray-600">
-              <CreditCard className="h-4 w-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-stone-600">
+              <CreditCard className="h-4 w-4 text-stone-400" />
               <span>{priceSek.toLocaleString('sv-SE')} kr/person</span>
             </div>
           </div>
@@ -225,7 +225,7 @@ export default function BookingPage() {
                 id="participants"
                 value={formData.participants}
                 onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
-                className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                className="flex h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2"
               >
                 {Array.from(
                   { length: Math.min(10, available) },
@@ -265,7 +265,7 @@ export default function BookingPage() {
               {bookingMutation.isPending ? 'Bearbetar...' : 'Gå till betalning'}
             </Button>
 
-            <p className="text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
+            <p className="text-xs text-stone-400 text-center flex items-center justify-center gap-1.5">
               <Lock className="h-3.5 w-3.5" />
               Du kommer att dirigeras till Stripe för säker betalning
             </p>

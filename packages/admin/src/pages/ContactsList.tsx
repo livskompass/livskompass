@@ -49,8 +49,8 @@ export default function ContactsList() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Messages</h1>
-        <p className="text-gray-500 mt-1">Contact form submissions and inquiries.</p>
+        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Messages</h1>
+        <p className="text-stone-500 mt-1">Contact form submissions and inquiries.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -64,7 +64,7 @@ export default function ContactsList() {
                 ))}
               </CardContent>
             ) : data?.contacts && data.contacts.length > 0 ? (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-stone-100">
                 {data.contacts.map((contact) => (
                   <div
                     key={contact.id}
@@ -72,39 +72,39 @@ export default function ContactsList() {
                     className={cn(
                       "p-4 cursor-pointer transition-colors",
                       selectedContact?.id === contact.id
-                        ? 'bg-primary-50/50'
+                        ? 'bg-forest-50/50'
                         : !contact.read
                         ? 'bg-blue-50/30 hover:bg-blue-50/50'
-                        : 'hover:bg-gray-50'
+                        : 'hover:bg-stone-50'
                     )}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           {!contact.read && (
-                            <span className="w-2 h-2 bg-primary-600 rounded-full shrink-0" />
+                            <span className="w-2 h-2 bg-forest-600 rounded-full shrink-0" />
                           )}
                           <p className={cn(
                             "text-sm truncate",
-                            !contact.read ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'
+                            !contact.read ? 'font-semibold text-stone-900' : 'font-medium text-stone-700'
                           )}>
                             {contact.name}
                           </p>
                         </div>
-                        <p className="text-xs text-gray-500 truncate mt-0.5">
+                        <p className="text-xs text-stone-500 truncate mt-0.5">
                           {contact.email}
                         </p>
                         {contact.subject && (
-                          <p className="text-sm text-gray-700 mt-1 truncate">
+                          <p className="text-sm text-stone-700 mt-1 truncate">
                             {contact.subject}
                           </p>
                         )}
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                        <p className="text-xs text-stone-400 mt-1 line-clamp-2">
                           {contact.message}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-1 shrink-0">
-                        <time className="text-xs text-gray-400">
+                        <time className="text-xs text-stone-400">
                           {new Date(contact.created_at).toLocaleDateString('sv-SE')}
                         </time>
                         {!contact.read && (
@@ -117,8 +117,8 @@ export default function ContactsList() {
               </div>
             ) : (
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <Mail className="h-10 w-10 text-gray-300 mb-3" />
-                <p className="text-gray-500">No messages yet.</p>
+                <Mail className="h-10 w-10 text-stone-300 mb-3" />
+                <p className="text-stone-500">No messages yet.</p>
               </CardContent>
             )}
           </Card>
@@ -134,26 +134,26 @@ export default function ContactsList() {
                     <CardTitle className="text-base">{selectedContact.name}</CardTitle>
                     <a
                       href={`mailto:${selectedContact.email}`}
-                      className="text-sm text-primary-600 hover:text-primary-700"
+                      className="text-sm text-forest-600 hover:text-forest-700"
                     >
                       {selectedContact.email}
                     </a>
                     {selectedContact.phone && (
-                      <p className="text-sm text-gray-500 mt-0.5">{selectedContact.phone}</p>
+                      <p className="text-sm text-stone-500 mt-0.5">{selectedContact.phone}</p>
                     )}
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                <div className="flex items-center gap-1.5 text-xs text-stone-400">
                   <Clock className="h-3 w-3" />
                   {new Date(selectedContact.created_at).toLocaleString('sv-SE')}
                 </div>
 
                 {selectedContact.subject && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Subject</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs text-stone-500 mb-1">Subject</p>
+                    <p className="text-sm font-medium text-stone-900">
                       {selectedContact.subject}
                     </p>
                   </div>
@@ -162,8 +162,8 @@ export default function ContactsList() {
                 <Separator />
 
                 <div>
-                  <p className="text-xs text-gray-500 mb-2">Message</p>
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  <p className="text-xs text-stone-500 mb-2">Message</p>
+                  <p className="text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">
                     {selectedContact.message}
                   </p>
                 </div>
@@ -190,8 +190,8 @@ export default function ContactsList() {
           ) : (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <Mail className="h-8 w-8 text-gray-300 mb-2" />
-                <p className="text-sm text-gray-400">Select a message to read it</p>
+                <Mail className="h-8 w-8 text-stone-300 mb-2" />
+                <p className="text-sm text-stone-400">Select a message to read it</p>
               </CardContent>
             </Card>
           )}

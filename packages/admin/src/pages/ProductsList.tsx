@@ -33,8 +33,8 @@ export default function ProductsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Products</h1>
-          <p className="text-gray-500 mt-1">Manage books, CDs, and other products.</p>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Products</h1>
+          <p className="text-stone-500 mt-1">Manage books, CDs, and other products.</p>
         </div>
         <Button asChild>
           <Link to="/material/ny">
@@ -54,7 +54,7 @@ export default function ProductsList() {
         ) : data?.products && data.products.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50/50">
+              <TableRow className="bg-stone-50/50">
                 <TableHead>Product</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Price</TableHead>
@@ -71,12 +71,12 @@ export default function ProductsList() {
                         <img
                           src={getMediaUrl(product.image_url)}
                           alt=""
-                          className="h-9 w-9 rounded-md object-cover border border-gray-200"
+                          className="h-9 w-9 rounded-md object-cover border border-stone-200"
                         />
                       )}
                       <Link
                         to={`/material/${product.id}`}
-                        className="font-medium text-gray-900 hover:text-primary-600 transition-colors"
+                        className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
                       >
                         {product.title}
                       </Link>
@@ -87,10 +87,10 @@ export default function ProductsList() {
                       {product.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-gray-600 text-sm">
+                  <TableCell className="text-stone-600 text-sm">
                     {product.price_sek
                       ? `${product.price_sek.toLocaleString('sv-SE')} kr`
-                      : <span className="text-gray-400">Free</span>}
+                      : <span className="text-stone-400">Free</span>}
                   </TableCell>
                   <TableCell>
                     <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>
@@ -120,8 +120,8 @@ export default function ProductsList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <ShoppingBag className="h-10 w-10 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-2">No products yet</p>
+            <ShoppingBag className="h-10 w-10 text-stone-300 mb-3" />
+            <p className="text-stone-500 mb-2">No products yet</p>
             <Button variant="outline" size="sm" asChild>
               <Link to="/material/ny">Add your first product</Link>
             </Button>

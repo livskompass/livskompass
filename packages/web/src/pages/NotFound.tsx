@@ -7,11 +7,11 @@ export default function NotFound() {
   useDocumentTitle('Sidan hittades inte')
   return (
     <div className="max-w-2xl mx-auto px-4 py-24 text-center">
-      <p className="text-8xl font-bold text-gray-200 mb-4 select-none">404</p>
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">
+      <p className="text-8xl font-bold text-stone-200 mb-4 select-none">404</p>
+      <h1 className="text-3xl font-bold text-stone-900 mb-4">
         Sidan hittades inte
       </h1>
-      <p className="text-gray-500 mb-10 text-lg">
+      <p className="text-stone-500 mb-10 text-lg">
         Sidan du letar efter finns inte eller har flyttats.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">

@@ -19,10 +19,10 @@ export default function AuthCallback() {
   }, [searchParams, navigate])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-stone-50">
       <div className="text-center">
-        <Loader2 className="h-10 w-10 text-primary-600 animate-spin mx-auto mb-4" />
-        <p className="text-gray-500 text-sm">Signing in...</p>
+        <Loader2 className="h-10 w-10 text-forest-600 animate-spin mx-auto mb-4" />
+        <p className="text-stone-500 text-sm">Signing in...</p>
       </div>
     </div>
   )

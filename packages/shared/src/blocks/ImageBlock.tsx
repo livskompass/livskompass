@@ -41,8 +41,8 @@ export function ImageBlock({
 }: ImageBlockProps) {
   if (!src) {
     return (
-      <div className="py-12 text-center text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
-        <ImageIcon className="h-12 w-12 mx-auto mb-2 text-neutral-300" />
+      <div className="py-12 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <ImageIcon className="h-12 w-12 mx-auto mb-2 text-stone-300" />
         <p>Välj en bild...</p>
       </div>
     )
@@ -69,7 +69,7 @@ export function ImageBlock({
     <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
       {wrappedImg}
       {caption && (
-        <figcaption className="mt-2 text-sm text-neutral-500 text-center">
+        <figcaption className="mt-2 text-sm text-stone-500 text-center">
           {caption}
         </figcaption>
       )}

@@ -30,7 +30,7 @@ function AccordionItemComponent({
       <button
         onClick={onToggle}
         className={cn(
-          'flex w-full items-center justify-between py-4 px-5 text-left font-medium text-neutral-800 hover:bg-neutral-50 transition-colors',
+          'flex w-full items-center justify-between py-4 px-5 text-left font-medium text-stone-800 hover:bg-stone-50 transition-colors',
           style === 'minimal' && 'px-0'
         )}
         aria-expanded={isOpen}
@@ -38,7 +38,7 @@ function AccordionItemComponent({
         <span>{item.question}</span>
         <ChevronDown
           className={cn(
-            'h-5 w-5 text-neutral-400 shrink-0 ml-4 transition-transform duration-300',
+            'h-5 w-5 text-stone-400 shrink-0 ml-4 transition-transform duration-300',
             isOpen && 'rotate-180'
           )}
         />
@@ -52,7 +52,7 @@ function AccordionItemComponent({
         <div className="overflow-hidden">
           <div
             className={cn(
-              'pb-4 text-neutral-600 leading-relaxed',
+              'pb-4 text-stone-600 leading-relaxed',
               style === 'minimal' ? 'px-0' : 'px-5'
             )}
           >
@@ -87,7 +87,7 @@ export function Accordion({
 
   if (items.length === 0) {
     return (
-      <div className="py-8 text-center text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
+      <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
         Lägg till frågor i inställningarna...
       </div>
     )
@@ -96,14 +96,14 @@ export function Accordion({
   return (
     <div>
       {heading && (
-        <h2 className="font-heading text-2xl font-bold text-neutral-800 mb-6">{heading}</h2>
+        <h2 className="text-h3 text-stone-800 mb-6">{heading}</h2>
       )}
       <div
         className={cn(
-          style !== 'minimal' && 'divide-y divide-neutral-200',
-          style === 'default' && 'border border-neutral-200 rounded-xl overflow-hidden bg-white',
-          style === 'bordered' && 'border-2 border-neutral-300 rounded-xl overflow-hidden bg-white',
-          style === 'minimal' && 'divide-y divide-neutral-200'
+          style !== 'minimal' && 'divide-y divide-stone-200',
+          style === 'default' && 'border border-stone-200 rounded-xl overflow-hidden bg-white',
+          style === 'bordered' && 'border-2 border-stone-300 rounded-xl overflow-hidden bg-white',
+          style === 'minimal' && 'divide-y divide-stone-200'
         )}
       >
         {items.map((item, index) => (

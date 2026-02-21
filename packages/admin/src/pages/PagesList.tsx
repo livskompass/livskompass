@@ -33,8 +33,8 @@ export default function PagesList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Pages</h1>
-          <p className="text-gray-500 mt-1">Manage your web pages.</p>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Pages</h1>
+          <p className="text-stone-500 mt-1">Manage your web pages.</p>
         </div>
         <Button asChild>
           <Link to="/sidor/ny">
@@ -54,7 +54,7 @@ export default function PagesList() {
         ) : data?.pages && data.pages.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50/50">
+              <TableRow className="bg-stone-50/50">
                 <TableHead>Title</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
@@ -67,12 +67,12 @@ export default function PagesList() {
                   <TableCell>
                     <Link
                       to={`/sidor/${page.id}`}
-                      className="font-medium text-gray-900 hover:text-primary-600 transition-colors"
+                      className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
                     >
                       {page.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-gray-500 font-mono text-xs">
+                  <TableCell className="text-stone-500 font-mono text-xs">
                     /{page.slug}
                   </TableCell>
                   <TableCell>
@@ -103,8 +103,8 @@ export default function PagesList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <FileText className="h-10 w-10 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-2">No pages yet</p>
+            <FileText className="h-10 w-10 text-stone-300 mb-3" />
+            <p className="text-stone-500 mb-2">No pages yet</p>
             <Button variant="outline" size="sm" asChild>
               <Link to="/sidor/ny">Create your first page</Link>
             </Button>

@@ -33,8 +33,8 @@ export default function PostsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Posts</h1>
-          <p className="text-gray-500 mt-1">Manage your blog posts.</p>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Posts</h1>
+          <p className="text-stone-500 mt-1">Manage your blog posts.</p>
         </div>
         <Button asChild>
           <Link to="/nyheter/ny">
@@ -54,7 +54,7 @@ export default function PostsList() {
         ) : data?.posts && data.posts.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50/50">
+              <TableRow className="bg-stone-50/50">
                 <TableHead>Title</TableHead>
                 <TableHead>Published</TableHead>
                 <TableHead>Status</TableHead>
@@ -67,15 +67,15 @@ export default function PostsList() {
                   <TableCell>
                     <Link
                       to={`/nyheter/${post.id}`}
-                      className="font-medium text-gray-900 hover:text-primary-600 transition-colors"
+                      className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
                     >
                       {post.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
+                  <TableCell className="text-stone-500 text-sm">
                     {post.published_at
                       ? new Date(post.published_at).toLocaleDateString('sv-SE')
-                      : <span className="text-gray-400">--</span>}
+                      : <span className="text-stone-400">--</span>}
                   </TableCell>
                   <TableCell>
                     <Badge variant={post.status === 'published' ? 'success' : 'warning'}>
@@ -105,8 +105,8 @@ export default function PostsList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Newspaper className="h-10 w-10 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-2">No posts yet</p>
+            <Newspaper className="h-10 w-10 text-stone-300 mb-3" />
+            <p className="text-stone-500 mb-2">No posts yet</p>
             <Button variant="outline" size="sm" asChild>
               <Link to="/nyheter/ny">Create your first post</Link>
             </Button>

@@ -53,8 +53,8 @@ export default function CoursesList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Courses</h1>
-          <p className="text-gray-500 mt-1">Manage courses and workshops.</p>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Courses</h1>
+          <p className="text-stone-500 mt-1">Manage courses and workshops.</p>
         </div>
         <Button asChild>
           <Link to="/utbildningar/ny">
@@ -74,7 +74,7 @@ export default function CoursesList() {
         ) : data?.courses && data.courses.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50/50">
+              <TableRow className="bg-stone-50/50">
                 <TableHead>Course</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Location</TableHead>
@@ -89,19 +89,19 @@ export default function CoursesList() {
                   <TableCell>
                     <Link
                       to={`/utbildningar/${course.id}`}
-                      className="font-medium text-gray-900 hover:text-primary-600 transition-colors"
+                      className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
                     >
                       {course.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
+                  <TableCell className="text-stone-500 text-sm">
                     {new Date(course.start_date).toLocaleDateString('sv-SE')}
                   </TableCell>
-                  <TableCell className="text-gray-500 text-sm">
+                  <TableCell className="text-stone-500 text-sm">
                     {course.location}
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm font-mono text-gray-600">
+                    <span className="text-sm font-mono text-stone-600">
                       {course.current_participants}/{course.max_participants}
                     </span>
                   </TableCell>
@@ -133,8 +133,8 @@ export default function CoursesList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <GraduationCap className="h-10 w-10 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-2">No courses yet</p>
+            <GraduationCap className="h-10 w-10 text-stone-300 mb-3" />
+            <p className="text-stone-500 mb-2">No courses yet</p>
             <Button variant="outline" size="sm" asChild>
               <Link to="/utbildningar/ny">Create your first course</Link>
             </Button>

@@ -1,5 +1,5 @@
 import { cn } from '../ui/utils'
-import { useFetchJson, resolveMediaUrl } from '../helpers'
+import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
 import { ExternalLink } from 'lucide-react'
 
 export interface ProductListProps {
@@ -46,35 +46,37 @@ export function ProductList({
     grouped.get(key)!.push(product)
   }
 
+  const revealRef = useScrollReveal()
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {heading && (
-        <h2 className="font-heading text-3xl font-bold text-neutral-800 mb-8 tracking-tight">{heading}</h2>
+        <h2 className="text-h2 text-stone-800 mb-8 reveal">{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-xl border border-neutral-200 bg-white overflow-hidden animate-pulse">
-              <div className="aspect-[4/3] bg-neutral-100" />
+            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
+              <div className="aspect-[4/3] bg-stone-100" />
               <div className="p-5 space-y-3">
-                <div className="h-4 bg-neutral-100 rounded w-1/4" />
-                <div className="h-5 bg-neutral-100 rounded w-3/4" />
+                <div className="h-4 bg-stone-100 rounded w-1/4" />
+                <div className="h-5 bg-stone-100 rounded w-3/4" />
               </div>
             </div>
           ))}
         </div>
       ) : products.length > 0 ? (
-        <div className="space-y-12">
+        <div className="space-y-12 reveal">
           {Array.from(grouped.entries()).map(([type, typeProducts]) => (
             <div key={type}>
               {!filterType && grouped.size > 1 && (
-                <h3 className="font-heading text-xl font-semibold text-neutral-700 mb-4">
+                <h3 className="text-h4 text-stone-800 mb-4">
                   {typeLabels[type] || type}
                 </h3>
               )}
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
                 {typeProducts.map((product) => (
-                  <div key={product.slug} className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden card-hover">
+                  <div key={product.slug} className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                     {product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
@@ -86,29 +88,29 @@ export function ProductList({
                       </div>
                     )}
                     <div className="p-5">
-                      <span className="text-xs font-medium text-accent-600 uppercase tracking-wide">
+                      <span className="text-xs font-medium text-amber-600 uppercase tracking-wide">
                         {typeLabels[product.type] || product.type}
                       </span>
-                      <h4 className="font-semibold text-neutral-800 mt-1 mb-2">{product.title}</h4>
+                      <h4 className="font-semibold text-stone-800 mt-1 mb-2">{product.title}</h4>
                       {product.description && (
-                        <p className="text-sm text-neutral-500 line-clamp-3 mb-4">{product.description}</p>
+                        <p className="text-sm text-stone-500 line-clamp-3 mb-4">{product.description}</p>
                       )}
                       <div className="flex items-center justify-between mt-auto">
                         {product.price_sek ? (
-                          <span className="font-heading text-lg font-bold text-neutral-800">
+                          <span className="font-display text-h4 text-stone-800">
                             {product.price_sek.toLocaleString('sv-SE')} kr
                           </span>
                         ) : (
-                          <span className="text-sm font-medium text-primary-600 bg-primary-50 px-2 py-1 rounded">Gratis</span>
+                          <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">Gratis</span>
                         )}
                         {!product.in_stock ? (
-                          <span className="text-xs text-neutral-400 font-medium">Slut i lager</span>
+                          <span className="text-xs text-stone-400 font-medium">Slut i lager</span>
                         ) : product.external_url ? (
                           <a
                             href={product.external_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center h-9 px-4 text-sm font-medium bg-accent-500 text-white hover:bg-accent-600 rounded-lg transition-colors"
+                            className="inline-flex items-center h-9 px-4 text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 rounded-full transition-colors"
                           >
                             Köp
                             <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
@@ -123,7 +125,7 @@ export function ProductList({
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 text-neutral-400 border-2 border-dashed border-neutral-200 rounded-xl">
+        <div className="text-center py-16 text-stone-400 border-2 border-dashed border-stone-200 rounded-xl">
           Inga produkter hittades.
         </div>
       )}

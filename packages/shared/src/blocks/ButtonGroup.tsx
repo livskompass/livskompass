@@ -45,7 +45,7 @@ export function ButtonGroup({
 }: ButtonGroupProps) {
   if (buttons.length === 0) {
     return (
-      <div className="py-4 text-center text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
+      <div className="py-4 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
         Lägg till knappar i inställningarna...
       </div>
     )

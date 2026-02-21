@@ -30,7 +30,7 @@ export default function EditToolbar({ onHide }: EditToolbarProps) {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-center gap-1 rounded-full bg-gray-900/80 backdrop-blur-md px-2 py-1.5 shadow-2xl border border-white/10">
+      <div className="flex items-center gap-1 rounded-full bg-stone-900/80 backdrop-blur-md px-2 py-1.5 shadow-2xl border border-white/10">
         <a
           href={cmsUrl}
           target="_blank"

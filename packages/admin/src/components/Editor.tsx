@@ -55,9 +55,9 @@ export default function Editor({ content, onChange, onImageUpload }: EditorProps
   }
 
   return (
-    <div className="border border-gray-300 rounded-lg overflow-hidden">
+    <div className="border border-stone-300 rounded-lg overflow-hidden">
       {/* Toolbar */}
-      <div className="bg-gray-50 border-b border-gray-300 p-2 flex flex-wrap gap-1">
+      <div className="bg-stone-50 border-b border-stone-300 p-2 flex flex-wrap gap-1">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive('bold')}
@@ -199,8 +199,8 @@ function ToolbarButton({
       title={title}
       className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
         active
-          ? 'bg-primary-600 text-white'
-          : 'bg-white text-gray-700 hover:bg-gray-100'
+          ? 'bg-forest-600 text-white'
+          : 'bg-white text-stone-700 hover:bg-stone-100'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {children}
@@ -209,5 +209,5 @@ function ToolbarButton({
 }
 
 function Separator() {
-  return <div className="w-px h-6 bg-gray-300 mx-1" />
+  return <div className="w-px h-6 bg-stone-300 mx-1" />
 }

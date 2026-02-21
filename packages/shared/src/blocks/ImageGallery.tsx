@@ -18,7 +18,7 @@ export function ImageGallery({
   aspectRatio = 'landscape',
 }: ImageGalleryProps) {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {images.length > 0 ? (
         <div className={`grid ${colMap[columns] || colMap[3]} ${gapMap[gap] || gapMap.medium}`}>
           {images.map((img, i) => (
@@ -29,12 +29,12 @@ export function ImageGallery({
                 loading="lazy"
                 className={`w-full object-cover ${ratioMap[aspectRatio] || ''}`}
               />
-              {img.caption && <figcaption className="text-xs text-neutral-500 mt-1">{img.caption}</figcaption>}
+              {img.caption && <figcaption className="text-xs text-stone-500 mt-1">{img.caption}</figcaption>}
             </figure>
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
+        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
           Lägg till bilder i inställningarna
         </div>
       )}

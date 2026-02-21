@@ -1,4 +1,5 @@
 import { cn } from '../ui/utils'
+import { useScrollReveal } from '../helpers'
 import { Heart, Star, Shield, Zap, BookOpen, Users, Target, Sparkles } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -30,10 +31,12 @@ export function FeatureGrid({
   items = [],
   style = 'cards',
 }: FeatureGridProps) {
+  const revealRef = useScrollReveal()
+
   if (items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center py-12 text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
+      <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
+        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
           Lägg till funktioner i inställningarna...
         </div>
       </div>
@@ -41,31 +44,32 @@ export function FeatureGrid({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || subheading) && (
-        <div className="text-center mb-12">
-          {heading && <h2 className="font-heading text-3xl font-bold text-neutral-800 mb-3 tracking-tight">{heading}</h2>}
-          {subheading && <p className="text-lg text-neutral-600 max-w-2xl mx-auto">{subheading}</p>}
+        <div className="text-center mb-12 reveal">
+          {heading && <h2 className="text-h2 text-stone-800 mb-3">{heading}</h2>}
+          {subheading && <p className="text-lg text-stone-600 max-w-2xl mx-auto">{subheading}</p>}
         </div>
       )}
       <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
         {items.map((item, i) => {
           const IconComponent = iconMap[item.icon?.toLowerCase()] || Star
+          const stagger = `reveal reveal-stagger-${Math.min(i + 1, 5)}`
           return style === 'cards' ? (
-            <div key={i} className="bg-white rounded-xl border border-neutral-200 shadow-sm p-6 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center mb-4">
-                <IconComponent className="h-6 w-6 text-primary-600" />
+            <div key={i} className={`bg-white rounded-xl border border-stone-200 shadow-sm p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ${stagger}`}>
+              <div className="w-12 h-12 rounded-xl bg-forest-50 flex items-center justify-center mb-4">
+                <IconComponent className="h-6 w-6 text-forest-600" />
               </div>
-              <h3 className="font-semibold text-neutral-800 mb-2">{item.title}</h3>
-              <p className="text-sm text-neutral-500 leading-relaxed">{item.description}</p>
+              <h3 className="font-semibold text-stone-800 mb-2">{item.title}</h3>
+              <p className="text-sm text-stone-500 leading-relaxed">{item.description}</p>
             </div>
           ) : (
-            <div key={i} className="text-center">
-              <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-4">
-                <IconComponent className="h-6 w-6 text-primary-600" />
+            <div key={i} className={`text-center ${stagger}`}>
+              <div className="w-12 h-12 rounded-full bg-forest-50 flex items-center justify-center mx-auto mb-4">
+                <IconComponent className="h-6 w-6 text-forest-600" />
               </div>
-              <h3 className="font-semibold text-neutral-800 mb-2">{item.title}</h3>
-              <p className="text-sm text-neutral-500 leading-relaxed">{item.description}</p>
+              <h3 className="font-semibold text-stone-800 mb-2">{item.title}</h3>
+              <p className="text-sm text-stone-500 leading-relaxed">{item.description}</p>
             </div>
           )
         })}

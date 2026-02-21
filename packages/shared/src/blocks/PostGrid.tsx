@@ -1,4 +1,4 @@
-import { useFetchJson, resolveMediaUrl } from '../helpers'
+import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
 
 export interface PostGridProps {
   heading: string
@@ -33,24 +33,25 @@ export function PostGrid({
   const limit = count || 3
   const { data, loading } = useFetchJson<{ posts: Post[] }>(`/posts?limit=${limit}`)
   const posts = data?.posts || []
+  const revealRef = useScrollReveal()
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || subheading) && (
-        <div className="mb-8">
-          {heading && <h2 className="font-heading text-3xl font-bold text-neutral-800 mb-2 tracking-tight">{heading}</h2>}
-          {subheading && <p className="text-lg text-neutral-600">{subheading}</p>}
+        <div className="mb-8 reveal">
+          {heading && <h2 className="text-h2 text-stone-800 mb-2">{heading}</h2>}
+          {subheading && <p className="text-lg text-stone-600">{subheading}</p>}
         </div>
       )}
       {loading ? (
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
           {Array.from({ length: Math.min(limit, 3) }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-neutral-200 bg-white overflow-hidden animate-pulse">
-              {showImage && <div className="aspect-video bg-neutral-100" />}
+            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
+              {showImage && <div className="aspect-video bg-stone-100" />}
               <div className="p-5 space-y-3">
-                <div className="h-4 bg-neutral-100 rounded w-1/3" />
-                <div className="h-5 bg-neutral-100 rounded w-3/4" />
-                <div className="h-4 bg-neutral-100 rounded w-full" />
+                <div className="h-4 bg-stone-100 rounded w-1/3" />
+                <div className="h-5 bg-stone-100 rounded w-3/4" />
+                <div className="h-4 bg-stone-100 rounded w-full" />
               </div>
             </div>
           ))}
@@ -58,7 +59,7 @@ export function PostGrid({
       ) : posts.length > 0 ? (
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
           {posts.map((post) => (
-            <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden card-hover group block">
+            <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300 group block">
               {showImage && post.featured_image && (
                 <div className="aspect-video overflow-hidden">
                   <img src={resolveMediaUrl(post.featured_image)} alt={post.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500" />
@@ -66,20 +67,20 @@ export function PostGrid({
               )}
               <div className="p-5">
                 {showDate && post.published_at && (
-                  <span className="text-xs font-medium text-neutral-400 mb-1 block">
+                  <span className="text-xs font-medium text-stone-400 mb-1 block">
                     {new Date(post.published_at).toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
                 )}
-                <h3 className="font-heading text-lg font-semibold text-neutral-800 group-hover:text-primary-600 transition-colors mb-1">{post.title}</h3>
+                <h3 className="text-h4 text-stone-800 group-hover:text-forest-600 transition-colors mb-1">{post.title}</h3>
                 {showExcerpt && post.excerpt && (
-                  <p className="text-sm text-neutral-500 line-clamp-2">{post.excerpt}</p>
+                  <p className="text-sm text-stone-500 line-clamp-2">{post.excerpt}</p>
                 )}
               </div>
             </a>
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
+        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
           Inga inlägg hittades
         </div>
       )}

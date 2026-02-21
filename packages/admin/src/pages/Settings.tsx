@@ -71,8 +71,8 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Settings</h1>
-        <p className="text-gray-500 mt-1">Manage site configuration and integrations.</p>
+        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Settings</h1>
+        <p className="text-stone-500 mt-1">Manage site configuration and integrations.</p>
       </div>
 
       {saved && (
@@ -94,7 +94,7 @@ export default function Settings() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Globe className="h-4 w-4 text-gray-400" />
+                <Globe className="h-4 w-4 text-stone-400" />
                 General
               </CardTitle>
             </CardHeader>
@@ -128,7 +128,7 @@ export default function Settings() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-400" />
+                <Phone className="h-4 w-4 text-stone-400" />
                 Contact details
               </CardTitle>
             </CardHeader>
@@ -163,7 +163,7 @@ export default function Settings() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-gray-400" />
+                <CreditCard className="h-4 w-4 text-stone-400" />
                 Integrations
               </CardTitle>
             </CardHeader>
@@ -179,7 +179,7 @@ export default function Settings() {
                   className="font-mono text-sm"
                   placeholder="pk_live_..."
                 />
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-stone-400">
                   Your public Stripe key for payments
                 </p>
               </div>
@@ -188,7 +188,7 @@ export default function Settings() {
 
               <div className="space-y-2">
                 <Label htmlFor="ga-id" className="flex items-center gap-2">
-                  <BarChart3 className="h-3.5 w-3.5 text-gray-400" />
+                  <BarChart3 className="h-3.5 w-3.5 text-stone-400" />
                   Google Analytics ID
                 </Label>
                 <Input

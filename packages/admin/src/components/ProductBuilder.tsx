@@ -156,7 +156,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                   href={`${window.location.origin.replace('admin', 'web')}/material`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors text-xs font-medium"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors text-xs font-medium"
                   title="View on site"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -186,20 +186,20 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                     }
                     setSettingsOpen(!settingsOpen)
                   }}
-                  className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors"
                   title="Product settings"
                 >
                   <Settings className="h-4 w-4" />
                 </button>
 
                 {settingsOpen && (
-                  <div className="fixed w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-[80vh] overflow-y-auto" style={{ top: dropdownStyle.top, right: dropdownStyle.right }}>
+                  <div className="fixed w-80 bg-white rounded-lg shadow-xl border border-stone-200 z-[9999] max-h-[80vh] overflow-y-auto" style={{ top: dropdownStyle.top, right: dropdownStyle.right }}>
                     <div className="p-4 space-y-4">
-                      <h3 className="text-sm font-semibold text-gray-900">Product settings</h3>
+                      <h3 className="text-sm font-semibold text-stone-900">Product settings</h3>
 
                       <div className="space-y-3">
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Title</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">Title</Label>
                           <Input
                             value={title}
                             onChange={(e) => {
@@ -212,7 +212,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Slug</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">Slug</Label>
                           <Input
                             value={slug}
                             onChange={(e) => setSlug(e.target.value)}
@@ -222,7 +222,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Status</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">Status</Label>
                           <Select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
@@ -234,7 +234,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Type</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">Type</Label>
                           <Select
                             value={type}
                             onChange={(e) => setType(e.target.value)}
@@ -249,7 +249,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Price (SEK)</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">Price (SEK)</Label>
                           <Input
                             type="number"
                             value={priceSek}
@@ -261,7 +261,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">In stock</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">In stock</Label>
                           <Input
                             type="number"
                             value={inStock}
@@ -273,7 +273,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">External URL</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">External URL</Label>
                           <Input
                             value={externalUrl}
                             onChange={(e) => setExternalUrl(e.target.value)}
@@ -283,7 +283,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Image URL</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">Image URL</Label>
                           <Input
                             value={imageUrl}
                             onChange={(e) => setImageUrl(e.target.value)}
@@ -294,17 +294,17 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                             <img
                               src={getMediaUrl(imageUrl)}
                               alt=""
-                              className="mt-2 w-full h-32 rounded-md object-cover border border-gray-200"
+                              className="mt-2 w-full h-32 rounded-md object-cover border border-stone-200"
                             />
                           )}
                         </div>
 
                         <div>
-                          <Label className="text-xs text-gray-500 mb-1 block">Description</Label>
+                          <Label className="text-xs text-stone-500 mb-1 block">Description</Label>
                           <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                            className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-forest-500 resize-none"
                             rows={2}
                             placeholder="Short description for listings..."
                           />
@@ -312,7 +312,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                       </div>
 
                       {onDelete && (
-                        <div className="border-t border-gray-100 pt-3">
+                        <div className="border-t border-stone-100 pt-3">
                           <button
                             onClick={() => {
                               setSettingsOpen(false)

@@ -1,4 +1,5 @@
 import { cn } from '../ui/utils'
+import { useScrollReveal } from '../helpers'
 
 export interface StatsCounterProps {
   items: Array<{ value: string; label: string; prefix: string; suffix: string }>
@@ -13,10 +14,12 @@ export function StatsCounter({
   columns = 4,
   style = 'default',
 }: StatsCounterProps) {
+  const revealRef = useScrollReveal()
+
   if (items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center py-12 text-neutral-400 border-2 border-dashed border-neutral-200 rounded-lg">
+      <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
+        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
           Lägg till statistik i inställningarna...
         </div>
       </div>
@@ -24,20 +27,21 @@ export function StatsCounter({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       <div className={cn('grid gap-8', colMap[columns] || colMap[4])}>
         {items.map((item, i) => (
           <div
             key={i}
             className={cn(
-              'text-center',
-              style === 'bordered' && 'bg-white rounded-xl border border-neutral-200 shadow-sm p-6'
+              'text-center reveal',
+              `reveal-stagger-${Math.min(i + 1, 5)}`,
+              style === 'bordered' && 'bg-white rounded-xl border border-stone-200 shadow-sm p-6'
             )}
           >
-            <div className="font-heading text-4xl md:text-5xl font-bold text-primary-600 mb-2">
+            <div className="text-h1 text-forest-600 mb-2">
               {item.prefix}{item.value}{item.suffix}
             </div>
-            <div className="text-sm text-neutral-500 font-medium uppercase tracking-wide">
+            <div className="text-sm text-stone-500 font-medium uppercase tracking-wide">
               {item.label}
             </div>
           </div>

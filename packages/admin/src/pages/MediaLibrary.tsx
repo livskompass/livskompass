@@ -70,8 +70,8 @@ export default function MediaLibrary() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Media Library</h1>
-          <p className="text-gray-500 mt-1">Upload and manage images, files, and media.</p>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Media Library</h1>
+          <p className="text-stone-500 mt-1">Upload and manage images, files, and media.</p>
         </div>
         <div>
           <input
@@ -116,8 +116,8 @@ export default function MediaLibrary() {
                         className={cn(
                           "relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all",
                           selectedMedia === media.id
-                            ? 'border-primary-600 ring-2 ring-primary-100'
-                            : 'border-transparent hover:border-gray-300'
+                            ? 'border-forest-600 ring-2 ring-forest-100'
+                            : 'border-transparent hover:border-stone-300'
                         )}
                       >
                         {media.type?.startsWith('image') ? (
@@ -127,9 +127,9 @@ export default function MediaLibrary() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center gap-2">
-                            <FileIcon className="h-8 w-8 text-gray-400" />
-                            <span className="text-xs text-gray-500 px-2 text-center truncate w-full">
+                          <div className="w-full h-full bg-stone-50 flex flex-col items-center justify-center gap-2">
+                            <FileIcon className="h-8 w-8 text-stone-400" />
+                            <span className="text-xs text-stone-500 px-2 text-center truncate w-full">
                               {media.filename}
                             </span>
                           </div>
@@ -143,9 +143,9 @@ export default function MediaLibrary() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <ImageIcon className="h-10 w-10 text-gray-300 mb-3" />
-                  <p className="text-gray-500 mb-1">No files yet</p>
-                  <p className="text-sm text-gray-400">Upload files to get started.</p>
+                  <ImageIcon className="h-10 w-10 text-stone-300 mb-3" />
+                  <p className="text-stone-500 mb-1">No files yet</p>
+                  <p className="text-sm text-stone-400">Upload files to get started.</p>
                 </div>
               )}
             </CardContent>
@@ -164,30 +164,30 @@ export default function MediaLibrary() {
                   <img
                     src={getMediaUrl(selected.url)}
                     alt={selected.alt_text || selected.filename}
-                    className="w-full rounded-lg border border-gray-200"
+                    className="w-full rounded-lg border border-stone-200"
                   />
                 )}
 
                 <dl className="space-y-3 text-sm">
                   <div>
-                    <dt className="text-gray-400 text-xs">Filename</dt>
-                    <dd className="font-medium text-gray-900 break-all text-sm">
+                    <dt className="text-stone-400 text-xs">Filename</dt>
+                    <dd className="font-medium text-stone-900 break-all text-sm">
                       {selected.filename}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-gray-400 text-xs">Type</dt>
-                    <dd className="text-gray-700">{selected.type}</dd>
+                    <dt className="text-stone-400 text-xs">Type</dt>
+                    <dd className="text-stone-700">{selected.type}</dd>
                   </div>
                   <div>
-                    <dt className="text-gray-400 text-xs">Size</dt>
-                    <dd className="text-gray-700">
+                    <dt className="text-stone-400 text-xs">Size</dt>
+                    <dd className="text-stone-700">
                       {(selected.size_bytes / 1024).toFixed(1)} KB
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-gray-400 text-xs">URL</dt>
-                    <dd className="font-mono text-[11px] text-gray-500 break-all">
+                    <dt className="text-stone-400 text-xs">URL</dt>
+                    <dd className="font-mono text-[11px] text-stone-500 break-all">
                       {getMediaUrl(selected.url)}
                     </dd>
                   </div>
@@ -218,8 +218,8 @@ export default function MediaLibrary() {
           ) : (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <ImageIcon className="h-8 w-8 text-gray-300 mb-2" />
-                <p className="text-sm text-gray-400">Select a file to view details</p>
+                <ImageIcon className="h-8 w-8 text-stone-300 mb-2" />
+                <p className="text-sm text-stone-400">Select a file to view details</p>
               </CardContent>
             </Card>
           )}

@@ -65,8 +65,8 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Overview of your website content and activity.</p>
+        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Dashboard</h1>
+        <p className="text-stone-500 mt-1">Overview of your website content and activity.</p>
       </div>
 
       {/* Stats Grid */}
@@ -79,14 +79,14 @@ export default function Dashboard() {
                   <div className={`p-2 rounded-lg ${stat.color}`}>
                     <stat.icon className="h-4 w-4" />
                   </div>
-                  <TrendingUp className="h-4 w-4 text-gray-300" />
+                  <TrendingUp className="h-4 w-4 text-stone-300" />
                 </div>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-16 mb-1" />
                 ) : (
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-2xl font-bold text-stone-900">{stat.value}</p>
                 )}
-                <p className="text-sm text-gray-500">{stat.name}</p>
+                <p className="text-sm text-stone-500">{stat.name}</p>
               </CardContent>
             </Card>
           </Link>
@@ -124,11 +124,11 @@ export default function Dashboard() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <Ticket className="h-4 w-4 text-gray-400" />
+                <Ticket className="h-4 w-4 text-stone-400" />
                 Recent bookings
               </CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/bokningar" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">
+                <Link to="/bokningar" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
                   View all <ArrowRight className="h-3 w-3" />
                 </Link>
               </Button>
@@ -143,10 +143,10 @@ export default function Dashboard() {
                     className="flex items-center justify-between py-2"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-stone-900 truncate">
                         {booking.customer_name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-stone-500">
                         <Users className="h-3 w-3 inline mr-1" />
                         {booking.participants} participants
                       </p>
@@ -166,7 +166,7 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-400 text-center py-6">No bookings yet</p>
+              <p className="text-sm text-stone-400 text-center py-6">No bookings yet</p>
             )}
           </CardContent>
         </Card>
@@ -176,11 +176,11 @@ export default function Dashboard() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-gray-400" />
+                <GraduationCap className="h-4 w-4 text-stone-400" />
                 Upcoming courses
               </CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/utbildningar" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">
+                <Link to="/utbildningar" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
                   Manage <ArrowRight className="h-3 w-3" />
                 </Link>
               </Button>
@@ -198,21 +198,21 @@ export default function Dashboard() {
                       className="flex items-center justify-between py-2"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-stone-900 truncate">
                           {course.title}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-stone-500">
                           {new Date(course.start_date).toLocaleDateString('sv-SE')} &middot; {course.location}
                         </p>
                       </div>
-                      <span className="text-xs text-gray-500 font-mono ml-3">
+                      <span className="text-xs text-stone-500 font-mono ml-3">
                         {course.current_participants}/{course.max_participants}
                       </span>
                     </div>
                   ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-400 text-center py-6">No upcoming courses</p>
+              <p className="text-sm text-stone-400 text-center py-6">No upcoming courses</p>
             )}
           </CardContent>
         </Card>

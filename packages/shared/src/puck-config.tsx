@@ -44,26 +44,44 @@ const navLinks = [
   { name: 'ACT', href: '/act' },
   { name: 'Utbildningar', href: '/utbildningar' },
   { name: 'Material', href: '/material' },
+  { name: 'Om oss', href: '/mindfulness' },
+  { name: 'Kontakt', href: '/kontakt' },
+  { name: 'Nyheter', href: '/nyhet' },
+]
+
+// Footer uses expanded links (matches Layout.tsx footerNavigation)
+const footerNavLinks = [
+  { name: 'ACT', href: '/act' },
+  { name: 'Utbildningar', href: '/utbildningar' },
+  { name: 'Material', href: '/material' },
   { name: 'Mindfulness', href: '/mindfulness' },
-  { name: 'Forskning på metoden', href: '/forskning-pa-metoden' },
-  { name: 'Om Fredrik Livheim', href: '/om-fredrik-livheim' },
+  { name: 'Forskning', href: '/forskning-pa-metoden' },
+  { name: 'Om Fredrik', href: '/om-fredrik-livheim' },
   { name: 'Kontakt', href: '/kontakt' },
   { name: 'Nyheter', href: '/nyhet' },
 ]
 
 function SiteHeader() {
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-40 border-b border-neutral-200/60">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <a href="/" className="flex items-center gap-2">
-              <span className="font-heading text-xl font-bold text-primary-600">Livskompass</span>
+    <header
+      className="sticky top-0 z-50"
+      style={{
+        background: 'var(--surface-glass, rgba(248, 246, 242, 0.72))',
+        backdropFilter: 'blur(16px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(16px) saturate(1.8)',
+        borderBottom: '1px solid var(--surface-glass-border, rgba(200, 196, 188, 0.25))',
+      }}
+    >
+      <nav style={{ maxWidth: 'var(--width-wide, 1440px)', marginInline: 'auto', paddingInline: 'var(--container-px, 1rem)' }}>
+        <div className="flex justify-between" style={{ height: '72px' }}>
+          <div className="flex items-center">
+            <a href="/">
+              <span className="font-display text-forest-950" style={{ fontSize: '1.375rem', letterSpacing: '-0.01em' }}>Livskompass</span>
             </a>
           </div>
-          <div className="hidden lg:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-7">
             {navLinks.map((item) => (
-              <a key={item.name} href={item.href} className="text-sm transition-colors whitespace-nowrap text-neutral-600 hover:text-primary-600">
+              <a key={item.name} href={item.href} className="text-stone-600 hover:text-forest-600 transition-colors duration-200 whitespace-nowrap" style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
                 {item.name}
               </a>
             ))}
@@ -76,27 +94,27 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="bg-neutral-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer className="bg-stone-950 text-white">
+      <div style={{ maxWidth: 'var(--width-content, 1280px)', marginInline: 'auto', paddingInline: 'var(--container-px, 1rem)', paddingTop: 'var(--section-md, 4rem)', paddingBottom: 'var(--section-sm, 3rem)' }}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <h3 className="font-heading text-lg font-semibold mb-4">Livskompass</h3>
-            <p className="text-neutral-400 leading-relaxed">ACT och mindfulness utbildningar med Fredrik Livheim</p>
+            <span className="font-display text-xl text-white block mb-4">Livskompass</span>
+            <p className="text-stone-400 leading-relaxed" style={{ fontSize: '0.9375rem' }}>ACT och mindfulness utbildningar med Fredrik Livheim</p>
           </div>
           <div>
-            <h3 className="font-heading text-lg font-semibold mb-4">Kontakt</h3>
-            <p className="text-neutral-400 leading-relaxed">Fredrik Livheim<br />livheim@gmail.com<br />070-694 03 64</p>
+            <h3 className="text-h4 mb-4">Kontakt</h3>
+            <p className="text-stone-400 leading-relaxed" style={{ fontSize: '0.9375rem' }}>Fredrik Livheim<br />livheim@gmail.com<br />070-694 03 64</p>
           </div>
           <div>
-            <h3 className="font-heading text-lg font-semibold mb-4">Länkar</h3>
+            <h3 className="text-h4 mb-4">Länkar</h3>
             <ul className="space-y-2">
-              {navLinks.map((item) => (
-                <li key={item.name}><a href={item.href} className="text-neutral-400 hover:text-white transition-colors text-sm">{item.name}</a></li>
+              {footerNavLinks.map((item) => (
+                <li key={item.name}><a href={item.href} className="text-stone-400 hover:text-white transition-colors duration-200" style={{ fontSize: '0.9375rem' }}>{item.name}</a></li>
               ))}
             </ul>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-neutral-800 text-center text-neutral-500 text-sm">
+        <div className="mt-12 pt-8 border-t border-stone-800 text-center text-stone-500 text-caption">
           <p>&copy; {new Date().getFullYear()} Livskompass. Alla rättigheter förbehållna.</p>
         </div>
       </div>
@@ -111,7 +129,7 @@ export const puckConfig: Config = {
     render: ({ children }: { children: React.ReactNode }) => {
       const isEditor = typeof window !== 'undefined' && window.frameElement !== null
       return (
-        <div className="min-h-screen flex flex-col bg-neutral-50" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", backgroundColor: 'var(--surface-primary, #F8F6F2)' }}>
           {isEditor && <SiteHeader />}
           <main className="flex-1">{children}</main>
           {isEditor && <SiteFooter />}
@@ -163,11 +181,10 @@ export const puckConfig: Config = {
     // ── Content ──
     Hero: {
       label: 'Hero',
-      defaultProps: { heading: 'Rubrik här', subheading: 'Underrubrik här', variant: 'gradient', backgroundColor: 'primary', backgroundImage: '', textAlignment: 'center', ctaPrimaryText: '', ctaPrimaryLink: '', ctaSecondaryText: '', ctaSecondaryLink: '', fullHeight: 'auto' },
+      defaultProps: { heading: 'Rubrik här', subheading: 'Underrubrik här', variant: 'gradient', backgroundImage: '', textAlignment: 'center', ctaPrimaryText: '', ctaPrimaryLink: '', ctaSecondaryText: '', ctaSecondaryLink: '', fullHeight: 'auto' },
       fields: {
         heading: { type: 'text' }, subheading: { type: 'textarea' },
-        variant: { type: 'select', options: [{ label: 'Gradient', value: 'gradient' }, { label: 'Image', value: 'image' }, { label: 'Solid', value: 'solid' }] },
-        backgroundColor: { type: 'select', options: [{ label: 'Primary (green)', value: 'primary' }, { label: 'Dark', value: 'dark' }, { label: 'Light', value: 'light' }] },
+        variant: { type: 'select', options: [{ label: 'Gradient', value: 'gradient' }, { label: 'Image', value: 'image' }, { label: 'Light', value: 'light' }] },
         backgroundImage: { type: 'text' },
         textAlignment: { type: 'radio', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
         ctaPrimaryText: { type: 'text' }, ctaPrimaryLink: { type: 'text' }, ctaSecondaryText: { type: 'text' }, ctaSecondaryLink: { type: 'text' },

@@ -110,8 +110,8 @@ export default function UsersList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Users</h1>
-          <p className="text-gray-500 mt-1">Manage admin access and roles.</p>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Users</h1>
+          <p className="text-stone-500 mt-1">Manage admin access and roles.</p>
         </div>
         <Button onClick={() => setShowAddForm(true)}>
           <Plus className="h-4 w-4 mr-2" />
@@ -177,7 +177,7 @@ export default function UsersList() {
                   <option value="editor">Editor</option>
                   <option value="admin">Administrator</option>
                 </Select>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-stone-500">
                   Administrators can manage other users.
                 </p>
               </div>
@@ -203,7 +203,7 @@ export default function UsersList() {
       <Card>
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50/50">
+            <TableRow className="bg-stone-50/50">
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Created</TableHead>
@@ -222,22 +222,22 @@ export default function UsersList() {
                         className="w-9 h-9 rounded-full"
                       />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
-                        <span className="text-gray-500 font-medium text-sm">
+                      <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center">
+                        <span className="text-stone-500 font-medium text-sm">
                           {user.name?.[0] || user.email[0].toUpperCase()}
                         </span>
                       </div>
                     )}
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900 text-sm">
+                        <span className="font-medium text-stone-900 text-sm">
                           {user.name || 'Unknown'}
                         </span>
                         {user.id === currentUser?.id && (
                           <Badge variant="outline" className="text-[10px]">You</Badge>
                         )}
                       </div>
-                      <div className="text-xs text-gray-500">{user.email}</div>
+                      <div className="text-xs text-stone-500">{user.email}</div>
                     </div>
                   </div>
                 </TableCell>
@@ -252,7 +252,7 @@ export default function UsersList() {
                     <option value="admin">Administrator</option>
                   </Select>
                 </TableCell>
-                <TableCell className="text-gray-500 text-sm">
+                <TableCell className="text-stone-500 text-sm">
                   {user.created_at
                     ? new Date(user.created_at).toLocaleDateString('sv-SE')
                     : '--'}
@@ -274,8 +274,8 @@ export default function UsersList() {
             {(!data?.users || data.users.length === 0) && (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8">
-                  <UsersIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500">No users found</p>
+                  <UsersIcon className="h-8 w-8 text-stone-300 mx-auto mb-2" />
+                  <p className="text-stone-500">No users found</p>
                 </TableCell>
               </TableRow>
             )}

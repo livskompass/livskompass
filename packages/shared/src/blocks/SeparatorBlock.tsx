@@ -21,9 +21,9 @@ const maxWidthMap = {
 } as const
 
 const colorMap = {
-  light: 'border-neutral-200',
-  medium: 'border-neutral-300',
-  dark: 'border-neutral-500',
+  light: 'border-stone-200',
+  medium: 'border-stone-300',
+  dark: 'border-stone-500',
 } as const
 
 export function SeparatorBlock({
@@ -45,9 +45,9 @@ export function SeparatorBlock({
       )}
       {variant === 'dots' && (
         <div className="flex justify-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
-          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
-          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
+          <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+          <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+          <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
         </div>
       )}
     </div>

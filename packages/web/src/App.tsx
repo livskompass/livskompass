@@ -13,10 +13,10 @@ function PageLoader() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
       <div className="animate-pulse space-y-4">
-        <div className="h-10 bg-neutral-100 rounded w-3/4" />
-        <div className="h-4 bg-neutral-100 rounded w-full" />
-        <div className="h-4 bg-neutral-100 rounded w-5/6" />
-        <div className="h-4 bg-neutral-100 rounded w-4/6" />
+        <div className="h-10 bg-stone-100 rounded w-3/4" />
+        <div className="h-4 bg-stone-100 rounded w-full" />
+        <div className="h-4 bg-stone-100 rounded w-5/6" />
+        <div className="h-4 bg-stone-100 rounded w-4/6" />
       </div>
     </div>
   )
@@ -27,8 +27,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          {/* Home: block-based page with slug "hem" */}
-          <Route index element={<Suspense fallback={<PageLoader />}><UniversalPage slug="hem" /></Suspense>} />
+          {/* Home: page with slug "home-2" (from WordPress migration) */}
+          <Route index element={<Suspense fallback={<PageLoader />}><UniversalPage slug="home-2" /></Suspense>} />
 
           {/* Listing pages: block-based pages */}
           <Route path="utbildningar" element={<Suspense fallback={<PageLoader />}><UniversalPage slug="utbildningar" /></Suspense>} />
