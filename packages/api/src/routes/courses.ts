@@ -13,6 +13,7 @@ coursesRoutes.get('/', async (c) => {
     ORDER BY start_date ASC
   `).all()
 
+  c.header('Cache-Control', 'public, max-age=60, s-maxage=300')
   return c.json({ courses: result.results })
 })
 
@@ -28,5 +29,6 @@ coursesRoutes.get('/:slug', async (c) => {
     return c.json({ error: 'Course not found' }, 404)
   }
 
+  c.header('Cache-Control', 'public, max-age=60, s-maxage=300')
   return c.json({ course: result })
 })

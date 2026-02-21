@@ -1,5 +1,6 @@
 import type { Config, Data } from "@puckeditor/core"
 import React from "react"
+import { useQuery } from "@tanstack/react-query"
 
 // Puck configuration for Livskompass CMS page builder.
 // Tier 1 blocks use extracted component files for reuse on the public frontend.
@@ -43,19 +44,12 @@ function rewriteHtmlMediaUrls(html: string): string {
 }
 
 function useFetchJson<T>(endpoint: string): { data: T | null; loading: boolean } {
-  const [data, setData] = React.useState<T | null>(null)
-  const [loading, setLoading] = React.useState(!!endpoint)
-  React.useEffect(() => {
-    if (!endpoint) { setLoading(false); return }
-    let cancelled = false
-    setLoading(true)
-    fetch(`${getApiBase()}${endpoint}`)
-      .then((r) => r.json())
-      .then((d) => { if (!cancelled) { setData(d as T); setLoading(false) } })
-      .catch(() => { if (!cancelled) setLoading(false) })
-    return () => { cancelled = true }
-  }, [endpoint])
-  return { data, loading }
+  const { data, isLoading } = useQuery<T>({
+    queryKey: ["puck-block", endpoint],
+    queryFn: () => fetch(`${getApiBase()}${endpoint}`).then((r) => r.json()),
+    enabled: !!endpoint,
+  })
+  return { data: data ?? null, loading: isLoading && !!endpoint }
 }
 
 // ── Static site chrome that matches the production layout ──
@@ -410,6 +404,7 @@ export const puckConfig: Config = {
               <img
                 src={resolveMediaUrl(src)}
                 alt={alt || ""}
+                loading="lazy"
                 className={`w-full h-auto ${roundedMap[rounded as keyof typeof roundedMap] || "rounded-lg"}`}
               />
             ) : (
@@ -768,7 +763,7 @@ export const puckConfig: Config = {
                   <a key={i} href={card.link || "#"} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow block group">
                     {card.image && (
                       <div className="aspect-video overflow-hidden">
-                        <img src={card.image} alt={card.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <img src={card.image} alt={card.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       </div>
                     )}
                     <div className="p-6">
@@ -959,6 +954,7 @@ export const puckConfig: Config = {
                   <img
                     src={resolveMediaUrl(img.src)}
                     alt={img.alt || ""}
+                    loading="lazy"
                     className={`w-full object-cover ${ratioMap[aspectRatio as keyof typeof ratioMap] || ""}`}
                   />
                   {img.caption && <figcaption className="text-xs text-gray-500 mt-1">{img.caption}</figcaption>}
@@ -1131,7 +1127,7 @@ export const puckConfig: Config = {
                   <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow group block">
                     {showImage && post.featured_image && (
                       <div className="aspect-video overflow-hidden">
-                        <img src={resolveMediaUrl(post.featured_image)} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <img src={resolveMediaUrl(post.featured_image)} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       </div>
                     )}
                     <div className="p-5">

@@ -20,6 +20,7 @@ postsRoutes.get('/', async (c) => {
     SELECT COUNT(*) as total FROM posts WHERE status = 'published'
   `).first()
 
+  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
   return c.json({
     posts: result.results,
     total: countResult?.total || 0,
@@ -40,5 +41,6 @@ postsRoutes.get('/:slug', async (c) => {
     return c.json({ error: 'Post not found' }, 404)
   }
 
+  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
   return c.json({ post: result })
 })

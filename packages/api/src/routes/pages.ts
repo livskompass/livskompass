@@ -12,6 +12,7 @@ pagesRoutes.get('/', async (c) => {
     ORDER BY sort_order ASC
   `).all()
 
+  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
   return c.json({ pages: result.results })
 })
 
@@ -36,5 +37,6 @@ pagesRoutes.get('/:slug', async (c) => {
     return c.json({ error: 'Page not found' }, 404)
   }
 
+  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
   return c.json({ page, children: childrenResult.results || [] })
 })

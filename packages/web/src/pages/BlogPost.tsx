@@ -70,6 +70,7 @@ export default function BlogPost() {
           <img
             src={getMediaUrl(post.featured_image)}
             alt={post.title}
+            loading="lazy"
             className="w-full h-auto rounded-xl mb-8 shadow-sm"
           />
         )}

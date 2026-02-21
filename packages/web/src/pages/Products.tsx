@@ -69,6 +69,7 @@ export default function Products() {
                           <img
                             src={getMediaUrl(product.image_url)}
                             alt={product.title}
+                            loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
