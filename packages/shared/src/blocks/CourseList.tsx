@@ -1,6 +1,7 @@
 import { cn } from '../ui/utils'
 import { useFetchJson, useScrollReveal } from '../helpers'
 import { MapPin, Calendar, ArrowRight } from 'lucide-react'
+import { useInlineEdit } from '../context'
 
 export interface CourseListProps {
   heading: string
@@ -29,12 +30,18 @@ interface Course {
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
 
-function formatDateRange(start: string, end: string): string {
+function formatDateRange(start: string, end: string | null): string {
   const s = new Date(start)
-  const e = new Date(end)
   const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }
+  if (!end) {
+    return s.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })
+  }
+  const e = new Date(end)
   if (s.getFullYear() !== e.getFullYear()) {
     return `${s.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })} – ${e.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })}`
+  }
+  if (s.getTime() === e.getTime()) {
+    return s.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })
   }
   return `${s.toLocaleDateString('sv-SE', opts)} – ${e.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })}`
 }
@@ -49,16 +56,18 @@ export function CourseList({
   bookButtonText = 'Boka plats',
   fullLabel = 'Fullbokad',
   emptyText = 'Det finns inga utbildningar planerade just nu.',
-}: CourseListProps) {
+  id,
+}: CourseListProps & { puck?: { isEditing: boolean }; id?: string }) {
   const { data, loading } = useFetchJson<{ courses: Course[] }>('/courses')
   const courses = data?.courses || []
   const displayed = maxItems > 0 ? courses.slice(0, maxItems) : courses
   const revealRef = useScrollReveal()
+  const headingEdit = useInlineEdit('heading', heading, id || '')
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {heading && (
-        <h2 className="text-h2 text-stone-800 mb-8 reveal">{heading}</h2>
+      {(heading || headingEdit) && (
+        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[2])}>
@@ -75,10 +84,12 @@ export function CourseList({
         <div className={cn('grid grid-cols-1 gap-6 reveal', colMap[columns] || colMap[2])}>
           {displayed.map((course) => {
             const isFull = course.status === 'full'
-            const spotsLeft = course.max_participants - course.current_participants
+            const hasCapacity = course.max_participants != null
+            const spotsLeft = hasCapacity ? course.max_participants - course.current_participants : null
             return (
               <div key={course.slug} className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
                 <div className="p-6">
+                  {(isFull || hasCapacity) && (
                   <div className="flex items-center gap-2 mb-3">
                     <span className={cn(
                       'text-xs font-semibold px-2.5 py-1 rounded-full',
@@ -89,6 +100,7 @@ export function CourseList({
                       {isFull ? fullLabel : `${spotsLeft} platser kvar`}
                     </span>
                   </div>
+                  )}
                   <h3 className="text-h4 text-stone-800 mb-2">{course.title}</h3>
                   {!compactMode && course.description && (
                     <p className="text-stone-500 text-sm line-clamp-2 mb-4">{course.description}</p>
@@ -106,11 +118,13 @@ export function CourseList({
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    {course.price_sek != null ? (
                     <span className="font-display text-h3 text-stone-800">
-                      {course.price_sek?.toLocaleString('sv-SE')} <span className="text-base font-normal text-stone-500">kr</span>
+                      {course.price_sek.toLocaleString('sv-SE')} <span className="text-base font-normal text-stone-500">kr</span>
                     </span>
-                    <div className="flex gap-2">
+                    ) : <span />}
+                    <div className="flex gap-2 flex-shrink-0">
                       <a
                         href={`/utbildningar/${course.slug}`}
                         className="inline-flex items-center h-9 px-4 text-sm font-medium text-forest-600 hover:text-forest-700 hover:bg-forest-50 rounded-full transition-colors"

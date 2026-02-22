@@ -1,3 +1,6 @@
+import { useInlineEdit } from '../context'
+import { cn } from '../ui/utils'
+
 export interface VideoEmbedProps {
   url: string
   aspectRatio: '16:9' | '4:3' | '1:1'
@@ -27,7 +30,9 @@ export function VideoEmbed({
   url = '',
   aspectRatio = '16:9',
   caption = '',
-}: VideoEmbedProps) {
+  id,
+}: VideoEmbedProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const captionEdit = useInlineEdit('caption', caption, id || '')
   const embedUrl = getEmbedUrl(url)
   const ratio = ratioMap[aspectRatio] || 'aspect-video'
 
@@ -49,7 +54,7 @@ export function VideoEmbed({
             Klistra in en video-URL
           </div>
         )}
-        {caption && <figcaption className="text-sm text-stone-500 mt-2 text-center">{caption}</figcaption>}
+        {(caption || captionEdit) && <figcaption {...(captionEdit ? { contentEditable: captionEdit.contentEditable, suppressContentEditableWarning: captionEdit.suppressContentEditableWarning, onBlur: captionEdit.onBlur, onKeyDown: captionEdit.onKeyDown, 'data-inline-edit': 'caption' } : {})} className={cn('text-sm text-stone-500 mt-2 text-center', captionEdit?.className)}>{caption}</figcaption>}
       </figure>
     </div>
   )

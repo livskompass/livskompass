@@ -105,7 +105,7 @@ export default function AdminLayout() {
           collapsed ? 'px-3' : 'px-5'
         )}>
           <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 bg-forest-600 rounded-lg flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 bg-stone-700 rounded-lg flex items-center justify-center shrink-0">
               <span className="text-white font-bold text-sm">L</span>
             </div>
             {!collapsed && (
@@ -142,22 +142,22 @@ export default function AdminLayout() {
                       "group flex items-center rounded-lg text-sm font-medium transition-all duration-150 relative",
                       collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5',
                       isActive
-                        ? 'bg-forest-900/30 text-white'
+                        ? 'bg-stone-800 text-white'
                         : 'text-stone-400 hover:bg-stone-800/60 hover:text-stone-200'
                     )}
                   >
                     {isActive && !collapsed && (
-                      <span className="absolute left-0 inset-y-1.5 w-[3px] bg-forest-400 rounded-full" />
+                      <span className="absolute left-0 inset-y-1.5 w-[3px] bg-white rounded-full" />
                     )}
                     <item.icon className={cn(
                       "h-[18px] w-[18px] shrink-0 transition-colors duration-150",
-                      isActive ? 'text-forest-400' : 'text-stone-500 group-hover:text-stone-400'
+                      isActive ? 'text-white' : 'text-stone-500 group-hover:text-stone-400'
                     )} />
                     {!collapsed && (
                       <>
                         <span className="transition-opacity duration-150">{item.name}</span>
                         {isActive && (
-                          <ChevronRight className="ml-auto h-4 w-4 text-forest-500/60" />
+                          <ChevronRight className="ml-auto h-4 w-4 text-stone-500" />
                         )}
                       </>
                     )}
@@ -246,7 +246,7 @@ export default function AdminLayout() {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-forest-600 rounded-lg flex items-center justify-center">
+            <div className="w-7 h-7 bg-stone-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xs">L</span>
             </div>
             <span className="font-semibold text-stone-900">Livskompass</span>

@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui
 import { Badge } from '../ui/badge'
 import { Calendar, MapPin } from 'lucide-react'
 import { getApiBase, useScrollReveal } from '../helpers'
+import { useInlineEdit } from '../context'
 
 export interface ManualCard {
   title: string
@@ -57,13 +58,18 @@ export function CardGrid({
   columns = 3,
   cardStyle = 'default',
   manualCards = [],
-}: CardGridProps) {
+  id,
+}: CardGridProps & { puck?: { isEditing: boolean }; id?: string }) {
   const [dynamicItems, setDynamicItems] = useState<DynamicItem[]>([])
+  const [dynamicLoading, setDynamicLoading] = useState(source !== 'manual')
   const revealRef = useScrollReveal()
+  const headingEdit = useInlineEdit('heading', heading, id || '')
+  const subheadingEdit = useInlineEdit('subheading', subheading, id || '')
 
   useEffect(() => {
     if (source === 'manual') return
 
+    setDynamicLoading(true)
     const base = getApiBase()
     const endpointMap: Record<string, string> = {
       courses: `${base}/courses`,
@@ -72,7 +78,7 @@ export function CardGrid({
     }
 
     const endpoint = endpointMap[source]
-    if (!endpoint) return
+    if (!endpoint) { setDynamicLoading(false); return }
 
     fetch(endpoint)
       .then((res) => res.json())
@@ -80,14 +86,13 @@ export function CardGrid({
         const items = data[source] || []
         setDynamicItems(items.slice(0, maxItems))
       })
-      .catch(() => {
-        // Silently fail — shows empty grid
-      })
+      .catch(() => {})
+      .finally(() => setDynamicLoading(false))
   }, [source, maxItems])
 
   const renderManualCards = () =>
     manualCards.slice(0, maxItems).map((card, i) => (
-      <a key={i} href={card.link || '#'} className="block group">
+      <a key={i} href={card.link || '#'} className="block group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
         <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle])}>
           {card.image && (
             <div className="aspect-video overflow-hidden rounded-t-xl">
@@ -130,7 +135,7 @@ export function CardGrid({
             : '/produkter/'
 
       return (
-        <a key={item.id} href={`${linkBase}${item.slug}`} className="block group">
+        <a key={item.id} href={`${linkBase}${item.slug}`} className="block group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
           <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle])}>
             {image && (
               <div className="aspect-video overflow-hidden rounded-t-xl">
@@ -195,21 +200,33 @@ export function CardGrid({
 
   return (
     <section ref={revealRef} style={{ paddingBlock: 'var(--section-md)', maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
-      {(heading || subheading) && (
+      {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="text-center mb-10 reveal">
-          {heading && (
-            <h2 className="text-h2 text-stone-800 mb-3">{heading}</h2>
+          {(heading || headingEdit) && (
+            <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-3', headingEdit?.className)}>{heading}</h2>
           )}
-          {subheading && (
-            <p className="text-stone-600 text-lg">{subheading}</p>
+          {(subheading || subheadingEdit) && (
+            <p {...(subheadingEdit ? { contentEditable: subheadingEdit.contentEditable, suppressContentEditableWarning: subheadingEdit.suppressContentEditableWarning, onBlur: subheadingEdit.onBlur, onKeyDown: subheadingEdit.onKeyDown, 'data-inline-edit': 'subheading' } : {})} className={cn('text-stone-600 text-lg', subheadingEdit?.className)}>{subheading}</p>
           )}
         </div>
       )}
-      {isEmpty ? (
+      {dynamicLoading && source !== 'manual' ? (
+        <div className={cn('grid grid-cols-1 gap-6', columnsMap[columns])}>
+          {Array.from({ length: Math.min(maxItems, 3) }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
+              <div className="aspect-video bg-stone-100" />
+              <div className="p-5 space-y-3">
+                <div className="h-5 bg-stone-100 rounded w-3/4" />
+                <div className="h-4 bg-stone-100 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : isEmpty ? (
         <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
           {source === 'manual'
             ? 'Lägg till kort i inställningarna...'
-            : 'Laddar...'}
+            : 'Inget innehåll tillgängligt.'}
         </div>
       ) : (
         <div className={cn('grid grid-cols-1 gap-6 reveal', columnsMap[columns])}>

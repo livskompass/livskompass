@@ -1,5 +1,6 @@
 import { cn } from '../ui/utils'
 import { ArrowRight } from 'lucide-react'
+import { useInlineEdit } from '../context'
 
 export interface CTABannerProps {
   heading: string
@@ -31,12 +32,18 @@ export function CTABanner({
   buttonLink = '/utbildningar',
   backgroundColor = 'primary',
   alignment = 'center',
-}: CTABannerProps) {
+  id,
+}: CTABannerProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const headingEdit = useInlineEdit('heading', heading, id || '')
+  const descriptionEdit = useInlineEdit('description', description, id || '')
+  const buttonTextEdit = useInlineEdit('buttonText', buttonText, id || '')
+
   const bg = bgMap[backgroundColor] || bgMap.primary
   const btnStyle = buttonStyleMap[backgroundColor] || buttonStyleMap.primary
   const isGradient = backgroundColor === 'gradient'
 
   return (
+    <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
     <section
       className={cn('rounded-2xl relative overflow-hidden', bg)}
       style={{
@@ -54,9 +61,9 @@ export function CTABanner({
           alignment === 'center' ? 'text-center' : 'text-left'
         )}
       >
-        <h2 className="text-h2 mb-4">{heading}</h2>
-        {description && (
-          <p className="text-lg mb-8 opacity-90 leading-relaxed">{description}</p>
+        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 mb-4', headingEdit?.className)}>{heading}</h2>
+        {(description || descriptionEdit) && (
+          <p {...(descriptionEdit ? { contentEditable: descriptionEdit.contentEditable, suppressContentEditableWarning: descriptionEdit.suppressContentEditableWarning, onBlur: descriptionEdit.onBlur, onKeyDown: descriptionEdit.onKeyDown, 'data-inline-edit': 'description' } : {})} className={cn('text-lg mb-8 opacity-90 leading-relaxed', descriptionEdit?.className)}>{description}</p>
         )}
         {buttonText && (
           <a
@@ -66,11 +73,12 @@ export function CTABanner({
               btnStyle
             )}
           >
-            {buttonText}
+            <span {...(buttonTextEdit ? { contentEditable: buttonTextEdit.contentEditable, suppressContentEditableWarning: buttonTextEdit.suppressContentEditableWarning, onBlur: buttonTextEdit.onBlur, onKeyDown: buttonTextEdit.onKeyDown, 'data-inline-edit': 'buttonText' } : {})} className={buttonTextEdit?.className}>{buttonText}</span>
             <ArrowRight className="ml-2 h-4 w-4" />
           </a>
         )}
       </div>
     </section>
+    </div>
   )
 }

@@ -51,7 +51,7 @@ export default function ProductsList() {
         ) : data?.products && data.products.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50">
+              <TableRow className="bg-stone-100">
                 <TableHead>Product</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Price</TableHead>
@@ -61,7 +61,7 @@ export default function ProductsList() {
             </TableHeader>
             <TableBody>
               {data.products.map((product) => (
-                <TableRow key={product.id}>
+                <TableRow key={product.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {product.image_url && (
@@ -73,7 +73,7 @@ export default function ProductsList() {
                       )}
                       <Link
                         to={`/material/${product.id}`}
-                        className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
+                        className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                       >
                         {product.title}
                       </Link>

@@ -49,19 +49,19 @@ export default function BookingsList() {
         ) : data?.bookings && data.bookings.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50">
+              <TableRow className="bg-stone-100">
                 <TableHead>Customer</TableHead>
-                <TableHead>Course</TableHead>
-                <TableHead>Participants</TableHead>
+                <TableHead className="hidden lg:table-cell">Course</TableHead>
+                <TableHead className="hidden md:table-cell">Participants</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Payment</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="hidden sm:table-cell">Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.bookings.map((booking) => (
-                <TableRow key={booking.id}>
+                <TableRow key={booking.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <div>
                       <p className="font-medium text-stone-900 text-sm">
@@ -70,10 +70,10 @@ export default function BookingsList() {
                       <p className="text-xs text-stone-500">{booking.customer_email}</p>
                     </div>
                   </TableCell>
-                  <TableCell className="text-stone-600 text-sm">
+                  <TableCell className="hidden lg:table-cell text-stone-600 text-sm">
                     {booking.course_title || booking.course_id}
                   </TableCell>
-                  <TableCell className="text-stone-600 text-sm font-mono">
+                  <TableCell className="hidden md:table-cell text-stone-600 text-sm font-mono">
                     {booking.participants}
                   </TableCell>
                   <TableCell className="text-stone-900 text-sm font-medium">
@@ -84,7 +84,7 @@ export default function BookingsList() {
                       {getPaymentLabel(booking.payment_status)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-stone-500 text-sm">
+                  <TableCell className="hidden sm:table-cell text-stone-500 text-sm">
                     {new Date(booking.created_at).toLocaleDateString('sv-SE')}
                   </TableCell>
                   <TableCell className="text-right">

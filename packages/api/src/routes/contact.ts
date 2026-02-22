@@ -11,12 +11,12 @@ contactRoutes.post('/', async (c) => {
 
   // Validate required fields
   if (!name || !email || !message) {
-    return c.json({ error: 'Name, email, and message are required' }, 400)
+    return c.json({ error: 'Namn, e-post och meddelande krävs' }, 400)
   }
 
   // Basic email validation
   if (!email.includes('@')) {
-    return c.json({ error: 'Invalid email address' }, 400)
+    return c.json({ error: 'Ogiltig e-postadress' }, 400)
   }
 
   const id = nanoid()

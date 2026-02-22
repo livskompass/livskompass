@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { getApiBase } from '../helpers'
 import { Send, CheckCircle, AlertCircle, Mail, Phone } from 'lucide-react'
+import { useInlineEdit } from '../context'
+import { cn } from '../ui/utils'
 
 export interface ContactFormProps {
   heading: string
@@ -17,6 +19,13 @@ export interface ContactFormProps {
   successMessage: string
 }
 
+/** Helper: extract handlers from inline edit props */
+function editHandlers(edit: ReturnType<typeof useInlineEdit>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
 export function ContactForm({
   heading = 'Kontakta oss',
   description = '',
@@ -30,10 +39,17 @@ export function ContactForm({
   submitButtonText = 'Skicka meddelande',
   successHeading = 'Tack för ditt meddelande!',
   successMessage = 'Vi återkommer så snart vi kan.',
-}: ContactFormProps) {
+  id,
+}: ContactFormProps & { puck?: { isEditing: boolean }; id?: string }) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+
+  const headingEdit = useInlineEdit('heading', heading, id || '')
+  const descriptionEdit = useInlineEdit('description', description, id || '')
+
+  const hHandlers = editHandlers(headingEdit)
+  const dHandlers = editHandlers(descriptionEdit)
 
   // Detect if we're inside the Puck editor
   const isEditor = typeof window !== 'undefined' && window.frameElement !== null
@@ -124,7 +140,7 @@ export function ContactForm({
       <button
         type="submit"
         disabled={status === 'submitting' || isEditor}
-        className="inline-flex items-center h-12 px-7 bg-forest-500 text-white hover:bg-forest-600 font-semibold rounded-full transition-colors disabled:opacity-50"
+        className="w-full inline-flex items-center justify-center h-12 px-7 bg-forest-500 text-white hover:bg-forest-600 font-semibold rounded-full transition-colors disabled:opacity-50"
       >
         {status === 'submitting' ? 'Skickar...' : submitButtonText}
         <Send className="ml-2 h-4 w-4" />
@@ -147,8 +163,8 @@ export function ContactForm({
   if (layout === 'split') {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {heading && <h2 className="text-h2 text-stone-800 mb-2">{heading}</h2>}
-        {description && <p className="text-stone-600 mb-8">{description}</p>}
+        {heading && <h2 {...hHandlers} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
+        {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-stone-600 mb-8', descriptionEdit?.className)}>{description}</p>}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-12">
           <div className="space-y-4">
             <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
@@ -183,8 +199,8 @@ export function ContactForm({
 
   return (
     <div className="mx-auto" style={{ maxWidth: '42rem', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {heading && <h2 className="text-h3 text-stone-800 mb-2">{heading}</h2>}
-      {description && <p className="text-stone-600 mb-6">{description}</p>}
+      {heading && <h2 {...hHandlers} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
+      {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-stone-600 mb-6', descriptionEdit?.className)}>{description}</p>}
       <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
         {status === 'error' && (
           <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-sm text-red-700">

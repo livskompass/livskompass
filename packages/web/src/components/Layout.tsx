@@ -257,7 +257,7 @@ export default function Layout() {
         >
           <div className="flex justify-between h-16 lg:h-[72px]">
             <div className="flex">
-              <Link to="/" className="flex items-center">
+              <Link to="/" className="flex items-center hover:opacity-75 transition-opacity">
                 <span
                   className="font-display text-forest-950"
                   style={{ fontSize: '1.375rem', letterSpacing: '-0.01em' }}
@@ -267,7 +267,7 @@ export default function Layout() {
               </Link>
             </div>
 
-            <div className="hidden lg:flex items-center space-x-7">
+            <div className="hidden lg:flex items-center space-x-5 xl:space-x-7">
               {navigation.map((item) => (
                 <DesktopDropdown key={item.name} item={item} isActive={isActive} />
               ))}
@@ -317,7 +317,7 @@ export default function Layout() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-stone-950 text-white" role="contentinfo">
+      <footer className="bg-stone-950 text-white mt-auto" role="contentinfo">
         <div
           className="mx-auto"
           style={{
@@ -327,7 +327,7 @@ export default function Layout() {
             paddingBottom: 'var(--section-sm)',
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
             <div>
               <span className="font-display text-xl text-white block mb-4">{footerConfig.companyName}</span>
               <p className="text-stone-400 leading-relaxed text-[0.9375rem]">

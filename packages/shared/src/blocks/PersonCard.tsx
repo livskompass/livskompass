@@ -1,5 +1,7 @@
 import { Mail, Phone } from 'lucide-react'
 import { resolveMediaUrl } from '../helpers'
+import { useInlineEdit } from '../context'
+import { cn } from '../ui/utils'
 
 export interface PersonCardProps {
   name: string
@@ -11,6 +13,13 @@ export interface PersonCardProps {
   style: 'card' | 'horizontal'
 }
 
+/** Helper: extract handlers from inline edit props */
+function editHandlers(edit: ReturnType<typeof useInlineEdit>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
 export function PersonCard({
   name = 'Fredrik Livheim',
   title = 'Legitimerad psykolog',
@@ -19,8 +28,16 @@ export function PersonCard({
   email = '',
   phone = '',
   style = 'card',
-}: PersonCardProps) {
+  id,
+}: PersonCardProps & { puck?: { isEditing: boolean }; id?: string }) {
   const resolvedImage = image ? resolveMediaUrl(image) : ''
+  const nameEdit = useInlineEdit('name', name, id || '')
+  const titleEdit = useInlineEdit('title', title, id || '')
+  const bioEdit = useInlineEdit('bio', bio, id || '')
+
+  const nHandlers = editHandlers(nameEdit)
+  const tHandlers = editHandlers(titleEdit)
+  const bHandlers = editHandlers(bioEdit)
 
   if (style === 'horizontal') {
     return (
@@ -34,9 +51,9 @@ export function PersonCard({
             </div>
           )}
           <div>
-            <h3 className="text-h3 text-stone-800">{name}</h3>
-            {title && <p className="text-amber-600 font-medium mt-1">{title}</p>}
-            {bio && <p className="text-stone-600 mt-4 leading-relaxed">{bio}</p>}
+            <h3 {...nHandlers} className={cn('text-h3 text-stone-800', nameEdit?.className)}>{name}</h3>
+            {(title || titleEdit) && <p {...tHandlers} className={cn('text-amber-600 font-medium mt-1', titleEdit?.className)}>{title}</p>}
+            {(bio || bioEdit) && <p {...bHandlers} className={cn('text-stone-600 mt-4 leading-relaxed max-w-prose', bioEdit?.className)}>{bio}</p>}
             {(email || phone) && (
               <div className="flex flex-wrap gap-4 mt-4">
                 {email && (
@@ -67,9 +84,9 @@ export function PersonCard({
             <span className="font-display text-3xl text-forest-600">{name.charAt(0)}</span>
           </div>
         )}
-        <h3 className="text-h4 text-stone-800">{name}</h3>
-        {title && <p className="text-amber-600 font-medium mt-1 text-sm">{title}</p>}
-        {bio && <p className="text-stone-600 mt-3 text-sm leading-relaxed">{bio}</p>}
+        <h3 {...nHandlers} className={cn('text-h4 text-stone-800', nameEdit?.className)}>{name}</h3>
+        {(title || titleEdit) && <p {...tHandlers} className={cn('text-amber-600 font-medium mt-1 text-sm', titleEdit?.className)}>{title}</p>}
+        {(bio || bioEdit) && <p {...bHandlers} className={cn('text-stone-600 mt-3 text-sm leading-relaxed', bioEdit?.className)}>{bio}</p>}
         {(email || phone) && (
           <div className="flex flex-col items-center gap-2 mt-4">
             {email && (

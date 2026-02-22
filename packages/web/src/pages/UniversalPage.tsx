@@ -75,8 +75,9 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
 
   // Non-home pages with no content_blocks: use default page template
   if (!page.content_blocks && (!page.content || page.content.trim() === '')) {
+    const safeTitle = JSON.stringify(page.title || 'Sida').slice(1, -1)
     const template = defaultPageTemplate
-      .replace('__PAGE_TITLE__', page.title || 'Sida')
+      .replace('__PAGE_TITLE__', safeTitle)
       .replace('__LEGACY_CONTENT__', '<p></p>')
     return <BlockRenderer data={template} />
   }

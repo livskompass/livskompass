@@ -104,7 +104,9 @@ export default function MediaLibrary() {
                   ))}
                 </div>
               ) : data?.media && data.media.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="space-y-4">
+                <p className="text-sm text-stone-400">{data.media.length} files</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {data.media.map((media) => {
                     const FileIcon = getFileIcon(media.type)
                     return (
@@ -114,7 +116,7 @@ export default function MediaLibrary() {
                         className={cn(
                           "relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-fast shadow-sm hover:shadow-md",
                           selectedMedia === media.id
-                            ? 'border-forest-500 ring-[3px] ring-forest-500/10'
+                            ? 'border-stone-900 ring-[3px] ring-stone-500/10'
                             : 'border-transparent hover:border-stone-300'
                         )}
                       >
@@ -138,6 +140,7 @@ export default function MediaLibrary() {
                       </div>
                     )
                   })}
+                </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -197,7 +200,7 @@ export default function MediaLibrary() {
                   <Button
                     variant="outline"
                     onClick={() => copyToClipboard(getMediaUrl(selected.url))}
-                    className={cn("w-full", copied && "border-forest-300 text-forest-700")}
+                    className={cn("w-full", copied && "border-stone-400 text-stone-700")}
                   >
                     {copied ? (
                       <><Check className="h-4 w-4 mr-2" /> Copied!</>

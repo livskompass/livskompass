@@ -29,7 +29,7 @@ export default function CoursesList() {
   const getStatusVariant = (status: string) => {
     switch (status) {
       case 'active': return 'success'
-      case 'full': return 'destructive'
+      case 'full': return 'default'
       case 'completed': return 'secondary'
       case 'cancelled': return 'destructive'
       default: return 'secondary'
@@ -71,7 +71,7 @@ export default function CoursesList() {
         ) : data?.courses && data.courses.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50">
+              <TableRow className="bg-stone-100">
                 <TableHead>Course</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Location</TableHead>
@@ -82,11 +82,11 @@ export default function CoursesList() {
             </TableHeader>
             <TableBody>
               {data.courses.map((course) => (
-                <TableRow key={course.id}>
+                <TableRow key={course.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <Link
                       to={`/utbildningar/${course.id}`}
-                      className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
+                      className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                     >
                       {course.title}
                     </Link>

@@ -88,7 +88,7 @@ export default function BookingDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Customer Information */}
         <Card>
           <CardHeader>
@@ -106,7 +106,7 @@ export default function BookingDetail() {
               <Mail className="h-4 w-4 text-stone-400 mt-0.5" />
               <div>
                 <p className="text-sm text-stone-500">Email</p>
-                <a href={`mailto:${booking.customer_email}`} className="font-medium text-forest-600 hover:text-forest-700">
+                <a href={`mailto:${booking.customer_email}`} className="font-medium text-stone-600 hover:text-stone-700">
                   {booking.customer_email}
                 </a>
               </div>
@@ -220,21 +220,21 @@ export default function BookingDetail() {
             )}
           </CardContent>
         </Card>
-
-        {/* Notes */}
-        {booking.notes && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Message</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-stone-700 text-sm whitespace-pre-wrap leading-relaxed">
-                {booking.notes}
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
+
+      {/* Notes — full width below the grid */}
+      {booking.notes && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Message</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-stone-700 text-sm whitespace-pre-wrap leading-relaxed">
+              {booking.notes}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       <ConfirmDialog
         open={refundOpen}

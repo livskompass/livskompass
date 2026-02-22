@@ -47,11 +47,12 @@ export function Columns({
   return (
     <div
       className={cn(
-        'grid grid-cols-1',
+        'grid grid-cols-1 mx-auto',
         layoutGridMap[layout] || layoutGridMap['50-50'],
         gapMap[gap],
         verticalAlignMap[verticalAlignment]
       )}
+      style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
     >
       <div className="min-h-[60px]">
         {renderZone?.(`${id}:column-1`)}

@@ -35,26 +35,24 @@
   --tracking-body: 0;
   --tracking-overline: 0.08em;
 
-  --color-forest-950-rgb: 10, 26, 16;
-
   --surface-primary:       #F8F6F2;
   --surface-secondary:     #EFECE7;
   --surface-elevated:      #FFFFFF;
   --surface-glass:         rgba(248, 246, 242, 0.72);
   --surface-glass-border:  rgba(200, 196, 188, 0.25);
-  --surface-overlay:       rgba(10, 26, 16, 0.6);
-  --surface-overlay-heavy: rgba(10, 26, 16, 0.8);
+  --surface-overlay:       rgba(28, 25, 23, 0.6);
+  --surface-overlay-heavy: rgba(28, 25, 23, 0.8);
 
-  --gradient-hero:    linear-gradient(145deg, #0A1A10 0%, #1C3D29 45%, #275137 100%);
+  --gradient-hero:    linear-gradient(145deg, #1C1917 0%, #3D3832 45%, #575249 100%);
   --gradient-section: linear-gradient(180deg, var(--surface-primary) 0%, var(--surface-secondary) 100%);
-  --gradient-glow:    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(62, 123, 87, 0.12) 0%, transparent 70%);
+  --gradient-glow:    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(138, 132, 122, 0.12) 0%, transparent 70%);
   --gradient-shimmer: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
 
-  --section-xs: clamp(2rem, 1rem + 3.333vw, 4rem);
-  --section-sm: clamp(3rem, 2rem + 3.333vw, 5rem);
-  --section-md: clamp(4rem, 2.667rem + 4.444vw, 7rem);
-  --section-lg: clamp(5rem, 3rem + 6.667vw, 9rem);
-  --section-xl: clamp(6rem, 3.333rem + 8.889vw, 10.5rem);
+  --section-xs: clamp(1.5rem, 1rem + 1.667vw, 3rem);
+  --section-sm: clamp(2rem, 1.5rem + 1.667vw, 3.5rem);
+  --section-md: clamp(2.5rem, 2rem + 1.667vw, 4.5rem);
+  --section-lg: clamp(3rem, 2.25rem + 2.5vw, 5.5rem);
+  --section-xl: clamp(3.5rem, 2.5rem + 3.333vw, 7rem);
 
   --gap-xs:  0.5rem;
   --gap-sm:  0.75rem;
@@ -193,7 +191,73 @@ body {
   50% { opacity: 0.5; }
 }
 
+/* ===== Animation Keyframes ===== */
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in 150ms var(--ease-out) forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 200ms var(--ease-out) forwards;
+}
+
 /* ===== Puck Editor Overrides ===== */
+
+/* ── Neutralize ALL Puck accent colors → warm stone palette ── */
+[class*="Puck"] {
+  /* Azure (blue accent) → stone */
+  --puck-color-azure-01: #FDFCFB;
+  --puck-color-azure-02: #FAF9F7;
+  --puck-color-azure-03: #F5F3EF;
+  --puck-color-azure-04: #EFECE7;
+  --puck-color-azure-05: #E2DFD9;
+  --puck-color-azure-06: #C8C4BC;
+  --puck-color-azure-07: #A8A29E;
+  --puck-color-azure-08: #8A847A;
+  --puck-color-azure-09: #6B6560;
+  --puck-color-azure-10: #575249;
+  --puck-color-azure-11: #3D3832;
+  --puck-color-azure-12: #1C1917;
+
+  /* Green (publish/success) → stone */
+  --puck-color-green-01: #FDFCFB;
+  --puck-color-green-02: #FAF9F7;
+  --puck-color-green-03: #F5F3EF;
+  --puck-color-green-04: #EFECE7;
+  --puck-color-green-05: #E2DFD9;
+  --puck-color-green-06: #C8C4BC;
+  --puck-color-green-07: #A8A29E;
+  --puck-color-green-08: #8A847A;
+  --puck-color-green-09: #6B6560;
+  --puck-color-green-10: #575249;
+  --puck-color-green-11: #3D3832;
+  --puck-color-green-12: #1C1917;
+
+  /* Grey → warm stone (not cool grey) */
+  --puck-color-grey-01: #FDFCFB;
+  --puck-color-grey-02: #FAF9F7;
+  --puck-color-grey-03: #F5F3EF;
+  --puck-color-grey-04: #EFECE7;
+  --puck-color-grey-05: #E2DFD9;
+  --puck-color-grey-06: #C8C4BC;
+  --puck-color-grey-07: #A8A29E;
+  --puck-color-grey-08: #8A847A;
+  --puck-color-grey-09: #6B6560;
+  --puck-color-grey-10: #575249;
+  --puck-color-grey-11: #3D3832;
+  --puck-color-grey-12: #1C1917;
+
+  /* Font → Inter */
+  --puck-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
 
 /* Consistent 18px icon sizing across all panels */
 [class*="SidebarSection"] svg,
@@ -208,15 +272,51 @@ body {
   height: 100% !important;
 }
 
-/* Ensure Puck header bar renders above the canvas/preview area */
+/* ── Header bar ── */
 [class*="PuckLayout-header"],
 [class*="Header-"] {
   z-index: 100 !important;
   position: relative;
+  background: #FFFFFF !important;
   border-bottom: 1px solid #E2DFD9;
 }
 
-/* Left sidebar: clean category headers and hover states */
+/* Publish/save button — dark neutral, not green/blue */
+[class*="Header-"] button[class*="Button--primary"],
+[class*="PuckLayout-header"] button[class*="Button--primary"] {
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  border-radius: 10px !important;
+  background-color: #1C1917 !important;
+  color: #FFFFFF !important;
+  border: none !important;
+}
+[class*="Header-"] button[class*="Button--primary"]:hover,
+[class*="PuckLayout-header"] button[class*="Button--primary"]:hover {
+  background-color: #292524 !important;
+}
+
+/* ── Left sidebar ── */
+[class*="Sidebar--left"] {
+  background: #F8F6F2 !important;
+  border-right: 1px solid #E2DFD9 !important;
+}
+
+/* Left sidebar nav icons — override Puck blue active state */
+[class*="Nav_"] button,
+[class*="Nav_"] a {
+  color: #8A847A !important;
+}
+[class*="Nav_"] button[class*="active"],
+[class*="Nav_"] button[aria-selected="true"],
+[class*="Nav_"] a[class*="active"] {
+  color: #1C1917 !important;
+}
+[class*="Nav_"] [class*="NavItem-label"] {
+  color: inherit !important;
+}
+
+/* Category headers */
 [class*="SidebarSection-title"] {
   font-family: var(--font-body) !important;
   font-size: 0.6875rem !important;
@@ -226,6 +326,8 @@ body {
   color: #8A847A !important;
   padding: 8px 12px 4px !important;
 }
+
+/* Component list items */
 [class*="ComponentList-item"],
 [class*="SidebarSection-content"] button {
   border-radius: 6px !important;
@@ -233,42 +335,21 @@ body {
 }
 [class*="ComponentList-item"]:hover,
 [class*="SidebarSection-content"] button:hover {
-  background-color: #ECF5EF !important;
+  background-color: #EFECE7 !important;
 }
 
-/* Right sidebar → floating overlay panel instead of fixed column */
-@media (min-width: 638px) {
-  [class*="PuckLayout-inner"] {
-    --puck-right-side-bar-width: 0px !important;
-  }
-
-  [class*="Sidebar--right"] {
-    position: absolute !important;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 320px !important;
-    z-index: 20;
-    background: #FFFFFF;
-    box-shadow: -8px 0 32px rgba(10, 26, 16, 0.08), -2px 0 8px rgba(10, 26, 16, 0.04);
-    border-left: 1px solid #E2DFD9;
-    transform: translateX(0);
-    opacity: 1;
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  [class*="Sidebar--right"][style*="display: none"],
-  [class*="Sidebar--right"]:empty {
-    transform: translateX(24px);
-    opacity: 0;
-  }
-
-  [class*="Sidebar--right"] + [class*="Sidebar-resizeHandle"] {
-    display: none !important;
-  }
+/* ── Right sidebar — flex layout, shares space with preview ── */
+[class*="Sidebar--right"] {
+  background: #FFFFFF !important;
+  border-left: 1px solid #E2DFD9 !important;
 }
 
-/* Puck field labels — consistent V2 styling */
+/* Hide resize handle */
+[class*="Sidebar--right"] + [class*="Sidebar-resizeHandle"] {
+  display: none !important;
+}
+
+/* ── Field labels ── */
 [class*="FieldLabel-label"] {
   font-family: var(--font-body) !important;
   font-size: 0.8125rem !important;
@@ -276,7 +357,7 @@ body {
   color: #575249 !important;
 }
 
-/* Puck field inputs — match admin V2 input style */
+/* ── Field inputs ── */
 [class*="Puck-root"] input[type="text"],
 [class*="Puck-root"] input[type="number"],
 [class*="Puck-root"] input[type="url"],
@@ -291,34 +372,73 @@ body {
 [class*="Puck-root"] input:focus,
 [class*="Puck-root"] select:focus,
 [class*="Puck-root"] textarea:focus {
-  border-color: #5C9873 !important;
-  box-shadow: 0 0 0 3px rgba(62, 123, 87, 0.1) !important;
+  border-color: #8A847A !important;
+  box-shadow: 0 0 0 3px rgba(138, 132, 122, 0.12) !important;
   outline: none !important;
 }
 
-/* Puck publish/save button — use forest green instead of Puck's default blue */
-[class*="Header-"] button[class*="Button--primary"],
-[class*="PuckLayout-header"] button[type="button"]:last-child {
+/* ── Header utility buttons (undo/redo, viewport, zoom) — unified style ── */
+[class*="PuckLayout-header"] button,
+[class*="Header-"] button {
   font-family: var(--font-body) !important;
-  font-weight: 500 !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
+  transition: background-color 150ms ease, color 150ms ease !important;
+}
+[class*="PuckLayout-header"] button:not([class*="Button--primary"]):hover,
+[class*="Header-"] button:not([class*="Button--primary"]):hover {
+  background-color: #F5F3EF !important;
+}
+[class*="PuckLayout-header"] button svg,
+[class*="Header-"] button svg {
+  width: 16px !important;
+  height: 16px !important;
 }
 
-/* Puck header bar bg */
-[class*="PuckLayout-header"],
-[class*="Header-"] {
-  background: #FFFFFF !important;
+/* ── Canvas/preview background ── */
+[class*="PuckLayout-frame"],
+[class*="Canvas-"] {
+  background: #F5F3EF !important;
 }
 
-/* Puck left sidebar bg */
-[class*="Sidebar--left"] {
-  background: #F8F6F2 !important;
-  border-right: 1px solid #E2DFD9 !important;
-}
-
-/* Puck action bar at bottom (drag overlay/toolbar) */
+/* ── Action bar (drag overlay/toolbar) ── */
 [class*="ActionBar-"] {
   border-radius: 10px !important;
-  box-shadow: 0 4px 12px rgba(10, 26, 16, 0.08), 0 2px 4px rgba(10, 26, 16, 0.06) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  background: #1C1917 !important;
+  color: #FFFFFF !important;
+}
+[class*="ActionBar-"] button {
+  color: #FFFFFF !important;
+}
+[class*="ActionBar-"] button:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ── Component overlay selection ring — stone, not blue ── */
+[class*="DropZone-renderWrapper"] [style*="outline"] {
+  outline-color: #8A847A !important;
+}
+[class*="DraggableComponent--isSelected"] {
+  outline-color: #575249 !important;
+}
+
+/* ── Puck scrollbar styling ── */
+[class*="Sidebar"] ::-webkit-scrollbar {
+  width: 4px;
+}
+[class*="Sidebar"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[class*="Sidebar"] ::-webkit-scrollbar-thumb {
+  background: #C8C4BC;
+  border-radius: 4px;
+}
+
+/* ── Empty drop zone hint ── */
+[class*="DropZone--isEmpty"] {
+  border-color: #C8C4BC !important;
+}
+[class*="DropZone--isAreaSelected"] {
+  border-color: #8A847A !important;
 }
 

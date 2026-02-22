@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { cn } from '../ui/utils'
 import { ChevronDown } from 'lucide-react'
+import { useInlineEdit } from '../context'
 
 export interface AccordionItem {
   question: string
@@ -69,7 +70,9 @@ export function Accordion({
   items = [],
   defaultOpen = 'none',
   style = 'default',
-}: AccordionProps) {
+  id,
+}: AccordionProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const headingEdit = useInlineEdit('heading', heading, id || '')
   const [openIndices, setOpenIndices] = useState<Set<number>>(() => {
     if (defaultOpen === 'all') return new Set(items.map((_, i) => i))
     if (defaultOpen === 'first' && items.length > 0) return new Set([0])
@@ -87,16 +90,18 @@ export function Accordion({
 
   if (items.length === 0) {
     return (
-      <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-        Lägg till frågor i inställningarna...
+      <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
+        <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+          Lägg till frågor i inställningarna...
+        </div>
       </div>
     )
   }
 
   return (
-    <div>
-      {heading && (
-        <h2 className="text-h3 text-stone-800 mb-6">{heading}</h2>
+    <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
+      {(heading || headingEdit) && (
+        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h3 text-stone-800 mb-6', headingEdit?.className)}>{heading}</h2>
       )}
       <div
         className={cn(

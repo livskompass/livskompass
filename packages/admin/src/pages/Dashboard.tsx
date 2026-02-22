@@ -13,7 +13,6 @@ import {
   Mail,
   ArrowRight,
   Users,
-  TrendingUp,
 } from 'lucide-react'
 
 interface StatsResponse {
@@ -40,20 +39,20 @@ export default function Dashboard() {
     queryKey: ['admin-stats'],
     queryFn: getStats,
   })
-  const { data: bookingsData } = useQuery({
+  const { data: bookingsData, isLoading: bookingsLoading } = useQuery({
     queryKey: ['admin-bookings'],
     queryFn: getBookings,
   })
-  const { data: coursesData } = useQuery({
+  const { data: coursesData, isLoading: coursesLoading } = useQuery({
     queryKey: ['admin-courses'],
     queryFn: getCourses,
   })
 
   const stats = [
-    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/sidor', icon: FileText, color: 'text-forest-600 bg-forest-50' },
-    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-forest-700 bg-forest-50' },
-    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-forest-500 bg-forest-50' },
-    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-amber-500 bg-amber-50' },
+    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/sidor', icon: FileText, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-stone-600 bg-stone-100' },
   ]
 
   const unreadContacts = statsData?.stats?.unreadContacts ?? 0
@@ -71,11 +70,10 @@ export default function Dashboard() {
           <Link key={stat.name} to={stat.href}>
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`p-2 rounded-lg ${stat.color}`}>
+                <div className="mb-3">
+                  <div className={`p-2 rounded-lg ${stat.color} inline-flex`}>
                     <stat.icon className="h-4 w-4" />
                   </div>
-                  <TrendingUp className="h-4 w-4 text-stone-300" />
                 </div>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-16 mb-1" />
@@ -91,11 +89,11 @@ export default function Dashboard() {
 
       {/* Unread Messages Alert */}
       {unreadContacts > 0 && (
-        <Card className="border-amber-200 bg-amber-50">
+        <Card className="border-stone-200 bg-stone-50">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Mail className="h-4 w-4 text-amber-500" />
+              <div className="p-2 bg-stone-100 rounded-lg">
+                <Mail className="h-4 w-4 text-stone-600" />
               </div>
               <div className="flex-1">
                 <p className="font-medium text-stone-800">
@@ -103,7 +101,7 @@ export default function Dashboard() {
                 </p>
                 <Link
                   to="/meddelanden"
-                  className="text-sm text-amber-600 hover:text-amber-500 inline-flex items-center gap-1"
+                  className="text-sm text-stone-600 hover:text-stone-500 inline-flex items-center gap-1"
                 >
                   View messages <ArrowRight className="h-3 w-3" />
                 </Link>
@@ -131,7 +129,11 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            {bookingsData?.bookings && bookingsData.bookings.length > 0 ? (
+            {bookingsLoading ? (
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+              </div>
+            ) : bookingsData?.bookings && bookingsData.bookings.length > 0 ? (
               <div className="space-y-3">
                 {bookingsData.bookings.slice(0, 5).map((booking) => (
                   <div
@@ -183,7 +185,11 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            {coursesData?.courses && coursesData.courses.length > 0 ? (
+            {coursesLoading ? (
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+              </div>
+            ) : coursesData?.courses && coursesData.courses.length > 0 ? (
               <div className="space-y-3">
                 {coursesData.courses
                   .filter((c) => new Date(c.start_date) >= new Date())

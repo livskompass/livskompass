@@ -1,4 +1,6 @@
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
+import { useInlineEdit } from '../context'
+import { cn } from '../ui/utils'
 
 export interface PostGridProps {
   heading: string
@@ -31,18 +33,21 @@ export function PostGrid({
   showExcerpt = true,
   showDate = true,
   emptyText = 'Inga inlägg hittades',
-}: PostGridProps) {
+  id,
+}: PostGridProps & { puck?: { isEditing: boolean }; id?: string }) {
   const limit = count || 3
   const { data, loading } = useFetchJson<{ posts: Post[] }>(`/posts?limit=${limit}`)
   const posts = data?.posts || []
   const revealRef = useScrollReveal()
+  const headingEdit = useInlineEdit('heading', heading, id || '')
+  const subheadingEdit = useInlineEdit('subheading', subheading, id || '')
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {(heading || subheading) && (
+      {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="mb-8 reveal">
-          {heading && <h2 className="text-h2 text-stone-800 mb-2">{heading}</h2>}
-          {subheading && <p className="text-lg text-stone-600">{subheading}</p>}
+          {(heading || headingEdit) && <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
+          {(subheading || subheadingEdit) && <p {...(subheadingEdit ? { contentEditable: subheadingEdit.contentEditable, suppressContentEditableWarning: subheadingEdit.suppressContentEditableWarning, onBlur: subheadingEdit.onBlur, onKeyDown: subheadingEdit.onKeyDown, 'data-inline-edit': 'subheading' } : {})} className={cn('text-lg text-stone-600', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
       {loading ? (
@@ -61,10 +66,10 @@ export function PostGrid({
       ) : posts.length > 0 ? (
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
           {posts.map((post) => (
-            <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300 group block">
+            <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 group block outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
               {showImage && post.featured_image && (
                 <div className="aspect-video overflow-hidden">
-                  <img src={resolveMediaUrl(post.featured_image)} alt={post.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500" />
+                  <img src={resolveMediaUrl(post.featured_image)} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
               )}
               <div className="p-5">

@@ -1,6 +1,6 @@
 import { cn } from '../ui/utils'
 import { ChevronRight } from 'lucide-react'
-import { useEditableText } from '../context'
+import { useEditableText, useInlineEdit } from '../context'
 
 export interface BreadcrumbItem {
   label: string
@@ -23,9 +23,19 @@ export function PageHeader({
   size = 'large',
   showDivider = false,
   breadcrumbs = [],
-}: PageHeaderProps) {
-  const headingEdit = useEditableText('heading', heading)
-  const subheadingEdit = useEditableText('subheading', subheading)
+  id,
+}: PageHeaderProps & { puck?: { isEditing: boolean }; id?: string }) {
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  const subheadingPuck = useInlineEdit('subheading', subheading, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  const subheadingEditCtx = useEditableText('subheading', subheading)
+
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+  const subheadingEdit = subheadingPuck || subheadingEditCtx
   const hasBreadcrumbs = breadcrumbs && breadcrumbs.length > 0
 
   // Build editable props with merged classNames
@@ -111,7 +121,7 @@ export function PageHeader({
               alignment === 'center' && 'flex justify-center',
             )}
           >
-            <div className="w-16 h-1 rounded-full bg-forest-300 origin-left animate-line-expand" />
+            <div className="w-16 h-1 rounded-full bg-forest-300" />
           </div>
         )}
       </div>

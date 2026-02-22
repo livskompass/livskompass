@@ -95,11 +95,11 @@
   --gradient-shimmer: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
 
   /* Spacing */
-  --section-xs: clamp(2rem, 1rem + 3.333vw, 4rem);
-  --section-sm: clamp(3rem, 2rem + 3.333vw, 5rem);
-  --section-md: clamp(4rem, 2.667rem + 4.444vw, 7rem);
-  --section-lg: clamp(5rem, 3rem + 6.667vw, 9rem);
-  --section-xl: clamp(6rem, 3.333rem + 8.889vw, 10.5rem);
+  --section-xs: clamp(1.5rem, 1rem + 1.667vw, 3rem);
+  --section-sm: clamp(2rem, 1.5rem + 1.667vw, 3.5rem);
+  --section-md: clamp(2.5rem, 2rem + 1.667vw, 4.5rem);
+  --section-lg: clamp(3rem, 2.25rem + 2.5vw, 5.5rem);
+  --section-xl: clamp(3.5rem, 2.5rem + 3.333vw, 7rem);
 
   --gap-xs:  0.5rem;
   --gap-sm:  0.75rem;
@@ -254,6 +254,14 @@ body {
     transform: none !important;
     transition-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==================== No-JS Reveal Fallback ==================== */
+@media (scripting: none) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

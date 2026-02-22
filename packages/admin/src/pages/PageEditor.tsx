@@ -59,6 +59,7 @@ export default function PageEditor() {
         parent_slug: data.page.parent_slug || '',
         sort_order: data.page.sort_order || 0,
         status: data.page.status,
+        content: (data.page as any).content || '',
         content_blocks: (data.page as any).content_blocks || null,
       }
     : null

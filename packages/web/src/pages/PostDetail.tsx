@@ -10,7 +10,7 @@ import { Skeleton } from '../components/ui/skeleton'
 
 function PostSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
+    <div className="mx-auto px-4 py-16" style={{ maxWidth: 'var(--width-content, 1280px)' }}>
       <Skeleton className="h-5 w-32 mb-6" />
       <Skeleton className="h-5 w-24 mb-3" />
       <Skeleton className="h-12 w-3/4 mb-8" />
@@ -47,11 +47,13 @@ export default function PostDetail() {
     // Post has custom Puck blocks
     blocksJson = postAny.content_blocks
   } else {
-    // Use default post template, replacing __LEGACY_CONTENT__ with actual HTML
-    blocksJson = defaultPostTemplate.replace(
-      '__LEGACY_CONTENT__',
-      post.content ? rewriteMediaUrls(post.content).replace(/"/g, '\\"') : ''
-    )
+    // Use default post template, replacing __LEGACY_CONTENT__ with actual HTML.
+    // JSON.stringify the content to properly escape quotes, newlines, backslashes, etc.,
+    // then strip the wrapping quotes since we're inserting into an existing JSON string.
+    const safeContent = post.content
+      ? JSON.stringify(rewriteMediaUrls(post.content)).slice(1, -1)
+      : ''
+    blocksJson = defaultPostTemplate.replace('__LEGACY_CONTENT__', safeContent)
   }
 
   return (

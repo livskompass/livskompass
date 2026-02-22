@@ -1,5 +1,6 @@
-import { useCourseData } from '../context'
+import { useCourseData, useInlineEdit } from '../context'
 import { ArrowRight, AlertCircle, CheckCircle } from 'lucide-react'
+import { cn } from '../ui/utils'
 
 export interface BookingCTAProps {
   style: 'card' | 'inline'
@@ -15,10 +16,17 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Boknings-CTA visas här (data-bunden)</p>
+        <p className="text-stone-400 text-sm">Boknings-CTA visas när en utbildning är vald.</p>
       </div>
     </div>
   )
+}
+
+/** Helper: extract handlers from inline edit props */
+function editHandlers(edit: ReturnType<typeof useInlineEdit>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
 }
 
 export function BookingCTA({
@@ -29,8 +37,16 @@ export function BookingCTA({
   completedMessage = 'Denna utbildning har genomförts.',
   fullMessage = 'Denna utbildning är fullbokad.',
   fullSubMessage = 'Kontakta oss om du vill ställas i kö.',
-}: BookingCTAProps) {
+  id,
+}: BookingCTAProps & { puck?: { isEditing: boolean }; id?: string }) {
   const course = useCourseData()
+  const headingEdit = useInlineEdit('heading', heading, id || '')
+  const descriptionEdit = useInlineEdit('description', description, id || '')
+  const buttonTextEdit = useInlineEdit('buttonText', buttonText, id || '')
+
+  const hHandlers = editHandlers(headingEdit)
+  const dHandlers = editHandlers(descriptionEdit)
+  const bHandlers = editHandlers(buttonTextEdit)
 
   if (!course) return <Placeholder />
 
@@ -66,7 +82,7 @@ export function BookingCTA({
           href={`/utbildningar/${course.slug}/boka`}
           className="inline-flex items-center h-12 px-8 bg-amber-500 text-white hover:bg-amber-600 font-semibold rounded-full transition-colors text-base"
         >
-          {buttonText}
+          <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
           <ArrowRight className="ml-2 h-4 w-4" />
         </a>
       </div>
@@ -76,13 +92,13 @@ export function BookingCTA({
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <div className="bg-forest-50 border border-forest-200 rounded-xl p-8 text-center">
-        <h3 className="text-h3 text-forest-800 mb-2">{heading}</h3>
-        <p className="text-forest-600 mb-6">{description}</p>
+        <h3 {...hHandlers} className={cn('text-h3 text-forest-800 mb-2', headingEdit?.className)}>{heading}</h3>
+        <p {...dHandlers} className={cn('text-forest-600 mb-6', descriptionEdit?.className)}>{description}</p>
         <a
           href={`/utbildningar/${course.slug}/boka`}
           className="inline-flex items-center h-12 px-8 bg-amber-500 text-white hover:bg-amber-600 font-semibold rounded-full transition-colors text-base"
         >
-          {buttonText}
+          <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
           <ArrowRight className="ml-2 h-4 w-4" />
         </a>
       </div>

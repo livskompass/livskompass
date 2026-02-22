@@ -26,13 +26,13 @@ function ColumnsEditor({
 }: any) {
   const threeCol = layout === '33-33-33'
   const classes = [
-    'grid grid-cols-1',
+    'grid grid-cols-1 mx-auto',
     layoutGridMap[layout] || layoutGridMap['50-50'],
     gapMap[gap] || gapMap.medium,
     verticalAlignMap[verticalAlignment] || verticalAlignMap.top,
   ].join(' ')
 
-  return React.createElement('div', { className: classes },
+  return React.createElement('div', { className: classes, style: { maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' } },
     React.createElement('div', { className: 'min-h-[60px]' },
       React.createElement(DropZone, { zone: 'column-1', disallow: ['Columns'] })
     ),

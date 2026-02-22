@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Puck, type Data } from '@puckeditor/core'
 import '@puckeditor/core/puck.css'
-import { emptyPuckData, injectPreviewCSS } from '@livskompass/shared'
+import { emptyPuckData, createEditorOverrides, defaultCourseTemplate } from '@livskompass/shared'
 import { getFilteredPuckConfig } from '../lib/puck-filter'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -17,7 +17,7 @@ import {
   DialogFooter,
 } from './ui/dialog'
 import { Settings, Trash2, ExternalLink } from 'lucide-react'
-import { cn } from '../lib/utils'
+import { cn, generateSlug } from '../lib/utils'
 
 interface CourseBuilderProps {
   course: {
@@ -66,7 +66,7 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
   const [deleteOpen, setDeleteOpen] = useState(false)
   const settingsRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const [dropdownStyle, setDropdownStyle] = useState({ top: 0, right: 0 })
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({ top: 0, right: 0 })
 
   useEffect(() => {
     if (course) {
@@ -94,14 +94,7 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [settingsOpen])
 
-  const generateSlug = (t: string) =>
-    t
-      .replace(/[åÅ]/g, (c) => (c === 'å' ? 'a' : 'A'))
-      .replace(/[äÄ]/g, (c) => (c === 'ä' ? 'a' : 'A'))
-      .replace(/[öÖ]/g, (c) => (c === 'ö' ? 'o' : 'O'))
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+  const editorOverrides = useMemo(() => createEditorOverrides(), [])
 
   const initialData = useMemo<Data>(() => {
     if (course?.content_blocks) {
@@ -111,8 +104,21 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
         return emptyPuckData
       }
     }
+    // Legacy course without Puck blocks: auto-populate from template
+    if (course?.title) {
+      try {
+        const safeContent = course.description
+          ? course.description.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+          : '<p></p>'
+        const template = defaultCourseTemplate
+          .replace('__LEGACY_CONTENT__', safeContent)
+        return JSON.parse(template) as Data
+      } catch {
+        return emptyPuckData
+      }
+    }
     return emptyPuckData
-  }, [course?.content_blocks])
+  }, [course?.content_blocks, course?.title, course?.description])
 
   const handlePublish = useCallback(
     (data: Data) => {
@@ -137,22 +143,22 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
   const statusBadge = () => {
     switch (status) {
       case 'active':
-        return { className: 'bg-forest-50 text-forest-700 border-forest-200', label: 'Active' }
+        return { className: 'bg-stone-100 text-stone-700 border-stone-300', label: 'Active' }
       case 'full':
-        return { className: 'bg-stone-100 text-stone-700 border-stone-200', label: 'Full' }
+        return { className: 'bg-stone-100 text-stone-600 border-stone-200', label: 'Full' }
       case 'completed':
-        return { className: 'bg-stone-100 text-stone-500 border-stone-200', label: 'Completed' }
+        return { className: 'bg-stone-50 text-stone-500 border-stone-200', label: 'Completed' }
       case 'cancelled':
-        return { className: 'bg-red-50 text-red-700 border-red-200', label: 'Cancelled' }
+        return { className: 'bg-stone-50 text-stone-400 border-stone-200', label: 'Cancelled' }
       default:
-        return { className: 'bg-amber-50 text-amber-600 border-amber-200', label: 'Draft' }
+        return { className: 'bg-stone-50 text-stone-500 border-stone-200', label: 'Draft' }
     }
   }
 
   const badge = statusBadge()
 
   return (
-    <div className="h-[calc(100vh-4rem)]">
+    <div className="h-[100dvh]">
       <Puck
         config={getFilteredPuckConfig('course')}
         data={initialData}
@@ -164,19 +170,13 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
           { width: 1280, label: 'Desktop', icon: 'Monitor' as any },
         ]}
         overrides={{
-          iframe: ({ children, document: iframeDoc }) => {
-            useEffect(() => {
-              if (!iframeDoc) return
-              injectPreviewCSS(iframeDoc)
-            }, [iframeDoc])
-            return <>{children}</>
-          },
+          ...editorOverrides,
           headerActions: ({ children }) => (
             <div className="flex items-center gap-2">
               {/* View on site */}
               {course?.id && slug && (
                 <a
-                  href={`${window.location.origin.replace('admin', 'web')}/utbildningar/${slug}`}
+                  href={`${window.location.origin.replace(':3001', ':3000').replace('admin', 'web')}/utbildningar/${slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors text-xs font-medium"
@@ -195,20 +195,26 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
               </span>
 
               {/* Settings dropdown */}
-              <div ref={settingsRef} className="relative z-[999]">
+              <div ref={settingsRef} className="relative z-50">
                 <button
                   ref={buttonRef}
                   onClick={() => {
                     if (!settingsOpen && buttonRef.current) {
                       const rect = buttonRef.current.getBoundingClientRect()
-                      setDropdownStyle({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
+                      const spaceBelow = window.innerHeight - rect.bottom - 16
+                      const dropdownMaxH = 500
+                      if (spaceBelow < dropdownMaxH) {
+                        setDropdownStyle({ bottom: window.innerHeight - rect.top + 8, right: window.innerWidth - rect.right })
+                      } else {
+                        setDropdownStyle({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
+                      }
                     }
                     setSettingsOpen(!settingsOpen)
                   }}
                   className={cn(
                     "inline-flex items-center justify-center h-8 w-8 rounded-lg border transition-all duration-150",
                     settingsOpen
-                      ? "border-forest-300 bg-forest-50 text-forest-700"
+                      ? "border-stone-400 bg-stone-100 text-stone-700"
                       : "border-stone-200 bg-white text-stone-500 hover:bg-stone-50 hover:text-stone-700"
                   )}
                   title="Course settings"
@@ -217,7 +223,7 @@ export default function CourseBuilder({ course, onSave, onDelete }: CourseBuilde
                 </button>
 
                 {settingsOpen && (
-                  <div className="fixed w-80 bg-white rounded-2xl shadow-xl border border-stone-200 z-[9999] max-h-[80vh] overflow-y-auto animate-scale-in origin-top-right" style={{ top: dropdownStyle.top, right: dropdownStyle.right }}>
+                  <div className="fixed w-96 bg-white rounded-2xl shadow-xl border border-stone-200 z-[200] max-h-[80vh] overflow-y-auto animate-scale-in origin-top-right" style={dropdownStyle}>
                     <div className="p-5 space-y-5">
                       <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Course settings</h3>
 

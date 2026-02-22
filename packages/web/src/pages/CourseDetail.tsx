@@ -11,7 +11,7 @@ import { Skeleton } from '../components/ui/skeleton'
 
 function CourseSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
+    <div className="mx-auto px-4 py-16" style={{ maxWidth: 'var(--width-content, 1280px)' }}>
       <Skeleton className="h-5 w-36 mb-6" />
       <Skeleton className="h-10 w-3/4 mb-6" />
       <Card className="mb-8">
@@ -58,11 +58,13 @@ export default function CourseDetail() {
     // Course has custom Puck blocks
     blocksJson = courseAny.content_blocks
   } else {
-    // Use default course template, replacing __LEGACY_CONTENT__ with actual HTML
-    blocksJson = defaultCourseTemplate.replace(
-      '__LEGACY_CONTENT__',
-      course.content ? rewriteMediaUrls(course.content).replace(/"/g, '\\"') : ''
-    )
+    // Use default course template, replacing __LEGACY_CONTENT__ with actual HTML.
+    // JSON.stringify the content to properly escape quotes, newlines, backslashes, etc.,
+    // then strip the wrapping quotes since we're inserting into an existing JSON string.
+    const safeContent = course.content
+      ? JSON.stringify(rewriteMediaUrls(course.content)).slice(1, -1)
+      : ''
+    blocksJson = defaultCourseTemplate.replace('__LEGACY_CONTENT__', safeContent)
   }
 
   return (

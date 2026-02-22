@@ -88,9 +88,10 @@ export default function BookingPage() {
   }
 
   // Default booking form (same as old Booking.tsx)
-  const available = (course.max_participants || 0) - (course.current_participants || 0)
+  const hasCapacity = course.max_participants != null
+  const available = hasCapacity ? (course.max_participants || 0) - (course.current_participants || 0) : null
 
-  if (course.status === 'full' || course.status === 'completed' || available <= 0) {
+  if (course.status === 'full' || course.status === 'completed' || (hasCapacity && available! <= 0)) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-24 text-center">
         <Card className="inline-block w-full">
@@ -157,10 +158,12 @@ export default function BookingPage() {
                 <span>{course.location}</span>
               </div>
             )}
+            {priceSek > 0 && (
             <div className="flex items-center gap-2 text-stone-600">
               <CreditCard className="h-4 w-4 text-stone-400" />
               <span>{priceSek.toLocaleString('sv-SE')} kr/person</span>
             </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -221,21 +224,26 @@ export default function BookingPage() {
 
             <div className="space-y-2">
               <Label htmlFor="participants">Antal deltagare *</Label>
-              <select
-                id="participants"
-                value={formData.participants}
-                onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
-                className="flex h-12 w-full px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
-              >
-                {Array.from(
-                  { length: Math.min(10, available) },
-                  (_, i) => i + 1
-                ).map((num) => (
-                  <option key={num} value={num}>
-                    {num}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  id="participants"
+                  value={formData.participants}
+                  onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
+                  className="flex h-12 w-full px-4 pr-10 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors appearance-none"
+                >
+                  {Array.from(
+                    { length: Math.min(10, available ?? 10) },
+                    (_, i) => i + 1
+                  ).map((num) => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ))}
+                </select>
+                <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </div>
             </div>
 
             <div className="space-y-2">

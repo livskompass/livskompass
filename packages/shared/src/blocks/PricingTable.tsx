@@ -1,6 +1,7 @@
 import { cn } from '../ui/utils'
 import { Check } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
+import { useInlineEdit } from '../context'
 
 export interface PricingTableProps {
   heading: string
@@ -8,7 +9,7 @@ export interface PricingTableProps {
     name: string
     price: string
     description: string
-    features: string[]
+    features: string[] | string
     highlighted: boolean
     ctaText: string
     ctaLink: string
@@ -26,7 +27,10 @@ export function PricingTable({
   columns = 2,
   highlightLabel = 'Populärt val',
   emptyText = 'Lägg till priser i inställningarna...',
-}: PricingTableProps) {
+  id,
+}: PricingTableProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const headingEdit = useInlineEdit('heading', heading, id || '')
+
   if (items.length === 0) {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
@@ -41,8 +45,8 @@ export function PricingTable({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {heading && (
-        <h2 className="text-h2 text-stone-800 text-center mb-10 reveal">{heading}</h2>
+      {(heading || headingEdit) && (
+        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 text-center mb-10 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       <div className={cn('grid grid-cols-1 gap-6 items-start reveal', colMap[columns] || colMap[2])}>
         {items.map((item, i) => (
@@ -63,7 +67,7 @@ export function PricingTable({
             )}
             <h3 className="text-h4 text-stone-800">{item.name}</h3>
             <div className="mt-4 mb-2">
-              <span className="font-display text-h1 text-stone-900">{item.price}</span>
+              <span className="font-display text-h2 text-stone-900">{item.price}</span>
               {item.price && !item.price.toLowerCase().includes('gratis') && (
                 <span className="text-stone-500 ml-1">kr</span>
               )}
@@ -71,9 +75,9 @@ export function PricingTable({
             {item.description && (
               <p className="text-stone-600 text-sm mb-6">{item.description}</p>
             )}
-            {item.features && item.features.length > 0 && (
+            {item.features && (typeof item.features === 'string' ? item.features.split('\n').filter(Boolean) : item.features).length > 0 && (
               <ul className="space-y-3 mb-8 flex-1">
-                {item.features.map((feature, j) => (
+                {(typeof item.features === 'string' ? item.features.split('\n').filter(Boolean) : item.features).map((feature, j) => (
                   <li key={j} className="flex items-start gap-3 text-sm text-stone-600">
                     <Check className="h-5 w-5 text-forest-500 flex-shrink-0 mt-0.5" />
                     {feature}

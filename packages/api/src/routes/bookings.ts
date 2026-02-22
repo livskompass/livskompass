@@ -34,14 +34,16 @@ bookingsRoutes.post('/', async (c) => {
 
   // Atomically reserve spots - prevents race condition where concurrent bookings overbook.
   // The UPDATE only affects a row if there are enough spots remaining.
+  // When max_participants is NULL, the course has unlimited capacity.
   const reserveResult = await c.env.DB.prepare(`
     UPDATE courses
     SET current_participants = current_participants + ?,
         status = CASE
-          WHEN current_participants + ? >= max_participants THEN 'full'
+          WHEN max_participants IS NOT NULL AND current_participants + ? >= max_participants THEN 'full'
           ELSE status
         END
-    WHERE id = ? AND status = 'active' AND current_participants + ? <= max_participants
+    WHERE id = ? AND status = 'active'
+      AND (max_participants IS NULL OR current_participants + ? <= max_participants)
   `).bind(participants, participants, courseId, participants).run()
 
   if (!reserveResult.meta.rows_written) {

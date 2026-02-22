@@ -1,4 +1,6 @@
 import { useFetchJson, useScrollReveal } from '../helpers'
+import { useInlineEdit } from '../context'
+import { cn } from '../ui/utils'
 
 export interface PageCardsProps {
   heading: string
@@ -27,7 +29,9 @@ export function PageCards({
   style = 'card',
   emptyText = 'Inga undersidor hittades',
   emptyManualText = 'Lägg till sidor manuellt eller ange en föräldersida',
-}: PageCardsProps) {
+  id,
+}: PageCardsProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const headingEdit = useInlineEdit('heading', heading, id || '')
   const { data, loading } = useFetchJson<PageData>(parentSlug ? `/pages/${parentSlug}` : '')
 
   const revealRef = useScrollReveal()
@@ -40,8 +44,13 @@ export function PageCards({
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4`}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 rounded-xl border border-stone-200 bg-white animate-pulse" />
+          {Array.from({ length: Math.min(columns, 3) }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
+              <div className="p-5 space-y-3">
+                <div className="h-5 bg-stone-100 rounded w-3/4" />
+                <div className="h-4 bg-stone-100 rounded w-1/2" />
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -51,7 +60,7 @@ export function PageCards({
   if (style === 'list') {
     return (
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {heading && <h2 className="text-h3 text-stone-800 mb-4 reveal">{heading}</h2>}
+        {(heading || headingEdit) && <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h3 text-stone-800 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl overflow-hidden">
           {pages.map((page, i) => (
             <a key={i} href={`/${page.slug}`} className="flex items-center justify-between p-4 bg-white hover:bg-stone-50 transition-colors group">
@@ -70,7 +79,7 @@ export function PageCards({
   if (style === 'minimal') {
     return (
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {heading && <h2 className="text-h3 text-stone-800 mb-4 reveal">{heading}</h2>}
+        {(heading || headingEdit) && <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h3 text-stone-800 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="flex flex-wrap gap-3">
           {pages.map((page, i) => (
             <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-stone-200 bg-white text-sm font-medium text-stone-700 hover:border-forest-300 hover:text-forest-600 transition-colors">
@@ -84,10 +93,10 @@ export function PageCards({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {heading && <h2 className="text-h3 text-stone-800 mb-6 reveal">{heading}</h2>}
+      {(heading || headingEdit) && <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h3 text-stone-800 mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
       <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4 reveal`}>
         {pages.map((page, i) => (
-          <a key={i} href={`/${page.slug}`} className="rounded-xl border border-stone-200 bg-white p-5 hover:shadow-md hover:-translate-y-1 transition-all duration-300 group block">
+          <a key={i} href={`/${page.slug}`} className="rounded-xl border border-stone-200 bg-white p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 group block outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
             <h3 className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors mb-1">{page.title}</h3>
             {showDescription && page.description && <p className="text-sm text-stone-500 line-clamp-2">{page.description}</p>}
           </a>

@@ -1,6 +1,6 @@
 import { cn } from '../ui/utils'
 import { ArrowRight } from 'lucide-react'
-import { useEditableText } from '../context'
+import { useEditableText, useInlineEdit } from '../context'
 
 export type HeroPreset = 'centered' | 'split-right' | 'split-left' | 'full-image' | 'minimal'
 export type HeroBgStyle = 'gradient' | 'forest' | 'stone'
@@ -51,9 +51,19 @@ export function Hero({
   image = '',
   backgroundImage = '',
   overlayDarkness = 'medium',
-}: HeroProps) {
-  const headingEdit = useEditableText('heading', heading)
-  const subheadingEdit = useEditableText('subheading', subheading)
+  id,
+}: HeroProps & { puck?: { isEditing: boolean }; id?: string }) {
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  const subheadingPuck = useInlineEdit('subheading', subheading, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  const subheadingEditCtx = useEditableText('subheading', subheading)
+
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+  const subheadingEdit = subheadingPuck || subheadingEditCtx
 
   const hEdit = editHandlers(headingEdit)
   const sEdit = editHandlers(subheadingEdit)
@@ -65,11 +75,11 @@ export function Hero({
     return (
       <section style={{ paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-md)' }}>
         <div style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
-          <h1 {...hEdit} className={cn('text-display text-forest-950 max-w-[20ch] reveal', hCls)}>
+          <h1 {...hEdit} className={cn('text-display text-forest-950 max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
             {heading}
           </h1>
           {(subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg text-stone-600 mt-6 max-w-[540px] leading-relaxed reveal reveal-stagger-1', sCls)}>
+            <p {...sEdit} className={cn('text-body-lg text-stone-600 mt-6 max-w-[540px] leading-relaxed animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
               {subheading}
             </p>
           )}
@@ -115,16 +125,16 @@ export function Hero({
       <section className="overflow-hidden" style={{ backgroundColor: 'var(--surface-primary)', paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-lg)' }}>
         <div className="grid grid-cols-1 lg:grid-cols-5 items-center gap-10 lg:gap-16" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('lg:col-span-3 flex flex-col', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
-            <h1 {...hEdit} className={cn('text-h1 text-forest-950 max-w-[20ch] reveal', hCls)}>
+            <h1 {...hEdit} className={cn('text-h1 text-forest-950 max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg text-stone-600 mt-5 max-w-[480px] leading-relaxed reveal reveal-stagger-1', sCls)}>
+              <p {...sEdit} className={cn('text-body-lg text-stone-600 mt-5 max-w-[480px] leading-relaxed animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
                 {subheading}
               </p>
             )}
             {ctaPrimaryText && ctaPrimaryLink && (
-              <div className="flex flex-col sm:flex-row gap-4 mt-8 reveal reveal-stagger-2">
+              <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
                 <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 bg-forest-600 text-white shadow-[0_1px_3px_rgba(50,102,71,0.2)] hover:bg-forest-500 hover:-translate-y-px transition-all">
                   {ctaPrimaryText}
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -134,9 +144,9 @@ export function Hero({
           </div>
           <div className={cn('lg:col-span-2', imageFirst ? 'lg:order-1' : 'lg:order-2')}>
             {image ? (
-              <img src={image} alt="" loading="lazy" className="w-full h-auto rounded-xl object-cover shadow-lg reveal" style={{ aspectRatio: '4 / 3' }} />
+              <img src={image} alt="" loading="lazy" className="w-full h-auto rounded-xl object-cover shadow-lg animate-hero-enter" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }} />
             ) : (
-              <div className="w-full rounded-xl bg-stone-200 reveal" style={{ aspectRatio: '4 / 3' }} />
+              <div className="w-full rounded-xl bg-stone-200 animate-hero-enter" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }} />
             )}
           </div>
         </div>

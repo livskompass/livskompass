@@ -17,8 +17,9 @@ export default function Login() {
   }, [navigate])
 
   const handleGoogleLogin = () => {
-    // Redirect to backend Google OAuth endpoint
-    window.location.href = `${API_BASE}/auth/google`
+    // Pass current origin so API redirects back here (not production) during local dev
+    const origin = encodeURIComponent(window.location.origin)
+    window.location.href = `${API_BASE}/auth/google?admin_origin=${origin}`
   }
 
   const getErrorMessage = (errorCode: string | null) => {
@@ -44,7 +45,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-stone-50 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-forest-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 bg-stone-900 rounded-xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-xl">L</span>
           </div>
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Livskompass</h1>
@@ -53,7 +54,7 @@ export default function Login() {
 
         <Card>
           <CardHeader className="text-center pb-2">
-            <CardTitle className="text-xl">Welcome back</CardTitle>
+            <CardTitle className="text-xl">Sign in</CardTitle>
             <CardDescription>Sign in to your account to continue</CardDescription>
           </CardHeader>
           <CardContent className="pt-4">

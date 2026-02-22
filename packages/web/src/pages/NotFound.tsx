@@ -6,8 +6,8 @@ import { Home, Mail } from 'lucide-react'
 export default function NotFound() {
   useDocumentTitle('Sidan hittades inte')
   return (
-    <div className="max-w-2xl mx-auto px-4 py-24 text-center">
-      <p className="font-display text-[8rem] leading-none text-stone-200 mb-4 select-none">404</p>
+    <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+      <p className="font-display text-6xl sm:text-[8rem] leading-none text-stone-300 mb-4 select-none">404</p>
       <h1 className="text-h2 text-stone-900 mb-4">
         Sidan hittades inte
       </h1>

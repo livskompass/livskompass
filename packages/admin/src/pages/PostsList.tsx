@@ -51,7 +51,7 @@ export default function PostsList() {
         ) : data?.posts && data.posts.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50">
+              <TableRow className="bg-stone-100">
                 <TableHead>Title</TableHead>
                 <TableHead>Published</TableHead>
                 <TableHead>Status</TableHead>
@@ -60,11 +60,11 @@ export default function PostsList() {
             </TableHeader>
             <TableBody>
               {data.posts.map((post) => (
-                <TableRow key={post.id}>
+                <TableRow key={post.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <Link
                       to={`/nyheter/${post.id}`}
-                      className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
+                      className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                     >
                       {post.title}
                     </Link>

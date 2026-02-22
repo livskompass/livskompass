@@ -59,6 +59,7 @@ export default function PostEditor() {
         featured_image: data.post.featured_image || null,
         status: data.post.status,
         published_at: data.post.published_at || null,
+        content: (data.post as any).content || '',
         content_blocks: (data.post as any).content_blocks || null,
       }
     : null

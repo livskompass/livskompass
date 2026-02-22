@@ -1,6 +1,7 @@
 import { cn } from '../ui/utils'
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
 import { ExternalLink } from 'lucide-react'
+import { useInlineEdit } from '../context'
 
 export interface ProductListProps {
   heading: string
@@ -41,7 +42,9 @@ export function ProductList({
   freeLabel = 'Gratis',
   outOfStockLabel = 'Slut i lager',
   emptyText = 'Inga produkter hittades.',
-}: ProductListProps) {
+  id,
+}: ProductListProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const headingEdit = useInlineEdit('heading', heading, id || '')
   const { data, loading } = useFetchJson<{ products: Product[] }>('/products')
   const allProducts = data?.products || []
   const products = filterType ? allProducts.filter((p) => p.type === filterType) : allProducts
@@ -58,17 +61,18 @@ export function ProductList({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {heading && (
-        <h2 className="text-h2 text-stone-800 mb-8 reveal">{heading}</h2>
+      {(heading || headingEdit) && (
+        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
-          {[1, 2, 3].map((i) => (
+          {Array.from({ length: Math.min(columns, 3) }).map((_, i) => (
             <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
               <div className="aspect-[4/3] bg-stone-100" />
               <div className="p-5 space-y-3">
                 <div className="h-4 bg-stone-100 rounded w-1/4" />
                 <div className="h-5 bg-stone-100 rounded w-3/4" />
+                <div className="h-4 bg-stone-100 rounded w-full" />
               </div>
             </div>
           ))}
@@ -84,18 +88,18 @@ export function ProductList({
               )}
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
                 {typeProducts.map((product) => (
-                  <div key={product.slug} className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                  <div key={product.slug} className="group bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
                     {product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
                           src={resolveMediaUrl(product.image_url)}
                           alt={product.title}
                           loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-500"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       </div>
                     )}
-                    <div className="p-5">
+                    <div className="p-5 flex flex-col flex-1">
                       <span className="text-xs font-medium text-amber-600 uppercase tracking-wide">
                         {typeLabels[product.type] || product.type}
                       </span>
@@ -103,7 +107,7 @@ export function ProductList({
                       {product.description && (
                         <p className="text-sm text-stone-500 line-clamp-3 mb-4">{product.description}</p>
                       )}
-                      <div className="flex items-center justify-between mt-auto">
+                      <div className="flex items-center justify-between mt-auto pt-2">
                         {product.price_sek ? (
                           <span className="font-display text-h4 text-stone-800">
                             {product.price_sek.toLocaleString('sv-SE')} kr

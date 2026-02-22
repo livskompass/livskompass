@@ -32,6 +32,10 @@ authRoutes.get('/google', async (c) => {
   const clientId = c.env.GOOGLE_CLIENT_ID
   const redirectUri = `${c.env.SITE_URL}/api/auth/google/callback`
 
+  // Allow admin to pass its origin so callback redirects back to the right place (e.g. localhost:3001)
+  const adminOrigin = c.req.query('admin_origin')
+  const state = adminOrigin ? JSON.stringify({ admin_origin: adminOrigin }) : undefined
+
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
@@ -41,6 +45,8 @@ authRoutes.get('/google', async (c) => {
     prompt: 'consent',
   })
 
+  if (state) params.set('state', state)
+
   return c.redirect(`${GOOGLE_AUTH_URL}?${params.toString()}`)
 })
 
@@ -48,7 +54,18 @@ authRoutes.get('/google', async (c) => {
 authRoutes.get('/google/callback', async (c) => {
   const code = c.req.query('code')
   const error = c.req.query('error')
-  const adminUrl = c.env.ADMIN_URL || c.env.SITE_URL
+
+  // Check if admin origin was passed via OAuth state parameter
+  let adminUrl = c.env.ADMIN_URL || c.env.SITE_URL
+  const stateParam = c.req.query('state')
+  if (stateParam) {
+    try {
+      const state = JSON.parse(stateParam)
+      if (state.admin_origin) {
+        adminUrl = state.admin_origin
+      }
+    } catch {}
+  }
 
   if (error || !code) {
     return c.redirect(`${adminUrl}/login?error=oauth_failed`)

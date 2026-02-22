@@ -139,12 +139,12 @@ export interface Course {
   description: string
   content: string
   location: string
-  start_date: string
-  end_date: string
-  price_sek: number
-  max_participants: number
+  start_date: string | null
+  end_date: string | null
+  price_sek: number | null
+  max_participants: number | null
   current_participants: number
-  registration_deadline: string
+  registration_deadline: string | null
   status: string
 }
 

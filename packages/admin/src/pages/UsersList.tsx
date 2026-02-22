@@ -94,9 +94,9 @@ export default function UsersList() {
   // Check if current user is admin
   if (currentUser?.role !== 'admin') {
     return (
-      <Card className="border-amber-200 bg-amber-50">
+      <Card className="border-stone-200 bg-stone-100">
         <CardContent className="flex items-center gap-3 p-4">
-          <ShieldAlert className="h-5 w-5 text-amber-500 shrink-0" />
+          <ShieldAlert className="h-5 w-5 text-stone-500 shrink-0" />
           <p className="text-sm text-stone-700">
             You don't have permission to manage users.
           </p>
@@ -202,7 +202,7 @@ export default function UsersList() {
       <Card>
         <Table>
           <TableHeader>
-            <TableRow className="bg-stone-50">
+            <TableRow className="bg-stone-100">
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Created</TableHead>
@@ -211,7 +211,7 @@ export default function UsersList() {
           </TableHeader>
           <TableBody>
             {data?.users?.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id} className="hover:bg-stone-50 transition-colors">
                 <TableCell>
                   <div className="flex items-center gap-3">
                     {user.avatar_url ? (

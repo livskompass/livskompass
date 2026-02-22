@@ -72,9 +72,9 @@ export default function ContactsList() {
                     className={cn(
                       "p-4 cursor-pointer transition-colors",
                       selectedContact?.id === contact.id
-                        ? 'bg-forest-50/50'
+                        ? 'bg-stone-100'
                         : !contact.read
-                        ? 'bg-forest-50/30 hover:bg-forest-50/50'
+                        ? 'bg-stone-50 hover:bg-stone-100'
                         : 'hover:bg-stone-50'
                     )}
                   >
@@ -82,7 +82,7 @@ export default function ContactsList() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           {!contact.read && (
-                            <span className="w-2 h-2 bg-forest-600 rounded-full shrink-0" />
+                            <span className="w-2 h-2 bg-stone-900 rounded-full shrink-0" />
                           )}
                           <p className={cn(
                             "text-sm truncate",
@@ -134,7 +134,7 @@ export default function ContactsList() {
                     <CardTitle className="text-base">{selectedContact.name}</CardTitle>
                     <a
                       href={`mailto:${selectedContact.email}`}
-                      className="text-sm text-forest-600 hover:text-forest-700"
+                      className="text-sm text-stone-600 hover:text-stone-700"
                     >
                       {selectedContact.email}
                     </a>

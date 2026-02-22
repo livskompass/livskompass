@@ -51,7 +51,7 @@ export default function PagesList() {
         ) : data?.pages && data.pages.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-50">
+              <TableRow className="bg-stone-100">
                 <TableHead>Title</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
@@ -60,11 +60,11 @@ export default function PagesList() {
             </TableHeader>
             <TableBody>
               {data.pages.map((page) => (
-                <TableRow key={page.id}>
+                <TableRow key={page.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <Link
                       to={`/sidor/${page.id}`}
-                      className="font-medium text-stone-900 hover:text-forest-600 transition-colors"
+                      className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                     >
                       {page.title}
                     </Link>

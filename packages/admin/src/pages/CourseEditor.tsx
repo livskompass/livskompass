@@ -60,7 +60,7 @@ export default function CourseEditor() {
         start_date: data.course.start_date?.split('T')[0] || '',
         end_date: data.course.end_date?.split('T')[0] || '',
         price_sek: data.course.price_sek || 0,
-        max_participants: data.course.max_participants || 20,
+        max_participants: data.course.max_participants ?? 20,
         registration_deadline: data.course.registration_deadline?.split('T')[0] || '',
         status: data.course.status,
         content_blocks: (data.course as any).content_blocks || null,

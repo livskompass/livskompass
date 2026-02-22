@@ -1,6 +1,7 @@
 import { cn } from '../ui/utils'
 import { ImageIcon } from 'lucide-react'
 import { resolveMediaUrl } from '../helpers'
+import { useInlineEdit } from '../context'
 
 export interface ImageBlockProps {
   src: string
@@ -38,12 +39,16 @@ export function ImageBlock({
   alignment = 'center',
   rounded = 'none',
   link = '',
-}: ImageBlockProps) {
+  id,
+}: ImageBlockProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const captionEdit = useInlineEdit('caption', caption, id || '')
   if (!src) {
     return (
-      <div className="py-12 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-        <ImageIcon className="h-12 w-12 mx-auto mb-2 text-stone-300" />
-        <p>Välj en bild...</p>
+      <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
+        <div className="py-12 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+          <ImageIcon className="h-12 w-12 mx-auto mb-2 text-stone-300" />
+          <p>Välj en bild...</p>
+        </div>
       </div>
     )
   }
@@ -66,13 +71,15 @@ export function ImageBlock({
   )
 
   return (
-    <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
-      {wrappedImg}
-      {caption && (
-        <figcaption className="mt-2 text-sm text-stone-500 text-center">
-          {caption}
-        </figcaption>
-      )}
-    </figure>
+    <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
+      <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
+        {wrappedImg}
+        {(caption || captionEdit) && (
+          <figcaption {...(captionEdit ? { contentEditable: captionEdit.contentEditable, suppressContentEditableWarning: captionEdit.suppressContentEditableWarning, onBlur: captionEdit.onBlur, onKeyDown: captionEdit.onKeyDown, 'data-inline-edit': 'caption' } : {})} className={cn('mt-2 text-sm text-stone-500 text-center', captionEdit?.className)}>
+            {caption}
+          </figcaption>
+        )}
+      </figure>
+    </div>
   )
 }

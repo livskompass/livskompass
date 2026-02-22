@@ -2,6 +2,7 @@ import { cn } from '../ui/utils'
 import { useScrollReveal } from '../helpers'
 import { Heart, Star, Shield, Zap, BookOpen, Users, Target, Sparkles } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useInlineEdit } from '../context'
 
 export interface FeatureGridProps {
   heading: string
@@ -30,8 +31,11 @@ export function FeatureGrid({
   columns = 3,
   items = [],
   style = 'cards',
-}: FeatureGridProps) {
+  id,
+}: FeatureGridProps & { puck?: { isEditing: boolean }; id?: string }) {
   const revealRef = useScrollReveal()
+  const headingEdit = useInlineEdit('heading', heading, id || '')
+  const subheadingEdit = useInlineEdit('subheading', subheading, id || '')
 
   if (items.length === 0) {
     return (
@@ -45,10 +49,10 @@ export function FeatureGrid({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {(heading || subheading) && (
+      {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="text-center mb-12 reveal">
-          {heading && <h2 className="text-h2 text-stone-800 mb-3">{heading}</h2>}
-          {subheading && <p className="text-lg text-stone-600 max-w-2xl mx-auto">{subheading}</p>}
+          {(heading || headingEdit) && <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-3', headingEdit?.className)}>{heading}</h2>}
+          {(subheading || subheadingEdit) && <p {...(subheadingEdit ? { contentEditable: subheadingEdit.contentEditable, suppressContentEditableWarning: subheadingEdit.suppressContentEditableWarning, onBlur: subheadingEdit.onBlur, onKeyDown: subheadingEdit.onKeyDown, 'data-inline-edit': 'subheading' } : {})} className={cn('text-lg text-stone-600 max-w-2xl mx-auto', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
       <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>

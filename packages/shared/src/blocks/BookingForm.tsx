@@ -17,7 +17,7 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Bokningsformulär visas här (data-bunden)</p>
+        <p className="text-stone-400 text-sm">Bokningsformuläret visas när en utbildning är vald.</p>
       </div>
     </div>
   )
@@ -54,7 +54,8 @@ export function BookingForm({
 
   const isFull = course.status === 'full'
   const isCompleted = course.status === 'completed'
-  const spotsLeft = course.max_participants - course.current_participants
+  const hasCapacity = course.max_participants != null
+  const spotsLeft = hasCapacity ? course.max_participants! - course.current_participants : 10
   const totalPrice = (course.price_sek || 0) * formData.participants
 
   if (isFull || isCompleted) {
@@ -115,7 +116,7 @@ export function BookingForm({
           {course.start_date && (
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-stone-400" />
-              {formatDate(course.start_date)} – {formatDate(course.end_date)}
+              {formatDate(course.start_date)}{course.end_date && course.end_date !== course.start_date ? ` – ${formatDate(course.end_date)}` : ''}
             </span>
           )}
           {course.location && (
@@ -123,10 +124,12 @@ export function BookingForm({
               <MapPin className="h-4 w-4 text-stone-400" />{course.location}
             </span>
           )}
+          {course.price_sek != null && (
           <span className="inline-flex items-center gap-1.5">
             <CreditCard className="h-4 w-4 text-stone-400" />
-            {course.price_sek?.toLocaleString('sv-SE')} kr/person
+            {course.price_sek.toLocaleString('sv-SE')} kr/person
           </span>
+          )}
         </div>
       </div>
 
@@ -186,16 +189,21 @@ export function BookingForm({
           )}
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-1.5">Antal deltagare *</label>
-            <select
-              value={formData.participants}
-              onChange={(e) => setFormData((f) => ({ ...f, participants: Number(e.target.value) }))}
-              className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
-              disabled={isEditor}
-            >
-              {Array.from({ length: Math.min(spotsLeft, 10) }, (_, i) => i + 1).map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={formData.participants}
+                onChange={(e) => setFormData((f) => ({ ...f, participants: Number(e.target.value) }))}
+                className="w-full h-12 px-4 pr-10 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors appearance-none"
+                disabled={isEditor}
+              >
+                {Array.from({ length: Math.min(spotsLeft, 10) }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+              <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </div>
           </div>
           {showNotes && (
             <div>

@@ -102,6 +102,26 @@ export function injectPreviewCSS(iframeDoc: Document) {
     .reveal-visible { opacity: 1 !important; transform: none !important; }
     .reveal-stagger-1, .reveal-stagger-2, .reveal-stagger-3,
     .reveal-stagger-4, .reveal-stagger-5 { transition-delay: 0ms !important; }
+
+    /* Inline editing visual feedback */
+    [data-inline-edit] { cursor: text; }
+    [data-inline-edit]:hover {
+      outline: 1.5px dashed rgba(138, 132, 122, 0.4);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+    [data-inline-edit]:focus {
+      outline: 2px solid rgba(138, 132, 122, 0.7);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+    [data-inline-edit]:empty::before {
+      content: 'Click to edit...';
+      color: rgba(138, 132, 122, 0.5);
+      font-style: italic;
+      pointer-events: none;
+    }
+    [data-inline-edit] { transition: outline-color 150ms ease, outline-offset 150ms ease; }
   `
   iframeDoc.head.appendChild(extraCSS)
 }

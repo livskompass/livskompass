@@ -111,7 +111,7 @@ function NavItemEditor({
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="p-1 text-stone-400 hover:text-stone-600 transition-colors"
+          className="p-1 rounded text-stone-400 hover:text-stone-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
           title={hasChildren ? 'Edit sub-items' : 'Add sub-items'}
         >
           {expanded ? (
@@ -123,7 +123,7 @@ function NavItemEditor({
         <button
           type="button"
           onClick={() => onRemove(index)}
-          className="p-1 text-stone-400 hover:text-red-500 transition-colors"
+          className="p-1 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -160,7 +160,7 @@ function NavItemEditor({
                   const newChildren = (item.children || []).filter((_, i) => i !== ci)
                   onChange(index, { ...item, children: newChildren.length > 0 ? newChildren : undefined })
                 }}
-                className="p-0.5 text-stone-400 hover:text-red-500 transition-colors"
+                className="p-0.5 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -210,7 +210,7 @@ function FooterColumnEditor({
         <button
           type="button"
           onClick={() => onRemove(index)}
-          className="p-1 text-stone-400 hover:text-red-500 transition-colors"
+          className="p-1 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -244,7 +244,7 @@ function FooterColumnEditor({
                 const newLinks = column.links.filter((_, i) => i !== li)
                 onChange(index, { ...column, links: newLinks })
               }}
-              className="p-0.5 text-stone-400 hover:text-red-500 transition-colors"
+              className="p-0.5 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
@@ -407,9 +407,10 @@ export default function Settings() {
       </div>
 
       {/* ── Site Header & Footer ── */}
+      <h2 className="text-h4 text-stone-900">Navigation & Structure</h2>
 
       {siteSaved && (
-        <div className="flex items-center gap-2 bg-forest-50 border border-forest-200 text-forest-700 px-4 py-3 rounded-xl text-sm">
+        <div className="flex items-center gap-2 bg-stone-100 border border-stone-200 text-stone-700 px-4 py-3 rounded-xl text-sm">
           <CheckCircle className="h-4 w-4 shrink-0" />
           Header & footer saved!
         </div>
@@ -543,7 +544,7 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
+      <div className="sticky bottom-0 bg-stone-50 py-3 flex justify-end">
         <Button
           type="button"
           onClick={handleSiteSave}
@@ -560,9 +561,10 @@ export default function Settings() {
       <Separator className="my-2" />
 
       {/* ── General Settings ── */}
+      <h2 className="text-h4 text-stone-900">General Settings</h2>
 
       {saved && (
-        <div className="flex items-center gap-2 bg-forest-50 border border-forest-200 text-forest-700 px-4 py-3 rounded-xl text-sm">
+        <div className="flex items-center gap-2 bg-stone-100 border border-stone-200 text-stone-700 px-4 py-3 rounded-xl text-sm">
           <CheckCircle className="h-4 w-4 shrink-0" />
           Settings saved!
         </div>
@@ -668,7 +670,7 @@ export default function Settings() {
             </CardContent>
           </Card>
 
-          <div className="flex justify-end">
+          <div className="sticky bottom-0 bg-stone-50 py-3 flex justify-end">
             <Button type="submit" disabled={saveMutation.isPending}>
               {saveMutation.isPending ? (
                 <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>

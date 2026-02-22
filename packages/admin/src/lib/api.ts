@@ -269,6 +269,8 @@ export interface Course {
   title: string
   description: string
   content: string
+  content_blocks: string | null
+  editor_version: string | null
   location: string
   start_date: string
   end_date: string
@@ -303,6 +305,8 @@ export interface Product {
   slug: string
   title: string
   description: string
+  content_blocks: string | null
+  editor_version: string | null
   type: string
   price_sek: number | null
   external_url: string | null

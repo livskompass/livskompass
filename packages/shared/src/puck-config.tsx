@@ -96,15 +96,17 @@ const defaultFooter: SiteFooterConfig = {
 let _cachedHeader: SiteHeaderConfig | null = null
 let _cachedFooter: SiteFooterConfig | null = null
 let _fetchPromise: Promise<void> | null = null
+let _cacheTime = 0
 
 function fetchSiteSettings() {
-  if (_fetchPromise) return _fetchPromise
+  if (_fetchPromise && Date.now() - _cacheTime < 60000) return _fetchPromise
   const apiBase = (typeof window !== 'undefined' && (window as any).__PUCK_API_BASE__) || '/api'
   _fetchPromise = fetch(`${apiBase}/site-settings`)
     .then((r) => r.json())
     .then((data: any) => {
       if (data.header) _cachedHeader = data.header
       if (data.footer) _cachedFooter = data.footer
+      _cacheTime = Date.now()
     })
     .catch(() => { /* use defaults */ })
   return _fetchPromise
@@ -392,9 +394,9 @@ export const puckConfig: Config = {
         content: { type: 'textarea' },
         maxWidth: { type: 'select', options: [{ label: 'Narrow (65ch)', value: 'narrow' }, { label: 'Medium (80ch)', value: 'medium' }, { label: 'Full', value: 'full' }] },
       },
-      render: ({ content, maxWidth }: any) => (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <RichText content={content} maxWidth={maxWidth} />
+      render: ({ content, maxWidth, id }: any) => (
+        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+          <RichText content={content} maxWidth={maxWidth} id={id} />
         </div>
       ),
     },
@@ -408,9 +410,9 @@ export const puckConfig: Config = {
         rounded: { type: 'radio', options: [{ label: 'None', value: 'none' }, { label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
         link: { type: 'text' },
       },
-      render: ({ src, alt, caption, size, alignment, rounded, link }: any) => (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} link={link} />
+      render: ({ src, alt, caption, size, alignment, rounded, link, id }: any) => (
+        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+          <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} link={link} id={id} />
         </div>
       ),
     },
@@ -423,9 +425,9 @@ export const puckConfig: Config = {
         defaultOpen: { type: 'select', options: [{ label: 'None', value: 'none' }, { label: 'First', value: 'first' }, { label: 'All', value: 'all' }] },
         style: { type: 'select', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }, { label: 'Minimal', value: 'minimal' }] },
       },
-      render: ({ heading, items, defaultOpen, style }: any) => (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <Accordion heading={heading} items={items} defaultOpen={defaultOpen} style={style} />
+      render: ({ heading, items, defaultOpen, style, id }: any) => (
+        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+          <Accordion heading={heading} items={items} defaultOpen={defaultOpen} style={style} id={id} />
         </div>
       ),
     },
@@ -482,9 +484,9 @@ export const puckConfig: Config = {
         backgroundColor: { type: 'select', options: [{ label: 'Primary (green)', value: 'primary' }, { label: 'Gradient', value: 'gradient' }, { label: 'Dark', value: 'dark' }, { label: 'Light', value: 'light' }] },
         alignment: { type: 'radio', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
       },
-      render: ({ heading, description, buttonText, buttonLink, backgroundColor, alignment }: any) => (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} backgroundColor={backgroundColor} alignment={alignment} />
+      render: ({ heading, description, buttonText, buttonLink, backgroundColor, alignment, id }: any) => (
+        <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
+          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} backgroundColor={backgroundColor} alignment={alignment} id={id} />
         </div>
       ),
     },
@@ -520,7 +522,7 @@ export const puckConfig: Config = {
         size: { type: 'select', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
       },
       render: ({ buttons, alignment, direction, size }: any) => (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
           <ButtonGroup buttons={buttons} alignment={alignment} direction={direction} size={size} />
         </div>
       ),

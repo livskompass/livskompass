@@ -21,7 +21,7 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Kursdetaljer visas här (data-bunden)</p>
+        <p className="text-stone-400 text-sm">Kursdetaljer visas när en utbildning är vald.</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           {['Plats', 'Datum', 'Pris', 'Platser'].map((label) => (
             <div key={label} className="bg-white rounded-lg border border-stone-200 p-3">
@@ -49,14 +49,27 @@ export function CourseInfo({
 
   if (!course) return <Placeholder />
 
-  const spotsLeft = course.max_participants - course.current_participants
   const isFull = course.status === 'full'
+  const hasCapacity = course.max_participants != null
+  const spotsLeft = hasCapacity ? course.max_participants! - course.current_participants : null
+
+  const dateValue = course.start_date
+    ? course.end_date && course.end_date !== course.start_date
+      ? `${formatDate(course.start_date)} – ${formatDate(course.end_date)}`
+      : formatDate(course.start_date)
+    : ''
+
+  const spotsValue = isFull
+    ? fullLabel
+    : hasCapacity
+      ? `${spotsLeft} av ${course.max_participants} kvar`
+      : ''
 
   const items = [
     { icon: MapPin, label: locationLabel, value: course.location },
-    { icon: Calendar, label: dateLabel, value: course.start_date ? `${formatDate(course.start_date)} – ${formatDate(course.end_date)}` : '' },
+    { icon: Calendar, label: dateLabel, value: dateValue },
     { icon: CreditCard, label: priceLabel, value: course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '' },
-    { icon: Users, label: spotsLabel, value: isFull ? fullLabel : `${spotsLeft} av ${course.max_participants} kvar` },
+    ...(spotsValue ? [{ icon: Users, label: spotsLabel, value: spotsValue }] : []),
   ]
 
   if (showDeadline && course.registration_deadline) {
@@ -86,7 +99,7 @@ export function CourseInfo({
       <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
         <div className={cn(
           'grid gap-6',
-          items.filter(i => i.value).length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
+          items.filter(i => i.value).length <= 2 ? 'grid-cols-2' : items.filter(i => i.value).length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
         )}>
           {items.filter(i => i.value).map((item, idx) => (
             <div key={idx} className="text-center">

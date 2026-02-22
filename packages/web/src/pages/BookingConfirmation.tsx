@@ -27,7 +27,7 @@ export default function BookingConfirmation() {
 
   if (!bookingId) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Card>
           <CardContent className="py-12">
             <h1 className="text-h2 text-stone-900 mb-4">
@@ -47,7 +47,7 @@ export default function BookingConfirmation() {
 
   if (status === 'cancelled') {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Card>
           <CardContent className="py-12 px-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 mb-6">
@@ -73,7 +73,7 @@ export default function BookingConfirmation() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Loader2 className="h-12 w-12 text-forest-600 animate-spin mx-auto mb-6" />
         <p className="text-stone-500 text-lg">Bekräftar bokning...</p>
       </div>
@@ -86,7 +86,7 @@ export default function BookingConfirmation() {
 
   if (isPending) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Loader2 className="h-12 w-12 text-forest-600 animate-spin mx-auto mb-6" />
         <h1 className="text-h2 text-stone-900 mb-3">
           Behandlar betalning...
@@ -100,7 +100,7 @@ export default function BookingConfirmation() {
 
   if (isPaid) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-6">
           <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
@@ -132,7 +132,7 @@ export default function BookingConfirmation() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+    <div className="max-w-2xl mx-auto px-4 py-16 text-center">
       <Card>
         <CardContent className="py-12 px-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
