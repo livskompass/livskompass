@@ -1,5 +1,5 @@
 import React from 'react'
-import { puckConfig, InlineEditBlockContext, ZoneRenderContext } from '@livskompass/shared'
+import { puckConfig, InlineEditBlockContext, ZoneRenderContext, useScrollReveal } from '@livskompass/shared'
 import { useInlineEdit } from './InlineEditProvider'
 
 /**
@@ -73,6 +73,7 @@ function renderItemsWithContext(
 
 export default function PuckRenderer({ data }: { data: PuckData }) {
   const { isAdmin, saveBlockProp } = useInlineEdit()
+  const revealRef = useScrollReveal()
 
   const RootRender = (puckConfig.root as any)?.render as
     | React.FC<any>
@@ -99,7 +100,11 @@ export default function PuckRenderer({ data }: { data: PuckData }) {
   )
 
   if (RootRender) {
-    return <RootRender {...data.root?.props}>{content}</RootRender>
+    return (
+      <div ref={revealRef}>
+        <RootRender {...data.root?.props}>{content}</RootRender>
+      </div>
+    )
   }
-  return <>{content}</>
+  return <div ref={revealRef}>{content}</div>
 }

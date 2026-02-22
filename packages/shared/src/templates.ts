@@ -105,6 +105,39 @@ export const defaultPageTemplate = JSON.stringify({
   zones: {},
 })
 
+export const defaultBlogTemplate = JSON.stringify({
+  content: [
+    {
+      type: 'PageHeader',
+      props: {
+        id: 'page-header',
+        heading: 'Nyheter',
+        subheading: 'Senaste nytt från Livskompass',
+        alignment: 'left',
+        size: 'large',
+        showDivider: true,
+        breadcrumbs: [],
+      },
+    },
+    {
+      type: 'PostGrid',
+      props: {
+        id: 'posts',
+        heading: '',
+        subheading: '',
+        count: 20,
+        columns: 3,
+        showImage: true,
+        showExcerpt: true,
+        showDate: true,
+        cardStyle: 'default',
+      },
+    },
+  ],
+  root: { props: {} },
+  zones: {},
+})
+
 export const defaultPostTemplate = JSON.stringify({
   content: [
     { type: 'PostHeader', props: { id: 'post-header', showBackLink: true, backLinkText: 'Alla inlägg', backLinkUrl: '/nyhet' } },

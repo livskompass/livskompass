@@ -214,61 +214,54 @@ body {
   animation: fade-in 200ms var(--ease-out) forwards;
 }
 
-/* ===== Puck Editor Overrides ===== */
+/* ===== Puck Editor Overrides — Modern Neutral CMS ===== */
 
-/* ── Neutralize ALL Puck accent colors → warm stone palette ── */
+/* ── Color system: neutralize ALL Puck colors → warm stone ── */
 [class*="Puck"] {
-  /* Azure (blue accent) → stone */
+  /* Azure (blue accent) → dark stone for selections/active states */
   --puck-color-azure-01: #FDFCFB;
-  --puck-color-azure-02: #FAF9F7;
-  --puck-color-azure-03: #F5F3EF;
-  --puck-color-azure-04: #EFECE7;
-  --puck-color-azure-05: #E2DFD9;
-  --puck-color-azure-06: #C8C4BC;
-  --puck-color-azure-07: #A8A29E;
-  --puck-color-azure-08: #8A847A;
-  --puck-color-azure-09: #6B6560;
-  --puck-color-azure-10: #575249;
-  --puck-color-azure-11: #3D3832;
+  --puck-color-azure-02: #F8F6F2;
+  --puck-color-azure-03: #F0EDEA;
+  --puck-color-azure-04: #E7E4DF;
+  --puck-color-azure-05: #D4D0CA;
+  --puck-color-azure-06: #B5B0A8;
+  --puck-color-azure-07: #8A847A;
+  --puck-color-azure-08: #6E685E;
+  --puck-color-azure-09: #575249;
+  --puck-color-azure-10: #403C36;
+  --puck-color-azure-11: #292524;
   --puck-color-azure-12: #1C1917;
 
-  /* Green (publish/success) → stone */
+  /* Green → same neutral stone */
   --puck-color-green-01: #FDFCFB;
-  --puck-color-green-02: #FAF9F7;
-  --puck-color-green-03: #F5F3EF;
-  --puck-color-green-04: #EFECE7;
-  --puck-color-green-05: #E2DFD9;
-  --puck-color-green-06: #C8C4BC;
-  --puck-color-green-07: #A8A29E;
-  --puck-color-green-08: #8A847A;
-  --puck-color-green-09: #6B6560;
-  --puck-color-green-10: #575249;
-  --puck-color-green-11: #3D3832;
+  --puck-color-green-02: #F8F6F2;
+  --puck-color-green-03: #F0EDEA;
+  --puck-color-green-04: #E7E4DF;
+  --puck-color-green-05: #D4D0CA;
+  --puck-color-green-06: #B5B0A8;
+  --puck-color-green-07: #8A847A;
+  --puck-color-green-08: #6E685E;
+  --puck-color-green-09: #575249;
+  --puck-color-green-10: #403C36;
+  --puck-color-green-11: #292524;
   --puck-color-green-12: #1C1917;
 
-  /* Grey → warm stone (keep Puck's intended contrast ratios) */
+  /* Grey → warm stone with strong contrast on both ends */
   --puck-color-grey-01: #FDFCFB;
-  --puck-color-grey-02: #FAF9F7;
-  --puck-color-grey-03: #F5F3EF;
-  --puck-color-grey-04: #EFECE7;
-  --puck-color-grey-05: #A8A29E;
+  --puck-color-grey-02: #F8F6F2;
+  --puck-color-grey-03: #F0EDEA;
+  --puck-color-grey-04: #E7E4DF;
+  --puck-color-grey-05: #B5B0A8;
   --puck-color-grey-06: #8A847A;
-  --puck-color-grey-07: #6B6560;
+  --puck-color-grey-07: #6E685E;
   --puck-color-grey-08: #575249;
-  --puck-color-grey-09: #3D3832;
+  --puck-color-grey-09: #403C36;
   --puck-color-grey-10: #292524;
   --puck-color-grey-11: #1C1917;
   --puck-color-grey-12: #0C0A09;
 
-  /* Font → Inter */
+  /* Font */
   --puck-font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-/* Consistent 18px icon sizing across all panels */
-[class*="SidebarSection"] svg,
-[class*="Nav_"] svg {
-  width: 18px !important;
-  height: 18px !important;
 }
 
 /* Fill available space */
@@ -277,16 +270,26 @@ body {
   height: 100% !important;
 }
 
-/* ── Header bar ── */
+/* ── Header bar — clean white, subtle border ── */
 [class*="PuckLayout-header"],
 [class*="Header-"] {
   z-index: 100 !important;
   position: relative;
   background: #FFFFFF !important;
-  border-bottom: 1px solid #E2DFD9;
+  border-bottom: 1px solid #E7E4DF !important;
+  box-shadow: none !important;
 }
 
-/* Publish/save button — dark neutral, not green/blue */
+/* Header title text */
+[class*="Header-title"],
+[class*="PuckLayout-header"] [class*="Heading"] {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  color: #1C1917 !important;
+}
+
+/* Publish button — solid dark, pill shape */
 [class*="Button--primary"] {
   background: #1C1917 !important;
   background-color: #1C1917 !important;
@@ -294,33 +297,64 @@ body {
   border: none !important;
   font-family: var(--font-body) !important;
   font-weight: 500 !important;
-  border-radius: 10px !important;
+  font-size: 0.8125rem !important;
+  border-radius: 8px !important;
+  letter-spacing: -0.01em !important;
+  padding: 6px 16px !important;
+  transition: background-color 150ms ease !important;
 }
 [class*="Button--primary"]:hover {
   background: #292524 !important;
   background-color: #292524 !important;
-  color: #FFFFFF !important;
 }
-[class*="Button--primary"]:active {
-  background: #1C1917 !important;
-  background-color: #1C1917 !important;
-  color: #FFFFFF !important;
-}
-/* Ensure button text + icon inside primary are white */
 [class*="Button--primary"] * {
   color: #FFFFFF !important;
 }
 
-/* ── Left sidebar ── */
-[class*="Sidebar--left"] {
-  background: #F8F6F2 !important;
-  border-right: 1px solid #E2DFD9 !important;
+/* Secondary / ghost buttons */
+[class*="Button--secondary"],
+[class*="Button--default"] {
+  border-radius: 8px !important;
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  font-size: 0.8125rem !important;
+  border-color: #E7E4DF !important;
+  color: #403C36 !important;
 }
 
-/* Left sidebar nav icons — override Puck blue active state */
+/* ── Header utility buttons (undo/redo, viewport, zoom) ── */
+[class*="PuckLayout-header"] button,
+[class*="Header-"] button {
+  font-family: var(--font-body) !important;
+  border-radius: 6px !important;
+  transition: all 120ms ease !important;
+}
+[class*="PuckLayout-header"] button:not([class*="Button--primary"]):hover,
+[class*="Header-"] button:not([class*="Button--primary"]):hover {
+  background-color: #F0EDEA !important;
+}
+[class*="PuckLayout-header"] button svg,
+[class*="Header-"] button svg {
+  width: 15px !important;
+  height: 15px !important;
+  color: #575249 !important;
+}
+
+/* ── Left sidebar — clean, organized ── */
+[class*="Sidebar--left"] {
+  background: #FDFCFB !important;
+  border-right: 1px solid #E7E4DF !important;
+}
+
+/* Nav icons — monochrome */
 [class*="Nav_"] button,
 [class*="Nav_"] a {
   color: #8A847A !important;
+  transition: color 120ms ease !important;
+}
+[class*="Nav_"] button:hover,
+[class*="Nav_"] a:hover {
+  color: #403C36 !important;
 }
 [class*="Nav_"] button[class*="active"],
 [class*="Nav_"] button[aria-selected="true"],
@@ -329,34 +363,63 @@ body {
 }
 [class*="Nav_"] [class*="NavItem-label"] {
   color: inherit !important;
+  font-size: 0.6875rem !important;
+  font-weight: 500 !important;
 }
 
-/* Category headers */
+/* Nav icon sizing */
+[class*="Nav_"] svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Category headers — clean uppercase labels */
 [class*="SidebarSection-title"] {
   font-family: var(--font-body) !important;
-  font-size: 0.6875rem !important;
-  font-weight: 600 !important;
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
+  letter-spacing: 0.1em !important;
   color: #8A847A !important;
-  padding: 8px 12px 4px !important;
+  padding: 12px 16px 6px !important;
 }
 
-/* Component list items */
-[class*="ComponentList-item"],
+/* Component list items — clean cards */
+[class*="ComponentList-item"] {
+  border-radius: 8px !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  color: #403C36 !important;
+  padding: 8px 12px !important;
+  margin: 1px 8px !important;
+  transition: all 120ms ease !important;
+  border: 1px solid transparent !important;
+}
+[class*="ComponentList-item"]:hover {
+  background-color: #F0EDEA !important;
+  border-color: #E7E4DF !important;
+}
+
+/* Sidebar section block items */
 [class*="SidebarSection-content"] button {
-  border-radius: 6px !important;
-  transition: background-color 150ms ease, color 150ms ease;
+  border-radius: 8px !important;
+  transition: all 120ms ease !important;
 }
-[class*="ComponentList-item"]:hover,
 [class*="SidebarSection-content"] button:hover {
-  background-color: #EFECE7 !important;
+  background-color: #F0EDEA !important;
 }
 
-/* ── Right sidebar — flex layout, shares space with preview ── */
+/* Sidebar section icons — consistent sizing */
+[class*="SidebarSection"] svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ── Right sidebar — white panel, clean fields ── */
 [class*="Sidebar--right"] {
   background: #FFFFFF !important;
-  border-left: 1px solid #E2DFD9 !important;
+  border-left: 1px solid #E7E4DF !important;
 }
 
 /* Hide resize handle */
@@ -364,49 +427,88 @@ body {
   display: none !important;
 }
 
-/* ── Field labels ── */
-[class*="FieldLabel-label"] {
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
-  font-weight: 500 !important;
-  color: #575249 !important;
+/* Right panel section headings (PAGE, RICH TEXT, etc.) */
+[class*="SidebarSection-title"] {
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: #8A847A !important;
 }
 
-/* ── Field inputs ── */
-[class*="Puck-root"] input[type="text"],
-[class*="Puck-root"] input[type="number"],
-[class*="Puck-root"] input[type="url"],
-[class*="Puck-root"] select,
-[class*="Puck-root"] textarea {
-  border-width: 1.5px !important;
-  border-color: #C8C4BC !important;
-  border-radius: 10px !important;
+/* Breadcrumb path (Page > Rich Text) */
+[class*="SidebarBreadcrumb"],
+[class*="Breadcrumb"] {
   font-family: var(--font-body) !important;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  font-size: 0.75rem !important;
+  color: #8A847A !important;
 }
-[class*="Puck-root"] input:focus,
-[class*="Puck-root"] select:focus,
-[class*="Puck-root"] textarea:focus {
-  border-color: #8A847A !important;
-  box-shadow: 0 0 0 3px rgba(138, 132, 122, 0.12) !important;
+[class*="SidebarBreadcrumb"] a,
+[class*="Breadcrumb"] a,
+[class*="SidebarBreadcrumb"] button,
+[class*="Breadcrumb"] button {
+  color: #8A847A !important;
+}
+[class*="SidebarBreadcrumb"] a:hover,
+[class*="Breadcrumb"] a:hover,
+[class*="SidebarBreadcrumb"] button:hover,
+[class*="Breadcrumb"] button:hover {
+  color: #1C1917 !important;
+}
+
+/* ── Field labels — dark, readable ── */
+[class*="FieldLabel-label"],
+[class*="FieldLabel"] label,
+[class*="FieldLabel"] span {
+  font-family: var(--font-body) !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: #403C36 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Field label icons */
+[class*="FieldLabel"] svg {
+  width: 14px !important;
+  height: 14px !important;
+  color: #8A847A !important;
+}
+
+/* ── Field inputs — clean, modern ── */
+[class*="Puck"] input[type="text"],
+[class*="Puck"] input[type="number"],
+[class*="Puck"] input[type="url"],
+[class*="Puck"] select,
+[class*="Puck"] textarea {
+  border: 1.5px solid #E7E4DF !important;
+  border-radius: 8px !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+  color: #1C1917 !important;
+  background: #FFFFFF !important;
+  padding: 8px 12px !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease !important;
+}
+[class*="Puck"] input::placeholder,
+[class*="Puck"] textarea::placeholder {
+  color: #B5B0A8 !important;
+}
+[class*="Puck"] input:focus,
+[class*="Puck"] select:focus,
+[class*="Puck"] textarea:focus {
+  border-color: #403C36 !important;
+  box-shadow: 0 0 0 3px rgba(64, 60, 54, 0.08) !important;
   outline: none !important;
 }
 
-/* ── Header utility buttons (undo/redo, viewport, zoom) — unified style ── */
-[class*="PuckLayout-header"] button,
-[class*="Header-"] button {
-  font-family: var(--font-body) !important;
-  border-radius: 8px !important;
-  transition: background-color 150ms ease, color 150ms ease !important;
-}
-[class*="PuckLayout-header"] button:not([class*="Button--primary"]):hover,
-[class*="Header-"] button:not([class*="Button--primary"]):hover {
-  background-color: #F5F3EF !important;
-}
-[class*="PuckLayout-header"] button svg,
-[class*="Header-"] button svg {
-  width: 16px !important;
-  height: 16px !important;
+/* Select dropdowns */
+[class*="Puck"] select {
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236E685E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 8px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px !important;
+  padding-right: 32px !important;
 }
 
 /* ── Canvas/preview background ── */
@@ -415,45 +517,92 @@ body {
   background: #F5F3EF !important;
 }
 
-/* ── Action bar (drag overlay/toolbar) ── */
+/* ── Action bar (component toolbar on hover) ── */
 [class*="ActionBar-"] {
-  border-radius: 10px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
   background: #1C1917 !important;
   color: #FFFFFF !important;
+  padding: 2px !important;
 }
 [class*="ActionBar-"] button {
   color: #FFFFFF !important;
+  border-radius: 6px !important;
 }
 [class*="ActionBar-"] button:hover {
-  background-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+[class*="ActionBar-"] svg {
+  width: 14px !important;
+  height: 14px !important;
 }
 
-/* ── Component overlay selection ring — stone, not blue ── */
+/* ── Component overlay selection ring ── */
 [class*="DropZone-renderWrapper"] [style*="outline"] {
   outline-color: #8A847A !important;
 }
 [class*="DraggableComponent--isSelected"] {
-  outline-color: #575249 !important;
+  outline-color: #403C36 !important;
 }
 
-/* ── Puck scrollbar styling ── */
+/* ── Scrollbar — thin, minimal ── */
 [class*="Sidebar"] ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 [class*="Sidebar"] ::-webkit-scrollbar-track {
   background: transparent;
 }
 [class*="Sidebar"] ::-webkit-scrollbar-thumb {
-  background: #C8C4BC;
-  border-radius: 4px;
+  background: #D4D0CA;
+  border-radius: 3px;
+}
+[class*="Sidebar"] ::-webkit-scrollbar-thumb:hover {
+  background: #B5B0A8;
 }
 
-/* ── Empty drop zone hint ── */
+/* ── Empty drop zone ── */
 [class*="DropZone--isEmpty"] {
-  border-color: #C8C4BC !important;
+  border: 2px dashed #D4D0CA !important;
+  border-radius: 8px !important;
+  background: rgba(253, 252, 251, 0.5) !important;
 }
 [class*="DropZone--isAreaSelected"] {
   border-color: #8A847A !important;
+}
+
+/* ── Drag handle dots — subtle ── */
+[class*="DragIcon"],
+[class*="ComponentList-item"] [class*="grip"] {
+  color: #B5B0A8 !important;
+  opacity: 0.6 !important;
+}
+
+/* ── Outline view items ── */
+[class*="LayerTree-item"] {
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+  border-radius: 6px !important;
+}
+[class*="LayerTree-item"]:hover {
+  background-color: #F0EDEA !important;
+}
+
+/* ── Array field items (accordion items, nav items, etc.) ── */
+[class*="ArrayField-item"],
+[class*="ArrayField"] [class*="item"] {
+  border-radius: 8px !important;
+  border-color: #E7E4DF !important;
+}
+
+/* ── External field wrapper (custom fields) ── */
+[class*="ExternalField"],
+[class*="AutoField"] {
+  font-family: var(--font-body) !important;
+}
+
+/* ── Toggle/switch buttons ── */
+[class*="Toggle"],
+[class*="Switch"] {
+  border-radius: 9999px !important;
 }
 

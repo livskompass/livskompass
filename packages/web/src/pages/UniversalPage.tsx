@@ -7,7 +7,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
 import { setPageEditData } from '../components/InlineEditProvider'
-import { defaultHomeTemplate, defaultPageTemplate } from '@livskompass/shared'
+import { defaultHomeTemplate, defaultPageTemplate, defaultBlogTemplate } from '@livskompass/shared'
 import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
@@ -52,6 +52,12 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
   }, [data?.page?.id, data?.page?.content_blocks, data?.page?.updated_at])
 
   if (isLoading) return <PageSkeleton />
+
+  // Blog listing fallback when no "nyhet" page exists in DB
+  if ((error || !data?.page) && slug === 'nyhet') {
+    return <BlockRenderer data={defaultBlogTemplate} />
+  }
+
   if (error || !data?.page) return <NotFound />
 
   const { page, children } = data
