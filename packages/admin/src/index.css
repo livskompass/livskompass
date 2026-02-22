@@ -241,19 +241,19 @@ body {
   --puck-color-green-11: #3D3832;
   --puck-color-green-12: #1C1917;
 
-  /* Grey → warm stone (not cool grey) */
+  /* Grey → warm stone (keep Puck's intended contrast ratios) */
   --puck-color-grey-01: #FDFCFB;
   --puck-color-grey-02: #FAF9F7;
   --puck-color-grey-03: #F5F3EF;
   --puck-color-grey-04: #EFECE7;
-  --puck-color-grey-05: #E2DFD9;
-  --puck-color-grey-06: #C8C4BC;
-  --puck-color-grey-07: #A8A29E;
-  --puck-color-grey-08: #8A847A;
-  --puck-color-grey-09: #6B6560;
-  --puck-color-grey-10: #575249;
-  --puck-color-grey-11: #3D3832;
-  --puck-color-grey-12: #1C1917;
+  --puck-color-grey-05: #A8A29E;
+  --puck-color-grey-06: #8A847A;
+  --puck-color-grey-07: #6B6560;
+  --puck-color-grey-08: #575249;
+  --puck-color-grey-09: #3D3832;
+  --puck-color-grey-10: #292524;
+  --puck-color-grey-11: #1C1917;
+  --puck-color-grey-12: #0C0A09;
 
   /* Font → Inter */
   --puck-font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -282,18 +282,28 @@ body {
 }
 
 /* Publish/save button — dark neutral, not green/blue */
-[class*="Header-"] button[class*="Button--primary"],
-[class*="PuckLayout-header"] button[class*="Button--primary"] {
-  font-family: var(--font-body) !important;
-  font-weight: 500 !important;
-  border-radius: 10px !important;
+[class*="Button--primary"] {
+  background: #1C1917 !important;
   background-color: #1C1917 !important;
   color: #FFFFFF !important;
   border: none !important;
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  border-radius: 10px !important;
 }
-[class*="Header-"] button[class*="Button--primary"]:hover,
-[class*="PuckLayout-header"] button[class*="Button--primary"]:hover {
+[class*="Button--primary"]:hover {
+  background: #292524 !important;
   background-color: #292524 !important;
+  color: #FFFFFF !important;
+}
+[class*="Button--primary"]:active {
+  background: #1C1917 !important;
+  background-color: #1C1917 !important;
+  color: #FFFFFF !important;
+}
+/* Ensure button text + icon inside primary are white */
+[class*="Button--primary"] * {
+  color: #FFFFFF !important;
 }
 
 /* ── Left sidebar ── */
