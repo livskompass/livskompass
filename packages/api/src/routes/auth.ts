@@ -41,8 +41,7 @@ authRoutes.get('/google', async (c) => {
     redirect_uri: redirectUri,
     response_type: 'code',
     scope: 'openid email profile',
-    access_type: 'offline',
-    prompt: 'consent',
+    prompt: 'select_account',
   })
 
   if (state) params.set('state', state)
