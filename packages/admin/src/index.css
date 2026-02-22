@@ -216,49 +216,50 @@ body {
 
 /* ===== Puck Editor Overrides — Modern Neutral CMS ===== */
 
-/* ── Color system: neutralize ALL Puck colors → warm stone ── */
+/* ── Color system: neutralize ALL Puck colors → warm stone ──
+   IMPORTANT: Puck's scale is 01=darkest → 12=lightest (inverted from Tailwind) */
 [class*="Puck"] {
-  /* Azure (blue accent) → dark stone for selections/active states */
-  --puck-color-azure-01: #FDFCFB;
-  --puck-color-azure-02: #F8F6F2;
-  --puck-color-azure-03: #F0EDEA;
-  --puck-color-azure-04: #E7E4DF;
-  --puck-color-azure-05: #D4D0CA;
-  --puck-color-azure-06: #B5B0A8;
-  --puck-color-azure-07: #8A847A;
-  --puck-color-azure-08: #6E685E;
-  --puck-color-azure-09: #575249;
-  --puck-color-azure-10: #403C36;
-  --puck-color-azure-11: #292524;
-  --puck-color-azure-12: #1C1917;
+  /* Azure (selections, active states) → warm stone */
+  --puck-color-azure-01: #1C1917;
+  --puck-color-azure-02: #292524;
+  --puck-color-azure-03: #403C36;
+  --puck-color-azure-04: #575249;
+  --puck-color-azure-05: #6E685E;
+  --puck-color-azure-06: #8A847A;
+  --puck-color-azure-07: #A8A29E;
+  --puck-color-azure-08: #C8C4BC;
+  --puck-color-azure-09: #E2DFD9;
+  --puck-color-azure-10: #EFECE7;
+  --puck-color-azure-11: #F5F3EF;
+  --puck-color-azure-12: #FDFCFB;
 
-  /* Green → same neutral stone */
-  --puck-color-green-01: #FDFCFB;
-  --puck-color-green-02: #F8F6F2;
-  --puck-color-green-03: #F0EDEA;
-  --puck-color-green-04: #E7E4DF;
-  --puck-color-green-05: #D4D0CA;
-  --puck-color-green-06: #B5B0A8;
-  --puck-color-green-07: #8A847A;
-  --puck-color-green-08: #6E685E;
-  --puck-color-green-09: #575249;
-  --puck-color-green-10: #403C36;
-  --puck-color-green-11: #292524;
-  --puck-color-green-12: #1C1917;
+  /* Green (publish/success) → same warm stone */
+  --puck-color-green-01: #1C1917;
+  --puck-color-green-02: #292524;
+  --puck-color-green-03: #403C36;
+  --puck-color-green-04: #575249;
+  --puck-color-green-05: #6E685E;
+  --puck-color-green-06: #8A847A;
+  --puck-color-green-07: #A8A29E;
+  --puck-color-green-08: #C8C4BC;
+  --puck-color-green-09: #E2DFD9;
+  --puck-color-green-10: #EFECE7;
+  --puck-color-green-11: #F5F3EF;
+  --puck-color-green-12: #FDFCFB;
 
-  /* Grey → warm stone with strong contrast on both ends */
-  --puck-color-grey-01: #FDFCFB;
-  --puck-color-grey-02: #F8F6F2;
-  --puck-color-grey-03: #F0EDEA;
-  --puck-color-grey-04: #E7E4DF;
-  --puck-color-grey-05: #B5B0A8;
+  /* Grey → warm stone (01=darkest for text, 12=lightest for bg) */
+  --puck-color-grey-01: #1C1917;
+  --puck-color-grey-02: #292524;
+  --puck-color-grey-03: #403C36;
+  --puck-color-grey-04: #575249;
+  --puck-color-grey-05: #6E685E;
   --puck-color-grey-06: #8A847A;
-  --puck-color-grey-07: #6E685E;
-  --puck-color-grey-08: #575249;
-  --puck-color-grey-09: #403C36;
-  --puck-color-grey-10: #292524;
-  --puck-color-grey-11: #1C1917;
-  --puck-color-grey-12: #0C0A09;
+  --puck-color-grey-07: #A8A29E;
+  --puck-color-grey-08: #C8C4BC;
+  --puck-color-grey-09: #E2DFD9;
+  --puck-color-grey-10: #EFECE7;
+  --puck-color-grey-11: #F5F3EF;
+  --puck-color-grey-12: #FDFCFB;
 
   /* Font */
   --puck-font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -456,59 +457,43 @@ body {
   color: #1C1917 !important;
 }
 
-/* ── Field labels — dark, readable ── */
-[class*="FieldLabel-label"],
-[class*="FieldLabel"] label,
-[class*="FieldLabel"] span {
-  font-family: var(--font-body) !important;
-  font-size: 0.75rem !important;
-  font-weight: 600 !important;
-  color: #403C36 !important;
-  letter-spacing: -0.01em !important;
-}
-
-/* Field label icons */
+/* ── Field labels — now using corrected grey scale, grey-04 = #575249 (dark) ── */
+/* Labels are styled by Puck's own CSS using var(--puck-color-grey-04) = #575249 */
+/* Just enhance icon styling */
+[class*="Input-labelIcon"] svg,
 [class*="FieldLabel"] svg {
   width: 14px !important;
   height: 14px !important;
-  color: #8A847A !important;
 }
 
-/* ── Field inputs — clean, modern ── */
+/* ── Field inputs — cleaner radius, better focus ring ── */
+[class*="Puck"] [class*="Input-input"] {
+  border-radius: 8px !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease !important;
+}
+[class*="Puck"] [class*="Input-input"]::placeholder {
+  color: #A8A29E !important;
+}
+[class*="Puck"] [class*="Input-input"]:focus {
+  box-shadow: 0 0 0 3px rgba(87, 82, 73, 0.08) !important;
+}
+
+/* Also target raw inputs/selects/textareas */
 [class*="Puck"] input[type="text"],
 [class*="Puck"] input[type="number"],
 [class*="Puck"] input[type="url"],
 [class*="Puck"] select,
 [class*="Puck"] textarea {
-  border: 1.5px solid #E7E4DF !important;
   border-radius: 8px !important;
   font-family: var(--font-body) !important;
   font-size: 0.8125rem !important;
-  color: #1C1917 !important;
-  background: #FFFFFF !important;
-  padding: 8px 12px !important;
-  transition: border-color 150ms ease, box-shadow 150ms ease !important;
-}
-[class*="Puck"] input::placeholder,
-[class*="Puck"] textarea::placeholder {
-  color: #B5B0A8 !important;
 }
 [class*="Puck"] input:focus,
 [class*="Puck"] select:focus,
 [class*="Puck"] textarea:focus {
-  border-color: #403C36 !important;
-  box-shadow: 0 0 0 3px rgba(64, 60, 54, 0.08) !important;
-  outline: none !important;
-}
-
-/* Select dropdowns */
-[class*="Puck"] select {
-  appearance: none !important;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236E685E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
-  background-position: right 8px center !important;
-  background-repeat: no-repeat !important;
-  background-size: 16px !important;
-  padding-right: 32px !important;
+  box-shadow: 0 0 0 3px rgba(87, 82, 73, 0.08) !important;
 }
 
 /* ── Canvas/preview background ── */
@@ -600,9 +585,25 @@ body {
   font-family: var(--font-body) !important;
 }
 
-/* ── Toggle/switch buttons ── */
-[class*="Toggle"],
-[class*="Switch"] {
-  border-radius: 9999px !important;
+/* ── Radio toggle (Yes/No) — pill shape ── */
+[class*="Input-radioGroupItems"] {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+[class*="Input-radioInner"] {
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+}
+
+/* ── Array field items — cleaner cards ── */
+[class*="ArrayFieldItem-summary"] {
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+}
+[class*="ArrayField-addButton"] {
+  border-radius: 8px !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
 }
 

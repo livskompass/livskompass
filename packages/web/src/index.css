@@ -222,7 +222,15 @@ body {
 }
 
 /* ==================== Scroll-Triggered Reveal System ==================== */
+/* Content visible by default; useScrollReveal() hook adds .reveal-pending
+   to elements it observes, then swaps to .reveal-visible on intersection.
+   This ensures content is ALWAYS visible even if JS fails or observer
+   hasn't initialized yet. */
 .reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-pending {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity var(--duration-reveal) var(--ease-out),
