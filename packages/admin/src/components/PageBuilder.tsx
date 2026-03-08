@@ -16,7 +16,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from './ui/dialog'
-import { Settings, Trash2, ExternalLink, Loader2, Check, AlertTriangle } from 'lucide-react'
+import { Settings, Trash2, ExternalLink, Loader2, Check, AlertTriangle, PenLine } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { cn, generateSlug } from '../lib/utils'
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
@@ -72,6 +73,7 @@ interface PageBuilderProps {
 }
 
 export default function PageBuilder({ page, isNew, hasDraft = false, onAutoSave, onStatusChange, onCreate, onDelete, saveStatus = 'idle', saveError, onRetry }: PageBuilderProps) {
+  const navigateToInline = useNavigate()
   const [title, setTitle] = useState(page?.title || '')
   const [slug, setSlug] = useState(page?.slug || '')
   const [metaDescription, setMetaDescription] = useState(page?.meta_description || '')
@@ -340,6 +342,17 @@ export default function PageBuilder({ page, isNew, hasDraft = false, onAutoSave,
               )}
 
               <span className="w-px h-3.5 bg-zinc-200" />
+
+              {/* Inline editor mode */}
+              {page?.id && !isNew && (
+                <button
+                  onClick={() => navigateToInline(`/inline/sidor/${page.id}`)}
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-md text-zinc-400 hover:text-zinc-700 transition-colors"
+                  title="Inline editor"
+                >
+                  <PenLine className="h-3.5 w-3.5" />
+                </button>
+              )}
 
               {/* View on site */}
               {page?.id && slug && (

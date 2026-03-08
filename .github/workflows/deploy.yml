@@ -33,6 +33,7 @@ jobs:
       - run: npm run build -w packages/web
         env:
           VITE_API_URL: https://livskompass-api.livskompass-config.workers.dev/api
+          VITE_ADMIN_URL: https://livskompass-admin.pages.dev
       - run: npx wrangler pages deploy dist --project-name=livskompass-web
         working-directory: packages/web
         env:
@@ -52,6 +53,7 @@ jobs:
       - run: npm run build -w packages/admin
         env:
           VITE_API_URL: https://livskompass-api.livskompass-config.workers.dev/api
+          VITE_WEB_URL: https://livskompass-web.pages.dev
       - run: npx wrangler pages deploy dist --project-name=livskompass-admin
         working-directory: packages/admin
         env:

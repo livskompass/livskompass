@@ -20,6 +20,7 @@ import MediaLibrary from './pages/MediaLibrary'
 import ContactsList from './pages/ContactsList'
 import UsersList from './pages/UsersList'
 import Settings from './pages/Settings'
+import InlineEditorPage from './editor/InlineEditor'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = getAuthToken()
@@ -56,6 +57,23 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        {/* Inline editor — full-screen, no AdminLayout chrome */}
+        <Route
+          path="/inline/sidor/:id"
+          element={<ProtectedRoute><InlineEditorPage contentType="page" /></ProtectedRoute>}
+        />
+        <Route
+          path="/inline/nyheter/:id"
+          element={<ProtectedRoute><InlineEditorPage contentType="post" /></ProtectedRoute>}
+        />
+        <Route
+          path="/inline/utbildningar/:id"
+          element={<ProtectedRoute><InlineEditorPage contentType="course" /></ProtectedRoute>}
+        />
+        <Route
+          path="/inline/material/:id"
+          element={<ProtectedRoute><InlineEditorPage contentType="product" /></ProtectedRoute>}
+        />
         <Route
           path="/"
           element={

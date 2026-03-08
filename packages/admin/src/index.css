@@ -145,6 +145,72 @@
   --radius-xl:   20px;
   --radius-2xl:  24px;
   --radius-full: 9999px;
+
+  /* ==================== INLINE EDITOR TOKENS ==================== */
+
+  /* Editor Action Colors */
+  --editor-blue: #2563EB;
+  --editor-blue-light: #DBEAFE;
+  --editor-blue-lightest: #F0F9FF;
+  --editor-blue-dark: #1E40AF;
+  --editor-blue-rgb: 37, 99, 235;
+
+  --editor-red: #EF4444;
+  --editor-red-light: #FEE2E2;
+  --editor-red-dark: #DC2626;
+  --editor-red-rgb: 239, 68, 68;
+
+  --editor-green: #10B981;
+  --editor-green-light: #D1FAE5;
+  --editor-green-dark: #059669;
+  --editor-green-rgb: 16, 185, 129;
+
+  --editor-amber: #F59E0B;
+  --editor-amber-light: #FEF3C7;
+
+  /* Selection & Focus */
+  --editor-ring-width: 2px;
+  --editor-ring-offset: 2px;
+  --editor-ring-color: var(--editor-blue);
+  --editor-selection-bg: rgba(var(--editor-blue-rgb), 0.08);
+  --editor-hover-bg: rgba(var(--editor-blue-rgb), 0.04);
+
+  /* Toolbar Surface */
+  --editor-toolbar-bg: rgba(255, 255, 255, 0.95);
+  --editor-toolbar-border: 1px solid rgba(0, 0, 0, 0.06);
+  --editor-toolbar-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --editor-toolbar-height: 36px;
+  --editor-toolbar-radius: 9999px;
+
+  /* Floating Panel */
+  --editor-panel-bg: #FFFFFF;
+  --editor-panel-border: 1px solid #E5E7EB;
+  --editor-panel-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --editor-panel-radius: 8px;
+
+  /* Status Badges */
+  --editor-badge-draft-bg: #FEF3C7;
+  --editor-badge-draft-text: #92400E;
+  --editor-badge-published-bg: #D1FAE5;
+  --editor-badge-published-text: #065F46;
+  --editor-badge-saving-bg: #DBEAFE;
+  --editor-badge-saving-text: #1E40AF;
+  --editor-badge-error-bg: #FEE2E2;
+  --editor-badge-error-text: #7F1D1D;
+
+  /* Z-Index Scale (Editor Layers) */
+  --z-editor-block: 10;
+  --z-editor-block-selected: 20;
+  --z-editor-toolbar: 100;
+  --z-editor-panel: 1000;
+  --z-editor-popover: 1005;
+  --z-editor-modal: 1010;
+  --z-editor-toast: 1020;
+
+  /* Editor Timing */
+  --editor-duration-fast: 150ms;
+  --editor-duration-normal: 300ms;
+  --editor-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Admin body — uses secondary surface for sidebar distinction */

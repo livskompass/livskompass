@@ -498,6 +498,34 @@ adminRoutes.patch('/products/:id/draft', async (c) => {
   return c.json({ success: true })
 })
 
+// Inline-edit: update only content_blocks for a product
+adminRoutes.patch('/products/:id', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const updatedAt = body.updatedAt ?? body.updated_at
+
+  if (updatedAt) {
+    const existing = await c.env.DB.prepare(
+      `SELECT updated_at FROM products WHERE id = ?`
+    ).bind(id).first<{ updated_at: string }>()
+
+    if (existing && existing.updated_at !== updatedAt) {
+      return c.json({ error: 'conflict', message: 'Product was modified by another user' }, 409)
+    }
+  }
+
+  if (contentBlocks !== undefined) {
+    await c.env.DB.prepare(`
+      UPDATE products SET content_blocks = ?, editor_version = 'puck', updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(contentBlocks, id).run()
+  }
+
+  const product = await c.env.DB.prepare(`SELECT * FROM products WHERE id = ?`).bind(id).first()
+  return c.json({ success: true, product })
+})
+
 adminRoutes.post('/products', async (c) => {
   const body = await c.req.json()
   const { slug, title, description, type, status } = body
