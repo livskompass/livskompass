@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { EditorProvider, useEditor } from './context'
 import { EditorTopBar } from './components/EditorTopBar'
 import { BlockList } from './components/BlockList'
+import { FloatingToolbar } from './components/FloatingToolbar'
+import { puckConfig } from '@livskompass/shared'
 import type { ContentType, ContentEntity } from './types'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
@@ -169,9 +171,40 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         </div>
       </div>
 
-      {/* Portal container for floating toolbar (Phase 3) */}
+      {/* Floating toolbar for selected block */}
+      <SelectedBlockToolbar />
+
+      {/* Portal container for floating toolbar */}
       <div id="editor-portals" />
     </div>
+  )
+}
+
+const components = puckConfig.components as Record<string, { label?: string }>
+
+function SelectedBlockToolbar() {
+  const { state } = useEditor()
+  const { selectedBlockId, puckData } = state
+
+  if (!selectedBlockId || !puckData) return null
+
+  const items = puckData.content || []
+  const blockIndex = items.findIndex(
+    (item: any, i: number) => (item.props?.id || `${item.type}-${i}`) === selectedBlockId,
+  )
+
+  if (blockIndex === -1) return null
+
+  const item = items[blockIndex]
+  const blockType = components[item.type]?.label || item.type
+
+  return (
+    <FloatingToolbar
+      blockId={selectedBlockId}
+      blockType={blockType}
+      blockIndex={blockIndex}
+      totalBlocks={items.length}
+    />
   )
 }
 

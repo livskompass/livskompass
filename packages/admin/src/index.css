@@ -281,6 +281,31 @@ body {
   }
 }
 
+/* ==================== Inline Editor Block States ==================== */
+
+/* Editor focus pulse animation */
+@keyframes editor-focus-pulse {
+  from { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  to { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+}
+
+/* Editor bounce-in for toolbar/labels */
+@keyframes editor-bounce-in {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Editor slide-down for popovers */
+@keyframes editor-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Block selection pulse — one-shot on select */
+[data-block-id].editor-just-selected {
+  animation: editor-focus-pulse 400ms var(--editor-ease, ease) forwards;
+}
+
 /* Reveal system — disabled in admin, all content visible immediately */
 .reveal,
 .reveal-visible,
