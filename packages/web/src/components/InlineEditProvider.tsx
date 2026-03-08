@@ -6,6 +6,7 @@ const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 interface PageEditData {
   pageId: string
+  contentType: 'page' | 'post' | 'course' | 'product'
   contentBlocks: string
   updatedAt: string
 }
@@ -94,7 +95,9 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
 
         setSavingStatus('saving')
 
-        fetch(`${API_BASE}/admin/pages/${pageData.pageId}`, {
+        const apiRoute = { page: 'pages', post: 'posts', course: 'courses', product: 'products' }[pageData.contentType] || 'pages'
+
+        fetch(`${API_BASE}/admin/${apiRoute}/${pageData.pageId}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -112,9 +115,10 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
           .then((data: any) => {
             setSavingStatus('saved')
             // Update updatedAt for conflict detection
-            if (data.page?.updated_at) {
+            const entity = data.page || data.post || data.course || data.product
+            if (entity?.updated_at) {
               setPageData((prev) =>
-                prev ? { ...prev, updatedAt: data.page.updated_at } : null,
+                prev ? { ...prev, updatedAt: entity.updated_at } : null,
               )
             }
             if (savedTimerRef.current) clearTimeout(savedTimerRef.current)

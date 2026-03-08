@@ -52,6 +52,15 @@ adminRoutes.get('/pages/:id', async (c) => {
   return c.json({ page: result })
 })
 
+// Save page draft (auto-save — does NOT touch live columns)
+adminRoutes.patch('/pages/:id/draft', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  await c.env.DB.prepare('UPDATE pages SET draft = ? WHERE id = ?')
+    .bind(JSON.stringify(body), id).run()
+  return c.json({ success: true })
+})
+
 // Create page
 adminRoutes.post('/pages', async (c) => {
   const body = await c.req.json()
@@ -86,7 +95,7 @@ adminRoutes.put('/pages/:id', async (c) => {
   await c.env.DB.prepare(`
     UPDATE pages
     SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
-        meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, updated_at = datetime('now')
+        meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, draft = NULL, updated_at = datetime('now')
     WHERE id = ?
   `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', metaDescription || null, parentSlug || null, sortOrder || 0, status, id).run()
 
@@ -148,6 +157,15 @@ adminRoutes.get('/posts/:id', async (c) => {
   return c.json({ post: result })
 })
 
+// Save post draft (auto-save)
+adminRoutes.patch('/posts/:id/draft', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  await c.env.DB.prepare('UPDATE posts SET draft = ? WHERE id = ?')
+    .bind(JSON.stringify(body), id).run()
+  return c.json({ success: true })
+})
+
 adminRoutes.post('/posts', async (c) => {
   const body = await c.req.json()
   const { slug, title, content, excerpt, status } = body
@@ -166,6 +184,34 @@ adminRoutes.post('/posts', async (c) => {
   return c.json({ post: { id, slug, title } }, 201)
 })
 
+// Inline-edit: update only content_blocks for a post
+adminRoutes.patch('/posts/:id', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const updatedAt = body.updatedAt ?? body.updated_at
+
+  if (updatedAt) {
+    const existing = await c.env.DB.prepare(
+      `SELECT updated_at FROM posts WHERE id = ?`
+    ).bind(id).first<{ updated_at: string }>()
+
+    if (existing && existing.updated_at !== updatedAt) {
+      return c.json({ error: 'conflict', message: 'Post was modified by another user' }, 409)
+    }
+  }
+
+  if (contentBlocks !== undefined) {
+    await c.env.DB.prepare(`
+      UPDATE posts SET content_blocks = ?, editor_version = 'puck', updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(contentBlocks, id).run()
+  }
+
+  const post = await c.env.DB.prepare(`SELECT * FROM posts WHERE id = ?`).bind(id).first()
+  return c.json({ success: true, post })
+})
+
 adminRoutes.put('/posts/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
@@ -178,7 +224,7 @@ adminRoutes.put('/posts/:id', async (c) => {
   await c.env.DB.prepare(`
     UPDATE posts
     SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
-        excerpt = ?, featured_image = ?, status = ?, published_at = ?, updated_at = datetime('now')
+        excerpt = ?, featured_image = ?, status = ?, published_at = ?, draft = NULL, updated_at = datetime('now')
     WHERE id = ?
   `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', excerpt || null, featuredImage || null, status, publishedAt || null, id).run()
 
@@ -210,6 +256,15 @@ adminRoutes.get('/courses/:id', async (c) => {
   return c.json({ course: result })
 })
 
+// Save course draft (auto-save)
+adminRoutes.patch('/courses/:id/draft', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  await c.env.DB.prepare('UPDATE courses SET draft = ? WHERE id = ?')
+    .bind(JSON.stringify(body), id).run()
+  return c.json({ success: true })
+})
+
 adminRoutes.post('/courses', async (c) => {
   const body = await c.req.json()
   const { slug, title, description, content, status } = body
@@ -237,6 +292,34 @@ adminRoutes.post('/courses', async (c) => {
   return c.json({ course: { id, slug, title } }, 201)
 })
 
+// Inline-edit: update only content_blocks for a course
+adminRoutes.patch('/courses/:id', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const updatedAt = body.updatedAt ?? body.updated_at
+
+  if (updatedAt) {
+    const existing = await c.env.DB.prepare(
+      `SELECT updated_at FROM courses WHERE id = ?`
+    ).bind(id).first<{ updated_at: string }>()
+
+    if (existing && existing.updated_at !== updatedAt) {
+      return c.json({ error: 'conflict', message: 'Course was modified by another user' }, 409)
+    }
+  }
+
+  if (contentBlocks !== undefined) {
+    await c.env.DB.prepare(`
+      UPDATE courses SET content_blocks = ?, editor_version = 'puck', updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(contentBlocks, id).run()
+  }
+
+  const course = await c.env.DB.prepare(`SELECT * FROM courses WHERE id = ?`).bind(id).first()
+  return c.json({ success: true, course })
+})
+
 adminRoutes.put('/courses/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
@@ -254,7 +337,7 @@ adminRoutes.put('/courses/:id', async (c) => {
     UPDATE courses
     SET slug = ?, title = ?, description = ?, content = ?, content_blocks = ?,
         editor_version = ?, location = ?, start_date = ?, end_date = ?,
-        price_sek = ?, max_participants = ?, registration_deadline = ?, status = ?
+        price_sek = ?, max_participants = ?, registration_deadline = ?, status = ?, draft = NULL
     WHERE id = ?
   `).bind(slug, title, description, content || null, contentBlocks || null,
           editorVersion || 'legacy', location || null, startDate || null, endDate || null,
@@ -406,6 +489,15 @@ adminRoutes.get('/products/:id', async (c) => {
   return c.json({ product: result })
 })
 
+// Save product draft (auto-save)
+adminRoutes.patch('/products/:id/draft', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  await c.env.DB.prepare('UPDATE products SET draft = ? WHERE id = ?')
+    .bind(JSON.stringify(body), id).run()
+  return c.json({ success: true })
+})
+
 adminRoutes.post('/products', async (c) => {
   const body = await c.req.json()
   const { slug, title, description, type, status } = body
@@ -442,7 +534,7 @@ adminRoutes.put('/products/:id', async (c) => {
   await c.env.DB.prepare(`
     UPDATE products
     SET slug = ?, title = ?, description = ?, content_blocks = ?, editor_version = ?,
-        type = ?, price_sek = ?, external_url = ?, image_url = ?, in_stock = ?, status = ?
+        type = ?, price_sek = ?, external_url = ?, image_url = ?, in_stock = ?, status = ?, draft = NULL
     WHERE id = ?
   `).bind(slug, title, description, contentBlocks || null, editorVersion || 'legacy',
           type, priceSek, externalUrl, imageUrl, inStock, status, id).run()
@@ -645,6 +737,55 @@ adminRoutes.put('/site-settings', async (c) => {
   if (statements.length > 0) {
     await c.env.DB.batch(statements)
   }
+
+  return c.json({ success: true })
+})
+
+// ============ UI STRINGS ============
+
+adminRoutes.get('/settings/ui-strings', async (c) => {
+  const result = await c.env.DB.prepare(
+    `SELECT value FROM settings WHERE key = 'ui_strings'`
+  ).first<{ value: string }>()
+
+  let strings = {}
+  if (result?.value) {
+    try { strings = JSON.parse(result.value) } catch { /* use empty */ }
+  }
+
+  return c.json({ strings })
+})
+
+adminRoutes.put('/settings/ui-strings', async (c) => {
+  const role = c.get('userRole')
+  if (role !== 'admin') {
+    return c.json({ error: 'Only admins can modify UI strings' }, 403)
+  }
+
+  const body = await c.req.json()
+  const { strings } = body
+
+  await c.env.DB.prepare(
+    `INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)`
+  ).bind('ui_strings', JSON.stringify(strings || {})).run()
+
+  return c.json({ success: true })
+})
+
+// ============ HOMEPAGE SLUG ============
+
+adminRoutes.put('/settings/homepage-slug', async (c) => {
+  const role = c.get('userRole')
+  if (role !== 'admin') {
+    return c.json({ error: 'Only admins can modify homepage slug' }, 403)
+  }
+
+  const body = await c.req.json()
+  const { slug } = body
+
+  await c.env.DB.prepare(
+    `INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)`
+  ).bind('homepage_slug', slug || 'home-2').run()
 
   return c.json({ success: true })
 })

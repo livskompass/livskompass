@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getPost, rewriteMediaUrls } from '../lib/api'
@@ -6,6 +7,7 @@ import { PostContext } from '../lib/context'
 import { defaultPostTemplate } from '@livskompass/shared'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
+import { setPageEditData } from '../components/InlineEditProvider'
 import { Skeleton } from '../components/ui/skeleton'
 
 function PostSkeleton() {
@@ -34,6 +36,20 @@ export default function PostDetail() {
   })
 
   useDocumentTitle(data?.post?.title)
+
+  // Register post data for inline editing
+  useEffect(() => {
+    const postAny = data?.post as any
+    if (postAny?.id && postAny?.content_blocks) {
+      setPageEditData({
+        pageId: String(postAny.id),
+        contentType: 'post',
+        contentBlocks: postAny.content_blocks,
+        updatedAt: postAny.updated_at || '',
+      })
+    }
+    return () => setPageEditData(null)
+  }, [data?.post])
 
   if (isLoading) return <PostSkeleton />
   if (error || !data?.post) return <NotFound />

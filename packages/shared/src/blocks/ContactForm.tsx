@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { getApiBase } from '../helpers'
 import { Send, CheckCircle, AlertCircle, Mail, Phone } from 'lucide-react'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
+import { UI_STRINGS } from '../ui-strings'
 
 export interface ContactFormProps {
   heading: string
@@ -15,12 +16,18 @@ export interface ContactFormProps {
   contactEmail: string
   contactPhone: string
   submitButtonText: string
+  submittingText: string
   successHeading: string
   successMessage: string
+  nameLabel: string
+  emailLabel: string
+  phoneLabel: string
+  subjectLabel: string
+  messageLabel: string
 }
 
-/** Helper: extract handlers from inline edit props */
-function editHandlers(edit: ReturnType<typeof useInlineEdit>) {
+/** Helper: extract handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText> | ReturnType<typeof useInlineEdit>) {
   if (!edit) return {}
   const { className: _, ...rest } = edit
   return rest
@@ -37,16 +44,31 @@ export function ContactForm({
   contactEmail = 'livheim@gmail.com',
   contactPhone = '070-694 03 64',
   submitButtonText = 'Skicka meddelande',
+  submittingText = 'Skickar...',
   successHeading = 'Tack för ditt meddelande!',
   successMessage = 'Vi återkommer så snart vi kan.',
+  nameLabel = 'Namn *',
+  emailLabel = 'E-post *',
+  phoneLabel = 'Telefon',
+  subjectLabel = 'Ämne',
+  messageLabel = 'Meddelande *',
   id,
 }: ContactFormProps & { puck?: { isEditing: boolean }; id?: string }) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
-  const headingEdit = useInlineEdit('heading', heading, id || '')
-  const descriptionEdit = useInlineEdit('description', description, id || '')
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  const descriptionPuck = useInlineEdit('description', description, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  const descriptionEditCtx = useEditableText('description', description)
+
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+  const descriptionEdit = descriptionPuck || descriptionEditCtx
 
   const hHandlers = editHandlers(headingEdit)
   const dHandlers = editHandlers(descriptionEdit)
@@ -67,12 +89,12 @@ export function ContactForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
-      if (!res.ok) throw new Error('Kunde inte skicka meddelandet')
+      if (!res.ok) throw new Error(UI_STRINGS.contact.errorSend)
       setStatus('success')
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
     } catch (err: any) {
       setStatus('error')
-      setErrorMsg(err.message || 'Något gick fel')
+      setErrorMsg(err.message || UI_STRINGS.contact.errorGeneric)
     }
   }
 
@@ -80,7 +102,7 @@ export function ContactForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">Namn *</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">{nameLabel}</label>
           <input
             type="text"
             required
@@ -91,7 +113,7 @@ export function ContactForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">E-post *</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">{emailLabel}</label>
           <input
             type="email"
             required
@@ -104,7 +126,7 @@ export function ContactForm({
       </div>
       {showPhone && (
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">Telefon</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">{phoneLabel}</label>
           <input
             type="tel"
             value={formData.phone}
@@ -116,7 +138,7 @@ export function ContactForm({
       )}
       {showSubject && (
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">Ämne</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">{subjectLabel}</label>
           <input
             type="text"
             value={formData.subject}
@@ -127,7 +149,7 @@ export function ContactForm({
         </div>
       )}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1.5">Meddelande *</label>
+        <label className="block text-sm font-medium text-stone-700 mb-1.5">{messageLabel}</label>
         <textarea
           required
           rows={5}
@@ -142,7 +164,7 @@ export function ContactForm({
         disabled={status === 'submitting' || isEditor}
         className="w-full inline-flex items-center justify-center h-12 px-7 bg-forest-500 text-white hover:bg-forest-600 font-semibold rounded-full transition-colors disabled:opacity-50"
       >
-        {status === 'submitting' ? 'Skickar...' : submitButtonText}
+        {status === 'submitting' ? submittingText : submitButtonText}
         <Send className="ml-2 h-4 w-4" />
       </button>
     </form>

@@ -13,7 +13,7 @@ coursesRoutes.get('/', async (c) => {
     ORDER BY start_date ASC
   `).all()
 
-  c.header('Cache-Control', 'public, max-age=60, s-maxage=300')
+  c.header('Cache-Control', 'no-cache')
   return c.json({ courses: result.results })
 })
 
@@ -22,13 +22,14 @@ coursesRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
 
   const result = await c.env.DB.prepare(`
-    SELECT * FROM courses WHERE slug = ? AND status IN ('active', 'full')
+    SELECT id, slug, title, description, content, content_blocks, editor_version, location, start_date, end_date, price_sek, max_participants, current_participants, registration_deadline, status, created_at
+    FROM courses WHERE slug = ? AND status IN ('active', 'full')
   `).bind(slug).first()
 
   if (!result) {
     return c.json({ error: 'Course not found' }, 404)
   }
 
-  c.header('Cache-Control', 'public, max-age=60, s-maxage=300')
+  c.header('Cache-Control', 'no-cache')
   return c.json({ course: result })
 })

@@ -1,5 +1,5 @@
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
 
 export interface PostGridProps {
@@ -15,6 +15,13 @@ export interface PostGridProps {
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
+
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
 
 interface Post {
   slug: string
@@ -39,15 +46,24 @@ export function PostGrid({
   const { data, loading } = useFetchJson<{ posts: Post[] }>(`/posts?limit=${limit}`)
   const posts = data?.posts || []
   const revealRef = useScrollReveal()
-  const headingEdit = useInlineEdit('heading', heading, id || '')
-  const subheadingEdit = useInlineEdit('subheading', subheading, id || '')
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  const subheadingPuck = useInlineEdit('subheading', subheading, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  const subheadingEditCtx = useEditableText('subheading', subheading)
+
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+  const subheadingEdit = subheadingPuck || subheadingEditCtx
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="mb-8 reveal">
-          {(heading || headingEdit) && <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
-          {(subheading || subheadingEdit) && <p {...(subheadingEdit ? { contentEditable: subheadingEdit.contentEditable, suppressContentEditableWarning: subheadingEdit.suppressContentEditableWarning, onBlur: subheadingEdit.onBlur, onKeyDown: subheadingEdit.onKeyDown, 'data-inline-edit': 'subheading' } : {})} className={cn('text-lg text-stone-600', subheadingEdit?.className)}>{subheading}</p>}
+          {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
+          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-lg text-stone-600', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
       {loading ? (

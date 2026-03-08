@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
 import { ExternalLink } from 'lucide-react'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 
 export interface ProductListProps {
   heading: string
@@ -11,6 +11,7 @@ export interface ProductListProps {
   freeLabel: string
   outOfStockLabel: string
   emptyText: string
+  typeLabels: Record<string, string>
 }
 
 interface Product {
@@ -24,7 +25,7 @@ interface Product {
   image_url: string
 }
 
-const typeLabels: Record<string, string> = {
+const defaultTypeLabels: Record<string, string> = {
   book: 'Böcker',
   cd: 'CD-skivor',
   cards: 'Kort',
@@ -34,6 +35,13 @@ const typeLabels: Record<string, string> = {
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
 
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
 export function ProductList({
   heading = '',
   filterType = '',
@@ -42,9 +50,16 @@ export function ProductList({
   freeLabel = 'Gratis',
   outOfStockLabel = 'Slut i lager',
   emptyText = 'Inga produkter hittades.',
+  typeLabels = defaultTypeLabels,
   id,
 }: ProductListProps & { puck?: { isEditing: boolean }; id?: string }) {
-  const headingEdit = useInlineEdit('heading', heading, id || '')
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+
   const { data, loading } = useFetchJson<{ products: Product[] }>('/products')
   const allProducts = data?.products || []
   const products = filterType ? allProducts.filter((p) => p.type === filterType) : allProducts
@@ -62,7 +77,7 @@ export function ProductList({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>

@@ -14,5 +14,7 @@ export function createEditorOverrides() {
       return <>{children}</>
     },
     componentOverlay: ComponentToolbar,
+    // Hide Outline plugin — only Blocks tab needed
+    outline: () => <></>,
   }
 }

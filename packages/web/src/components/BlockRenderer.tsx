@@ -1,3 +1,4 @@
+import { UI_STRINGS } from '@livskompass/shared'
 import PuckRenderer from './PuckRenderer'
 
 interface BlockRendererProps {
@@ -11,7 +12,7 @@ export default function BlockRenderer({ data }: BlockRendererProps) {
   } catch {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center text-stone-500">
-        Kunde inte ladda sidinnehåll.
+        {UI_STRINGS.errors.blockRenderFailed}
       </div>
     )
   }

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getProduct, createProduct, updateProduct, deleteProduct } from '../lib/api'
+import { getProduct, createProduct, updateProduct, saveProductDraft, deleteProduct } from '../lib/api'
 import ProductBuilder from '../components/ProductBuilder'
+import type { SaveStatus } from '../components/PageBuilder'
 import { Skeleton } from '../components/ui/skeleton'
 
 export default function ProductEditor() {
@@ -11,7 +12,10 @@ export default function ProductEditor() {
   const queryClient = useQueryClient()
   const isNew = !id
 
-  const [error, setError] = useState('')
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [saveError, setSaveError] = useState('')
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const lastSaveDataRef = useRef<any>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-product', id],
@@ -19,15 +23,57 @@ export default function ProductEditor() {
     enabled: !!id,
   })
 
-  const saveMutation = useMutation({
-    mutationFn: (saveData: any) =>
-      isNew ? createProduct(saveData) : updateProduct(id!, saveData),
+  const autoSaveMutation = useMutation({
+    mutationFn: (saveData: any) => {
+      lastSaveDataRef.current = saveData
+      return saveProductDraft(id!, saveData)
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-products'] })
-      navigate('/material')
+      setSaveStatus('saved')
+      setSaveError('')
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2500)
     },
     onError: (err: Error) => {
-      setError(err.message || 'Could not save the product')
+      setSaveError(err.message || 'Could not save draft')
+      setSaveStatus('error')
+    },
+  })
+
+  const statusChangeMutation = useMutation({
+    mutationFn: (saveData: any) => {
+      lastSaveDataRef.current = saveData
+      return updateProduct(id!, saveData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-product', id] })
+      setSaveStatus('saved')
+      setSaveError('')
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2500)
+    },
+    onError: (err: Error) => {
+      setSaveError(err.message || 'Could not save the product')
+      setSaveStatus('error')
+    },
+  })
+
+  const createMutation = useMutation({
+    mutationFn: (saveData: any) => createProduct(saveData),
+    onSuccess: (result: any) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] })
+      if (result?.product?.id) {
+        navigate(`/material/${result.product.id}`, { replace: true })
+      }
+      setSaveStatus('saved')
+      setSaveError('')
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2500)
+    },
+    onError: (err: Error) => {
+      setSaveError(err.message || 'Could not create the product')
+      setSaveStatus('error')
     },
   })
 
@@ -37,10 +83,33 @@ export default function ProductEditor() {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] })
       navigate('/material')
     },
-    onError: (err: Error) => {
-      setError(err.message || 'Could not delete the product')
-    },
   })
+
+  const handleAutoSave = useCallback((saveData: any) => {
+    setSaveError('')
+    setSaveStatus('saving')
+    autoSaveMutation.mutate(saveData)
+  }, [autoSaveMutation])
+
+  const handleStatusChange = useCallback((saveData: any) => {
+    setSaveError('')
+    setSaveStatus('saving')
+    statusChangeMutation.mutate(saveData)
+  }, [statusChangeMutation])
+
+  const handleCreate = useCallback((saveData: any) => {
+    setSaveError('')
+    setSaveStatus('saving')
+    createMutation.mutate(saveData)
+  }, [createMutation])
+
+  const handleRetry = () => {
+    if (lastSaveDataRef.current) {
+      setSaveError('')
+      setSaveStatus('saving')
+      autoSaveMutation.mutate(lastSaveDataRef.current)
+    }
+  }
 
   if (!isNew && isLoading) {
     return (
@@ -50,38 +119,39 @@ export default function ProductEditor() {
     )
   }
 
-  const productData = data?.product
+  const raw = data?.product as any
+  const draftData = raw?.draft ? (() => { try { return JSON.parse(raw.draft) } catch { return null } })() : null
+
+  const productData = raw
     ? {
-        id: (data.product as any).id,
-        title: data.product.title,
-        slug: data.product.slug,
-        description: data.product.description || '',
-        type: data.product.type || 'book',
-        price_sek: data.product.price_sek || 0,
-        external_url: data.product.external_url || '',
-        image_url: data.product.image_url || '',
-        in_stock: data.product.in_stock ?? 1,
-        status: (data.product as any).status || 'active',
-        content_blocks: (data.product as any).content_blocks || null,
+        id: raw.id,
+        title: draftData?.title ?? raw.title,
+        slug: draftData?.slug ?? raw.slug,
+        description: draftData?.description ?? raw.description ?? '',
+        type: draftData?.type ?? raw.type ?? 'book',
+        price_sek: draftData?.price_sek ?? raw.price_sek ?? 0,
+        external_url: draftData?.external_url ?? raw.external_url ?? '',
+        image_url: draftData?.image_url ?? raw.image_url ?? '',
+        in_stock: draftData?.in_stock ?? raw.in_stock ?? 1,
+        status: raw.status,
+        content_blocks: draftData?.content_blocks ?? raw.content_blocks ?? null,
       }
     : null
 
-  return (
-    <div>
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-2">
-          {error}
-        </div>
-      )}
+  const hasDraft = !!raw?.draft
 
-      <ProductBuilder
-        product={isNew ? null : productData}
-        onSave={(saveData) => {
-          setError('')
-          saveMutation.mutate(saveData)
-        }}
-        onDelete={!isNew ? () => deleteMutation.mutate() : undefined}
-      />
-    </div>
+  return (
+    <ProductBuilder
+      product={isNew ? null : productData}
+      isNew={isNew}
+      hasDraft={hasDraft}
+      onAutoSave={handleAutoSave}
+      onStatusChange={handleStatusChange}
+      onCreate={handleCreate}
+      onDelete={!isNew ? () => deleteMutation.mutate() : undefined}
+      saveStatus={saveStatus}
+      saveError={saveError}
+      onRetry={handleRetry}
+    />
   )
 }

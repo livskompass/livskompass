@@ -1,6 +1,6 @@
 import { Quote } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
 
 export interface TestimonialProps {
@@ -11,8 +11,8 @@ export interface TestimonialProps {
   style: 'card' | 'minimal' | 'featured'
 }
 
-/** Helper: extract handlers from inline edit props */
-function editHandlers(edit: ReturnType<typeof useInlineEdit>) {
+/** Helper: extract handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText> | ReturnType<typeof useInlineEdit>) {
   if (!edit) return {}
   const { className: _, ...rest } = edit
   return rest
@@ -26,9 +26,20 @@ export function Testimonial({
   id,
 }: TestimonialProps & { puck?: { isEditing: boolean }; id?: string }) {
   const revealRef = useScrollReveal()
-  const quoteEdit = useInlineEdit('quote', quote, id || '')
-  const authorEdit = useInlineEdit('author', author, id || '')
-  const roleEdit = useInlineEdit('role', role, id || '')
+  // Puck editor inline editing (via postMessage)
+  const quotePuck = useInlineEdit('quote', quote, id || '')
+  const authorPuck = useInlineEdit('author', author, id || '')
+  const rolePuck = useInlineEdit('role', role, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const quoteEditCtx = useEditableText('quote', quote)
+  const authorEditCtx = useEditableText('author', author)
+  const roleEditCtx = useEditableText('role', role)
+
+  // Puck takes priority
+  const quoteEdit = quotePuck || quoteEditCtx
+  const authorEdit = authorPuck || authorEditCtx
+  const roleEdit = rolePuck || roleEditCtx
 
   const qHandlers = editHandlers(quoteEdit)
   const aHandlers = editHandlers(authorEdit)

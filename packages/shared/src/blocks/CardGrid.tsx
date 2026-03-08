@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui
 import { Badge } from '../ui/badge'
 import { Calendar, MapPin } from 'lucide-react'
 import { getApiBase, useScrollReveal } from '../helpers'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 
 export interface ManualCard {
   title: string
@@ -22,6 +22,10 @@ export interface CardGridProps {
   columns: 2 | 3 | 4
   cardStyle: 'default' | 'bordered' | 'shadow'
   manualCards: ManualCard[]
+  fullBadgeText: string
+  spotsAvailableText: string
+  emptyManualText: string
+  emptyDynamicText: string
 }
 
 const columnsMap = {
@@ -35,6 +39,13 @@ const cardStyleMap = {
   bordered: 'border-2',
   shadow: 'shadow-md',
 } as const
+
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
 
 interface DynamicItem {
   id: string
@@ -58,13 +69,26 @@ export function CardGrid({
   columns = 3,
   cardStyle = 'default',
   manualCards = [],
+  fullBadgeText = 'Fullbokad',
+  spotsAvailableText = 'Platser kvar',
+  emptyManualText = 'Lägg till kort i inställningarna...',
+  emptyDynamicText = 'Inget innehåll tillgängligt.',
   id,
 }: CardGridProps & { puck?: { isEditing: boolean }; id?: string }) {
   const [dynamicItems, setDynamicItems] = useState<DynamicItem[]>([])
   const [dynamicLoading, setDynamicLoading] = useState(source !== 'manual')
   const revealRef = useScrollReveal()
-  const headingEdit = useInlineEdit('heading', heading, id || '')
-  const subheadingEdit = useInlineEdit('subheading', subheading, id || '')
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  const subheadingPuck = useInlineEdit('subheading', subheading, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  const subheadingEditCtx = useEditableText('subheading', subheading)
+
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+  const subheadingEdit = subheadingPuck || subheadingEditCtx
 
   useEffect(() => {
     if (source === 'manual') return
@@ -153,7 +177,7 @@ export function CardGrid({
                   variant={item.status === 'full' ? 'destructive' : 'success'}
                   className="w-fit mb-1"
                 >
-                  {item.status === 'full' ? 'Fullbokad' : 'Platser kvar'}
+                  {item.status === 'full' ? fullBadgeText : spotsAvailableText}
                 </Badge>
               )}
               {source === 'posts' && item.published_at && (
@@ -203,10 +227,10 @@ export function CardGrid({
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="text-center mb-10 reveal">
           {(heading || headingEdit) && (
-            <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-3', headingEdit?.className)}>{heading}</h2>
+            <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-3', headingEdit?.className)}>{heading}</h2>
           )}
           {(subheading || subheadingEdit) && (
-            <p {...(subheadingEdit ? { contentEditable: subheadingEdit.contentEditable, suppressContentEditableWarning: subheadingEdit.suppressContentEditableWarning, onBlur: subheadingEdit.onBlur, onKeyDown: subheadingEdit.onKeyDown, 'data-inline-edit': 'subheading' } : {})} className={cn('text-stone-600 text-lg', subheadingEdit?.className)}>{subheading}</p>
+            <p {...editHandlers(subheadingEdit)} className={cn('text-stone-600 text-lg', subheadingEdit?.className)}>{subheading}</p>
           )}
         </div>
       )}
@@ -224,9 +248,7 @@ export function CardGrid({
         </div>
       ) : isEmpty ? (
         <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-          {source === 'manual'
-            ? 'Lägg till kort i inställningarna...'
-            : 'Inget innehåll tillgängligt.'}
+          {source === 'manual' ? emptyManualText : emptyDynamicText}
         </div>
       ) : (
         <div className={cn('grid grid-cols-1 gap-6 reveal', columnsMap[columns])}>

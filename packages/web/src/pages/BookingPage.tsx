@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { getCourse, createBooking, startCheckout } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { useUIStrings } from '@livskompass/shared'
 import { CourseContext } from '../lib/context'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
@@ -36,6 +37,8 @@ function BookingSkeleton() {
 }
 
 export default function BookingPage() {
+  const strings = useUIStrings()
+  const s = strings.booking
   const { slug } = useParams<{ slug: string }>()
 
   const [formData, setFormData] = useState({
@@ -54,7 +57,7 @@ export default function BookingPage() {
     enabled: !!slug,
   })
 
-  useDocumentTitle(data?.course ? `Boka ${data.course.title}` : 'Boka plats')
+  useDocumentTitle(data?.course ? `Boka ${data.course.title}` : s.pageTitle)
 
   const bookingMutation = useMutation({
     mutationFn: createBooking,
@@ -63,11 +66,11 @@ export default function BookingPage() {
         const checkout = await startCheckout(data.booking.id)
         window.location.href = checkout.checkoutUrl
       } catch {
-        setError('Kunde inte starta betalningen. Försök igen.')
+        setError(s.errorPaymentStart)
       }
     },
     onError: (err: Error) => {
-      setError(err.message || 'Något gick fel. Försök igen.')
+      setError(err.message || s.errorGeneric)
     },
   })
 
@@ -97,20 +100,20 @@ export default function BookingPage() {
         <Card className="inline-block w-full">
           <CardContent className="py-12 px-8">
             <Badge variant={course.status === 'completed' ? 'secondary' : 'destructive'} className="mb-4">
-              {course.status === 'completed' ? 'Genomförd' : 'Fullbokad'}
+              {course.status === 'completed' ? s.completedBadge : s.fullBadge}
             </Badge>
             <h1 className="text-h2 text-stone-900 mb-3">
-              Kan inte boka
+              {s.cannotBook}
             </h1>
             <p className="text-stone-500 mb-6">
               {course.status === 'completed'
-                ? 'Denna utbildning har redan genomförts.'
-                : 'Denna utbildning är fullbokad.'}
+                ? s.completedMessage
+                : s.fullMessage}
             </p>
             <Button variant="ghost" className="text-forest-600" asChild>
               <Link to="/utbildningar">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Se andra utbildningar
+                {s.seeOtherCourses}
               </Link>
             </Button>
           </CardContent>
@@ -136,11 +139,11 @@ export default function BookingPage() {
       <Button variant="ghost" className="mb-6 -ml-2 text-stone-600 hover:text-forest-600" asChild>
         <Link to={`/utbildningar/${slug}`}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Tillbaka
+          {s.back}
         </Link>
       </Button>
 
-      <h1 className="text-h2 text-stone-900 mb-2">Boka plats</h1>
+      <h1 className="text-h2 text-stone-900 mb-2">{s.heading}</h1>
       <p className="text-xl text-stone-500 mb-8">{course.title}</p>
 
       <Card className="mb-8">
@@ -161,7 +164,7 @@ export default function BookingPage() {
             {priceSek > 0 && (
             <div className="flex items-center gap-2 text-stone-600">
               <CreditCard className="h-4 w-4 text-stone-400" />
-              <span>{priceSek.toLocaleString('sv-SE')} kr/person</span>
+              <span>{priceSek.toLocaleString('sv-SE')} {s.perPerson}</span>
             </div>
             )}
           </div>
@@ -176,12 +179,12 @@ export default function BookingPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Dina uppgifter</CardTitle>
+          <CardTitle className="text-xl">{s.yourDetails}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="customerName">Namn *</Label>
+              <Label htmlFor="customerName">{s.nameLabel}</Label>
               <Input
                 type="text"
                 id="customerName"
@@ -192,7 +195,7 @@ export default function BookingPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="customerEmail">E-post *</Label>
+              <Label htmlFor="customerEmail">{s.emailLabel}</Label>
               <Input
                 type="email"
                 id="customerEmail"
@@ -203,7 +206,7 @@ export default function BookingPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="customerPhone">Telefon</Label>
+              <Label htmlFor="customerPhone">{s.phoneLabel}</Label>
               <Input
                 type="tel"
                 id="customerPhone"
@@ -213,7 +216,7 @@ export default function BookingPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="customerOrganization">Organisation/företag</Label>
+              <Label htmlFor="customerOrganization">{s.organizationLabel}</Label>
               <Input
                 type="text"
                 id="customerOrganization"
@@ -223,7 +226,7 @@ export default function BookingPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="participants">Antal deltagare *</Label>
+              <Label htmlFor="participants">{s.participantsLabel}</Label>
               <div className="relative">
                 <select
                   id="participants"
@@ -247,21 +250,21 @@ export default function BookingPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Meddelande</Label>
+              <Label htmlFor="notes">{s.messageLabel}</Label>
               <Textarea
                 id="notes"
                 rows={3}
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Eventuella frågor eller önskemål..."
+                placeholder={s.messagePlaceholder}
               />
             </div>
 
             <Separator />
 
             <div className="flex justify-between text-lg font-semibold">
-              <span>Totalt att betala</span>
-              <span>{totalPrice.toLocaleString('sv-SE')} kr</span>
+              <span>{s.totalToPay}</span>
+              <span>{totalPrice.toLocaleString('sv-SE')} {strings.common.currency}</span>
             </div>
 
             <Button
@@ -270,12 +273,12 @@ export default function BookingPage() {
               size="lg"
               disabled={bookingMutation.isPending}
             >
-              {bookingMutation.isPending ? 'Bearbetar...' : 'Gå till betalning'}
+              {bookingMutation.isPending ? s.processingButton : s.submitButton}
             </Button>
 
             <p className="text-xs text-stone-400 text-center flex items-center justify-center gap-1.5">
               <Lock className="h-3.5 w-3.5" />
-              Du kommer att dirigeras till Stripe för säker betalning
+              {s.stripeRedirectNote}
             </p>
           </form>
         </CardContent>

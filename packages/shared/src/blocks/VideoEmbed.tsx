@@ -1,4 +1,4 @@
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
 
 export interface VideoEmbedProps {
@@ -8,6 +8,13 @@ export interface VideoEmbedProps {
 }
 
 const ratioMap = { '16:9': 'aspect-video', '4:3': 'aspect-[4/3]', '1:1': 'aspect-square' }
+
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
 
 function getEmbedUrl(url: string): string {
   if (!url) return ''
@@ -32,7 +39,13 @@ export function VideoEmbed({
   caption = '',
   id,
 }: VideoEmbedProps & { puck?: { isEditing: boolean }; id?: string }) {
-  const captionEdit = useInlineEdit('caption', caption, id || '')
+  // Puck editor inline editing (via postMessage)
+  const captionPuck = useInlineEdit('caption', caption, id || '')
+  // Public site admin editing (via InlineEditBlockContext)
+  const captionEditCtx = useEditableText('caption', caption)
+  // Puck takes priority
+  const captionEdit = captionPuck || captionEditCtx
+
   const embedUrl = getEmbedUrl(url)
   const ratio = ratioMap[aspectRatio] || 'aspect-video'
 
@@ -54,7 +67,7 @@ export function VideoEmbed({
             Klistra in en video-URL
           </div>
         )}
-        {(caption || captionEdit) && <figcaption {...(captionEdit ? { contentEditable: captionEdit.contentEditable, suppressContentEditableWarning: captionEdit.suppressContentEditableWarning, onBlur: captionEdit.onBlur, onKeyDown: captionEdit.onKeyDown, 'data-inline-edit': 'caption' } : {})} className={cn('text-sm text-stone-500 mt-2 text-center', captionEdit?.className)}>{caption}</figcaption>}
+        {(caption || captionEdit) && <figcaption {...editHandlers(captionEdit)} className={cn('text-sm text-stone-500 mt-2 text-center', captionEdit?.className)}>{caption}</figcaption>}
       </figure>
     </div>
   )

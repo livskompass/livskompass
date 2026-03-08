@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ==================== Design Tokens (mirror web) ==================== */
+/* ==================== Design Tokens (mirror web — MUST match packages/web/src/index.css) ==================== */
 :root {
+  /* Typography */
   --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
@@ -35,19 +36,65 @@
   --tracking-body: 0;
   --tracking-overline: 0.08em;
 
+  /* Colors */
+  --color-forest-950-rgb: 10, 26, 16;
+  --forest-950: #0A1A10;
+  --forest-900: #132B1C;
+  --forest-800: #1C3D29;
+  --forest-700: #275137;
+  --forest-600: #326647;
+  --forest-500: #3E7B57;
+  --forest-400: #5C9873;
+  --forest-300: #84B496;
+  --forest-200: #B0D1BC;
+  --forest-100: #D7E9DD;
+  --forest-50:  #ECF5EF;
+
+  --stone-950: #1A1816;
+  --stone-900: #2C2924;
+  --stone-800: #403C36;
+  --stone-700: #575249;
+  --stone-600: #6E685E;
+  --stone-500: #8A847A;
+  --stone-400: #A9A49B;
+  --stone-300: #C8C4BC;
+  --stone-200: #E2DFD9;
+  --stone-100: #EFECE7;
+  --stone-50:  #F8F6F2;
+
+  --amber-600: #8C6534;
+  --amber-500: #B08350;
+  --amber-400: #C0955F;
+  --amber-300: #D5B68A;
+  --amber-200: #EAD5B5;
+  --amber-100: #F4EADB;
+  --amber-50:  #FBF5EC;
+
+  --color-success-fg: #2F7A42;
+  --color-success-bg: #EFF7F1;
+  --color-warning-fg: #A67B4A;
+  --color-warning-bg: #FBF5EC;
+  --color-error-fg:   #C43B32;
+  --color-error-bg:   #FEF1F0;
+  --color-info-fg:    #2E6FA0;
+  --color-info-bg:    #EFF5FB;
+
+  /* Surfaces */
   --surface-primary:       #F8F6F2;
   --surface-secondary:     #EFECE7;
   --surface-elevated:      #FFFFFF;
   --surface-glass:         rgba(248, 246, 242, 0.72);
   --surface-glass-border:  rgba(200, 196, 188, 0.25);
-  --surface-overlay:       rgba(28, 25, 23, 0.6);
-  --surface-overlay-heavy: rgba(28, 25, 23, 0.8);
+  --surface-overlay:       rgba(10, 26, 16, 0.6);
+  --surface-overlay-heavy: rgba(10, 26, 16, 0.8);
 
-  --gradient-hero:    linear-gradient(145deg, #1C1917 0%, #3D3832 45%, #575249 100%);
+  /* Gradients */
+  --gradient-hero:    linear-gradient(145deg, #0A1A10 0%, #1C3D29 45%, #275137 100%);
   --gradient-section: linear-gradient(180deg, var(--surface-primary) 0%, var(--surface-secondary) 100%);
-  --gradient-glow:    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(138, 132, 122, 0.12) 0%, transparent 70%);
+  --gradient-glow:    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(62, 123, 87, 0.12) 0%, transparent 70%);
   --gradient-shimmer: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
 
+  /* Spacing */
   --section-xs: clamp(1.5rem, 1rem + 1.667vw, 3rem);
   --section-sm: clamp(2rem, 1.5rem + 1.667vw, 3.5rem);
   --section-md: clamp(2.5rem, 2rem + 1.667vw, 4.5rem);
@@ -69,6 +116,7 @@
   --width-narrow:  720px;
   --width-prose:   65ch;
 
+  /* Motion */
   --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out:  cubic-bezier(0.45, 0, 0.55, 1);
   --ease-gentle:  cubic-bezier(0.4, 0, 0.2, 1);
@@ -79,6 +127,24 @@
   --duration-slow:     500ms;
   --duration-reveal:   700ms;
   --duration-dramatic: 1000ms;
+
+  /* Shadows */
+  --shadow-xs:    0 1px 2px rgba(10, 26, 16, 0.05);
+  --shadow-sm:    0 2px 4px rgba(10, 26, 16, 0.04), 0 1px 2px rgba(10, 26, 16, 0.06);
+  --shadow-md:    0 4px 12px rgba(10, 26, 16, 0.05), 0 2px 4px rgba(10, 26, 16, 0.06);
+  --shadow-lg:    0 8px 24px rgba(10, 26, 16, 0.07), 0 4px 8px rgba(10, 26, 16, 0.05);
+  --shadow-xl:    0 16px 48px rgba(10, 26, 16, 0.1), 0 8px 16px rgba(10, 26, 16, 0.05);
+  --shadow-glow:  0 0 0 1px rgba(62, 123, 87, 0.15), 0 4px 16px rgba(62, 123, 87, 0.1);
+  --shadow-amber: 0 2px 8px rgba(166, 123, 74, 0.2), 0 1px 3px rgba(166, 123, 74, 0.15);
+
+  /* Radius */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
 }
 
 /* Admin body — uses secondary surface for sidebar distinction */
@@ -214,396 +280,676 @@ body {
   animation: fade-in 200ms var(--ease-out) forwards;
 }
 
-/* ===== Puck Editor Overrides — Modern Neutral CMS ===== */
+/* =====================================================================
+   Puck Editor Overrides — Clean, Modern CMS UI
+   Inspired by Linear, Notion, Webflow
 
-/* ── Color system: neutralize ALL Puck colors → warm stone ──
-   IMPORTANT: Puck's scale is 01=darkest → 12=lightest (inverted from Tailwind) */
+   Color scale reminder: Puck uses 01=darkest → 12=lightest
+   ===================================================================== */
+
+/* ── 1. Color System ── */
 [class*="Puck"] {
-  /* Azure (selections, active states) → warm stone */
-  --puck-color-azure-01: #1C1917;
-  --puck-color-azure-02: #292524;
-  --puck-color-azure-03: #403C36;
-  --puck-color-azure-04: #575249;
-  --puck-color-azure-05: #6E685E;
-  --puck-color-azure-06: #8A847A;
-  --puck-color-azure-07: #A8A29E;
-  --puck-color-azure-08: #C8C4BC;
-  --puck-color-azure-09: #E2DFD9;
-  --puck-color-azure-10: #EFECE7;
-  --puck-color-azure-11: #F5F3EF;
-  --puck-color-azure-12: #FDFCFB;
+  /* Neutral grey palette — clean cool-warm tones */
+  --puck-color-grey-01: #171717;
+  --puck-color-grey-02: #262626;
+  --puck-color-grey-03: #3F3F46;
+  --puck-color-grey-04: #52525B;
+  --puck-color-grey-05: #71717A;
+  --puck-color-grey-06: #A1A1AA;
+  --puck-color-grey-07: #D4D4D8;
+  --puck-color-grey-08: #E4E4E7;
+  --puck-color-grey-09: #E4E4E7;
+  --puck-color-grey-10: #F4F4F5;
+  --puck-color-grey-11: #FAFAFA;
+  --puck-color-grey-12: #FFFFFF;
 
-  /* Green (publish/success) → same warm stone */
-  --puck-color-green-01: #1C1917;
-  --puck-color-green-02: #292524;
-  --puck-color-green-03: #403C36;
-  --puck-color-green-04: #575249;
-  --puck-color-green-05: #6E685E;
-  --puck-color-green-06: #8A847A;
-  --puck-color-green-07: #A8A29E;
-  --puck-color-green-08: #C8C4BC;
-  --puck-color-green-09: #E2DFD9;
-  --puck-color-green-10: #EFECE7;
-  --puck-color-green-11: #F5F3EF;
-  --puck-color-green-12: #FDFCFB;
+  /* Azure → neutral for selections/active — no blue tint */
+  --puck-color-azure-01: #171717;
+  --puck-color-azure-02: #262626;
+  --puck-color-azure-03: #3F3F46;
+  --puck-color-azure-04: #18181B;
+  --puck-color-azure-05: #52525B;
+  --puck-color-azure-06: #71717A;
+  --puck-color-azure-07: #A1A1AA;
+  --puck-color-azure-08: #D4D4D8;
+  --puck-color-azure-09: #E4E4E7;
+  --puck-color-azure-10: #F4F4F5;
+  --puck-color-azure-11: #FAFAFA;
+  --puck-color-azure-12: #FFFFFF;
 
-  /* Grey → warm stone (01=darkest for text, 12=lightest for bg) */
-  --puck-color-grey-01: #1C1917;
-  --puck-color-grey-02: #292524;
-  --puck-color-grey-03: #403C36;
-  --puck-color-grey-04: #575249;
-  --puck-color-grey-05: #6E685E;
-  --puck-color-grey-06: #8A847A;
-  --puck-color-grey-07: #A8A29E;
-  --puck-color-grey-08: #C8C4BC;
-  --puck-color-grey-09: #E2DFD9;
-  --puck-color-grey-10: #EFECE7;
-  --puck-color-grey-11: #F5F3EF;
-  --puck-color-grey-12: #FDFCFB;
+  /* Green → neutral */
+  --puck-color-green-01: #171717;
+  --puck-color-green-02: #262626;
+  --puck-color-green-03: #3F3F46;
+  --puck-color-green-04: #52525B;
+  --puck-color-green-05: #71717A;
+  --puck-color-green-06: #A1A1AA;
+  --puck-color-green-07: #D4D4D8;
+  --puck-color-green-08: #E4E4E7;
+  --puck-color-green-09: #E4E4E7;
+  --puck-color-green-10: #F4F4F5;
+  --puck-color-green-11: #FAFAFA;
+  --puck-color-green-12: #FFFFFF;
 
-  /* Font */
-  --puck-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  /* White override — true white panels */
+  --puck-color-white: #FFFFFF;
+  --puck-color-black: #18181B;
+
+  /* Font — system Inter */
+  --puck-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-/* Fill available space */
+/* ── 2. Layout Shell ── */
 [class*="Puck-root"],
 [class*="PuckLayout_"] {
   height: 100% !important;
 }
 
-/* ── Header bar — clean white, subtle border ── */
+/* Main layout bg — clean white */
+[class*="PuckLayout-inner"] {
+  background-color: #FFFFFF !important;
+}
+
+/* ── 3. Header Bar — single clean border ── */
+
+/* Nuke ALL borders inside the entire header area first */
+[class*="PuckHeader"],
+[class*="PuckHeader"] *,
 [class*="PuckLayout-header"],
-[class*="Header-"] {
-  z-index: 100 !important;
-  position: relative;
-  background: #FFFFFF !important;
-  border-bottom: 1px solid #E7E4DF !important;
+[class*="PuckLayout-header"] *,
+[class*="MenuBar"] {
+  border-bottom: none !important;
   box-shadow: none !important;
 }
 
-/* Header title text */
-[class*="Header-title"],
-[class*="PuckLayout-header"] [class*="Heading"] {
-  font-family: var(--font-body) !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  color: #1C1917 !important;
+/* Then add back exactly ONE border on the header grid area */
+[class*="PuckLayout-header"] {
+  border-bottom: 1px solid #E4E4E7 !important;
+  background: #FFFFFF !important;
+}
+[class*="PuckHeader"] {
+  background: #FFFFFF !important;
+  padding-left: 0 !important;
 }
 
-/* Publish button — solid dark, pill shape */
+/* Header inner — tighter padding, left border to sidenav */
+[class*="PuckHeader-inner"] {
+  padding: 10px 16px !important;
+  border-left: 1px solid #E4E4E7 !important;
+}
+
+/* Header title text */
+[class*="PuckHeader-title"],
+[class*="PuckHeader-path"] {
+  font-family: var(--puck-font-family) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  color: #18181B !important;
+}
+[class*="PuckHeader-path"] {
+  font-weight: 400 !important;
+  color: #71717A !important;
+}
+
+/* Toggle buttons (sidebar toggles, menu) */
+[class*="PuckHeader-toggle"] {
+  color: #A1A1AA !important;
+}
+[class*="PuckHeader-toggle"]:hover {
+  color: #52525B !important;
+}
+
+/* Sidebar sections: no top borders */
+[class*="SidebarSection-title"] {
+  border-top: none !important;
+}
+
+/* Publish / primary button — solid black, rounded */
 [class*="Button--primary"] {
-  background: #1C1917 !important;
-  background-color: #1C1917 !important;
+  background: #18181B !important;
   color: #FFFFFF !important;
   border: none !important;
-  font-family: var(--font-body) !important;
+  border-radius: 6px !important;
+  font-family: var(--puck-font-family) !important;
   font-weight: 500 !important;
-  font-size: 0.8125rem !important;
-  border-radius: 8px !important;
-  letter-spacing: -0.01em !important;
+  font-size: 13px !important;
   padding: 6px 16px !important;
-  transition: background-color 150ms ease !important;
+  letter-spacing: -0.01em !important;
+  transition: all 120ms ease !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+  gap: 6px !important;
 }
 [class*="Button--primary"]:hover {
-  background: #292524 !important;
-  background-color: #292524 !important;
+  background: #27272A !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
 }
 [class*="Button--primary"] * {
   color: #FFFFFF !important;
+}
+/* Hide the green dot icon inside Publish button */
+[class*="Button--primary"] svg {
+  display: none !important;
 }
 
 /* Secondary / ghost buttons */
 [class*="Button--secondary"],
 [class*="Button--default"] {
-  border-radius: 8px !important;
-  font-family: var(--font-body) !important;
-  font-weight: 500 !important;
-  font-size: 0.8125rem !important;
-  border-color: #E7E4DF !important;
-  color: #403C36 !important;
-}
-
-/* ── Header utility buttons (undo/redo, viewport, zoom) ── */
-[class*="PuckLayout-header"] button,
-[class*="Header-"] button {
-  font-family: var(--font-body) !important;
+  background: transparent !important;
+  border: 1px solid #E4E4E7 !important;
   border-radius: 6px !important;
-  transition: all 120ms ease !important;
-}
-[class*="PuckLayout-header"] button:not([class*="Button--primary"]):hover,
-[class*="Header-"] button:not([class*="Button--primary"]):hover {
-  background-color: #F0EDEA !important;
-}
-[class*="PuckLayout-header"] button svg,
-[class*="Header-"] button svg {
-  width: 15px !important;
-  height: 15px !important;
-  color: #575249 !important;
-}
-
-/* ── Left sidebar — clean, organized ── */
-[class*="Sidebar--left"] {
-  background: #FDFCFB !important;
-  border-right: 1px solid #E7E4DF !important;
-}
-
-/* Nav icons — monochrome */
-[class*="Nav_"] button,
-[class*="Nav_"] a {
-  color: #8A847A !important;
-  transition: color 120ms ease !important;
-}
-[class*="Nav_"] button:hover,
-[class*="Nav_"] a:hover {
-  color: #403C36 !important;
-}
-[class*="Nav_"] button[class*="active"],
-[class*="Nav_"] button[aria-selected="true"],
-[class*="Nav_"] a[class*="active"] {
-  color: #1C1917 !important;
-}
-[class*="Nav_"] [class*="NavItem-label"] {
-  color: inherit !important;
-  font-size: 0.6875rem !important;
+  font-family: var(--puck-font-family) !important;
   font-weight: 500 !important;
-}
-
-/* Nav icon sizing */
-[class*="Nav_"] svg {
-  width: 18px !important;
-  height: 18px !important;
-}
-
-/* Category headers — clean uppercase labels */
-[class*="SidebarSection-title"] {
-  font-family: var(--font-body) !important;
-  font-size: 0.625rem !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  color: #8A847A !important;
-  padding: 12px 16px 6px !important;
-}
-
-/* Component list items — clean cards */
-[class*="ComponentList-item"] {
-  border-radius: 8px !important;
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
-  font-weight: 500 !important;
-  color: #403C36 !important;
-  padding: 8px 12px !important;
-  margin: 1px 8px !important;
-  transition: all 120ms ease !important;
-  border: 1px solid transparent !important;
-}
-[class*="ComponentList-item"]:hover {
-  background-color: #F0EDEA !important;
-  border-color: #E7E4DF !important;
-}
-
-/* Sidebar section block items */
-[class*="SidebarSection-content"] button {
-  border-radius: 8px !important;
+  font-size: 13px !important;
+  color: #3F3F46 !important;
   transition: all 120ms ease !important;
 }
-[class*="SidebarSection-content"] button:hover {
-  background-color: #F0EDEA !important;
+[class*="Button--secondary"]:hover,
+[class*="Button--default"]:hover {
+  background: #FAFAFA !important;
+  border-color: #D4D4D8 !important;
 }
 
-/* Sidebar section icons — consistent sizing */
-[class*="SidebarSection"] svg {
+/* ── 4. Header Utility Buttons (undo/redo, viewport) ── */
+[class*="PuckHeader"] button {
+  font-family: var(--puck-font-family) !important;
+  border-radius: 6px !important;
+  transition: all 100ms ease !important;
+}
+/* Hover only for Puck's own icon buttons (toggles), not our custom CTA buttons */
+[class*="PuckHeader-toggle"]:hover,
+[class*="PuckHeader-menuButton"]:hover,
+[class*="PuckHeader"] [class*="IconButton"]:hover {
+  background-color: #F4F4F5 !important;
+}
+[class*="PuckHeader"] button svg {
   width: 16px !important;
   height: 16px !important;
+  color: #71717A !important;
 }
 
-/* ── Right sidebar — white panel, clean fields ── */
-[class*="Sidebar--right"] {
-  background: #FFFFFF !important;
-  border-left: 1px solid #E7E4DF !important;
+/* MenuBar — keep container, hide only undo/redo buttons */
+[class*="MenuBar_"],
+[class*="MenuBar-"] {
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  margin-top: 0 !important;
 }
-
-/* Hide resize handle */
-[class*="Sidebar--right"] + [class*="Sidebar-resizeHandle"] {
+[class*="MenuBar-history"] {
   display: none !important;
 }
 
-/* Right panel section headings (PAGE, RICH TEXT, etc.) */
+/* Remove double border between header and content */
+[class*="PuckHeader_"] + *,
+[class*="PuckLayout-header"] + * {
+  border-top: none !important;
+}
+
+/* Clean up SidebarSection top borders that stack with header */
+[class*="SidebarSection--noBorderTop"] > [class*="SidebarSection-title"] {
+  border-top: none !important;
+}
+
+/* First sidebar section — no top border (avoids double line with header) */
+[class*="SidebarSection"]:first-child > [class*="SidebarSection-title"] {
+  border-top: none !important;
+}
+
+/* ── 5. Side Navigation — invisible, keeps grid slot ── */
+[class*="PuckLayout-nav"] {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Fix canvas collapse when left sidebar is closed — force frame to fill space */
+[class*="PuckLayout-inner"] {
+  --puck-frame-width: minmax(266px, 1fr) !important;
+}
+
+/* ── 6. Left Sidebar — Component Picker ── */
+[class*="Sidebar--left"] {
+  background: #FAFAFA !important;
+  border-right: 1px solid #E4E4E7 !important;
+}
+
+/* Section titles — clean, subtle uppercase labels */
 [class*="SidebarSection-title"] {
-  font-size: 0.625rem !important;
-  font-weight: 700 !important;
+  background: transparent !important;
+  font-family: var(--puck-font-family) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  color: #8A847A !important;
+  letter-spacing: 0.05em !important;
+  color: #A1A1AA !important;
+  padding: 16px 16px 8px !important;
+  border-bottom: none !important;
+  border-top: none !important;
 }
 
-/* Breadcrumb path (Page > Rich Text) */
-[class*="SidebarBreadcrumb"],
-[class*="Breadcrumb"] {
-  font-family: var(--font-body) !important;
-  font-size: 0.75rem !important;
-  color: #8A847A !important;
-}
-[class*="SidebarBreadcrumb"] a,
-[class*="Breadcrumb"] a,
-[class*="SidebarBreadcrumb"] button,
-[class*="Breadcrumb"] button {
-  color: #8A847A !important;
-}
-[class*="SidebarBreadcrumb"] a:hover,
-[class*="Breadcrumb"] a:hover,
-[class*="SidebarBreadcrumb"] button:hover,
-[class*="Breadcrumb"] button:hover {
-  color: #1C1917 !important;
+/* Section heading text */
+[class*="SidebarSection-heading"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #A1A1AA !important;
 }
 
-/* ── Field labels — now using corrected grey scale, grey-04 = #575249 (dark) ── */
-/* Labels are styled by Puck's own CSS using var(--puck-color-grey-04) = #575249 */
-/* Just enhance icon styling */
+/* Drawer items (component list) — clean, tappable rows */
+[class*="DrawerItem-draggable"] {
+  background: #FFFFFF !important;
+  border: 1px solid #E4E4E7 !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  font-family: var(--puck-font-family) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #3F3F46 !important;
+  transition: all 100ms ease !important;
+  cursor: grab !important;
+}
+[class*="DrawerItem-draggable"]:hover {
+  background: #F4F4F5 !important;
+  border-color: #D4D4D8 !important;
+}
+
+/* Drawer gap between items */
+[class*="Drawer_"] {
+  gap: 6px !important;
+}
+
+/* Sidebar content padding */
+[class*="SidebarSection-content"] {
+  padding: 4px 12px 12px !important;
+}
+
+/* ── 7. Right Sidebar — Field Editor Panel ── */
+[class*="Sidebar--right"] {
+  background: #FFFFFF !important;
+  border-left: 1px solid #E4E4E7 !important;
+}
+
+/* Hide resize handle */
+[class*="Sidebar--right"] + [class*="Sidebar-resizeHandle"],
+[class*="Sidebar-resizeHandle"] {
+  display: none !important;
+}
+
+/* Right panel section titles */
+[class*="Sidebar--right"] [class*="SidebarSection-title"] {
+  padding: 14px 16px 10px !important;
+  border-bottom: 1px solid #F4F4F5 !important;
+}
+
+/* ── 8. Breadcrumbs ── */
+[class*="SidebarSection-breadcrumb"],
+[class*="Breadcrumbs_"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 12px !important;
+}
+[class*="SidebarSection-breadcrumbLabel"],
+[class*="Breadcrumbs-breadcrumbLabel"] {
+  color: #71717A !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  transition: color 100ms ease !important;
+}
+[class*="SidebarSection-breadcrumbLabel"]:hover,
+[class*="Breadcrumbs-breadcrumbLabel"]:hover {
+  color: #18181B !important;
+}
+
+/* ── 9. Field Labels — Clear, readable ── */
+[class*="Input-label"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #52525B !important;
+  padding-bottom: 8px !important;
+}
+
 [class*="Input-labelIcon"] svg,
 [class*="FieldLabel"] svg {
   width: 14px !important;
   height: 14px !important;
+  color: #A1A1AA !important;
 }
 
-/* ── Field inputs — cleaner radius, better focus ring ── */
+/* ── 10. Field Inputs — Modern, clean ── */
 [class*="Puck"] [class*="Input-input"] {
-  border-radius: 8px !important;
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
-  transition: border-color 150ms ease, box-shadow 150ms ease !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E4E4E7 !important;
+  border-radius: 6px !important;
+  font-family: var(--puck-font-family) !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  color: #18181B !important;
+  transition: border-color 120ms ease, box-shadow 120ms ease !important;
+  min-height: 36px !important;
+  box-sizing: border-box !important;
 }
 [class*="Puck"] [class*="Input-input"]::placeholder {
-  color: #A8A29E !important;
+  color: #A1A1AA !important;
+}
+[class*="Puck"] [class*="Input-input"]:hover:not(:focus):not([readonly]) {
+  border-color: #D4D4D8 !important;
 }
 [class*="Puck"] [class*="Input-input"]:focus {
-  box-shadow: 0 0 0 3px rgba(87, 82, 73, 0.08) !important;
+  border-color: #A1A1AA !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(113, 113, 122, 0.08) !important;
 }
 
-/* Also target raw inputs/selects/textareas */
+/* Select dropdown chevron — crisp */
+[class*="Puck"] select[class*="Input-input"] {
+  cursor: pointer !important;
+  padding-right: 32px !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") !important;
+  background-position: calc(100% - 10px) center !important;
+  background-repeat: no-repeat !important;
+  background-size: 12px !important;
+}
+[class*="Puck"] select[class*="Input-input"]:hover:not([disabled]) {
+  background-color: #FAFAFA !important;
+}
+
+/* Textarea — auto-height feel */
+[class*="Puck"] textarea[class*="Input-input"] {
+  min-height: 80px !important;
+  line-height: 1.5 !important;
+  resize: vertical !important;
+}
+
+/* Raw input/select/textarea fallback */
 [class*="Puck"] input[type="text"],
 [class*="Puck"] input[type="number"],
 [class*="Puck"] input[type="url"],
-[class*="Puck"] select,
-[class*="Puck"] textarea {
-  border-radius: 8px !important;
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
+[class*="Puck"] select:not([class*="Input-input"]),
+[class*="Puck"] textarea:not([class*="Input-input"]) {
+  border-radius: 6px !important;
+  font-family: var(--puck-font-family) !important;
+  font-size: 13px !important;
+  border: 1px solid #E4E4E7 !important;
+  padding: 8px 12px !important;
 }
 [class*="Puck"] input:focus,
 [class*="Puck"] select:focus,
 [class*="Puck"] textarea:focus {
-  box-shadow: 0 0 0 3px rgba(87, 82, 73, 0.08) !important;
+  border-color: #A1A1AA !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(113, 113, 122, 0.08) !important;
 }
 
-/* ── Canvas/preview background ── */
-[class*="PuckLayout-frame"],
-[class*="Canvas-"] {
-  background: #F5F3EF !important;
-}
-
-/* ── Action bar (component toolbar on hover) ── */
-[class*="ActionBar-"] {
+/* ── 11. Radio Toggles (Yes/No) — Pill style ── */
+[class*="Input-radioGroupItems"] {
+  border: 1px solid #E4E4E7 !important;
   border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
-  background: #1C1917 !important;
-  color: #FFFFFF !important;
-  padding: 2px !important;
+  overflow: hidden !important;
+  background: #FFFFFF !important;
 }
-[class*="ActionBar-"] button {
-  color: #FFFFFF !important;
-  border-radius: 6px !important;
+[class*="Input-radio"]:not(:last-of-type) {
+  border-right: 1px solid #E4E4E7 !important;
 }
-[class*="ActionBar-"] button:hover {
-  background-color: rgba(255, 255, 255, 0.12) !important;
+[class*="Input-radioInner"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 7px 14px !important;
+  color: #71717A !important;
+  background: #FFFFFF !important;
+  transition: all 100ms ease !important;
+}
+[class*="Input-radioInner"]:hover {
+  background: #FAFAFA !important;
+}
+/* Selected state */
+[class*="Input-radioInput"]:checked ~ [class*="Input-radioInner"] {
+  background: #F4F4F5 !important;
+  color: #18181B !important;
+  font-weight: 600 !important;
+}
+
+/* ── 12. Array Fields — Clean card list ── */
+[class*="ArrayField_"]:not([class*="ArrayFieldItem"]) {
+  border: 1px solid #E4E4E7 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  background: #FAFAFA !important;
+}
+
+[class*="ArrayFieldItem-summary"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #3F3F46 !important;
+  padding: 10px 14px !important;
+  background: #FFFFFF !important;
+  transition: background-color 100ms ease !important;
+}
+[class*="ArrayFieldItem-summary"]:hover {
+  background: #FAFAFA !important;
+}
+
+/* Expanded array item */
+[class*="ArrayFieldItem--isExpanded"] {
+  outline: 1px solid #D4D4D8 !important;
+}
+[class*="ArrayFieldItem--isExpanded"] > [class*="ArrayFieldItem-summary"] {
+  background: #F4F4F5 !important;
+  color: #18181B !important;
+  font-weight: 600 !important;
+}
+
+/* Array item fieldset (expanded content) */
+[class*="ArrayFieldItem-fieldset"] {
+  border-top: 1px solid #E4E4E7 !important;
+  padding: 14px !important;
+  background: #FFFFFF !important;
+}
+
+/* Array item action buttons (delete, reorder) */
+[class*="ArrayFieldItem-actions"] {
+  color: #A1A1AA !important;
+}
+
+/* Add button */
+[class*="ArrayField-addButton"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #71717A !important;
+  padding: 10px 14px !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid #E4E4E7 !important;
+  transition: all 100ms ease !important;
+}
+[class*="ArrayField-addButton"]:hover {
+  background: #FAFAFA !important;
+  color: #18181B !important;
+}
+
+/* ── 13. Canvas / Preview Area ── */
+[class*="PuckPreview_"],
+[class*="PuckPreview-frame"] {
+  background: #F4F4F5 !important;
+}
+
+/* Canvas wrapper */
+[class*="PuckCanvas_"] {
+  background: #F4F4F5 !important;
+}
+
+/* Remove the outline border on the canvas iframe root */
+[class*="PuckCanvas-root"] {
+  outline: none !important;
+}
+
+/* Remove top border from canvas controls (viewport bar) */
+[class*="PuckCanvas-controls"] {
+  border-top: none !important;
+}
+
+/* ── 14. Action Bar (floating component toolbar) ── */
+[class*="ActionBar_"]:not([class*="ActionBarAction"]) {
+  border-radius: 8px !important;
+  background: #18181B !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05) !important;
+  padding: 2px 4px !important;
+}
+
+/* Action bar label */
+[class*="ActionBar-label"] {
+  color: #A1A1AA !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}
+
+/* Action bar buttons */
+[class*="ActionBarAction"]:not([class*="disabled"]) {
+  color: #D4D4D8 !important;
+  border-radius: 4px !important;
+  transition: all 80ms ease !important;
+}
+[class*="ActionBarAction"]:hover:not([class*="disabled"]) {
+  color: #FFFFFF !important;
+  background: rgba(255,255,255,0.1) !important;
 }
 [class*="ActionBar-"] svg {
   width: 14px !important;
   height: 14px !important;
 }
-
-/* ── Component overlay selection ring ── */
-[class*="DropZone-renderWrapper"] [style*="outline"] {
-  outline-color: #8A847A !important;
+[class*="ActionBar-separator"] {
+  background: #3F3F46 !important;
 }
+
+/* ── 15. Component Overlay (selection/hover) ── */
+[class*="DraggableComponent-overlay"] {
+  outline-color: #D4D4D8 !important;
+}
+[class*="DraggableComponent--hover"] [class*="DraggableComponent-overlay"] {
+  outline-color: #A1A1AA !important;
+  background: rgba(113, 113, 122, 0.04) !important;
+}
+[class*="DraggableComponent--isSelected"] [class*="DraggableComponent-overlay"],
 [class*="DraggableComponent--isSelected"] {
-  outline-color: #403C36 !important;
+  outline-color: #18181B !important;
 }
 
-/* ── Scrollbar — thin, minimal ── */
-[class*="Sidebar"] ::-webkit-scrollbar {
-  width: 3px;
-}
-[class*="Sidebar"] ::-webkit-scrollbar-track {
-  background: transparent;
-}
-[class*="Sidebar"] ::-webkit-scrollbar-thumb {
-  background: #D4D0CA;
-  border-radius: 3px;
-}
-[class*="Sidebar"] ::-webkit-scrollbar-thumb:hover {
-  background: #B5B0A8;
-}
-
-/* ── Empty drop zone ── */
+/* ── 16. Drop Zones ── */
 [class*="DropZone--isEmpty"] {
-  border: 2px dashed #D4D0CA !important;
+  border: 2px dashed #D4D4D8 !important;
   border-radius: 8px !important;
-  background: rgba(253, 252, 251, 0.5) !important;
+  background: rgba(250, 250, 250, 0.5) !important;
 }
 [class*="DropZone--isAreaSelected"] {
-  border-color: #8A847A !important;
+  border-color: #A1A1AA !important;
 }
 
-/* ── Drag handle dots — subtle ── */
+/* Drop zone indicator line */
+[class*="DropZone-indicator"] {
+  background: #18181B !important;
+}
+
+/* ── 17. Layer Tree (Outline View) ── */
+[class*="Layer-inner"] {
+  border-radius: 6px !important;
+}
+[class*="Layer-clickable"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 13px !important;
+}
+[class*="Layer-title"],
+[class*="LayerTree-zoneTitle"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+[class*="Layer-name"] {
+  font-size: 13px !important;
+}
+[class*="Layer--isSelected"] > [class*="Layer-inner"] {
+  background: #F4F4F5 !important;
+}
+
+/* ── 18. Scrollbar — Thin, minimal ── */
+[class*="Sidebar"] ::-webkit-scrollbar,
+[class*="PuckPluginTab-body"] ::-webkit-scrollbar {
+  width: 4px;
+}
+[class*="Sidebar"] ::-webkit-scrollbar-track,
+[class*="PuckPluginTab-body"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[class*="Sidebar"] ::-webkit-scrollbar-thumb,
+[class*="PuckPluginTab-body"] ::-webkit-scrollbar-thumb {
+  background: #D4D4D8;
+  border-radius: 4px;
+}
+[class*="Sidebar"] ::-webkit-scrollbar-thumb:hover,
+[class*="PuckPluginTab-body"] ::-webkit-scrollbar-thumb:hover {
+  background: #A1A1AA;
+}
+
+/* ── 19. Drag Handles ── */
 [class*="DragIcon"],
-[class*="ComponentList-item"] [class*="grip"] {
-  color: #B5B0A8 !important;
+[class*="DrawerItem"] [class*="grip"],
+[class*="ArrayFieldItem"] [class*="grip"] {
+  color: #D4D4D8 !important;
+  opacity: 0.8 !important;
+}
+
+/* ── 20. Loading States ── */
+[class*="SidebarSection-loadingOverlay"] {
+  background: rgba(255,255,255,0.9) !important;
+}
+[class*="PuckFields--isLoading"] {
   opacity: 0.6 !important;
 }
 
-/* ── Outline view items ── */
-[class*="LayerTree-item"] {
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
-  border-radius: 6px !important;
+/* ── 21. Viewport Controls (responsive) ── */
+[class*="ViewportControls-zoomSelect"] {
+  font-family: var(--puck-font-family) !important;
+  font-size: 12px !important;
+  color: #71717A !important;
 }
-[class*="LayerTree-item"]:hover {
-  background-color: #F0EDEA !important;
+[class*="ViewportControls-toggleButton"] {
+  background-color: #262626 !important;
+  border-color: #3F3F46 !important;
+  color: #D4D4D8 !important;
+}
+[class*="ViewportControls-toggleButton"]:hover {
+  border-color: #71717A !important;
+  color: #FFFFFF !important;
 }
 
-/* ── Array field items (accordion items, nav items, etc.) ── */
-[class*="ArrayField-item"],
-[class*="ArrayField"] [class*="item"] {
-  border-radius: 8px !important;
-  border-color: #E7E4DF !important;
-}
-
-/* ── External field wrapper (custom fields) ── */
+/* ── 22. External / Custom Fields ── */
 [class*="ExternalField"],
 [class*="AutoField"] {
-  font-family: var(--font-body) !important;
+  font-family: var(--puck-font-family) !important;
 }
 
-/* ── Radio toggle (Yes/No) — pill shape ── */
-[class*="Input-radioGroupItems"] {
-  border-radius: 8px !important;
-  overflow: hidden;
-}
-[class*="Input-radioInner"] {
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
-  font-weight: 500 !important;
+/* ── 23. Global Refinements ── */
+
+/* Ensure all text within Puck uses Inter */
+[class*="Puck"] {
+  font-family: var(--puck-font-family) !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
 }
 
-/* ── Array field items — cleaner cards ── */
-[class*="ArrayFieldItem-summary"] {
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
+/* Smooth transitions on interactive elements globally */
+[class*="Puck"] button {
+  transition: all 100ms ease !important;
 }
-[class*="ArrayField-addButton"] {
-  border-radius: 8px !important;
-  font-family: var(--font-body) !important;
-  font-size: 0.8125rem !important;
+
+/* Icon button base style */
+[class*="IconButton"] {
+  border-radius: 6px !important;
+  color: #71717A !important;
+}
+[class*="IconButton"]:hover {
+  color: #18181B !important;
+  background: #F4F4F5 !important;
 }
 

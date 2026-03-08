@@ -5,9 +5,8 @@ import {
   updateSettings,
   getSiteSettings,
   updateSiteSettings,
-  type SiteHeaderConfig,
-  type SiteFooterConfig,
 } from '../lib/api'
+import { defaultHeader, defaultFooter, type SiteHeaderConfig, type SiteFooterConfig } from '@livskompass/shared'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -31,50 +30,6 @@ import {
   PanelTop,
   PanelBottom,
 } from 'lucide-react'
-
-// ── Default site settings ──
-
-const defaultHeader: SiteHeaderConfig = {
-  logoText: 'Livskompass',
-  navItems: [
-    { label: 'ACT', href: '/act' },
-    { label: 'Utbildningar', href: '/utbildningar' },
-    { label: 'Material', href: '/material' },
-    {
-      label: 'Om oss',
-      href: '#',
-      children: [
-        { label: 'Mindfulness', href: '/mindfulness' },
-        { label: 'Forskning på metoden', href: '/forskning-pa-metoden' },
-        { label: 'Om Fredrik Livheim', href: '/om-fredrik-livheim' },
-      ],
-    },
-    { label: 'Kontakt', href: '/kontakt' },
-    { label: 'Nyheter', href: '/nyhet' },
-  ],
-}
-
-const defaultFooter: SiteFooterConfig = {
-  companyName: 'Livskompass',
-  tagline: 'ACT och mindfulness utbildningar med Fredrik Livheim',
-  contact: { email: 'livheim@gmail.com', phone: '070-694 03 64' },
-  columns: [
-    {
-      heading: 'Länkar',
-      links: [
-        { label: 'ACT', href: '/act' },
-        { label: 'Utbildningar', href: '/utbildningar' },
-        { label: 'Material', href: '/material' },
-        { label: 'Mindfulness', href: '/mindfulness' },
-        { label: 'Forskning', href: '/forskning-pa-metoden' },
-        { label: 'Om Fredrik', href: '/om-fredrik-livheim' },
-        { label: 'Kontakt', href: '/kontakt' },
-        { label: 'Nyheter', href: '/nyhet' },
-      ],
-    },
-  ],
-  copyright: '© {year} Livskompass. Alla rättigheter förbehållna.',
-}
 
 // ── Nav item editor sub-component ──
 
@@ -279,6 +234,7 @@ export default function Settings() {
     site_description: 'ACT and mindfulness training',
     contact_email: 'livheim@gmail.com',
     contact_phone: '070-694 03 64',
+    homepage_slug: 'home-2',
     stripe_publishable_key: '',
     google_analytics_id: '',
   })
@@ -488,6 +444,16 @@ export default function Settings() {
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label>Contact section heading</Label>
+            <Input
+              value={footer.contactHeading || ''}
+              onChange={(e) => setFooter({ ...footer, contactHeading: e.target.value })}
+              placeholder="Kontakt"
+            />
+            <p className="text-xs text-stone-400">Heading shown above the contact info in the footer. Defaults to "Kontakt".</p>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Contact email</Label>
@@ -592,6 +558,17 @@ export default function Settings() {
                   value={formData.site_name}
                   onChange={(e) => setFormData({ ...formData, site_name: e.target.value })}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="homepage-slug">Homepage slug</Label>
+                <Input
+                  id="homepage-slug"
+                  value={formData.homepage_slug}
+                  onChange={(e) => setFormData({ ...formData, homepage_slug: e.target.value })}
+                  placeholder="home-2"
+                  className="font-mono text-sm"
+                />
+                <p className="text-xs text-stone-400">The page slug that loads as the homepage (e.g. "home-2" from WordPress migration).</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="site-desc">Description</Label>

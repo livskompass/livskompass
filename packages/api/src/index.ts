@@ -87,19 +87,35 @@ app.get('/media/*', async (c) => {
 // Public site-settings endpoint (header/footer JSON, cached)
 app.get('/api/site-settings', async (c) => {
   const result = await c.env.DB.prepare(
-    `SELECT key, value FROM settings WHERE key IN ('site_header', 'site_footer')`
+    `SELECT key, value FROM settings WHERE key IN ('site_header', 'site_footer', 'homepage_slug')`
   ).all()
 
   const settings: Record<string, any> = {}
   result.results?.forEach((row: any) => {
-    try { settings[row.key] = JSON.parse(row.value) } catch { settings[row.key] = null }
+    try { settings[row.key] = JSON.parse(row.value) } catch { settings[row.key] = row.value }
   })
 
-  c.header('Cache-Control', 'public, max-age=300')
+  c.header('Cache-Control', 'no-cache')
   return c.json({
     header: settings.site_header || null,
     footer: settings.site_footer || null,
+    homepage_slug: settings.homepage_slug || 'home-2',
   })
+})
+
+// Public UI strings endpoint (customizable labels, cached)
+app.get('/api/site-settings/ui-strings', async (c) => {
+  const result = await c.env.DB.prepare(
+    `SELECT value FROM settings WHERE key = 'ui_strings'`
+  ).first<{ value: string }>()
+
+  let strings = {}
+  if (result?.value) {
+    try { strings = JSON.parse(result.value) } catch { /* use empty */ }
+  }
+
+  c.header('Cache-Control', 'public, max-age=60')
+  return c.json({ strings })
 })
 
 // Public routes

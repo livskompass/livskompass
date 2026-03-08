@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { useFetchJson, useScrollReveal } from '../helpers'
 import { MapPin, Calendar, ArrowRight } from 'lucide-react'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 
 export interface CourseListProps {
   heading: string
@@ -12,6 +12,7 @@ export interface CourseListProps {
   readMoreText: string
   bookButtonText: string
   fullLabel: string
+  spotsText: string
   emptyText: string
 }
 
@@ -29,6 +30,13 @@ interface Course {
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
+
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
 
 function formatDateRange(start: string, end: string | null): string {
   const s = new Date(start)
@@ -55,6 +63,7 @@ export function CourseList({
   readMoreText = 'Läs mer',
   bookButtonText = 'Boka plats',
   fullLabel = 'Fullbokad',
+  spotsText = 'platser kvar',
   emptyText = 'Det finns inga utbildningar planerade just nu.',
   id,
 }: CourseListProps & { puck?: { isEditing: boolean }; id?: string }) {
@@ -62,12 +71,17 @@ export function CourseList({
   const courses = data?.courses || []
   const displayed = maxItems > 0 ? courses.slice(0, maxItems) : courses
   const revealRef = useScrollReveal()
-  const headingEdit = useInlineEdit('heading', heading, id || '')
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[2])}>
@@ -97,7 +111,7 @@ export function CourseList({
                         ? 'bg-amber-50 text-amber-700'
                         : 'bg-forest-50 text-forest-700'
                     )}>
-                      {isFull ? fullLabel : `${spotsLeft} platser kvar`}
+                      {isFull ? fullLabel : `${spotsLeft} ${spotsText}`}
                     </span>
                   </div>
                   )}

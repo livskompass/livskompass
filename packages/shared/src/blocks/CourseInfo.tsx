@@ -11,6 +11,8 @@ export interface CourseInfoProps {
   spotsLabel: string
   deadlineLabel: string
   fullLabel: string
+  spotsOfText: string
+  spotsRemainingText: string
 }
 
 function formatDate(date: string): string {
@@ -44,6 +46,8 @@ export function CourseInfo({
   spotsLabel = 'Platser',
   deadlineLabel = 'Sista anmälningsdag',
   fullLabel = 'Fullbokad',
+  spotsOfText = 'av',
+  spotsRemainingText = 'kvar',
 }: CourseInfoProps) {
   const course = useCourseData()
 
@@ -62,7 +66,7 @@ export function CourseInfo({
   const spotsValue = isFull
     ? fullLabel
     : hasCapacity
-      ? `${spotsLeft} av ${course.max_participants} kvar`
+      ? `${spotsLeft} ${spotsOfText} ${course.max_participants} ${spotsRemainingText}`
       : ''
 
   const items = [

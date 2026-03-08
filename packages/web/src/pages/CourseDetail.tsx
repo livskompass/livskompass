@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getCourse, rewriteMediaUrls } from '../lib/api'
@@ -6,6 +7,7 @@ import { CourseContext } from '../lib/context'
 import { defaultCourseTemplate } from '@livskompass/shared'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
+import { setPageEditData } from '../components/InlineEditProvider'
 import { Card, CardContent } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton'
 
@@ -45,6 +47,20 @@ export default function CourseDetail() {
   })
 
   useDocumentTitle(data?.course?.title)
+
+  // Register course data for inline editing
+  useEffect(() => {
+    const courseAny = data?.course as any
+    if (courseAny?.id && courseAny?.content_blocks) {
+      setPageEditData({
+        pageId: String(courseAny.id),
+        contentType: 'course',
+        contentBlocks: courseAny.content_blocks,
+        updatedAt: courseAny.updated_at || '',
+      })
+    }
+    return () => setPageEditData(null)
+  }, [data?.course])
 
   if (isLoading) return <CourseSkeleton />
   if (error || !data?.course) return <NotFound />

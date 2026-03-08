@@ -146,6 +146,12 @@ ALTER TABLE courses ADD COLUMN editor_version TEXT DEFAULT 'legacy';
 ALTER TABLE products ADD COLUMN content_blocks TEXT;
 ALTER TABLE products ADD COLUMN editor_version TEXT DEFAULT 'legacy';
 
+-- Draft layer: auto-save writes here, publish copies to main columns and clears draft
+ALTER TABLE pages ADD COLUMN draft TEXT;
+ALTER TABLE posts ADD COLUMN draft TEXT;
+ALTER TABLE courses ADD COLUMN draft TEXT;
+ALTER TABLE products ADD COLUMN draft TEXT;
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_pages_slug ON pages(slug);
 CREATE INDEX IF NOT EXISTS idx_pages_status ON pages(status);

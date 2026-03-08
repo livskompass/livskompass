@@ -12,7 +12,7 @@ pagesRoutes.get('/', async (c) => {
     ORDER BY sort_order ASC
   `).all()
 
-  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
+  c.header('Cache-Control', 'no-cache')
   return c.json({ pages: result.results })
 })
 
@@ -22,7 +22,8 @@ pagesRoutes.get('/:slug', async (c) => {
 
   const [pageResult, childrenResult] = await c.env.DB.batch([
     c.env.DB.prepare(`
-      SELECT * FROM pages WHERE slug = ? AND status = 'published'
+      SELECT id, slug, title, content, content_blocks, editor_version, meta_description, parent_slug, sort_order, status, created_at, updated_at
+      FROM pages WHERE slug = ? AND status = 'published'
     `).bind(slug),
     c.env.DB.prepare(`
       SELECT id, slug, title, meta_description, parent_slug, sort_order
@@ -37,6 +38,6 @@ pagesRoutes.get('/:slug', async (c) => {
     return c.json({ error: 'Page not found' }, 404)
   }
 
-  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
+  c.header('Cache-Control', 'no-cache')
   return c.json({ page, children: childrenResult.results || [] })
 })

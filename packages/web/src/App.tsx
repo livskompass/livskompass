@@ -1,5 +1,9 @@
 import React, { Suspense } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useSearchParams, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { DEFAULT_HOMEPAGE_SLUG } from '@livskompass/shared'
+import { getSiteSettings } from './lib/api'
 import Layout from './components/Layout'
 import InlineEditProvider from './components/InlineEditProvider'
 
@@ -23,14 +27,44 @@ function PageLoader() {
   )
 }
 
+function HomepageRoute() {
+  const { data: siteData } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: getSiteSettings,
+    staleTime: 5 * 60 * 1000,
+  })
+  const slug = siteData?.homepage_slug || DEFAULT_HOMEPAGE_SLUG
+  return <Suspense fallback={<PageLoader />}><UniversalPage slug={slug} /></Suspense>
+}
+
+/** Accepts ?token=xxx from OAuth callback or admin-auth bridge and stores it */
+function AuthBridge() {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  useEffect(() => {
+    const token = searchParams.get('token')
+    if (token) {
+      localStorage.setItem('admin_token', token)
+      navigate('/', { replace: true })
+      window.location.reload()
+    } else {
+      navigate('/', { replace: true })
+    }
+  }, [searchParams, navigate])
+  return null
+}
+
 function App() {
   return (
     <BrowserRouter>
       <InlineEditProvider>
       <Routes>
+        {/* Admin auth — stores token from OAuth redirect or admin bridge */}
+        <Route path="/admin-auth" element={<AuthBridge />} />
+        <Route path="/auth/callback" element={<AuthBridge />} />
         <Route path="/" element={<Layout />}>
-          {/* Home: page with slug "home-2" (from WordPress migration) */}
-          <Route index element={<Suspense fallback={<PageLoader />}><UniversalPage slug="home-2" /></Suspense>} />
+          {/* Home: resolved from site settings, fallback to DEFAULT_HOMEPAGE_SLUG */}
+          <Route index element={<HomepageRoute />} />
 
           {/* Listing pages: block-based pages */}
           <Route path="utbildningar" element={<Suspense fallback={<PageLoader />}><UniversalPage slug="utbildningar" /></Suspense>} />

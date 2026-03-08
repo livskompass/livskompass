@@ -25,7 +25,7 @@ productsRoutes.get('/', async (c) => {
 
   const result = await stmt.all()
 
-  c.header('Cache-Control', 'public, max-age=60, s-maxage=300')
+  c.header('Cache-Control', 'no-cache')
   return c.json({ products: result.results })
 })
 
@@ -34,13 +34,14 @@ productsRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
 
   const result = await c.env.DB.prepare(`
-    SELECT * FROM products WHERE slug = ? AND status = 'active'
+    SELECT id, slug, title, description, content_blocks, editor_version, type, price_sek, external_url, image_url, in_stock, status, created_at
+    FROM products WHERE slug = ? AND status = 'active'
   `).bind(slug).first()
 
   if (!result) {
     return c.json({ error: 'Product not found' }, 404)
   }
 
-  c.header('Cache-Control', 'public, max-age=60, s-maxage=300')
+  c.header('Cache-Control', 'no-cache')
   return c.json({ product: result })
 })

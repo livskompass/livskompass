@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useCourseData } from '../context'
 import { getApiBase } from '../helpers'
 import { Calendar, MapPin, CreditCard, AlertCircle, ArrowRight } from 'lucide-react'
+import { UI_STRINGS } from '../ui-strings'
 
 export interface BookingFormProps {
   showOrganization: boolean
@@ -11,6 +12,13 @@ export interface BookingFormProps {
   fullMessage: string
   completedMessage: string
   totalLabel: string
+  nameLabel: string
+  emailLabel: string
+  phoneLabel: string
+  organizationLabel: string
+  participantsLabel: string
+  notesLabel: string
+  priceSuffix: string
 }
 
 function Placeholder() {
@@ -35,6 +43,13 @@ export function BookingForm({
   fullMessage = 'Denna utbildning är fullbokad.',
   completedMessage = 'Denna utbildning har genomförts.',
   totalLabel = 'Totalt',
+  nameLabel = 'Namn *',
+  emailLabel = 'E-post *',
+  phoneLabel = 'Telefon',
+  organizationLabel = 'Organisation',
+  participantsLabel = 'Antal deltagare *',
+  notesLabel = 'Meddelande',
+  priceSuffix = 'kr/person',
 }: BookingFormProps) {
   const course = useCourseData()
   const isEditor = typeof window !== 'undefined' && window.frameElement !== null
@@ -92,7 +107,7 @@ export function BookingForm({
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Kunde inte skapa bokning')
+      if (!res.ok) throw new Error(data.error || UI_STRINGS.bookingForm.errorCreate)
 
       // Redirect to checkout
       const bookingId = data.booking?.id || data.id
@@ -127,7 +142,7 @@ export function BookingForm({
           {course.price_sek != null && (
           <span className="inline-flex items-center gap-1.5">
             <CreditCard className="h-4 w-4 text-stone-400" />
-            {course.price_sek.toLocaleString('sv-SE')} kr/person
+            {course.price_sek.toLocaleString('sv-SE')} {priceSuffix}
           </span>
           )}
         </div>
@@ -143,7 +158,7 @@ export function BookingForm({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">Namn *</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">{nameLabel}</label>
               <input
                 type="text"
                 required
@@ -154,7 +169,7 @@ export function BookingForm({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">E-post *</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">{emailLabel}</label>
               <input
                 type="email"
                 required
@@ -166,7 +181,7 @@ export function BookingForm({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Telefon</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{phoneLabel}</label>
             <input
               type="tel"
               value={formData.customerPhone}
@@ -177,7 +192,7 @@ export function BookingForm({
           </div>
           {showOrganization && (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">Organisation</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">{organizationLabel}</label>
               <input
                 type="text"
                 value={formData.organization}
@@ -188,7 +203,7 @@ export function BookingForm({
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Antal deltagare *</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{participantsLabel}</label>
             <div className="relative">
               <select
                 value={formData.participants}
@@ -207,7 +222,7 @@ export function BookingForm({
           </div>
           {showNotes && (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">Meddelande</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">{notesLabel}</label>
               <textarea
                 rows={3}
                 value={formData.notes}

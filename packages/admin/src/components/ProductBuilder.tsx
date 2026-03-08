@@ -4,6 +4,7 @@ import '@puckeditor/core/puck.css'
 import { emptyPuckData, createEditorOverrides } from '@livskompass/shared'
 import { getFilteredPuckConfig } from '../lib/puck-filter'
 import { getMediaUrl } from '../lib/api'
+import { MediaPickerField } from './MediaPickerField'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Select } from './ui/select'
@@ -17,8 +18,9 @@ import {
   DialogDescription,
   DialogFooter,
 } from './ui/dialog'
-import { Settings, Trash2, ExternalLink } from 'lucide-react'
+import { Settings, Trash2, ExternalLink, Loader2, Check, AlertTriangle } from 'lucide-react'
 import { cn, generateSlug } from '../lib/utils'
+import type { SaveStatus } from './PageBuilder'
 
 interface ProductBuilderProps {
   product: {
@@ -34,7 +36,35 @@ interface ProductBuilderProps {
     status: string
     content_blocks?: string | null
   } | null
-  onSave: (data: {
+  isNew: boolean
+  hasDraft?: boolean
+  onAutoSave: (data: {
+    title: string
+    slug: string
+    description: string
+    type: string
+    price_sek: number
+    external_url: string
+    image_url: string
+    in_stock: number
+    status: string
+    content_blocks: string
+    editor_version: string
+  }) => void
+  onStatusChange: (data: {
+    title: string
+    slug: string
+    description: string
+    type: string
+    price_sek: number
+    external_url: string
+    image_url: string
+    in_stock: number
+    status: string
+    content_blocks: string
+    editor_version: string
+  }) => void
+  onCreate: (data: {
     title: string
     slug: string
     description: string
@@ -48,9 +78,12 @@ interface ProductBuilderProps {
     editor_version: string
   }) => void
   onDelete?: () => void
+  saveStatus?: SaveStatus
+  saveError?: string
+  onRetry?: () => void
 }
 
-export default function ProductBuilder({ product, onSave, onDelete }: ProductBuilderProps) {
+export default function ProductBuilder({ product, isNew, hasDraft = false, onAutoSave, onStatusChange, onCreate, onDelete, saveStatus = 'idle', saveError, onRetry }: ProductBuilderProps) {
   const [title, setTitle] = useState(product?.title || '')
   const [slug, setSlug] = useState(product?.slug || '')
   const [description, setDescription] = useState(product?.description || '')
@@ -62,9 +95,19 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
   const [status, setStatus] = useState(product?.status || 'inactive')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [hasUnpublishedChanges, setHasUnpublishedChanges] = useState(false)
+  const canTrackDirtyRef = useRef(false)
   const settingsRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({ top: 0, right: 0 })
+
+  // Refs for auto-save
+  const puckDataRef = useRef<Data | null>(null)
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const stateRef = useRef({ title, slug, description, type, priceSek, externalUrl, imageUrl, inStock, status })
+  stateRef.current = { title, slug, description, type, priceSek, externalUrl, imageUrl, inStock, status }
+  const cbRef = useRef({ onAutoSave, onStatusChange, onCreate })
+  cbRef.current = { onAutoSave, onStatusChange, onCreate }
 
   useEffect(() => {
     if (product) {
@@ -77,8 +120,24 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
       setImageUrl(product.image_url || '')
       setInStock(product.in_stock ?? 0)
       setStatus(product.status)
+      if (hasDraft && product.status === 'active') {
+        setHasUnpublishedChanges(true)
+      }
     }
-  }, [product])
+  }, [product, hasDraft])
+
+  useEffect(() => {
+    const timer = setTimeout(() => { canTrackDirtyRef.current = true }, 200)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const shouldWarn = saveStatus === 'saving' || (isNew && title.trim().length > 0)
+    if (!shouldWarn) return
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault() }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [saveStatus, isNew, title])
 
   useEffect(() => {
     if (!settingsOpen) return
@@ -90,6 +149,10 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [settingsOpen])
+
+  useEffect(() => {
+    return () => clearTimeout(autoSaveTimerRef.current)
+  }, [])
 
   const editorOverrides = useMemo(() => createEditorOverrides(), [])
 
@@ -104,31 +167,72 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
     return emptyPuckData
   }, [product?.content_blocks])
 
-  const handlePublish = useCallback(
-    (data: Data) => {
-      onSave({
-        title,
-        slug,
-        description,
-        type,
-        price_sek: priceSek,
-        external_url: externalUrl,
-        image_url: imageUrl,
-        in_stock: inStock,
-        status,
-        content_blocks: JSON.stringify(data),
-        editor_version: 'puck',
-      })
-    },
-    [title, slug, description, type, priceSek, externalUrl, imageUrl, inStock, status, onSave],
-  )
+  const assemblePayload = useCallback((s: typeof stateRef.current) => ({
+    title: s.title,
+    slug: s.slug,
+    description: s.description,
+    type: s.type,
+    price_sek: s.priceSek,
+    external_url: s.externalUrl,
+    image_url: s.imageUrl,
+    in_stock: s.inStock,
+    status: s.status,
+    content_blocks: JSON.stringify(puckDataRef.current || initialData),
+    editor_version: 'puck',
+  }), [initialData])
+
+  // Debounced auto-save
+  const triggerAutoSave = useCallback(() => {
+    if (isNew) return
+    clearTimeout(autoSaveTimerRef.current)
+    autoSaveTimerRef.current = setTimeout(() => {
+      const s = stateRef.current
+      if (!s.title) return
+      cbRef.current.onAutoSave(assemblePayload(s))
+    }, 2000)
+  }, [isNew, assemblePayload])
+
+  const handlePuckChange = useCallback((data: Data) => {
+    puckDataRef.current = data
+    if (!canTrackDirtyRef.current) return
+    if (status === 'active') setHasUnpublishedChanges(true)
+    triggerAutoSave()
+  }, [status, triggerAutoSave])
+
+  const onSettingsChange = useCallback(() => {
+    if (status === 'active') setHasUnpublishedChanges(true)
+    triggerAutoSave()
+  }, [status, triggerAutoSave])
+
+  // CTA: Create / Activate / Deactivate
+  const handleCTA = useCallback(() => {
+    clearTimeout(autoSaveTimerRef.current)
+    const s = stateRef.current
+    const payload = assemblePayload(s)
+    if (isNew) {
+      cbRef.current.onCreate(payload)
+    } else if (s.status === 'active') {
+      cbRef.current.onStatusChange({ ...payload, status: 'inactive' })
+    } else {
+      cbRef.current.onStatusChange({ ...payload, status: 'active' })
+    }
+    setHasUnpublishedChanges(false)
+  }, [isNew, status, assemblePayload])
+
+  const handlePublishChanges = useCallback(() => {
+    clearTimeout(autoSaveTimerRef.current)
+    const s = stateRef.current
+    const payload = assemblePayload(s)
+    cbRef.current.onStatusChange({ ...payload, status: s.status })
+    setHasUnpublishedChanges(false)
+  }, [assemblePayload])
 
   return (
     <div className="h-[100dvh]">
       <Puck
         config={getFilteredPuckConfig('product')}
         data={initialData}
-        onPublish={handlePublish}
+        onChange={handlePuckChange}
         headerTitle={title || 'New product'}
         viewports={[
           { width: 360, label: 'Mobile', icon: 'Smartphone' as any },
@@ -137,34 +241,106 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
         ]}
         overrides={{
           ...editorOverrides,
-          headerActions: ({ children }) => (
-            <div className="flex items-center gap-2">
-              {/* View on site */}
+          fieldTypes: {
+            text: ({ field, value, onChange, children }: any) => {
+              if (field?.metadata?.isImage) {
+                return <MediaPickerField value={value || ''} onChange={onChange} label={field.label} />
+              }
+              return children
+            },
+          },
+          headerActions: () => (
+            <div className="flex items-center gap-1">
+              {saveStatus === 'saving' && (
+                <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-500 px-2 py-0.5 animate-fade-in">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Saving…
+                </span>
+              )}
+              {saveStatus === 'saved' && (
+                <span className="inline-flex items-center gap-1 text-[12px] font-medium text-emerald-600 px-2 py-0.5 bg-emerald-50 rounded animate-fade-in">
+                  <Check className="h-3 w-3" />
+                  Saved
+                </span>
+              )}
+              {saveStatus === 'error' && (
+                <span
+                  className="inline-flex items-center gap-1.5 text-[12px] font-medium text-red-600 px-2 py-0.5 bg-red-50 rounded animate-fade-in"
+                  title={saveError}
+                >
+                  <AlertTriangle className="h-3 w-3" />
+                  Failed
+                  {onRetry && (
+                    <button
+                      onClick={onRetry}
+                      className="text-[11px] font-semibold text-red-700 hover:text-red-900 underline underline-offset-2 decoration-red-300 hover:decoration-red-500 ml-0.5 transition-colors"
+                    >
+                      Retry
+                    </button>
+                  )}
+                </span>
+              )}
+
+              {hasUnpublishedChanges && !isNew ? (
+                <span className="text-[12px] font-medium px-2 py-0.5 rounded bg-amber-50 text-amber-600 animate-fade-in">
+                  Unpublished changes
+                </span>
+              ) : (
+                <span className={`text-[12px] font-medium px-2 py-0.5 rounded ${
+                  status === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-500'
+                }`}>
+                  {status === 'active' ? 'Active' : 'Inactive'}
+                </span>
+              )}
+
+              {hasUnpublishedChanges && !isNew ? (
+                <>
+                  <button
+                    onClick={handleCTA}
+                    disabled={saveStatus === 'saving'}
+                    className="h-8 px-3 text-[13px] font-medium rounded-md bg-zinc-100 text-zinc-600 hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Deactivate
+                  </button>
+                  <button
+                    onClick={handlePublishChanges}
+                    disabled={saveStatus === 'saving' || !title.trim()}
+                    className="h-8 px-3 text-[13px] font-medium rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Publish changes
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleCTA}
+                  disabled={saveStatus === 'saving' || !title.trim()}
+                  className={cn(
+                    "h-8 px-3 text-[13px] font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                    isNew
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : status === 'active'
+                        ? "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                        : "bg-emerald-600 text-white hover:bg-emerald-700"
+                  )}
+                >
+                  {isNew ? 'Create' : status === 'active' ? 'Deactivate' : 'Activate'}
+                </button>
+              )}
+
+              <span className="w-px h-3.5 bg-zinc-200" />
+
               {product?.id && slug && (
                 <a
                   href={`${window.location.origin.replace(':3001', ':3000').replace('admin', 'web')}/material/${slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-900 transition-colors text-xs font-medium"
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-md text-zinc-400 hover:text-zinc-700 transition-colors"
                   title="View on site"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  View
                 </a>
               )}
 
-              {/* Status badge */}
-              <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
-                  status === 'active'
-                    ? 'bg-stone-100 text-stone-700 border-stone-300'
-                    : 'bg-stone-50 text-stone-500 border-stone-200'
-                }`}
-              >
-                {status === 'active' ? 'Active' : 'Inactive'}
-              </span>
-
-              {/* Settings dropdown */}
               <div ref={settingsRef} className="relative z-50">
                 <button
                   ref={buttonRef}
@@ -182,10 +358,10 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                     setSettingsOpen(!settingsOpen)
                   }}
                   className={cn(
-                    "inline-flex items-center justify-center h-8 w-8 rounded-lg border transition-all duration-150",
+                    "inline-flex items-center justify-center h-8 w-8 rounded-md transition-all duration-100",
                     settingsOpen
-                      ? "border-stone-400 bg-stone-100 text-stone-700"
-                      : "border-stone-200 bg-white text-stone-500 hover:bg-stone-50 hover:text-stone-700"
+                      ? "bg-zinc-100 text-zinc-700"
+                      : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
                   )}
                   title="Product settings"
                 >
@@ -205,6 +381,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                             onChange={(e) => {
                               setTitle(e.target.value)
                               if (!product?.id) setSlug(generateSlug(e.target.value))
+                              onSettingsChange()
                             }}
                             className="h-9 text-sm"
                             placeholder="Product title"
@@ -215,38 +392,25 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                           <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Slug</Label>
                           <Input
                             value={slug}
-                            onChange={(e) => setSlug(e.target.value)}
+                            onChange={(e) => { setSlug(e.target.value); onSettingsChange() }}
                             className="h-9 text-sm"
                             placeholder="url-slug"
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Status</Label>
-                            <Select
-                              value={status}
-                              onChange={(e) => setStatus(e.target.value)}
-                              className="h-9 text-sm"
-                            >
-                              <option value="active">Active</option>
-                              <option value="inactive">Inactive</option>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Type</Label>
-                            <Select
-                              value={type}
-                              onChange={(e) => setType(e.target.value)}
-                              className="h-9 text-sm"
-                            >
-                              <option value="book">Book</option>
-                              <option value="cd">CD</option>
-                              <option value="cards">Cards</option>
-                              <option value="app">App</option>
-                              <option value="download">Download</option>
-                            </Select>
-                          </div>
+                        <div>
+                          <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Type</Label>
+                          <Select
+                            value={type}
+                            onChange={(e) => { setType(e.target.value); onSettingsChange() }}
+                            className="h-9 text-sm"
+                          >
+                            <option value="book">Book</option>
+                            <option value="cd">CD</option>
+                            <option value="cards">Cards</option>
+                            <option value="app">App</option>
+                            <option value="download">Download</option>
+                          </Select>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
@@ -255,7 +419,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                             <Input
                               type="number"
                               value={priceSek}
-                              onChange={(e) => setPriceSek(Number(e.target.value))}
+                              onChange={(e) => { setPriceSek(Number(e.target.value)); onSettingsChange() }}
                               className="h-9 text-sm"
                               placeholder="0 for free"
                               min={0}
@@ -266,7 +430,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                             <Input
                               type="number"
                               value={inStock}
-                              onChange={(e) => setInStock(Number(e.target.value))}
+                              onChange={(e) => { setInStock(Number(e.target.value)); onSettingsChange() }}
                               className="h-9 text-sm"
                               placeholder="0"
                               min={0}
@@ -278,7 +442,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                           <Label className="text-sm font-medium text-stone-700 mb-1.5 block">External URL</Label>
                           <Input
                             value={externalUrl}
-                            onChange={(e) => setExternalUrl(e.target.value)}
+                            onChange={(e) => { setExternalUrl(e.target.value); onSettingsChange() }}
                             className="h-9 text-sm"
                             placeholder="https://example.com/buy"
                           />
@@ -288,7 +452,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                           <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Image URL</Label>
                           <Input
                             value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
+                            onChange={(e) => { setImageUrl(e.target.value); onSettingsChange() }}
                             className="h-9 text-sm"
                             placeholder="/media/uploads/image.jpg"
                           />
@@ -305,7 +469,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                           <Label className="text-sm font-medium text-stone-700 mb-1.5 block">Description</Label>
                           <Textarea
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(e) => { setDescription(e.target.value); onSettingsChange() }}
                             className="min-h-0 resize-none"
                             rows={2}
                             placeholder="Short description for listings..."
@@ -332,14 +496,11 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
                 )}
               </div>
 
-              {/* Puck's built-in Publish/Save button */}
-              {children}
             </div>
           ),
         }}
       />
 
-      {/* Delete confirmation dialog */}
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
@@ -364,6 +525,7 @@ export default function ProductBuilder({ product, onSave, onDelete }: ProductBui
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </div>
   )
 }

@@ -11,9 +11,10 @@ export default defineConfig({
         target: process.env.API_TARGET || 'https://livskompass-api.livskompass-config.workers.dev',
         changeOrigin: true,
       },
-      '/media': {
+      '/media/': {
         target: process.env.API_TARGET || 'https://livskompass-api.livskompass-config.workers.dev',
         changeOrigin: true,
+        rewrite: (path: string) => path,
       },
     },
     fs: {

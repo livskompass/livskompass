@@ -46,23 +46,12 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
   return response.json()
 }
 
-// Site settings (header/footer)
-export interface SiteHeaderConfig {
-  logoText: string
-  navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
-  ctaButton?: { text: string; href: string }
-}
-
-export interface SiteFooterConfig {
-  companyName: string
-  tagline: string
-  contact: { email: string; phone: string }
-  columns: { heading: string; links: { label: string; href: string }[] }[]
-  copyright: string
-}
+// Site settings types — re-exported from shared
+import type { SiteHeaderConfig, SiteFooterConfig } from '@livskompass/shared'
+export type { SiteHeaderConfig, SiteFooterConfig }
 
 export const getSiteSettings = () =>
-  fetchApi<{ header: SiteHeaderConfig | null; footer: SiteFooterConfig | null }>('/site-settings')
+  fetchApi<{ header: SiteHeaderConfig | null; footer: SiteFooterConfig | null; homepage_slug?: string }>('/site-settings')
 
 // Pages
 export const getPages = () => fetchApi<{ pages: Page[] }>('/pages')

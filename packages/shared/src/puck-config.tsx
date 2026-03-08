@@ -39,59 +39,7 @@ export const emptyPuckData: Data = {
 }
 
 // ── Site settings types + hook for Puck preview chrome ──
-
-interface SiteHeaderConfig {
-  logoText: string
-  navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
-  ctaButton?: { text: string; href: string }
-}
-
-interface SiteFooterConfig {
-  companyName: string
-  tagline: string
-  contactHeading?: string
-  contact: { email: string; phone: string }
-  columns: { heading: string; links: { label: string; href: string }[] }[]
-  copyright: string
-}
-
-const defaultHeader: SiteHeaderConfig = {
-  logoText: 'Livskompass',
-  navItems: [
-    { label: 'ACT', href: '/act' },
-    { label: 'Utbildningar', href: '/utbildningar' },
-    { label: 'Material', href: '/material' },
-    { label: 'Om oss', href: '#', children: [
-      { label: 'Mindfulness', href: '/mindfulness' },
-      { label: 'Forskning på metoden', href: '/forskning-pa-metoden' },
-      { label: 'Om Fredrik Livheim', href: '/om-fredrik-livheim' },
-    ] },
-    { label: 'Kontakt', href: '/kontakt' },
-    { label: 'Nyheter', href: '/nyhet' },
-  ],
-}
-
-const defaultFooter: SiteFooterConfig = {
-  companyName: 'Livskompass',
-  tagline: 'ACT och mindfulness utbildningar med Fredrik Livheim',
-  contact: { email: 'livheim@gmail.com', phone: '070-694 03 64' },
-  columns: [
-    {
-      heading: 'Länkar',
-      links: [
-        { label: 'ACT', href: '/act' },
-        { label: 'Utbildningar', href: '/utbildningar' },
-        { label: 'Material', href: '/material' },
-        { label: 'Mindfulness', href: '/mindfulness' },
-        { label: 'Forskning', href: '/forskning-pa-metoden' },
-        { label: 'Om Fredrik', href: '/om-fredrik-livheim' },
-        { label: 'Kontakt', href: '/kontakt' },
-        { label: 'Nyheter', href: '/nyhet' },
-      ],
-    },
-  ],
-  copyright: '© {year} Livskompass. Alla rättigheter förbehållna.',
-}
+import { defaultHeader, defaultFooter, type SiteHeaderConfig, type SiteFooterConfig } from './defaults'
 
 let _cachedHeader: SiteHeaderConfig | null = null
 let _cachedFooter: SiteFooterConfig | null = null
@@ -215,6 +163,7 @@ function SiteFooter() {
 
 export const puckConfig: Config = {
   root: {
+    fields: {},
     render: ({ children }: { children: React.ReactNode }) => {
       const isEditor = typeof window !== 'undefined' && window.frameElement !== null
       return (
@@ -310,8 +259,8 @@ export const puckConfig: Config = {
         ctaPrimaryLink: { type: 'text', label: 'Primary button link' },
         ctaSecondaryText: { type: 'text', label: 'Secondary button text' },
         ctaSecondaryLink: { type: 'text', label: 'Secondary button link' },
-        image: { type: 'text', label: 'Image URL' },
-        backgroundImage: { type: 'text', label: 'Background image URL' },
+        image: { type: 'text', label: 'Image URL', metadata: { isImage: true } },
+        backgroundImage: { type: 'text', label: 'Background image URL', metadata: { isImage: true } },
         overlayDarkness: {
           type: 'select',
           label: 'Overlay darkness',
@@ -360,7 +309,7 @@ export const puckConfig: Config = {
         if (p === 'split-right' || p === 'split-left') {
           return {
             ...base,
-            image: { type: 'text' as const, label: 'Image URL' },
+            image: { type: 'text' as const, label: 'Image URL', metadata: { isImage: true } },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
             ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
           }
@@ -368,7 +317,7 @@ export const puckConfig: Config = {
         if (p === 'full-image') {
           return {
             ...base,
-            backgroundImage: { type: 'text' as const, label: 'Background image URL' },
+            backgroundImage: { type: 'text' as const, label: 'Background image URL', metadata: { isImage: true } },
             overlayDarkness: {
               type: 'select' as const,
               label: 'Overlay darkness',
@@ -404,7 +353,7 @@ export const puckConfig: Config = {
       label: 'Image',
       defaultProps: { src: '', alt: '', caption: '', size: 'full', alignment: 'center', rounded: 'small', link: '' },
       fields: {
-        src: { type: 'text' }, alt: { type: 'text' }, caption: { type: 'text' },
+        src: { type: 'text', metadata: { isImage: true } }, alt: { type: 'text' }, caption: { type: 'text' },
         size: { type: 'select', options: [{ label: 'Small (50%)', value: 'small' }, { label: 'Medium (75%)', value: 'medium' }, { label: 'Full', value: 'full' }] },
         alignment: { type: 'radio', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
         rounded: { type: 'radio', options: [{ label: 'None', value: 'none' }, { label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
@@ -433,13 +382,14 @@ export const puckConfig: Config = {
     },
     PageHeader: {
       label: 'Page Header',
-      defaultProps: { heading: 'Rubrik', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [] },
+      defaultProps: { heading: 'Rubrik', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Hem' },
       fields: {
         heading: { type: 'text' }, subheading: { type: 'textarea' },
         alignment: { type: 'radio', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         size: { type: 'radio', options: [{ label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
         showDivider: { type: 'radio', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         breadcrumbs: { type: 'array', arrayFields: { label: { type: 'text' }, href: { type: 'text' } } },
+        breadcrumbHomeText: { type: 'text', label: 'Breadcrumb home text' },
       },
       render: PageHeader as any,
     },
@@ -448,7 +398,7 @@ export const puckConfig: Config = {
       defaultProps: { name: 'Fredrik Livheim', title: 'Legitimerad psykolog', bio: '', image: '', email: '', phone: '', style: 'horizontal' },
       fields: {
         name: { type: 'text' }, title: { type: 'text' }, bio: { type: 'textarea' },
-        image: { type: 'text' }, email: { type: 'text' }, phone: { type: 'text' },
+        image: { type: 'text', metadata: { isImage: true } }, email: { type: 'text' }, phone: { type: 'text' },
         style: { type: 'radio', options: [{ label: 'Card', value: 'card' }, { label: 'Horizontal', value: 'horizontal' }] },
       },
       render: PersonCard as any,
@@ -492,14 +442,18 @@ export const puckConfig: Config = {
     },
     CardGrid: {
       label: 'Card Grid',
-      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [] },
+      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fullbokad', spotsAvailableText: 'Platser kvar', emptyManualText: 'Lägg till kort i inställningarna...', emptyDynamicText: 'Inget innehåll tillgängligt.' },
       fields: {
         heading: { type: 'text' }, subheading: { type: 'text' },
         source: { type: 'select', options: [{ label: 'Manual', value: 'manual' }, { label: 'Posts', value: 'posts' }, { label: 'Courses', value: 'courses' }, { label: 'Products', value: 'products' }] },
         maxItems: { type: 'number' },
         columns: { type: 'select', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
-        manualCards: { type: 'array', arrayFields: { title: { type: 'text' }, description: { type: 'textarea' }, image: { type: 'text' }, link: { type: 'text' }, badge: { type: 'text' } } },
+        manualCards: { type: 'array', arrayFields: { title: { type: 'text' }, description: { type: 'textarea' }, image: { type: 'text', metadata: { isImage: true } }, link: { type: 'text' }, badge: { type: 'text' } } },
         cardStyle: { type: 'select', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }, { label: 'Shadow', value: 'shadow' }] },
+        fullBadgeText: { type: 'text', label: 'Full badge text' },
+        spotsAvailableText: { type: 'text', label: 'Spots available text' },
+        emptyManualText: { type: 'text', label: 'Empty text (manual)' },
+        emptyDynamicText: { type: 'text', label: 'Empty text (dynamic)' },
       },
       render: CardGrid as any,
     },
@@ -507,7 +461,7 @@ export const puckConfig: Config = {
       label: 'Testimonial',
       defaultProps: { quote: 'Ett fantastiskt citat här...', author: '', role: '', avatar: '', style: 'card' },
       fields: {
-        quote: { type: 'textarea' }, author: { type: 'text' }, role: { type: 'text' }, avatar: { type: 'text' },
+        quote: { type: 'textarea' }, author: { type: 'text' }, role: { type: 'text' }, avatar: { type: 'text', metadata: { isImage: true } },
         style: { type: 'select', options: [{ label: 'Card', value: 'card' }, { label: 'Minimal', value: 'minimal' }, { label: 'Featured', value: 'featured' }] },
       },
       render: Testimonial as any,
@@ -545,7 +499,7 @@ export const puckConfig: Config = {
       label: 'Image Gallery',
       defaultProps: { images: [], columns: 3, gap: 'medium', aspectRatio: 'landscape' },
       fields: {
-        images: { type: 'array', arrayFields: { src: { type: 'text' }, alt: { type: 'text' }, caption: { type: 'text' } } },
+        images: { type: 'array', arrayFields: { src: { type: 'text', metadata: { isImage: true } }, alt: { type: 'text' }, caption: { type: 'text' } } },
         columns: { type: 'select', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         gap: { type: 'select', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
         aspectRatio: { type: 'select', options: [{ label: 'Square', value: 'square' }, { label: 'Landscape', value: 'landscape' }, { label: 'Portrait', value: 'portrait' }, { label: 'Auto', value: 'auto' }] },
@@ -566,7 +520,7 @@ export const puckConfig: Config = {
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokad', emptyText: 'Det finns inga utbildningar planerade just nu.' },
+      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokad', spotsText: 'platser kvar', emptyText: 'Det finns inga utbildningar planerade just nu.' },
       fields: {
         heading: { type: 'text' },
         maxItems: { type: 'number' },
@@ -576,6 +530,7 @@ export const puckConfig: Config = {
         readMoreText: { type: 'text', label: 'Read more text' },
         bookButtonText: { type: 'text', label: 'Book button text' },
         fullLabel: { type: 'text', label: 'Full label' },
+        spotsText: { type: 'text', label: 'Spots remaining text' },
         emptyText: { type: 'text', label: 'Empty text' },
       },
       render: CourseList as any,
@@ -637,7 +592,7 @@ export const puckConfig: Config = {
     // ── Interactive ──
     ContactForm: {
       label: 'Contact Form',
-      defaultProps: { heading: 'Kontakta oss', description: 'Har du frågor? Hör av dig så återkommer vi så snart vi kan.', showPhone: true, showSubject: true, layout: 'full', contactName: 'Fredrik Livheim', contactTitle: 'Legitimerad psykolog och ACT-utbildare', contactEmail: 'livheim@gmail.com', contactPhone: '070-694 03 64', submitButtonText: 'Skicka meddelande', successHeading: 'Tack för ditt meddelande!', successMessage: 'Vi återkommer så snart vi kan.' },
+      defaultProps: { heading: 'Kontakta oss', description: 'Har du frågor? Hör av dig så återkommer vi så snart vi kan.', showPhone: true, showSubject: true, layout: 'full', contactName: 'Fredrik Livheim', contactTitle: 'Legitimerad psykolog och ACT-utbildare', contactEmail: 'livheim@gmail.com', contactPhone: '070-694 03 64', submitButtonText: 'Skicka meddelande', submittingText: 'Skickar...', successHeading: 'Tack för ditt meddelande!', successMessage: 'Vi återkommer så snart vi kan.', nameLabel: 'Namn *', emailLabel: 'E-post *', phoneLabel: 'Telefon', subjectLabel: 'Ämne', messageLabel: 'Meddelande *' },
       fields: {
         heading: { type: 'text' }, description: { type: 'textarea' },
         showPhone: { type: 'radio', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -645,14 +600,20 @@ export const puckConfig: Config = {
         layout: { type: 'radio', options: [{ label: 'Full', value: 'full' }, { label: 'Split', value: 'split' }] },
         contactName: { type: 'text' }, contactTitle: { type: 'text' }, contactEmail: { type: 'text' }, contactPhone: { type: 'text' },
         submitButtonText: { type: 'text', label: 'Submit button text' },
+        submittingText: { type: 'text', label: 'Submitting text' },
         successHeading: { type: 'text', label: 'Success heading' },
         successMessage: { type: 'text', label: 'Success message' },
+        nameLabel: { type: 'text', label: 'Name field label' },
+        emailLabel: { type: 'text', label: 'Email field label' },
+        phoneLabel: { type: 'text', label: 'Phone field label' },
+        subjectLabel: { type: 'text', label: 'Subject field label' },
+        messageLabel: { type: 'text', label: 'Message field label' },
       },
       render: ContactForm as any,
     },
     BookingForm: {
       label: 'Booking Form',
-      defaultProps: { showOrganization: true, showNotes: true, submitButtonText: 'Gå till betalning', processingText: 'Bearbetar...', fullMessage: 'Denna utbildning är fullbokad.', completedMessage: 'Denna utbildning har genomförts.', totalLabel: 'Totalt' },
+      defaultProps: { showOrganization: true, showNotes: true, submitButtonText: 'Gå till betalning', processingText: 'Bearbetar...', fullMessage: 'Denna utbildning är fullbokad.', completedMessage: 'Denna utbildning har genomförts.', totalLabel: 'Totalt', nameLabel: 'Namn *', emailLabel: 'E-post *', phoneLabel: 'Telefon', organizationLabel: 'Organisation', participantsLabel: 'Antal deltagare *', notesLabel: 'Meddelande', priceSuffix: 'kr/person' },
       fields: {
         showOrganization: { type: 'radio', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showNotes: { type: 'radio', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -661,6 +622,13 @@ export const puckConfig: Config = {
         fullMessage: { type: 'text', label: 'Full message' },
         completedMessage: { type: 'text', label: 'Completed message' },
         totalLabel: { type: 'text', label: 'Total label' },
+        nameLabel: { type: 'text', label: 'Name field label' },
+        emailLabel: { type: 'text', label: 'Email field label' },
+        phoneLabel: { type: 'text', label: 'Phone field label' },
+        organizationLabel: { type: 'text', label: 'Organization field label' },
+        participantsLabel: { type: 'text', label: 'Participants field label' },
+        notesLabel: { type: 'text', label: 'Notes field label' },
+        priceSuffix: { type: 'text', label: 'Price suffix' },
       },
       render: BookingForm as any,
     },
@@ -668,7 +636,7 @@ export const puckConfig: Config = {
     // ── Data-bound ──
     CourseInfo: {
       label: 'Course Info',
-      defaultProps: { showDeadline: true, layout: 'grid', locationLabel: 'Plats', dateLabel: 'Datum', priceLabel: 'Pris', spotsLabel: 'Platser', deadlineLabel: 'Sista anmälningsdag', fullLabel: 'Fullbokad' },
+      defaultProps: { showDeadline: true, layout: 'grid', locationLabel: 'Plats', dateLabel: 'Datum', priceLabel: 'Pris', spotsLabel: 'Platser', deadlineLabel: 'Sista anmälningsdag', fullLabel: 'Fullbokad', spotsOfText: 'av', spotsRemainingText: 'kvar' },
       fields: {
         showDeadline: { type: 'radio', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         layout: { type: 'radio', options: [{ label: 'Grid', value: 'grid' }, { label: 'Stacked', value: 'stacked' }] },
@@ -678,6 +646,8 @@ export const puckConfig: Config = {
         spotsLabel: { type: 'text', label: 'Spots label' },
         deadlineLabel: { type: 'text', label: 'Deadline label' },
         fullLabel: { type: 'text', label: 'Full label' },
+        spotsOfText: { type: 'text', label: 'Spots "of" text' },
+        spotsRemainingText: { type: 'text', label: 'Spots "remaining" text' },
       },
       render: CourseInfo as any,
     },

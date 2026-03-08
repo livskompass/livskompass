@@ -7,7 +7,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
 import { setPageEditData } from '../components/InlineEditProvider'
-import { defaultHomeTemplate, defaultPageTemplate, defaultBlogTemplate } from '@livskompass/shared'
+import { defaultHomeTemplate, defaultPageTemplate, defaultBlogTemplate, UI_STRINGS } from '@livskompass/shared'
 import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
@@ -44,6 +44,7 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
     if (data?.page?.id && data.page.content_blocks) {
       setPageEditData({
         pageId: String(data.page.id),
+        contentType: 'page',
         contentBlocks: data.page.content_blocks,
         updatedAt: data.page.updated_at || '',
       })
@@ -81,7 +82,7 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
 
   // Non-home pages with no content_blocks: use default page template
   if (!page.content_blocks && (!page.content || page.content.trim() === '')) {
-    const safeTitle = JSON.stringify(page.title || 'Sida').slice(1, -1)
+    const safeTitle = JSON.stringify(page.title || UI_STRINGS.page.fallbackTitle).slice(1, -1)
     const template = defaultPageTemplate
       .replace('__PAGE_TITLE__', safeTitle)
       .replace('__LEGACY_CONTENT__', '<p></p>')

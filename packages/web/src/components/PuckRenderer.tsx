@@ -1,6 +1,7 @@
 import React from 'react'
 import { puckConfig, InlineEditBlockContext, ZoneRenderContext, useScrollReveal } from '@livskompass/shared'
 import { useInlineEdit } from './InlineEditProvider'
+import EditableBlock from './EditableBlock'
 
 /**
  * Lightweight Puck data renderer that replaces @puckeditor/core's <Render>.
@@ -49,11 +50,13 @@ function RenderItemWithContext({
   if (!comp?.render) return null
   const Fn = comp.render
   return (
-    <InlineEditBlockContext.Provider
-      value={{ isAdmin: true, blockIndex: index, saveBlockProp }}
-    >
-      <Fn {...item.props} />
-    </InlineEditBlockContext.Provider>
+    <EditableBlock blockType={item.type} blockIndex={index}>
+      <InlineEditBlockContext.Provider
+        value={{ isAdmin: true, blockIndex: index, saveBlockProp }}
+      >
+        <Fn {...item.props} />
+      </InlineEditBlockContext.Provider>
+    </EditableBlock>
   )
 }
 

@@ -99,6 +99,11 @@ export const updatePage = (id: string, data: Partial<Page>) =>
     method: 'PUT',
     body: JSON.stringify(data),
   })
+export const savePageDraft = (id: string, data: any) =>
+  fetchApi<{ success: boolean }>(`/admin/pages/${id}/draft`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
 export const deletePage = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/pages/${id}`, { method: 'DELETE' })
 
@@ -115,6 +120,11 @@ export const updatePost = (id: string, data: Partial<Post>) =>
     method: 'PUT',
     body: JSON.stringify(data),
   })
+export const savePostDraft = (id: string, data: any) =>
+  fetchApi<{ success: boolean }>(`/admin/posts/${id}/draft`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
 export const deletePost = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/posts/${id}`, { method: 'DELETE' })
 
@@ -129,6 +139,11 @@ export const createCourse = (data: Partial<Course>) =>
 export const updateCourse = (id: string, data: Partial<Course>) =>
   fetchApi<{ course: Course }>(`/admin/courses/${id}`, {
     method: 'PUT',
+    body: JSON.stringify(data),
+  })
+export const saveCourseDraft = (id: string, data: any) =>
+  fetchApi<{ success: boolean }>(`/admin/courses/${id}/draft`, {
+    method: 'PATCH',
     body: JSON.stringify(data),
   })
 export const deleteCourse = (id: string) =>
@@ -156,6 +171,11 @@ export const createProduct = (data: Partial<Product>) =>
 export const updateProduct = (id: string, data: Partial<Product>) =>
   fetchApi<{ product: Product }>(`/admin/products/${id}`, {
     method: 'PUT',
+    body: JSON.stringify(data),
+  })
+export const saveProductDraft = (id: string, data: any) =>
+  fetchApi<{ success: boolean }>(`/admin/products/${id}/draft`, {
+    method: 'PATCH',
     body: JSON.stringify(data),
   })
 export const deleteProduct = (id: string) =>
@@ -191,20 +211,9 @@ export const markContactRead = (id: string) =>
 export const deleteContact = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/contacts/${id}`, { method: 'DELETE' })
 
-// Site settings (header/footer)
-export interface SiteHeaderConfig {
-  logoText: string
-  navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
-  ctaButton?: { text: string; href: string }
-}
-
-export interface SiteFooterConfig {
-  companyName: string
-  tagline: string
-  contact: { email: string; phone: string }
-  columns: { heading: string; links: { label: string; href: string }[] }[]
-  copyright: string
-}
+// Site settings types — re-exported from shared
+import type { SiteHeaderConfig, SiteFooterConfig } from '@livskompass/shared'
+export type { SiteHeaderConfig, SiteFooterConfig }
 
 export const getSiteSettings = () =>
   fetchApi<{ header: SiteHeaderConfig | null; footer: SiteFooterConfig | null }>('/admin/site-settings')
@@ -244,6 +253,7 @@ export interface Page {
   parent_slug: string | null
   sort_order: number
   status: string
+  draft: string | null
   created_at: string
   updated_at: string
 }
@@ -259,6 +269,7 @@ export interface Post {
   featured_image: string | null
   status: string
   published_at: string | null
+  draft: string | null
   created_at: string
   updated_at: string
 }
@@ -279,6 +290,7 @@ export interface Course {
   current_participants: number
   registration_deadline: string
   status: string
+  draft: string | null
   created_at: string
 }
 
@@ -313,6 +325,7 @@ export interface Product {
   image_url: string | null
   in_stock: number
   status: string
+  draft: string | null
   created_at: string
 }
 

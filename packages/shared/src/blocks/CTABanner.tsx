@@ -1,6 +1,6 @@
 import { cn } from '../ui/utils'
 import { ArrowRight } from 'lucide-react'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 
 export interface CTABannerProps {
   heading: string
@@ -25,6 +25,13 @@ const buttonStyleMap: Record<string, string> = {
   gradient: 'bg-white text-forest-700 hover:bg-forest-50 shadow-lg hover:shadow-xl',
 }
 
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
 export function CTABanner({
   heading = 'Redo att börja?',
   description = '',
@@ -34,9 +41,20 @@ export function CTABanner({
   alignment = 'center',
   id,
 }: CTABannerProps & { puck?: { isEditing: boolean }; id?: string }) {
-  const headingEdit = useInlineEdit('heading', heading, id || '')
-  const descriptionEdit = useInlineEdit('description', description, id || '')
-  const buttonTextEdit = useInlineEdit('buttonText', buttonText, id || '')
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  const descriptionPuck = useInlineEdit('description', description, id || '')
+  const buttonTextPuck = useInlineEdit('buttonText', buttonText, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  const descriptionEditCtx = useEditableText('description', description)
+  const buttonTextEditCtx = useEditableText('buttonText', buttonText)
+
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+  const descriptionEdit = descriptionPuck || descriptionEditCtx
+  const buttonTextEdit = buttonTextPuck || buttonTextEditCtx
 
   const bg = bgMap[backgroundColor] || bgMap.primary
   const btnStyle = buttonStyleMap[backgroundColor] || buttonStyleMap.primary
@@ -61,9 +79,9 @@ export function CTABanner({
           alignment === 'center' ? 'text-center' : 'text-left'
         )}
       >
-        <h2 {...(headingEdit ? { contentEditable: headingEdit.contentEditable, suppressContentEditableWarning: headingEdit.suppressContentEditableWarning, onBlur: headingEdit.onBlur, onKeyDown: headingEdit.onKeyDown, 'data-inline-edit': 'heading' } : {})} className={cn('text-h2 mb-4', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 mb-4', headingEdit?.className)}>{heading}</h2>
         {(description || descriptionEdit) && (
-          <p {...(descriptionEdit ? { contentEditable: descriptionEdit.contentEditable, suppressContentEditableWarning: descriptionEdit.suppressContentEditableWarning, onBlur: descriptionEdit.onBlur, onKeyDown: descriptionEdit.onKeyDown, 'data-inline-edit': 'description' } : {})} className={cn('text-lg mb-8 opacity-90 leading-relaxed', descriptionEdit?.className)}>{description}</p>
+          <p {...editHandlers(descriptionEdit)} className={cn('text-lg mb-8 opacity-90 leading-relaxed', descriptionEdit?.className)}>{description}</p>
         )}
         {buttonText && (
           <a
@@ -73,7 +91,7 @@ export function CTABanner({
               btnStyle
             )}
           >
-            <span {...(buttonTextEdit ? { contentEditable: buttonTextEdit.contentEditable, suppressContentEditableWarning: buttonTextEdit.suppressContentEditableWarning, onBlur: buttonTextEdit.onBlur, onKeyDown: buttonTextEdit.onKeyDown, 'data-inline-edit': 'buttonText' } : {})} className={buttonTextEdit?.className}>{buttonText}</span>
+            <span {...editHandlers(buttonTextEdit)} className={buttonTextEdit?.className}>{buttonText}</span>
             <ArrowRight className="ml-2 h-4 w-4" />
           </a>
         )}

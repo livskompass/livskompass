@@ -1,55 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getSiteSettings, type SiteHeaderConfig, type SiteFooterConfig } from '../lib/api'
+import { getSiteSettings } from '../lib/api'
+import { defaultHeader, defaultFooter, type SiteHeaderConfig } from '@livskompass/shared'
 
 interface NavItem {
   name: string
   href: string
   children?: { name: string; href: string }[]
-}
-
-// Fallback values used when no site settings are saved in the DB
-const defaultHeaderConfig: SiteHeaderConfig = {
-  logoText: 'Livskompass',
-  navItems: [
-    { label: 'ACT', href: '/act' },
-    { label: 'Utbildningar', href: '/utbildningar' },
-    { label: 'Material', href: '/material' },
-    {
-      label: 'Om oss',
-      href: '#',
-      children: [
-        { label: 'Mindfulness', href: '/mindfulness' },
-        { label: 'Forskning på metoden', href: '/forskning-pa-metoden' },
-        { label: 'Om Fredrik Livheim', href: '/om-fredrik-livheim' },
-      ],
-    },
-    { label: 'Kontakt', href: '/kontakt' },
-    { label: 'Nyheter', href: '/nyhet' },
-  ],
-}
-
-const defaultFooterConfig: SiteFooterConfig = {
-  companyName: 'Livskompass',
-  tagline: 'ACT och mindfulness utbildningar med Fredrik Livheim',
-  contact: { email: 'livheim@gmail.com', phone: '070-694 03 64' },
-  columns: [
-    {
-      heading: 'Länkar',
-      links: [
-        { label: 'ACT', href: '/act' },
-        { label: 'Utbildningar', href: '/utbildningar' },
-        { label: 'Material', href: '/material' },
-        { label: 'Mindfulness', href: '/mindfulness' },
-        { label: 'Forskning', href: '/forskning-pa-metoden' },
-        { label: 'Om Fredrik', href: '/om-fredrik-livheim' },
-        { label: 'Kontakt', href: '/kontakt' },
-        { label: 'Nyheter', href: '/nyhet' },
-      ],
-    },
-  ],
-  copyright: '© {year} Livskompass. Alla rättigheter förbehållna.',
 }
 
 function configToNavItems(config: SiteHeaderConfig): NavItem[] {
@@ -220,8 +178,8 @@ export default function Layout() {
     staleTime: 5 * 60 * 1000,
   })
 
-  const headerConfig = siteData?.header || defaultHeaderConfig
-  const footerConfig = siteData?.footer || defaultFooterConfig
+  const headerConfig = siteData?.header || defaultHeader
+  const footerConfig = siteData?.footer || defaultFooter
   const navigation = configToNavItems(headerConfig)
 
   useEffect(() => { window.scrollTo(0, 0) }, [location.pathname])
@@ -335,7 +293,7 @@ export default function Layout() {
               </p>
             </div>
             <div>
-              <h3 className="text-h4 mb-4">Kontakt</h3>
+              <h3 className="text-h4 mb-4">{footerConfig.contactHeading || 'Kontakt'}</h3>
               <p className="text-stone-400 leading-relaxed text-[0.9375rem]">
                 {footerConfig.contact.email}<br />
                 {footerConfig.contact.phone}

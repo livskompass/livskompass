@@ -2,13 +2,16 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getBookingStatus } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { useUIStrings } from '@livskompass/shared'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { CheckCircle2, XCircle, AlertTriangle, Loader2, Home, BookOpen, MessageSquare } from 'lucide-react'
 
 export default function BookingConfirmation() {
-  useDocumentTitle('Bokningsbekräftelse')
+  const strings = useUIStrings()
+  const s = strings.confirmation
+  useDocumentTitle(s.pageTitle)
   const [searchParams] = useSearchParams()
   const bookingId = searchParams.get('booking')
   const status = searchParams.get('status')
@@ -31,12 +34,12 @@ export default function BookingConfirmation() {
         <Card>
           <CardContent className="py-12">
             <h1 className="text-h2 text-stone-900 mb-4">
-              Ingen bokning hittades
+              {s.noBookingHeading}
             </h1>
             <Button variant="ghost" className="text-forest-600" asChild>
               <Link to="/utbildningar">
                 <BookOpen className="mr-2 h-4 w-4" />
-                Se utbildningar
+                {s.seeCourses}
               </Link>
             </Button>
           </CardContent>
@@ -54,15 +57,15 @@ export default function BookingConfirmation() {
               <AlertTriangle className="h-8 w-8 text-yellow-600" />
             </div>
             <h1 className="text-h2 text-stone-900 mb-3">
-              Betalning avbruten
+              {s.cancelledHeading}
             </h1>
             <p className="text-stone-500 mb-8 text-lg">
-              Betalningen avbrotades. Ingen debitering har gjorts.
+              {s.cancelledMessage}
             </p>
             <Button size="lg" asChild>
               <Link to="/utbildningar">
                 <BookOpen className="mr-2 h-4 w-4" />
-                Tillbaka till utbildningar
+                {s.backToCourses}
               </Link>
             </Button>
           </CardContent>
@@ -75,7 +78,7 @@ export default function BookingConfirmation() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Loader2 className="h-12 w-12 text-forest-600 animate-spin mx-auto mb-6" />
-        <p className="text-stone-500 text-lg">Bekräftar bokning...</p>
+        <p className="text-stone-500 text-lg">{s.confirming}</p>
       </div>
     )
   }
@@ -89,10 +92,10 @@ export default function BookingConfirmation() {
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Loader2 className="h-12 w-12 text-forest-600 animate-spin mx-auto mb-6" />
         <h1 className="text-h2 text-stone-900 mb-3">
-          Behandlar betalning...
+          {s.processingHeading}
         </h1>
         <p className="text-stone-500 text-lg" aria-live="polite">
-          Vi behandlar din bokning. Vänligen vänta...
+          {s.processingMessage}
         </p>
       </div>
     )
@@ -105,26 +108,26 @@ export default function BookingConfirmation() {
           <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
         <h1 className="text-h2 text-stone-900 mb-3">
-          Tack för din bokning!
+          {s.successHeading}
         </h1>
         <p className="text-stone-500 mb-8 text-lg" aria-live="polite">
-          Din bokning är bekräftad. Spara ditt bokningsnummer. Kontakta oss vid frågor.
+          {s.successMessage}
         </p>
         <Card className="text-left mb-8">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-stone-500 mb-0.5">Bokningsnummer</p>
+                <p className="text-sm text-stone-500 mb-0.5">{s.bookingNumberLabel}</p>
                 <p className="font-mono font-medium text-stone-900">{bookingId}</p>
               </div>
-              <Badge variant="success">Bekräftad</Badge>
+              <Badge variant="success">{s.confirmedBadge}</Badge>
             </div>
           </CardContent>
         </Card>
         <Button size="lg" asChild>
           <Link to="/">
             <Home className="mr-2 h-4 w-4" />
-            Till startsidan
+            {s.toHomepage}
           </Link>
         </Button>
       </div>
@@ -139,15 +142,15 @@ export default function BookingConfirmation() {
             <XCircle className="h-8 w-8 text-red-600" />
           </div>
           <h1 className="text-h2 text-stone-900 mb-3">
-            Något gick fel
+            {s.errorHeading}
           </h1>
           <p className="text-stone-500 mb-8 text-lg">
-            Det uppstod ett problem med din betalning. Kontakta oss om du har frågor.
+            {s.errorMessage}
           </p>
           <Button size="lg" asChild>
             <Link to="/kontakt">
               <MessageSquare className="mr-2 h-4 w-4" />
-              Kontakta oss
+              {s.contactUs}
             </Link>
           </Button>
         </CardContent>

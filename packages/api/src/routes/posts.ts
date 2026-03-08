@@ -23,7 +23,7 @@ postsRoutes.get('/', async (c) => {
 
   const total = (countResult.results?.[0] as { total: number } | undefined)?.total ?? 0
 
-  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
+  c.header('Cache-Control', 'no-cache')
   return c.json({
     posts: result.results,
     total,
@@ -37,13 +37,14 @@ postsRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
 
   const result = await c.env.DB.prepare(`
-    SELECT * FROM posts WHERE slug = ? AND status = 'published'
+    SELECT id, slug, title, content, content_blocks, editor_version, excerpt, featured_image, status, published_at, created_at, updated_at
+    FROM posts WHERE slug = ? AND status = 'published'
   `).bind(slug).first()
 
   if (!result) {
     return c.json({ error: 'Post not found' }, 404)
   }
 
-  c.header('Cache-Control', 'public, max-age=300, s-maxage=600')
+  c.header('Cache-Control', 'no-cache')
   return c.json({ post: result })
 })

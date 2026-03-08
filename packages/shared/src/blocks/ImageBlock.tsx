@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { ImageIcon } from 'lucide-react'
 import { resolveMediaUrl } from '../helpers'
-import { useInlineEdit } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 
 export interface ImageBlockProps {
   src: string
@@ -31,6 +31,13 @@ const roundedMap = {
   large: 'rounded-2xl',
 } as const
 
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
 export function ImageBlock({
   src = '',
   alt = '',
@@ -41,7 +48,13 @@ export function ImageBlock({
   link = '',
   id,
 }: ImageBlockProps & { puck?: { isEditing: boolean }; id?: string }) {
-  const captionEdit = useInlineEdit('caption', caption, id || '')
+  // Puck editor inline editing (via postMessage)
+  const captionPuck = useInlineEdit('caption', caption, id || '')
+  // Public site admin editing (via InlineEditBlockContext)
+  const captionEditCtx = useEditableText('caption', caption)
+  // Puck takes priority
+  const captionEdit = captionPuck || captionEditCtx
+
   if (!src) {
     return (
       <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
@@ -75,7 +88,7 @@ export function ImageBlock({
       <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
         {wrappedImg}
         {(caption || captionEdit) && (
-          <figcaption {...(captionEdit ? { contentEditable: captionEdit.contentEditable, suppressContentEditableWarning: captionEdit.suppressContentEditableWarning, onBlur: captionEdit.onBlur, onKeyDown: captionEdit.onKeyDown, 'data-inline-edit': 'caption' } : {})} className={cn('mt-2 text-sm text-stone-500 text-center', captionEdit?.className)}>
+          <figcaption {...editHandlers(captionEdit)} className={cn('mt-2 text-sm text-stone-500 text-center', captionEdit?.className)}>
             {caption}
           </figcaption>
         )}

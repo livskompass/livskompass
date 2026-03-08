@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPost, createPost, updatePost, deletePost } from '../lib/api'
+import { getPost, createPost, updatePost, savePostDraft, deletePost } from '../lib/api'
 import PostBuilder from '../components/PostBuilder'
+import type { SaveStatus } from '../components/PageBuilder'
 import { Skeleton } from '../components/ui/skeleton'
 
 export default function PostEditor() {
@@ -11,7 +12,10 @@ export default function PostEditor() {
   const queryClient = useQueryClient()
   const isNew = !id
 
-  const [error, setError] = useState('')
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [saveError, setSaveError] = useState('')
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const lastSaveDataRef = useRef<any>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-post', id],
@@ -19,15 +23,57 @@ export default function PostEditor() {
     enabled: !!id,
   })
 
-  const saveMutation = useMutation({
-    mutationFn: (saveData: any) =>
-      isNew ? createPost(saveData) : updatePost(id!, saveData),
+  const autoSaveMutation = useMutation({
+    mutationFn: (saveData: any) => {
+      lastSaveDataRef.current = saveData
+      return savePostDraft(id!, saveData)
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
-      navigate('/nyheter')
+      setSaveStatus('saved')
+      setSaveError('')
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2500)
     },
     onError: (err: Error) => {
-      setError(err.message || 'Could not save the post')
+      setSaveError(err.message || 'Could not save draft')
+      setSaveStatus('error')
+    },
+  })
+
+  const statusChangeMutation = useMutation({
+    mutationFn: (saveData: any) => {
+      lastSaveDataRef.current = saveData
+      return updatePost(id!, saveData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-post', id] })
+      setSaveStatus('saved')
+      setSaveError('')
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2500)
+    },
+    onError: (err: Error) => {
+      setSaveError(err.message || 'Could not save the post')
+      setSaveStatus('error')
+    },
+  })
+
+  const createMutation = useMutation({
+    mutationFn: (saveData: any) => createPost(saveData),
+    onSuccess: (result: any) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
+      if (result?.post?.id) {
+        navigate(`/nyheter/${result.post.id}`, { replace: true })
+      }
+      setSaveStatus('saved')
+      setSaveError('')
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2500)
+    },
+    onError: (err: Error) => {
+      setSaveError(err.message || 'Could not create the post')
+      setSaveStatus('error')
     },
   })
 
@@ -37,10 +83,33 @@ export default function PostEditor() {
       queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
       navigate('/nyheter')
     },
-    onError: (err: Error) => {
-      setError(err.message || 'Could not delete the post')
-    },
   })
+
+  const handleAutoSave = useCallback((saveData: any) => {
+    setSaveError('')
+    setSaveStatus('saving')
+    autoSaveMutation.mutate(saveData)
+  }, [autoSaveMutation])
+
+  const handleStatusChange = useCallback((saveData: any) => {
+    setSaveError('')
+    setSaveStatus('saving')
+    statusChangeMutation.mutate(saveData)
+  }, [statusChangeMutation])
+
+  const handleCreate = useCallback((saveData: any) => {
+    setSaveError('')
+    setSaveStatus('saving')
+    createMutation.mutate(saveData)
+  }, [createMutation])
+
+  const handleRetry = () => {
+    if (lastSaveDataRef.current) {
+      setSaveError('')
+      setSaveStatus('saving')
+      autoSaveMutation.mutate(lastSaveDataRef.current)
+    }
+  }
 
   if (!isNew && isLoading) {
     return (
@@ -50,36 +119,37 @@ export default function PostEditor() {
     )
   }
 
-  const postData = data?.post
+  const raw = data?.post as any
+  const draftData = raw?.draft ? (() => { try { return JSON.parse(raw.draft) } catch { return null } })() : null
+
+  const postData = raw
     ? {
-        id: (data.post as any).id,
-        title: data.post.title,
-        slug: data.post.slug,
-        excerpt: data.post.excerpt || '',
-        featured_image: data.post.featured_image || null,
-        status: data.post.status,
-        published_at: data.post.published_at || null,
-        content: (data.post as any).content || '',
-        content_blocks: (data.post as any).content_blocks || null,
+        id: raw.id,
+        title: draftData?.title ?? raw.title,
+        slug: draftData?.slug ?? raw.slug,
+        excerpt: draftData?.excerpt ?? raw.excerpt ?? '',
+        featured_image: draftData?.featured_image ?? raw.featured_image ?? null,
+        status: raw.status,
+        published_at: draftData?.published_at ?? raw.published_at ?? null,
+        content: raw.content || '',
+        content_blocks: draftData?.content_blocks ?? raw.content_blocks ?? null,
       }
     : null
 
-  return (
-    <div>
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-2">
-          {error}
-        </div>
-      )}
+  const hasDraft = !!raw?.draft
 
-      <PostBuilder
-        post={isNew ? null : postData}
-        onSave={(saveData) => {
-          setError('')
-          saveMutation.mutate(saveData)
-        }}
-        onDelete={!isNew ? () => deleteMutation.mutate() : undefined}
-      />
-    </div>
+  return (
+    <PostBuilder
+      post={isNew ? null : postData}
+      isNew={isNew}
+      hasDraft={hasDraft}
+      onAutoSave={handleAutoSave}
+      onStatusChange={handleStatusChange}
+      onCreate={handleCreate}
+      onDelete={!isNew ? () => deleteMutation.mutate() : undefined}
+      saveStatus={saveStatus}
+      saveError={saveError}
+      onRetry={handleRetry}
+    />
   )
 }

@@ -14,6 +14,7 @@ export interface PageHeaderProps {
   size: 'small' | 'large'
   showDivider: boolean
   breadcrumbs: BreadcrumbItem[]
+  breadcrumbHomeText: string
 }
 
 export function PageHeader({
@@ -23,6 +24,7 @@ export function PageHeader({
   size = 'large',
   showDivider = false,
   breadcrumbs = [],
+  breadcrumbHomeText = 'Hem',
   id,
 }: PageHeaderProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -71,7 +73,7 @@ export function PageHeader({
         <nav aria-label="Breadcrumb" className="mb-5 reveal">
           <ol className="flex items-center gap-1.5 text-body-sm text-stone-500">
             <li>
-              <a href="/" className="hover:text-forest-600 transition-colors">Hem</a>
+              <a href="/" className="hover:text-forest-600 transition-colors">{breadcrumbHomeText}</a>
             </li>
             {breadcrumbs.map((crumb, i) => (
               <li key={i} className="flex items-center gap-1.5">
