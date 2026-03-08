@@ -502,9 +502,11 @@ body {
   pointer-events: none !important;
 }
 
-/* Fix canvas collapse when left sidebar is closed — force frame to fill space */
+/* Fix canvas collapse when left sidebar is closed — force frame to fill space.
+   Right sidebar is floating, so reclaim its grid space. */
 [class*="PuckLayout-inner"] {
   --puck-frame-width: minmax(266px, 1fr) !important;
+  --puck-right-side-bar-width: 0px !important;
 }
 
 /* ── 6. Left Sidebar — Component Picker ── */
@@ -563,10 +565,19 @@ body {
   padding: 4px 12px 12px !important;
 }
 
-/* ── 7. Right Sidebar — Field Editor Panel ── */
+/* ── 7. Right Sidebar — Floating Field Editor Panel ── */
 [class*="Sidebar--right"] {
+  position: fixed !important;
+  top: 54px !important;          /* below Puck header bar */
+  right: 0 !important;
+  width: 280px !important;
+  max-height: calc(100vh - 54px) !important;
+  overflow-y: auto !important;
   background: #FFFFFF !important;
   border-left: 1px solid #E4E4E7 !important;
+  box-shadow: -4px 0 16px rgba(0,0,0,0.06) !important;
+  z-index: 999999 !important;
+  isolation: isolate !important;
 }
 
 /* Hide resize handle */
