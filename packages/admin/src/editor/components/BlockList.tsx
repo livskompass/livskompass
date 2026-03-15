@@ -40,21 +40,40 @@ function EmptyStateInsertButton() {
     setSearch('')
   }
 
+  // Close on click outside
+  const ref = useRef<HTMLDivElement>(null)
+  React.useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    setTimeout(() => document.addEventListener('mousedown', handler), 50)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  // Close on ESC
+  React.useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open])
+
   return (
-    <div className="relative mb-4">
+    <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer mb-6"
         style={{ background: 'var(--editor-blue-lightest)', color: 'var(--editor-blue)', border: '2px solid var(--editor-blue-light, #93C5FD)' }}
         aria-label="Add first block"
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
       </button>
       {open && (
-        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[320px] bg-white rounded-xl border border-zinc-200 shadow-xl z-50 max-h-[400px] overflow-hidden flex flex-col">
+        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[340px] bg-white rounded-xl border border-zinc-200 shadow-2xl z-50 max-h-[400px] overflow-hidden flex flex-col" style={{ animation: 'editor-slide-down 150ms ease forwards' }}>
           <div className="p-2.5 border-b border-zinc-100">
             <input
               type="text"
@@ -260,7 +279,7 @@ export function BlockList() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className="flex flex-col items-center justify-center py-32 min-h-[400px] transition-colors rounded-lg mx-4 my-4"
+        className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] transition-colors rounded-lg mx-4"
         style={{
           border: isPanelDragOver
             ? '2px dashed var(--editor-blue)'
