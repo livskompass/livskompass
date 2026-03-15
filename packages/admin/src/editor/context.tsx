@@ -3,6 +3,8 @@ import type { Data, EditorState, EditorAction, ContentEntity, ContentType, SaveS
 
 // ── Reducer ──
 
+const MAX_HISTORY = 50
+
 const initialState: EditorState = {
   entity: null,
   contentType: 'page',
@@ -14,6 +16,18 @@ const initialState: EditorState = {
   saveStatus: 'idle',
   isDirty: false,
   isPublished: false,
+}
+
+// History stack — kept outside reducer for simplicity
+let historyStack: Data[] = []
+let historyIndex = -1
+
+function pushHistory(data: Data) {
+  // Truncate any redo entries
+  historyStack = historyStack.slice(0, historyIndex + 1)
+  historyStack.push(JSON.parse(JSON.stringify(data)))
+  if (historyStack.length > MAX_HISTORY) historyStack.shift()
+  historyIndex = historyStack.length - 1
 }
 
 function editorReducer(state: EditorState, action: EditorAction): EditorState {
@@ -58,6 +72,16 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
       return { ...state, isDirty: false }
     case 'MARK_PUBLISHED':
       return { ...state, isPublished: true, isDirty: false }
+    case 'UNDO': {
+      if (historyIndex <= 0) return state
+      historyIndex--
+      return { ...state, puckData: JSON.parse(JSON.stringify(historyStack[historyIndex])), isDirty: true }
+    }
+    case 'REDO': {
+      if (historyIndex >= historyStack.length - 1) return state
+      historyIndex++
+      return { ...state, puckData: JSON.parse(JSON.stringify(historyStack[historyIndex])), isDirty: true }
+    }
     default:
       return state
   }
@@ -82,6 +106,13 @@ interface EditorContextValue {
   exitEdit: () => void
   /** Set save status */
   setSaveStatus: (status: SaveStatus) => void
+  /** Undo last block operation */
+  undo: () => void
+  /** Redo last undone operation */
+  redo: () => void
+  /** Whether undo/redo are available */
+  canUndo: boolean
+  canRedo: boolean
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -198,6 +229,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   stateRef.current = state
 
   const updateDataWithSave = useCallback((data: Data) => {
+    pushHistory(data)
     dispatch({ type: 'SET_PUCK_DATA', data })
     const { entity, contentType } = stateRef.current
     // Skip auto-save for new entities (no ID yet — will be created on first publish)
@@ -222,6 +254,57 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'EXIT_EDIT' })
   }, [])
 
+  const undo = useCallback(() => {
+    dispatch({ type: 'UNDO' })
+    // Trigger auto-save for the restored state
+    setTimeout(() => {
+      const { entity, contentType, puckData } = stateRef.current
+      if (entity && entity.id && puckData) {
+        autoSave(puckData, entity, contentType)
+      }
+    }, 0)
+  }, [autoSave])
+
+  const redo = useCallback(() => {
+    dispatch({ type: 'REDO' })
+    setTimeout(() => {
+      const { entity, contentType, puckData } = stateRef.current
+      if (entity && entity.id && puckData) {
+        autoSave(puckData, entity, contentType)
+      }
+    }, 0)
+  }, [autoSave])
+
+  // Keyboard shortcuts: Cmd+Z / Cmd+Shift+Z
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        // Don't intercept when user is typing in an input/textarea/contenteditable
+        const target = e.target as HTMLElement
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return
+
+        e.preventDefault()
+        if (e.shiftKey) {
+          dispatch({ type: 'REDO' })
+        } else {
+          dispatch({ type: 'UNDO' })
+        }
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  // Reset history when entity changes
+  useEffect(() => {
+    historyStack = []
+    historyIndex = -1
+    if (state.puckData) {
+      pushHistory(state.puckData)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.entity?.id])
+
   // Cleanup timers and in-flight requests on unmount
   useEffect(() => {
     return () => {
@@ -241,6 +324,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     enterEdit,
     exitEdit,
     setSaveStatus,
+    undo,
+    redo,
+    canUndo: historyIndex > 0,
+    canRedo: historyIndex < historyStack.length - 1,
   }
 
   return (

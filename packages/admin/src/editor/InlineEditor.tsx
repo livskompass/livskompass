@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { EditorProvider, useEditor } from './context'
 import { EditorTopBar } from './components/EditorTopBar'
@@ -46,7 +46,24 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [historyOpen, setHistoryOpen] = useState(false)
-  const [panelCollapsed, setPanelCollapsed] = useState(false)
+  const [panelCollapsed, setPanelCollapsed] = useState(() => window.innerWidth < 1024)
+
+  // Auto-collapse block panel on small screens
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const handler = (e: MediaQueryListEvent) => setPanelCollapsed(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' } | null>(null)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout>>()
+
+  const showToast = useCallback((message: string, type: 'error' | 'success' = 'error') => {
+    setToast({ message, type })
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    toastTimerRef.current = setTimeout(() => setToast(null), 4000)
+  }, [])
 
   const isNew = id === 'new'
   const toggleHistory = useCallback(() => setHistoryOpen((v) => !v), [])
@@ -189,6 +206,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
       }
     } catch (err) {
       console.error('Publish failed:', err)
+      showToast('Publish failed. Please try again.', 'error')
     }
   }
 
@@ -264,6 +282,27 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
       {/* Accessibility: live region for save status announcements */}
       <SaveStatusAnnouncer />
+
+      {/* Toast notification */}
+      {toast && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-lg text-sm font-medium text-white shadow-lg flex items-center gap-2"
+          style={{
+            background: toast.type === 'error' ? 'var(--editor-red, #dc2626)' : 'var(--editor-green, #16a34a)',
+            animation: 'editor-bounce-in 200ms ease-out forwards',
+          }}
+          role="alert"
+        >
+          {toast.message}
+          <button
+            onClick={() => setToast(null)}
+            className="ml-2 text-white/70 hover:text-white"
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   )
 }

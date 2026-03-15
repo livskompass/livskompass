@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react'
-import { Search, X, GripVertical, Columns, Type, Image, BarChart3, Layout, MessageSquare, Database, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, X, GripVertical, Columns, Type, Image, BarChart3, Layout, MessageSquare, Database, ChevronLeft, ChevronRight, ChevronDown,
+  Heading, AlignLeft, ImageIcon, Layers, Star, FileText, List, Grid3x3, SplitSquareHorizontal, Minus, MoveVertical,
+  Megaphone, CreditCard, Quote, MousePointerClick, Video, Music, File, Code2, BookOpen, ShoppingCart, Newspaper, Navigation, Mail, CalendarCheck, Info, Tag
+} from 'lucide-react'
 import { puckConfig } from '@livskompass/shared'
 
 // Drag data type — used to identify panel drops vs other drag sources
@@ -22,6 +25,41 @@ const categories = (puckConfig as any).categories as Record<
   { title: string; components: string[] }
 >
 
+// Per-block icons for quick visual identification
+const BLOCK_ICONS: Record<string, React.ReactNode> = {
+  Hero: <Heading className="h-3.5 w-3.5" />,
+  RichText: <AlignLeft className="h-3.5 w-3.5" />,
+  ImageBlock: <ImageIcon className="h-3.5 w-3.5" />,
+  Accordion: <List className="h-3.5 w-3.5" />,
+  PageHeader: <Heading className="h-3.5 w-3.5" />,
+  PersonCard: <Star className="h-3.5 w-3.5" />,
+  FeatureGrid: <Grid3x3 className="h-3.5 w-3.5" />,
+  StatsCounter: <BarChart3 className="h-3.5 w-3.5" />,
+  CTABanner: <Megaphone className="h-3.5 w-3.5" />,
+  CardGrid: <Layers className="h-3.5 w-3.5" />,
+  Testimonial: <Quote className="h-3.5 w-3.5" />,
+  ButtonGroup: <MousePointerClick className="h-3.5 w-3.5" />,
+  PricingTable: <CreditCard className="h-3.5 w-3.5" />,
+  ImageGallery: <Grid3x3 className="h-3.5 w-3.5" />,
+  VideoEmbed: <Video className="h-3.5 w-3.5" />,
+  AudioEmbed: <Music className="h-3.5 w-3.5" />,
+  FileEmbed: <File className="h-3.5 w-3.5" />,
+  EmbedBlock: <Code2 className="h-3.5 w-3.5" />,
+  CourseList: <BookOpen className="h-3.5 w-3.5" />,
+  ProductList: <ShoppingCart className="h-3.5 w-3.5" />,
+  PostGrid: <Newspaper className="h-3.5 w-3.5" />,
+  PageCards: <FileText className="h-3.5 w-3.5" />,
+  NavigationMenu: <Navigation className="h-3.5 w-3.5" />,
+  ContactForm: <Mail className="h-3.5 w-3.5" />,
+  BookingForm: <CalendarCheck className="h-3.5 w-3.5" />,
+  BookingCTA: <CalendarCheck className="h-3.5 w-3.5" />,
+  CourseInfo: <Info className="h-3.5 w-3.5" />,
+  PostHeader: <Tag className="h-3.5 w-3.5" />,
+  Columns: <SplitSquareHorizontal className="h-3.5 w-3.5" />,
+  Separator: <Minus className="h-3.5 w-3.5" />,
+  Spacer: <MoveVertical className="h-3.5 w-3.5" />,
+}
+
 const components = puckConfig.components as Record<
   string,
   { label?: string; defaultProps?: Record<string, any> }
@@ -35,6 +73,11 @@ interface BlockPanelProps {
 export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
   const [search, setSearch] = useState('')
   const [draggingBlock, setDraggingBlock] = useState<string | null>(null)
+  const [collapsedCats, setCollapsedCats] = useState<Record<string, boolean>>({})
+
+  const toggleCategory = useCallback((key: string) => {
+    setCollapsedCats((prev) => ({ ...prev, [key]: !prev[key] }))
+  }, [])
 
   const handleDragStart = useCallback((e: React.DragEvent, blockType: string) => {
     e.dataTransfer.setData(PANEL_DRAG_TYPE, blockType)
@@ -138,20 +181,32 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
             No blocks found
           </div>
         ) : (
-          filteredCategories.map((cat) => (
+          filteredCategories.map((cat) => {
+            const isCatCollapsed = collapsedCats[cat.key] && !search
+            return (
             <div key={cat.key} className="mb-3 last:mb-0">
-              <div className="flex items-center gap-1.5 px-2 py-1">
+              <button
+                onClick={() => toggleCategory(cat.key)}
+                className="flex items-center gap-1.5 px-2 py-1 w-full text-left group"
+              >
                 <span style={{ color: 'var(--editor-text-disabled, #a3a3a3)' }}>
                   {CATEGORY_ICONS[cat.key]}
                 </span>
                 <span
-                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  className="text-[10px] font-semibold uppercase tracking-wider flex-1"
                   style={{ color: 'var(--editor-text-disabled, #a3a3a3)' }}
                 >
                   {cat.title}
                 </span>
-              </div>
-              {cat.components.map((name) => (
+                <ChevronDown
+                  className="h-3 w-3 transition-transform"
+                  style={{
+                    color: 'var(--editor-text-disabled, #a3a3a3)',
+                    transform: isCatCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                  }}
+                />
+              </button>
+              {!isCatCollapsed && cat.components.map((name) => (
                 <div
                   key={name}
                   draggable
@@ -178,15 +233,14 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
                   }}
                   title={`Drag to add ${components[name]?.label || name}`}
                 >
-                  <GripVertical
-                    className="h-3.5 w-3.5 flex-shrink-0"
-                    style={{ color: 'var(--editor-neutral-300, #d4d4d4)' }}
-                  />
+                  <span className="flex-shrink-0" style={{ color: 'var(--editor-neutral-400, #a3a3a3)' }}>
+                    {BLOCK_ICONS[name] || <GripVertical className="h-3.5 w-3.5" />}
+                  </span>
                   <span className="truncate">{components[name]?.label || name}</span>
                 </div>
               ))}
             </div>
-          ))
+          )})
         )}
       </div>
     </div>

@@ -59,6 +59,8 @@ export type EditorAction =
   | { type: 'MARK_DIRTY' }
   | { type: 'MARK_CLEAN' }
   | { type: 'MARK_PUBLISHED' }
+  | { type: 'UNDO' }
+  | { type: 'REDO' }
 
 // ── Component Props ──
 

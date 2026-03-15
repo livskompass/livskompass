@@ -48,7 +48,7 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, isNew }
 
         <div className="w-px h-5" style={{ background: 'var(--editor-neutral-200)' }} />
 
-        <div className="flex items-center gap-1.5">
+        <div className="hidden sm:flex items-center gap-1.5">
           <span
             className="w-1.5 h-1.5 rounded-full animate-pulse"
             style={{ background: 'var(--editor-green)' }}
@@ -60,9 +60,9 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, isNew }
 
         {entity && (
           <>
-            <div className="w-px h-5" style={{ background: 'var(--editor-neutral-200)' }} />
+            <div className="hidden sm:block w-px h-5" style={{ background: 'var(--editor-neutral-200)' }} />
             <span
-              className="text-sm font-medium truncate max-w-[300px]"
+              className="text-sm font-medium truncate max-w-[140px] sm:max-w-[300px]"
               style={{ color: 'var(--editor-text-primary)' }}
             >
               {entity.title}
@@ -72,7 +72,7 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, isNew }
       </div>
 
       {/* Center: Save status */}
-      <div className="flex items-center gap-2">
+      <div className="hidden sm:flex items-center gap-2">
         {saveStatus === 'saving' && (
           <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--editor-text-subtle)' }}>
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -132,7 +132,7 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, isNew }
         </button>
 
         {user && (
-          <>
+          <div className="hidden md:contents">
             <div className="w-px h-5" style={{ background: 'var(--editor-neutral-200)' }} />
             {user.avatar_url ? (
               <img
@@ -151,7 +151,7 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, isNew }
                 {user.name?.[0]?.toUpperCase() || '?'}
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>
