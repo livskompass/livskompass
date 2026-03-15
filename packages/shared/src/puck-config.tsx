@@ -167,7 +167,8 @@ function SiteFooter() {
 export const puckConfig: Config = {
   root: {
     fields: {},
-    render: ({ children }: { children: React.ReactNode }) => {
+    render: (props: any) => {
+      const { children } = props
       const isEditor = typeof window !== 'undefined' && window.frameElement !== null
       return (
         <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", backgroundColor: 'var(--surface-primary, #F8F6F2)' }}>
