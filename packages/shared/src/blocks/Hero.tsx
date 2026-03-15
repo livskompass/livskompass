@@ -250,8 +250,8 @@ export function Hero({
         {bgStyle === 'gradient' && (
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />
         )}
-        <div className="relative grid grid-cols-1 lg:grid-cols-5 items-center gap-10 lg:gap-16" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
-          <div className={cn('lg:col-span-3 flex flex-col', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
+        <div className="relative grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-20" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
+          <div className={cn('flex flex-col justify-center', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
             <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'stone' ? 'text-forest-950' : 'text-white', hCls)} style={{ fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400, animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
@@ -274,7 +274,7 @@ export function Hero({
               </div>
             )}
           </div>
-          <div className={cn('lg:col-span-2', imageFirst ? 'lg:order-1' : 'lg:order-2')}>
+          <div className={cn('flex items-center justify-center', imageFirst ? 'lg:order-1' : 'lg:order-2')}>
             <InlineImage
               src={image}
               propName="image"
