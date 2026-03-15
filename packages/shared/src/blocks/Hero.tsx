@@ -249,7 +249,7 @@ export function Hero({
       <section className="overflow-hidden" style={{ backgroundColor: 'var(--surface-primary)', paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-lg)' }}>
         <div className="grid grid-cols-1 lg:grid-cols-5 items-center gap-10 lg:gap-16" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('lg:col-span-3 flex flex-col', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
-            <h1 {...hEdit} className={cn('text-display text-forest-950 max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+            <h1 {...hEdit} className={cn('text-h1 text-forest-950 max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
@@ -276,8 +276,9 @@ export function Hero({
               src={image}
               propName="image"
               loading="eager"
-              className="w-full h-auto rounded-xl object-cover shadow-lg animate-hero-enter"
-              style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}
+              allowRemove
+              className="w-full rounded-xl object-cover shadow-lg animate-hero-enter"
+              style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both', maxHeight: '500px' }}
               fallback={
                 <div className="w-full rounded-xl bg-stone-100 border-2 border-dashed border-stone-300 animate-hero-enter flex items-center justify-center" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}>
                   <div className="text-center text-stone-400">

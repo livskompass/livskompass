@@ -69,8 +69,9 @@ export function InlineImage({
       {resolvedSrc ? (
         <img src={resolvedSrc} alt={alt} loading={loading} className={className} />
       ) : (
-        <div className={cn('flex items-center justify-center bg-stone-100', className)} style={{ minHeight: 80 }}>
-          <Camera className="h-8 w-8 text-stone-300" />
+        <div className={cn('flex flex-col items-center justify-center bg-stone-100 border-2 border-dashed border-stone-300 rounded-xl', className)} style={{ minHeight: 200, aspectRatio: style?.aspectRatio || '4 / 3' }}>
+          <Camera className="h-10 w-10 text-stone-400 mb-2" />
+          <span className="text-sm font-medium text-stone-400">Click to add image</span>
         </div>
       )}
 
