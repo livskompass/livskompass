@@ -106,3 +106,52 @@
 9. **H10-H16** — Accessibility and mobile touch
 
 **Estimated fix time**: C1-C7 = ~2 hours. H1-H16 = ~6 hours. M1-M18 = ~8 hours.
+
+---
+
+## Fix Status (Updated 2026-03-15 post-validation)
+
+### CRITICAL — Fixed
+- [x] C2: SettingsPopover mobile overflow — `min(400, viewport-16px)`
+- [x] C3: SlashMenu mobile overflow — `min(360, viewport-32px)`
+- [x] C4: FloatingToolbar edge clamping — x clamped 120px from edges
+- [x] C5: History stack isolation — `resetHistory()` on entity change
+- [x] C6: VERIFIED FALSE POSITIVE — routes have correct slashes
+- [x] C7: beforeunload handler added — warns on dirty tab close
+
+### CRITICAL — Needs browser verification
+- [ ] C1: Media block URL fields — code review says overlays work, needs manual test
+
+### HIGH — Fixed
+- [x] H2: Keyboard undo now calls undo()/redo() which triggers auto-save
+- [x] H4: Course status now editable (active/full/completed/cancelled)
+- [x] H5: All public-facing defaults translated to Swedish
+- [x] H6: Footer translated to Swedish
+- [x] H7: CTABanner buttons have full ArrayItemControls + ArrayDragProvider
+- [x] H8: PageCards manualPages have ArrayItemControls + ArrayDragProvider + AddItemButton
+- [x] H12: zinc-400 contrast fixed to zinc-500 (passes WCAG AA)
+
+### HIGH — Mitigated
+- [x] H3: Metadata changes warned by beforeunload (not auto-saved, but user gets warning)
+
+### HIGH — Not yet fixed
+- [ ] H1: New entity POST hardcodes status='draft'
+- [ ] H9: Hero resolveFields ignored by SettingsPopover
+- [ ] H10: BlockPanel items not keyboard-focusable
+- [ ] H11: Form labels not linked via htmlFor/id
+- [ ] H13: Version restore unguarded JSON.parse
+- [ ] H14: Auto-save error no retry
+- [ ] H15: Block panel drag no touch support
+- [ ] H16: No focus management after block insert/delete
+
+### MEDIUM — Fixed
+- [x] M1: SlashMenu now inserts after selected block position
+- [x] M5: RichText admin paths now sanitize with DOMPurify
+- [x] M11: ImageGallery mobile grid fallback
+- [x] M12: StatsCounter mobile grid fallback
+
+### Builds verified
+- TypeScript: ALL 3 packages pass tsc --noEmit
+- Vite build: admin (3.35s) + web (2.88s) succeed
+- Dev servers: both respond 200
+- API: 72 pages, 10 posts, 7 courses, 6 products verified
