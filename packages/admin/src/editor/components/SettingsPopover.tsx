@@ -121,7 +121,10 @@ export function SettingsPopover({
   const blockProps = block?.props || {}
   // Access fields from the raw puck config (bypass TypeScript Config type which may strip fields)
   const comp = (puckConfig as any).components?.[blockType]
-  const rawFields = comp?.fields
+  // If component has resolveFields (dynamic fields based on props), use it
+  const rawFields = comp?.resolveFields
+    ? (() => { try { return comp.resolveFields({ props: blockProps }) } catch { return comp.fields } })()
+    : comp?.fields
   const fieldConfig: Record<string, PuckField> = (rawFields && typeof rawFields === 'object' && !Array.isArray(rawFields)) ? rawFields : {}
 
   // Filter out inline-editable text/image fields — keep ALL layout/structural fields
