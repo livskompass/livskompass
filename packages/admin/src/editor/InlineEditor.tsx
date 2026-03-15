@@ -108,26 +108,19 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const toggleHistory = useCallback(() => setHistoryOpen((v) => !v), [])
   const toggleEntitySettings = useCallback(() => setEntitySettingsOpen((v) => !v), [])
 
-  // Auth check
+  // Auth — get user info (ProtectedRoute already verified auth)
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
-    if (!token) {
-      navigate('/login')
-      return
-    }
+    if (!token) { navigate('/login'); return }
 
     fetch(`${API_BASE}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((r) => {
-        if (!r.ok) throw new Error('Unauthorized')
-        return r.json()
-      })
+      .then((r) => r.ok ? r.json() : null)
       .then((data: any) => {
-        if (data.user?.role !== 'admin') throw new Error('Not admin')
-        setUser(data.user)
+        if (data?.user) setUser(data.user)
       })
-      .catch(() => navigate('/login'))
+      .catch(() => {}) // Don't redirect — ProtectedRoute handles that
   }, [navigate])
 
   // Load entity data (or init blank for new)

@@ -104,17 +104,18 @@ function HomepageToggle({ slug }: { slug: string }) {
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
-    if (!token) return
+    if (!token) { setHomepageSlug('home-2'); return }
     fetch(`${API_BASE}/admin/settings`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((r) => r.json())
+      .then((r) => r.ok ? r.json() : null)
       .then((data: any) => {
+        if (!data) { setHomepageSlug('home-2'); return }
         const settings = data.settings || []
         const hp = settings.find((s: any) => s.key === 'homepage_slug')
         setHomepageSlug(hp?.value || 'home-2')
       })
-      .catch(() => {})
+      .catch(() => setHomepageSlug('home-2'))
   }, [])
 
   const isHomepage = homepageSlug === slug

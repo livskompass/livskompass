@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPages, deletePage } from '../lib/api'
+import { getPages, deletePage, getSettings } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
@@ -18,6 +18,12 @@ export default function PagesList() {
     queryKey: ['admin-pages'],
     queryFn: getPages,
   })
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: getSettings,
+  })
+  const _homepageSlug = (settingsData?.settings as any)?.homepage_slug || (Array.isArray(settingsData?.settings) ? (settingsData.settings as any[]).find((s: any) => s.key === 'homepage_slug')?.value : null) || 'home-2'
 
   const deleteMutation = useMutation({
     mutationFn: deletePage,
@@ -59,7 +65,7 @@ export default function PagesList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {[...data.pages].sort((a, b) => a.slug === 'home-2' ? -1 : b.slug === 'home-2' ? 1 : 0).map((page) => (
+              {[...data.pages].sort((a, b) => a.slug === _homepageSlug ? -1 : b.slug === _homepageSlug ? 1 : 0).map((page) => (
                 <TableRow key={page.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
@@ -68,7 +74,7 @@ export default function PagesList() {
                     >
                       {page.title}
                     </Link>
-                    {page.slug === 'home-2' && (
+                    {page.slug === _homepageSlug && (
                       <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
                         Homepage
                       </span>
