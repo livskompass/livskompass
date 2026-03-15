@@ -267,8 +267,16 @@ export function SlashMenu() {
 
       const newBlock = { type: blockType, props: defaultProps }
 
-      // Insert at the end of content
-      const content = [...state.puckData.content, newBlock]
+      // Insert after selected block, or at end if none selected
+      const content = [...state.puckData.content]
+      const selectedIdx = state.selectedBlockId
+        ? content.findIndex((b: any) => (b.props?.id || '') === state.selectedBlockId)
+        : -1
+      if (selectedIdx >= 0) {
+        content.splice(selectedIdx + 1, 0, newBlock)
+      } else {
+        content.push(newBlock)
+      }
       updateData({ ...state.puckData, content } as Data)
 
       addRecentBlock(blockType)

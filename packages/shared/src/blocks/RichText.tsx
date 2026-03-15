@@ -80,7 +80,7 @@ export function RichText({
         contentEditable={puckEdit.contentEditable}
         suppressContentEditableWarning={puckEdit.suppressContentEditableWarning}
         onBlur={puckEdit.onBlur}
-        dangerouslySetInnerHTML={{ __html: rewriteHtmlMediaUrls(content) }}
+        dangerouslySetInnerHTML={{ __html: sanitize(rewriteHtmlMediaUrls(content)) }}
       />
     )
   }
@@ -110,7 +110,7 @@ export function RichText({
         className={cn(baseClass, 'outline-none hover:ring-1 hover:ring-forest-300/50 hover:ring-offset-2 rounded-sm transition-shadow cursor-text', !localContent && 'min-h-[3em]')}
         onClick={() => setEditing(true)}
         {...(localContent
-          ? { dangerouslySetInnerHTML: { __html: rewriteHtmlMediaUrls(localContent) } }
+          ? { dangerouslySetInnerHTML: { __html: sanitize(rewriteHtmlMediaUrls(localContent)) } }
           : {}
         )}
         data-placeholder={!localContent ? 'Click to add text...' : undefined}

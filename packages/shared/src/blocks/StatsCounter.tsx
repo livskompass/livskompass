@@ -10,7 +10,7 @@ export interface StatsCounterProps {
   animation?: 'none' | 'countUp'
 }
 
-const colMap = { 2: 'grid-cols-2', 3: 'grid-cols-2 md:grid-cols-3', 4: 'grid-cols-2 md:grid-cols-4' }
+const colMap = { 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-2 md:grid-cols-3', 4: 'sm:grid-cols-2 md:grid-cols-4' }
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {

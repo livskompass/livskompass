@@ -12,7 +12,7 @@ export interface ImageGalleryProps {
   lightbox?: boolean
 }
 
-const colMap = { 2: 'grid-cols-2', 3: 'grid-cols-2 lg:grid-cols-3', 4: 'grid-cols-2 lg:grid-cols-4' }
+const colMap = { 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-2 lg:grid-cols-3', 4: 'sm:grid-cols-2 lg:grid-cols-4' }
 const gapMap = { small: 'gap-2', medium: 'gap-4', large: 'gap-6' }
 const ratioMap = { square: 'aspect-square', landscape: 'aspect-video', portrait: 'aspect-[3/4]', auto: '' }
 const roundedMap = { none: 'rounded-none', medium: 'rounded-xl', large: 'rounded-2xl' }
