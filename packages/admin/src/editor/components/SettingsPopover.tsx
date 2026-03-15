@@ -248,7 +248,7 @@ export function SettingsPopover({
         {/* Fields */}
         <div className="overflow-y-auto p-3 flex flex-col gap-3" style={{ maxHeight: maxHeight - 44 }}>
           {settingsFields.length === 0 && (
-            <p className="text-xs text-zinc-400 text-center py-4">All fields are editable directly on the canvas</p>
+            <p className="text-xs text-zinc-500 text-center py-4">All fields are editable directly on the canvas</p>
           )}
           {settingsFields.map(([key, field]) => (
             <FieldRenderer
@@ -512,7 +512,7 @@ function PagePicker({ label, value, onChange }: { label: string; value: string; 
               className={`w-full text-left px-2.5 py-1.5 text-sm hover:bg-blue-50 transition-colors ${p.slug === value ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-700'}`}
             >
               {p.title}
-              <span className="text-[10px] text-zinc-400 ml-1.5">/{p.slug}</span>
+              <span className="text-[10px] text-zinc-500 ml-1.5">/{p.slug}</span>
             </button>
           ))}
         </div>
@@ -589,7 +589,7 @@ function ArrayInput({
               className="rounded-md border border-zinc-100 bg-zinc-50/50 p-2"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-medium text-zinc-400">
+                <span className="text-[10px] font-medium text-zinc-500">
                   #{index + 1}
                 </span>
                 <button

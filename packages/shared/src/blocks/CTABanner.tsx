@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { ArrowRight } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
-import { AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface CTAButton {
   text: string
@@ -120,10 +120,11 @@ export function CTABanner({
           <p {...editHandlers(descriptionEdit)} className={cn('text-lg mb-8 opacity-90 leading-relaxed', descriptionEdit?.className)}>{description}</p>
         )}
         {renderButtons.length > 0 && (
+          <ArrayDragProvider fieldName="buttons">
           <div className={cn('flex flex-wrap gap-3', alignment === 'center' ? 'justify-center' : alignment === 'right' ? 'justify-end' : 'justify-start')}>
             {renderButtons.map((btn, i) => (
+              <ArrayItemControls key={i} fieldName="buttons" itemIndex={i} totalItems={renderButtons.length}>
               <a
-                key={i}
                 href={btn.link || '#'}
                 className={cn(
                   'inline-flex items-center justify-center h-12 px-8 font-semibold text-base rounded-full transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
@@ -137,8 +138,10 @@ export function CTABanner({
                 )}
                 {btn.variant !== 'outline' && <ArrowRight className="ml-2 h-4 w-4" />}
               </a>
+              </ArrayItemControls>
             ))}
           </div>
+          </ArrayDragProvider>
         )}
         <AddItemButton fieldName="buttons" label="Add button" />
       </div>

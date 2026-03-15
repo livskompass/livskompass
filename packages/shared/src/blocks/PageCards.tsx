@@ -2,6 +2,7 @@ import { useFetchJson, useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
 import { EditItemBadge } from './EditItemBadge'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface PageCardsProps {
   heading: string
@@ -113,15 +114,18 @@ export function PageCards({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
+      <ArrayDragProvider fieldName="manualPages">
       <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4 reveal`}>
         {pages.map((page, i) => (
-          <div key={i} className="relative group rounded-xl border border-stone-200 bg-white p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+          <ArrayItemControls key={i} fieldName="manualPages" itemIndex={i} totalItems={pages.length}>
+          <div className="relative group rounded-xl border border-stone-200 bg-white p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
             <EditItemBadge cmsRoute="pages" entityId={page.id} label="Edit page" slug={page.slug} />
             <a href={`/${page.slug}`} className="block">
               <h3 className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors mb-1">{page.title}</h3>
               {showDescription && page.description && <p className="text-sm text-stone-500 line-clamp-2">{page.description}</p>}
             </a>
           </div>
+          </ArrayItemControls>
         ))}
         {pages.length === 0 && (
           <div className="col-span-full text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
@@ -132,6 +136,8 @@ export function PageCards({
           </div>
         )}
       </div>
+      </ArrayDragProvider>
+      {!parentSlug && <AddItemButton fieldName="manualPages" label="Add page" />}
     </div>
   )
 }
