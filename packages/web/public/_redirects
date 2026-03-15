@@ -1,0 +1,116 @@
+# WordPress to Cloudflare Pages redirect map
+# Format: old-path new-path status-code
+# Cloudflare Pages _redirects file — processed before SPA fallback
+
+# Trailing slash normalization (WordPress used trailing slashes)
+/act/ /act 301
+/forskning-pa-metoden/ /forskning-pa-metoden 301
+/material/ /material 301
+/mindfulness/ /mindfulness 301
+/utbildningar/ /utbildningar 301
+/kontakt/ /kontakt 301
+/nyhet/ /nyhet 301
+/norge/ /norge 301
+/om-fredrik-livheim/ /om-fredrik-livheim 301
+/pressbilder/ /pressbilder 301
+
+# ACT section
+/om-detta-gruppformat-av-act/ /om-detta-gruppformat-av-act 301
+/vad-ar-act/ /vad-ar-act 301
+/act-grupp-for-ungdomar-13-19-ar/ /act-grupp-for-ungdomar-13-19-ar 301
+/act-pa-norska/ /act-pa-norska 301
+/act-samtalskort/ /act-samtalskort 301
+/act-samtalskort-norska/ /act-samtalskort-norska 301
+/actonline/ /actonline 301
+
+# Research section
+/forskning-pa-detta-gruppformat-av-act-i-sverige/ /forskning-pa-detta-gruppformat-av-act-i-sverige 301
+/internationell-forskning-pa-ett-liknande-gruppformat-av-act/ /internationell-forskning-pa-ett-liknande-gruppformat-av-act 301
+
+# Training section
+/infor-gruppledarutbildning/ /infor-gruppledarutbildning 301
+/rekryteringsmaterial/ /rekryteringsmaterial 301
+/infor-pabyggnadsutbildning-for-ungdomar/ /infor-pabyggnadsutbildning-for-ungdomar 301
+/allman-information-om-gruppledarutbildningen/ /allman-information-om-gruppledarutbildningen 301
+/anmalningsblankett-att-leva-livet-fullt-ut/ /anmalningsblankett-att-leva-livet-fullt-ut 301
+/for-dig-som-gar-gruppledarutbildning/ /for-dig-som-gar-gruppledarutbildning 301
+/forelasningar/ /forelasningar 301
+/prosocial-ledarskapsutbildning/ /prosocial-ledarskapsutbildning 301
+/act-inom-sis-och-bup/ /act-inom-sis-och-bup 301
+/infor-gruppledarutbildning-malmo/ /infor-gruppledarutbildning-malmo 301
+
+# Training sub-pages
+/act-7-traffar/ /act-7-traffar 301
+/actonline-losenord/ /actonline-losenord 301
+/bestallning-ny-manual/ /bestallning-ny-manual 301
+/bestallning-ny-manual-2/ /bestallning-ny-manual-2 301
+/bestallning-parm-gruppdeltagare/ /bestallning-parm-gruppdeltagare 301
+/filmer/ /filmer 301
+/filmer-till-act-kursen/ /filmer-till-act-kursen 301
+/matformular/ /matformular 301
+/ovrigt-material/ /ovrigt-material 301
+/pafyllnadsutbildningar/ /pafyllnadsutbildningar 301
+/traff-1-2/ /traff-1-2 301
+/traff-2/ /traff-2 301
+/traff-3/ /traff-3 301
+/traff-4/ /traff-4 301
+/traff-5-valfritt/ /traff-5-valfritt 301
+/grupp-enhetschefer-2016/ /grupp-enhetschefer-2016 301
+/grupp-stab-metod-och-regionschefer-2016/ /grupp-stab-metod-och-regionschefer-2016 301
+
+# Material section
+/act-conversation-cards/ /act-conversation-cards 301
+/ahorarkopior-fran-forelasningar-med-fredrik-livheim/ /ahorarkopior-fran-forelasningar-med-fredrik-livheim 301
+/arbetsmaterial-att-ladda-hem/ /arbetsmaterial-att-ladda-hem 301
+/tidningsartiklar-om-denna-act-intervention/ /tidningsartiklar-om-denna-act-intervention 301
+/internationell-media-om-act/ /internationell-media-om-act 301
+/media-om-detta-act-gruppformat/ /media-om-detta-act-gruppformat 301
+/ovrig-svensk-media-om-act/ /ovrig-svensk-media-om-act 301
+/material-for-act-att-leva-livet-fullt-ut/ /material-for-act-att-leva-livet-fullt-ut 301
+/material-for-group-leaders/ /material-for-group-leaders 301
+
+# Mindfulness section
+/cd-skivor-medveten-narvaro-skivor-ovningar/ /cd-skivor-medveten-narvaro-skivor-ovningar 301
+/cd-medveten-narvaro/ /cd-medveten-narvaro 301
+/bestallning-av-cd-medveten-narvaro-2/ /bestallning-av-cd-medveten-narvaro-2 301
+/cd-nar-det-gor-ont-medveten-narvaro-yin-yoga/ /cd-nar-det-gor-ont-medveten-narvaro-yin-yoga 301
+/bestallning-av-cd-nar-det-gor-ont/ /bestallning-av-cd-nar-det-gor-ont 301
+/instruktioner-for-att-kopa-appen-till-flera/ /instruktioner-for-att-kopa-appen-till-flera 301
+/jag-har-nu-webbapp/ /jag-har-nu-webbapp 301
+/jagharnuiphoneapp/ /jagharnuiphoneapp 301
+/ovningar-for-kursdeltagare/ /ovningar-for-kursdeltagare 301
+/ovningar-i-medveten-narvaro/ /ovningar-i-medveten-narvaro 301
+/tips-nar-du-ovar-medveten-narvaro/ /tips-nar-du-ovar-medveten-narvaro 301
+/vad-ar-medveten-narvaro/ /vad-ar-medveten-narvaro 301
+
+# Misc pages
+/stockholm-varen/ /stockholm-varen 301
+/anmalningsblankett-stockholm-varen/ /anmalningsblankett-stockholm-varen 301
+/bestallning-av-cd-medveten-narvaro/ /bestallning-av-cd-medveten-narvaro 301
+/booster/ /booster 301
+
+# Blog posts (WordPress /nyhet/slug/ → /nyhet/slug)
+/nyhet/act-i-grupp-effektivt-for-stressade-och-deprimerade-ungdomar/ /nyhet/act-i-grupp-effektivt-for-stressade-och-deprimerade-ungdomar 301
+/nyhet/anmal-dig-till-vara-kommande-utbildningar/ /nyhet/anmal-dig-till-vara-kommande-utbildningar 301
+/nyhet/boken-mindful-employee-finns-nu-att-kopa/ /nyhet/boken-mindful-employee-finns-nu-att-kopa 301
+/nyhet/fredrik-livheim-blir-intervjuad-i-tv4-nyhetsmorgon/ /nyhet/fredrik-livheim-blir-intervjuad-i-tv4-nyhetsmorgon 301
+/nyhet/fredrik-livheim-medverkar-i-facktidningen-kollega/ /nyhet/fredrik-livheim-medverkar-i-facktidningen-kollega 301
+/nyhet/fredrik-livheim-pratar-om-act-och-stress-i-nyhetsmorgon/ /nyhet/fredrik-livheim-pratar-om-act-och-stress-i-nyhetsmorgon 301
+/nyhet/fredriks-doktorsavhandling-nu-publicerad/ /nyhet/fredriks-doktorsavhandling-nu-publicerad 301
+/nyhet/nyinspelade-filmer/ /nyhet/nyinspelade-filmer 301
+/nyhet/ova-medveten-narvaro-med-var-nya-app-jag-har-nu/ /nyhet/ova-medveten-narvaro-med-var-nya-app-jag-har-nu 301
+/nyhet/tid-att-leva-testad-i-vetenskaplig-studie-preliminara-resultat-mycket-lovande/ /nyhet/tid-att-leva-testad-i-vetenskaplig-studie-preliminara-resultat-mycket-lovande 301
+/nyhet/tid-att-leva-ute-nu-i-bokhandeln/ /nyhet/tid-att-leva-ute-nu-i-bokhandeln 301
+
+# WordPress feed URLs
+/feed/ / 301
+/rss/ / 301
+/atom/ / 301
+/comments/feed/ / 301
+
+# WordPress admin/login (redirect to new admin)
+/wp-admin/* https://livskompass-admin.pages.dev/ 301
+/wp-login.php https://livskompass-admin.pages.dev/ 301
+
+# SPA fallback — must be last
+/* /index.html 200
