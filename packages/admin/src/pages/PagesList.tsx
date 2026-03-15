@@ -59,7 +59,7 @@ export default function PagesList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.pages.map((page) => (
+              {[...data.pages].sort((a, b) => a.slug === 'home-2' ? -1 : b.slug === 'home-2' ? 1 : 0).map((page) => (
                 <TableRow key={page.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
