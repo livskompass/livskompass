@@ -1,6 +1,6 @@
 import { cn } from '../ui/utils'
 import { useEditableText } from '../context'
-import { ArrayItemControls } from './ArrayItemControls'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface NavigationMenuProps {
   items: Array<{ label: string; link: string }>
@@ -60,6 +60,7 @@ export function NavigationMenu({
             <span className="text-stone-400 text-sm">Add menu items in settings</span>
           )}
         </div>
+        <AddItemButton fieldName="items" label="Add menu item" />
       </nav>
     </div>
   )

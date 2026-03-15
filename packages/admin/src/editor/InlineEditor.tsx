@@ -81,6 +81,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const [user, setUser] = useState<{ name: string; avatar_url: string; role: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [legacyConverted, setLegacyConverted] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [panelCollapsed, setPanelCollapsed] = useState(() => window.innerWidth < 1024)
 
@@ -185,6 +186,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
           if (legacyHtml) {
             entity.content_blocks = legacyHtmlToPuckData(legacyHtml)
             entity.editor_version = 'puck'
+            setLegacyConverted(true)
           }
         }
 
@@ -312,7 +314,25 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* DEBUG BANNER — remove after fixing */}
+      {import.meta.env.DEV && (
+        <div className="fixed bottom-0 right-0 z-[9999] bg-black text-green-400 text-[10px] font-mono p-2 rounded-tl-lg max-w-sm opacity-80">
+          <div>Entity: {state.entity?.title || 'none'} (id: {state.entity?.id?.slice(0,8) || '?'})</div>
+          <div>PuckData: {state.puckData ? `${state.puckData.content?.length} blocks` : 'NULL'}</div>
+          <div>Status: {state.publishState} | Dirty: {String(state.isDirty)}</div>
+          <div>Draft: {state.hasDraftChanges ? 'YES' : 'NO'}</div>
+        </div>
+      )}
       <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} onToggleHistory={toggleHistory} onToggleEntitySettings={toggleEntitySettings} isNew={isNew} />
+
+      {/* Legacy conversion banner */}
+      {legacyConverted && (
+        <div className="fixed top-12 left-0 right-0 z-40 flex items-center justify-center gap-3 px-4 py-2.5 bg-amber-50 border-b border-amber-200 text-amber-800 text-sm">
+          <svg className="h-4 w-4 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>
+          <span>This page was converted from legacy content. <strong>Publish to save the migration.</strong></span>
+          <button onClick={() => setLegacyConverted(false)} className="ml-2 text-amber-600 hover:text-amber-800 font-medium">Dismiss</button>
+        </div>
+      )}
 
       {/* Left block panel — always visible */}
       <BlockPanel collapsed={panelCollapsed} onToggleCollapsed={() => setPanelCollapsed((v) => !v)} />
@@ -417,12 +437,13 @@ function SelectedBlockToolbar() {
   if (blockIndex === -1) return null
 
   const item = items[blockIndex]
-  const blockType = components[item.type]?.label || item.type
+  const blockLabel = components[item.type]?.label || item.type
 
   return (
     <FloatingToolbar
       blockId={selectedBlockId}
-      blockType={blockType}
+      blockType={item.type}
+      blockLabel={blockLabel}
       blockIndex={blockIndex}
       totalBlocks={items.length}
     />

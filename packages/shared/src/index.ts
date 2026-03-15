@@ -11,5 +11,6 @@ export { defaultCourseTemplate, defaultPostTemplate, defaultHomeTemplate, defaul
 export { default as tailwindPreset } from './tailwind-preset'
 export { colors, fonts, fontUrl } from './design-tokens'
 export { UI_STRINGS, type UIStrings, type UIStringKey } from './ui-strings'
+export { getEditingSurface, BLOCK_EDITING_SURFACE, SURFACE_LABELS, type EditingSurface } from './block-editing-surface'
 export { defaultHeader, defaultFooter, DEFAULT_HOMEPAGE_SLUG, type SiteHeaderConfig, type SiteFooterConfig } from './defaults'
 export { useUIStrings } from './hooks/useUIStrings'

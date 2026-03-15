@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { useScrollReveal } from '../helpers'
 import { useEditableText } from '../context'
-import { ArrayItemControls } from './ArrayItemControls'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface StatsCounterProps {
   items: Array<{ value: string; label: string; prefix: string; suffix: string }>
@@ -70,6 +70,7 @@ export function StatsCounter({
           <StatItem key={i} item={item} index={i} style={style} totalItems={items.length} />
         ))}
       </div>
+      <AddItemButton fieldName="items" label="Add stat" />
     </div>
   )
 }

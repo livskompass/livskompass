@@ -5,7 +5,6 @@ import { puckConfig } from '@livskompass/shared'
 import type { Data } from '../types'
 import { useEditor } from '../context'
 import { MediaPickerField } from '../../components/MediaPickerField'
-import { getVisualFieldKeys } from './InlineVisualControls'
 
 // ── Puck field type definitions ──
 
@@ -79,6 +78,18 @@ const INLINE_FIELDS: Record<string, Set<string>> = {
   PostHeader: new Set(['backLinkText']),
 }
 
+/** Check if a block type has any settings fields (not inline) */
+export function hasSettingsFields(blockType: string): boolean {
+  const comp = (puckConfig as any).components?.[blockType]
+  const rawFields = comp?.fields
+  const fieldConfig = (rawFields && typeof rawFields === 'object' && !Array.isArray(rawFields)) ? rawFields : {}
+  const inlineSet = INLINE_FIELDS[blockType] || new Set()
+  const settingsFields = Object.entries(fieldConfig).filter(
+    ([key]) => !inlineSet.has(key),
+  )
+  return settingsFields.length > 0
+}
+
 // ── Main component ──
 
 interface SettingsPopoverProps {
@@ -89,9 +100,10 @@ interface SettingsPopoverProps {
   onClose: () => void
 }
 
-const components = puckConfig.components as Record<
+// Access components with 'any' to bypass Puck's Config type which may strip fields
+const components = (puckConfig as any).components as Record<
   string,
-  { fields?: Record<string, PuckField>; label?: string }
+  { fields?: Record<string, PuckField>; label?: string; resolveFields?: any }
 >
 
 export function SettingsPopover({
@@ -107,13 +119,15 @@ export function SettingsPopover({
   const puckData = state.puckData
   const block = puckData?.content?.[blockIndex]
   const blockProps = block?.props || {}
-  const fieldConfig = components[blockType]?.fields || {}
+  // Access fields from the raw puck config (bypass TypeScript Config type which may strip fields)
+  const comp = (puckConfig as any).components?.[blockType]
+  const rawFields = comp?.fields
+  const fieldConfig: Record<string, PuckField> = (rawFields && typeof rawFields === 'object' && !Array.isArray(rawFields)) ? rawFields : {}
 
-  // Filter out inline-editable fields AND visual fields (shown in InlineVisualControls)
+  // Filter out inline-editable text/image fields — keep ALL layout/structural fields
   const inlineSet = INLINE_FIELDS[blockType] || new Set()
-  const visualKeys = new Set(getVisualFieldKeys(blockType))
   const settingsFields = Object.entries(fieldConfig).filter(
-    ([key]) => !inlineSet.has(key) && !visualKeys.has(key),
+    ([key]) => !inlineSet.has(key),
   )
 
   // Update a single prop
@@ -159,7 +173,7 @@ export function SettingsPopover({
     }
   }, [onClose])
 
-  if (!anchorRect || settingsFields.length === 0) return null
+  if (!anchorRect) return null
 
   // Position: below the toolbar, centered on anchor
   const popoverWidth = 320
@@ -233,6 +247,9 @@ export function SettingsPopover({
 
         {/* Fields */}
         <div className="overflow-y-auto p-3 flex flex-col gap-3" style={{ maxHeight: maxHeight - 44 }}>
+          {settingsFields.length === 0 && (
+            <p className="text-xs text-zinc-400 text-center py-4">All fields are editable directly on the canvas</p>
+          )}
           {settingsFields.map(([key, field]) => (
             <FieldRenderer
               key={key}

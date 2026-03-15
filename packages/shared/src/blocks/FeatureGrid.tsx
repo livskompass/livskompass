@@ -3,7 +3,7 @@ import { useScrollReveal } from '../helpers'
 import { Heart, Star, Shield, Zap, BookOpen, Users, Target, Sparkles } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
-import { ArrayItemControls } from './ArrayItemControls'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface FeatureGridProps {
   heading: string
@@ -106,6 +106,7 @@ export function FeatureGrid({
           <FeatureItem key={i} item={item} index={i} style={style} totalItems={items.length} />
         ))}
       </div>
+      <AddItemButton fieldName="items" label="Add feature" />
     </div>
   )
 }

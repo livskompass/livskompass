@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { cn } from '../ui/utils'
 import { ChevronDown } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
-import { ArrayItemControls } from './ArrayItemControls'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface AccordionItem {
   question: string
@@ -148,6 +148,7 @@ export function Accordion({
           />
         ))}
       </div>
+      <AddItemButton fieldName="items" label="Add question" />
     </div>
   )
 }

@@ -10,6 +10,7 @@ import type { Data } from '../types'
 interface FloatingToolbarProps {
   blockId: string | null
   blockType: string
+  blockLabel?: string
   blockIndex: number
   totalBlocks: number
 }
@@ -17,9 +18,11 @@ interface FloatingToolbarProps {
 export function FloatingToolbar({
   blockId,
   blockType,
+  blockLabel,
   blockIndex,
   totalBlocks,
 }: FloatingToolbarProps) {
+  const displayName = blockLabel || blockType
   const position = useToolbarPosition(blockId)
   const { state, updateData } = useEditor()
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -99,13 +102,13 @@ export function FloatingToolbar({
           boxShadow: 'var(--editor-shadow-md)',
         }}
         role="toolbar"
-        aria-label={`${blockType} block actions`}
+        aria-label={`${displayName} block actions`}
       >
         {confirmDelete ? (
           /* Delete confirmation mode */
           <div className="flex items-center gap-1 px-1">
             <span className="text-xs px-1" style={{ color: 'var(--editor-text-muted)' }}>
-              Delete {blockType}?
+              Delete {displayName}?
             </span>
             <button
               onClick={deleteBlock}
@@ -140,7 +143,7 @@ export function FloatingToolbar({
               className="text-[11px] font-medium px-1.5 select-none"
               style={{ color: 'var(--editor-text-subtle)' }}
             >
-              {blockType}
+              {displayName}
             </span>
 
             <ToolbarDivider />

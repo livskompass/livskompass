@@ -2,10 +2,10 @@ const ADMIN_URL = import.meta.env.VITE_ADMIN_URL || ''
 
 /** Maps content types to their admin route prefixes */
 const ADMIN_ROUTES: Record<string, string> = {
-  page: 'sidor',
-  post: 'nyheter',
-  course: 'utbildningar',
-  product: 'material',
+  page: 'pages',
+  post: 'posts',
+  course: 'courses',
+  product: 'products',
 }
 
 /**

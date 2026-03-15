@@ -116,7 +116,7 @@ export function Hero({
     }
 
     return (
-      <section className="relative overflow-hidden group/hero-bg" style={{ height: '100svh', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
+      <section className={cn('relative overflow-hidden group/hero-bg', bgStyles[bgStyle])} style={{ height: '100svh', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
         {/* Background video */}
         {backgroundVideo && (
           <video
@@ -138,11 +138,11 @@ export function Hero({
         {/* Content */}
         <div className={cn('relative flex flex-col h-full px-6 md:px-12 lg:px-20', positionClasses[contentPosition || 'center'])}>
           <div className={cn('max-w-3xl', contentPosition === 'center' && 'mx-auto')}>
-            <h1 {...hEdit} className={cn('text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.1] tracking-tight max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+            <h1 {...hEdit} className={cn('text-display text-white max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-lg md:text-xl lg:text-2xl text-white/80 mt-4 md:mt-6 max-w-[540px] leading-relaxed animate-hero-enter', contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+              <p {...sEdit} className={cn('text-body-lg text-white/80 mt-6 max-w-[540px] leading-relaxed animate-hero-enter', contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
                 {subheading}
               </p>
             )}

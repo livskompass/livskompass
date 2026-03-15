@@ -1,4 +1,5 @@
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
+import { EditItemBadge } from './EditItemBadge'
 import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
 
@@ -23,6 +24,7 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
 }
 
 interface Post {
+  id: string
   slug: string
   title: string
   excerpt: string
@@ -82,7 +84,9 @@ export function PostGrid({
       ) : posts.length > 0 ? (
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
           {posts.map((post) => (
-            <a key={post.slug} href={`/nyhet/${post.slug}`} className="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 group block outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+            <div key={post.slug} className="relative group rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+              <EditItemBadge cmsRoute="posts" entityId={post.id} label="Edit post" />
+              <a href={`/nyhet/${post.slug}`} className="block">
               {showImage && post.featured_image && (
                 <div className="aspect-video overflow-hidden">
                   <img src={resolveMediaUrl(post.featured_image)} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -100,6 +104,7 @@ export function PostGrid({
                 )}
               </div>
             </a>
+            </div>
           ))}
         </div>
       ) : (

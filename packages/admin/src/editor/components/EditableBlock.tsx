@@ -1,5 +1,6 @@
 import { useCallback, useRef, type ReactNode } from 'react'
-import { GripVertical } from 'lucide-react'
+import { GripVertical, Pencil, ExternalLink } from 'lucide-react'
+import { getEditingSurface } from '@livskompass/shared'
 import { useHoverIntent } from '../hooks/useHoverIntent'
 import { useEditor } from '../context'
 
@@ -111,25 +112,30 @@ export function EditableBlock({
       data-block-type={blockType}
       data-block-index={blockIndex}
     >
-      {/* Block type label — outside the block, top-right */}
-      {(isHovered || isSelected) && !isEditing && !isDragSource && (
-        <div
-          className="absolute -top-6 right-2 px-2 py-0.5 rounded pointer-events-none select-none"
-          style={{
-            fontSize: '10px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            color: isSelected ? 'var(--editor-blue)' : 'var(--editor-text-subtle)',
-            background: isSelected ? 'var(--editor-blue-lightest)' : 'var(--editor-surface-muted)',
-            border: `1px solid ${isSelected ? 'var(--editor-blue-light)' : 'var(--editor-border-input)'}`,
-            zIndex: 'var(--z-editor-block-selected)',
-            animation: 'scale-in 150ms var(--ease-out, ease) forwards',
-          }}
-        >
-          {blockLabel}
-        </div>
-      )}
+      {/* Block type label + editing surface badge — outside the block, top-right */}
+      {(isHovered || isSelected) && !isEditing && !isDragSource && (() => {
+        const surface = getEditingSurface(blockType)
+        const isLinked = surface === 'linked'
+        return (
+          <div
+            className="absolute -top-6 right-2 flex items-center gap-1.5 px-2 py-0.5 rounded pointer-events-none select-none"
+            style={{
+              fontSize: '10px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              color: isSelected ? 'var(--editor-blue)' : 'var(--editor-text-subtle)',
+              background: isSelected ? 'var(--editor-blue-lightest)' : 'var(--editor-surface-muted)',
+              border: `1px solid ${isSelected ? 'var(--editor-blue-light)' : 'var(--editor-border-input)'}`,
+              zIndex: 'var(--z-editor-block-selected)',
+              animation: 'scale-in 150ms var(--ease-out, ease) forwards',
+            }}
+          >
+            {isLinked ? <ExternalLink className="h-2.5 w-2.5" /> : <Pencil className="h-2.5 w-2.5" />}
+            {blockLabel}
+          </div>
+        )
+      })()}
 
       {/* Drag handle — left edge */}
       {showHandle && onDragStart && (

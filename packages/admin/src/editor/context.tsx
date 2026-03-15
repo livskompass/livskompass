@@ -62,6 +62,7 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
       const draftData = safeParse(action.entity.draft)
       const publishedData = safeParse(action.entity.content_blocks)
       const puckData = draftData || publishedData
+
       const hasDraft = draftData !== null
       const hasDraftChanges = hasDraft && isPublished
 

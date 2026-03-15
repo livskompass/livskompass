@@ -1,6 +1,7 @@
 import { useFetchJson, useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
+import { EditItemBadge } from './EditItemBadge'
 
 export interface PageCardsProps {
   heading: string
@@ -24,7 +25,7 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
 
 interface PageData {
   page: { title: string }
-  children: Array<{ slug: string; title: string; meta_description: string }>
+  children: Array<{ id: string; slug: string; title: string; meta_description: string }>
 }
 
 export function PageCards({
@@ -52,8 +53,8 @@ export function PageCards({
   const revealRef = useScrollReveal()
 
   const pages = parentSlug && data?.children
-    ? data.children.map((p) => ({ title: p.title, description: p.meta_description || '', slug: p.slug, icon: '' }))
-    : manualPages
+    ? data.children.map((p) => ({ id: p.id, title: p.title, description: p.meta_description || '', slug: p.slug, icon: '' }))
+    : manualPages.map((p) => ({ ...p, id: '' }))
 
   if (loading && parentSlug) {
     return (
@@ -78,13 +79,16 @@ export function PageCards({
         {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl overflow-hidden">
           {pages.map((page, i) => (
-            <a key={i} href={`/${page.slug}`} className="flex items-center justify-between p-4 bg-white hover:bg-stone-50 transition-colors group">
-              <div>
-                <h3 className="font-medium text-stone-800 group-hover:text-forest-600 transition-colors">{page.title}</h3>
-                {showDescription && page.description && <p className="text-sm text-stone-500 mt-0.5">{page.description}</p>}
-              </div>
-              <svg className="w-5 h-5 text-stone-400 group-hover:text-forest-600 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </a>
+            <div key={i} className="relative group flex items-center justify-between p-4 bg-white hover:bg-stone-50 transition-colors">
+              <EditItemBadge cmsRoute="pages" entityId={page.id} slug={page.slug} label="Edit page" />
+              <a href={`/${page.slug}`} className="flex items-center justify-between flex-1">
+                <div>
+                  <h3 className="font-medium text-stone-800 group-hover:text-forest-600 transition-colors">{page.title}</h3>
+                  {showDescription && page.description && <p className="text-sm text-stone-500 mt-0.5">{page.description}</p>}
+                </div>
+                <svg className="w-5 h-5 text-stone-400 group-hover:text-forest-600 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              </a>
+            </div>
           ))}
         </div>
       </div>
@@ -111,10 +115,13 @@ export function PageCards({
       {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
       <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4 reveal`}>
         {pages.map((page, i) => (
-          <a key={i} href={`/${page.slug}`} className="rounded-xl border border-stone-200 bg-white p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 group block outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
-            <h3 className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors mb-1">{page.title}</h3>
-            {showDescription && page.description && <p className="text-sm text-stone-500 line-clamp-2">{page.description}</p>}
-          </a>
+          <div key={i} className="relative group rounded-xl border border-stone-200 bg-white p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+            <EditItemBadge cmsRoute="pages" entityId={page.id} label="Edit page" slug={page.slug} />
+            <a href={`/${page.slug}`} className="block">
+              <h3 className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors mb-1">{page.title}</h3>
+              {showDescription && page.description && <p className="text-sm text-stone-500 line-clamp-2">{page.description}</p>}
+            </a>
+          </div>
         ))}
         {pages.length === 0 && (
           <div className="col-span-full text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">

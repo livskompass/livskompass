@@ -2,6 +2,7 @@ import { cn } from '../ui/utils'
 import { Check } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText } from '../context'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface PricingTableProps {
   heading: string
@@ -28,13 +29,14 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
-function PricingTierItem({ item, index, highlightLabel }: { item: PricingTableProps['items'][number]; index: number; highlightLabel: string }) {
+function PricingTierItem({ item, index, highlightLabel, totalItems }: { item: PricingTableProps['items'][number]; index: number; highlightLabel: string; totalItems: number }) {
   const nameEdit = useEditableText(`items[${index}].name`, item.name)
   const descEdit = useEditableText(`items[${index}].description`, item.description)
   const priceEdit = useEditableText(`items[${index}].price`, item.price)
   const ctaTextEdit = useEditableText(`items[${index}].ctaText`, item.ctaText)
 
   return (
+    <ArrayItemControls fieldName="items" itemIndex={index} totalItems={totalItems}>
     <div
       className={cn(
         'rounded-xl p-8 flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-1',
@@ -83,6 +85,7 @@ function PricingTierItem({ item, index, highlightLabel }: { item: PricingTablePr
         </a>
       )}
     </div>
+    </ArrayItemControls>
   )
 }
 
@@ -120,9 +123,10 @@ export function PricingTable({
       )}
       <div className={cn('grid grid-cols-1 gap-6 items-start reveal', colMap[columns] || colMap[2])}>
         {items.map((item, i) => (
-          <PricingTierItem key={i} item={item} index={i} highlightLabel={highlightLabel} />
+          <PricingTierItem key={i} item={item} index={i} highlightLabel={highlightLabel} totalItems={items.length} />
         ))}
       </div>
+      <AddItemButton fieldName="items" label="Add tier" />
     </div>
   )
 }

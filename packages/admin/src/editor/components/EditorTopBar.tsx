@@ -117,7 +117,7 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, onToggl
       {/* Right: Status badge + Discard + Publish + User */}
       <div className="flex items-center gap-3">
         {onToggleEntitySettings && (
-          <EntitySettingsButton onClick={onToggleEntitySettings} />
+          <EntitySettingsButton onClick={onToggleEntitySettings} contentType={state.contentType} />
         )}
 
         {onToggleHistory && (

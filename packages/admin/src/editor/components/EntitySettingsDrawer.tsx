@@ -67,18 +67,23 @@ const FIELDS_BY_TYPE: Record<ContentType, FieldDef[]> = {
 
 // ── Trigger button for EditorTopBar ──
 
-export function EntitySettingsButton({ onClick }: { onClick: () => void }) {
+export function EntitySettingsButton({ onClick, contentType }: { onClick: () => void; contentType?: string }) {
+  const label = contentType === 'course' ? 'Course details'
+    : contentType === 'product' ? 'Product details'
+    : contentType === 'post' ? 'Post details'
+    : 'Page settings'
   return (
     <button
       onClick={onClick}
-      className="p-1.5 rounded-md transition-colors"
+      className="flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium transition-colors"
       style={{ color: 'var(--editor-text-muted)' }}
       onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--editor-text-primary)'; e.currentTarget.style.background = 'var(--editor-neutral-100)' }}
       onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--editor-text-muted)'; e.currentTarget.style.background = 'transparent' }}
-      aria-label="Content settings"
-      title="Content settings"
+      aria-label={label}
+      title={label}
     >
       <Settings className="h-4 w-4" />
+      <span className="hidden sm:inline">{label}</span>
     </button>
   )
 }

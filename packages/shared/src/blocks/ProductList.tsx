@@ -1,5 +1,6 @@
 import { cn } from '../ui/utils'
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
+import { EditItemBadge } from './EditItemBadge'
 import { ExternalLink } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
 
@@ -15,6 +16,7 @@ export interface ProductListProps {
 }
 
 interface Product {
+  id: string
   slug: string
   title: string
   description: string
@@ -109,7 +111,8 @@ export function ProductList({
               )}
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
                 {typeProducts.map((product) => (
-                  <div key={product.slug} className="group bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                  <div key={product.slug} className="relative group bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                    <EditItemBadge cmsRoute="products" entityId={product.id} label="Edit product" />
                     {product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img

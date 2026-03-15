@@ -46,6 +46,7 @@ function buildVisualFields(): Record<string, VisualFieldDef[]> {
           { value: 'split-right', label: 'Split R', icon: <SplitSquareHorizontal className={I} /> },
           { value: 'split-left', label: 'Split L', icon: <SplitSquareHorizontal className={I} style={{ transform: 'scaleX(-1)' }} /> },
           { value: 'full-image', label: 'Full', icon: <Image className={I} /> },
+          { value: 'fullscreen', label: '100vh', icon: <Maximize2 className={I} /> },
           { value: 'minimal', label: 'Min', icon: <Minus className={I} /> },
         ],
       },

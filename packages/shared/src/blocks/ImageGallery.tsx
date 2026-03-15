@@ -1,7 +1,7 @@
 import { useEditableText } from '../context'
 import { cn } from '../ui/utils'
 import { InlineImage } from './InlineImage'
-import { ArrayItemControls } from './ArrayItemControls'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface ImageGalleryProps {
   images: Array<{ src: string; alt: string; caption: string }>
@@ -62,6 +62,7 @@ export function ImageGallery({
           Add images in settings
         </div>
       )}
+      <AddItemButton fieldName="images" label="Add image" />
     </div>
   )
 }

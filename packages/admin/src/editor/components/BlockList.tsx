@@ -231,7 +231,17 @@ export function BlockList() {
     <InlineArrayOpsProvider>
       <div
         ref={containerRef}
-        onClick={handleDeselectAll}
+        onClick={(e) => {
+          // Intercept link clicks inside blocks — prevent navigating away from editor
+          const target = e.target as HTMLElement
+          const anchor = target.closest('a[href]') as HTMLAnchorElement | null
+          if (anchor && containerRef.current?.contains(anchor)) {
+            e.preventDefault()
+            e.stopPropagation()
+            return
+          }
+          handleDeselectAll()
+        }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}

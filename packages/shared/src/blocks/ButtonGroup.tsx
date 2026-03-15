@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { Button } from '../ui/button'
 import { useEditableText } from '../context'
-import { ArrayItemControls } from './ArrayItemControls'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface ButtonItem {
   text: string
@@ -93,6 +93,7 @@ export function ButtonGroup({
           <ButtonItem key={i} btn={btn} index={i} size={size} totalItems={buttons.length} />
         ))}
       </div>
+      <AddItemButton fieldName="buttons" label="Add button" />
     </div>
   )
 }

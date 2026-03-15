@@ -6,7 +6,7 @@ import { Calendar, MapPin } from 'lucide-react'
 import { getApiBase, useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { InlineImage } from './InlineImage'
-import { ArrayItemControls } from './ArrayItemControls'
+import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
 
 export interface ManualCard {
   title: string
@@ -270,6 +270,7 @@ export function CardGrid({
           {source === 'manual' ? renderManualCards() : renderDynamicCards()}
         </div>
       )}
+      {source === 'manual' && <AddItemButton fieldName="manualCards" label="Add card" />}
     </section>
   )
 }

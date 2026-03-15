@@ -1,5 +1,6 @@
 import { cn } from '../ui/utils'
 import { useFetchJson, useScrollReveal } from '../helpers'
+import { EditItemBadge } from './EditItemBadge'
 import { MapPin, Calendar, ArrowRight } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
 
@@ -17,6 +18,7 @@ export interface CourseListProps {
 }
 
 interface Course {
+  id: string
   slug: string
   title: string
   description: string
@@ -107,7 +109,8 @@ export function CourseList({
             const hasCapacity = course.max_participants != null
             const spotsLeft = hasCapacity ? course.max_participants - course.current_participants : null
             return (
-              <div key={course.slug} className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
+              <div key={course.slug} className="relative group bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
+                <EditItemBadge cmsRoute="courses" entityId={course.id} label="Edit course" />
                 <div className="p-6">
                   {(isFull || hasCapacity) && (
                   <div className="flex items-center gap-2 mb-3">

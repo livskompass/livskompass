@@ -143,6 +143,8 @@ export function useEditableText(propName: string, currentValue: string) {
 // ── Inline array operations context ──
 
 export interface InlineArrayOpsContextValue {
+  /** Add a new item to an array field */
+  addItem: (blockIndex: number, fieldName: string) => void
   /** Remove an item from an array field */
   removeItem: (blockIndex: number, fieldName: string, itemIndex: number) => void
   /** Move an item within an array field (reorder) */

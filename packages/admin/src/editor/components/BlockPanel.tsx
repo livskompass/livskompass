@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react'
 import { Search, X, GripVertical, Columns, Type, Image, BarChart3, Layout, MessageSquare, Database, ChevronLeft, ChevronRight, ChevronDown,
   Heading, AlignLeft, ImageIcon, Layers, Star, FileText, List, Grid3x3, SplitSquareHorizontal, Minus, MoveVertical,
-  Megaphone, CreditCard, Quote, MousePointerClick, Video, Music, File, Code2, BookOpen, ShoppingCart, Newspaper, Navigation, Mail, CalendarCheck, Info, Tag
+  Megaphone, CreditCard, Quote, MousePointerClick, Video, Music, File, Code2, BookOpen, ShoppingCart, Newspaper, Navigation, Mail, CalendarCheck, Info, Tag,
+  ExternalLink
 } from 'lucide-react'
-import { puckConfig } from '@livskompass/shared'
+import { puckConfig, getEditingSurface } from '@livskompass/shared'
 
 // Drag data type — used to identify panel drops vs other drag sources
 export const PANEL_DRAG_TYPE = 'application/x-block-type'
@@ -236,7 +237,10 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
                   <span className="flex-shrink-0" style={{ color: 'var(--editor-neutral-400, #a3a3a3)' }}>
                     {BLOCK_ICONS[name] || <GripVertical className="h-3.5 w-3.5" />}
                   </span>
-                  <span className="truncate">{components[name]?.label || name}</span>
+                  <span className="truncate flex-1">{components[name]?.label || name}</span>
+                  {getEditingSurface(name) === 'linked' && (
+                    <ExternalLink className="h-2.5 w-2.5 flex-shrink-0 opacity-50" />
+                  )}
                 </div>
               ))}
             </div>

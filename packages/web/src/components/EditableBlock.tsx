@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react'
-import { Pencil } from 'lucide-react'
+import { Pencil, ExternalLink } from 'lucide-react'
+import { getEditingSurface } from '@livskompass/shared'
 import { useInlineEdit } from './InlineEditProvider'
 import { getCmsUrl } from '../lib/cms-url'
 
@@ -9,24 +10,39 @@ interface EditableBlockProps {
   blockIndex: number
 }
 
-/** Human-friendly Swedish block type labels */
+/** Human-friendly block type labels (CMS UI = English) */
 const BLOCK_LABELS: Record<string, string> = {
   Hero: 'Hero',
   RichText: 'Text',
-  Image: 'Bild',
-  Columns: 'Kolumner',
-  Separator: 'Separator',
+  ImageBlock: 'Image',
+  Columns: 'Columns',
+  SeparatorBlock: 'Separator',
   CTABanner: 'CTA',
-  CardGrid: 'Kort',
-  Testimonial: 'Citat',
-  Buttons: 'Knappar',
-  PostGrid: 'Inlägg',
-  PageCards: 'Sidkort',
-  NavigationMenu: 'Meny',
-  ImageGallery: 'Galleri',
-  Video: 'Video',
-  ContactForm: 'Kontakt',
-  AccordionFAQ: 'FAQ',
+  CardGrid: 'Cards',
+  Testimonial: 'Testimonial',
+  ButtonGroup: 'Buttons',
+  PostGrid: 'Posts',
+  PageCards: 'Page Cards',
+  NavigationMenu: 'Menu',
+  ImageGallery: 'Gallery',
+  VideoEmbed: 'Video',
+  AudioEmbed: 'Audio',
+  FileEmbed: 'File',
+  EmbedBlock: 'Embed',
+  ContactForm: 'Contact',
+  BookingForm: 'Booking',
+  Accordion: 'FAQ',
+  PageHeader: 'Header',
+  PersonCard: 'Person',
+  FeatureGrid: 'Features',
+  StatsCounter: 'Stats',
+  PricingTable: 'Pricing',
+  CourseList: 'Courses',
+  ProductList: 'Products',
+  CourseInfo: 'Course Info',
+  BookingCTA: 'Booking CTA',
+  PostHeader: 'Post Header',
+  Spacer: 'Spacer',
 }
 
 export default function EditableBlock({ children, blockType, blockIndex }: EditableBlockProps) {
@@ -38,6 +54,8 @@ export default function EditableBlock({ children, blockType, blockIndex }: Edita
     ? getCmsUrl(pageData.contentType, pageData.pageId, blockIndex)
     : null
   const label = BLOCK_LABELS[blockType] || blockType
+  const surface = getEditingSurface(blockType)
+  const isLinked = surface === 'linked'
 
   const handleClick = () => {
     if (cmsUrl) {
@@ -56,10 +74,10 @@ export default function EditableBlock({ children, blockType, blockIndex }: Edita
       <button
         onClick={handleClick}
         className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-full text-[13px] font-medium leading-snug shadow-sm cursor-pointer border-none opacity-0 -translate-y-1 group-hover/edit:opacity-100 group-hover/edit:translate-y-0 transition-all duration-200"
-        title={`Redigera ${label} i CMS`}
+        title={isLinked ? `Edit ${label} items in CMS` : `Edit ${label} in CMS`}
       >
-        <Pencil className="w-3.5 h-3.5" />
-        Redigera {label}
+        {isLinked ? <ExternalLink className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+        {isLinked ? `Edit ${label}` : `Edit ${label}`}
       </button>
     </div>
   )
