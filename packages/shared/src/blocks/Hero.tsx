@@ -252,7 +252,7 @@ export function Hero({
         )}
         <div className="relative grid grid-cols-1 lg:grid-cols-5 items-center gap-10 lg:gap-16" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('lg:col-span-3 flex flex-col', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
-            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'stone' ? 'text-forest-950' : 'text-white', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'stone' ? 'text-forest-950' : 'text-white', hCls)} style={{ fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400, animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
