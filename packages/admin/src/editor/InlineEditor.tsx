@@ -8,6 +8,7 @@ import { FloatingToolbar } from './components/FloatingToolbar'
 import { SlashMenu } from './components/SlashMenu'
 import { SelectedBlockArrayControls } from './components/InlineArrayControls'
 import { VersionHistoryPanel } from './components/VersionHistoryPanel'
+import { EntitySettingsDrawer } from './components/EntitySettingsDrawer'
 import { puckConfig } from '@livskompass/shared'
 import type { ContentType, ContentEntity } from './types'
 
@@ -38,6 +39,41 @@ const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   product: 'New product',
 }
 
+/**
+ * Extract legacy HTML content from a WordPress-migrated entity.
+ * Pages/posts store HTML in `content`, courses/products in `description`.
+ */
+function getLegacyHtml(entity: Record<string, any>, contentType: ContentType): string | null {
+  if (contentType === 'page' || contentType === 'post') {
+    return entity.content || null
+  }
+  if (contentType === 'course' || contentType === 'product') {
+    return entity.description || entity.content || null
+  }
+  return null
+}
+
+/**
+ * Convert legacy HTML content to a Puck data structure with a RichText block.
+ * Called when content_blocks is null but HTML content exists.
+ */
+function legacyHtmlToPuckData(html: string): string {
+  return JSON.stringify({
+    content: [
+      {
+        type: 'RichText',
+        props: {
+          id: `RichText-migrated-${Date.now()}`,
+          content: html,
+          maxWidth: 'medium',
+        },
+      },
+    ],
+    root: { props: {} },
+    zones: {},
+  })
+}
+
 function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -65,8 +101,11 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
     toastTimerRef.current = setTimeout(() => setToast(null), 4000)
   }, [])
 
+  const [entitySettingsOpen, setEntitySettingsOpen] = useState(false)
+
   const isNew = id === 'new'
   const toggleHistory = useCallback(() => setHistoryOpen((v) => !v), [])
+  const toggleEntitySettings = useCallback(() => setEntitySettingsOpen((v) => !v), [])
 
   // Auth check
   useEffect(() => {
@@ -127,9 +166,19 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         return r.json()
       })
       .then((data: any) => {
-        const entity: ContentEntity = data.page || data.post || data.course || data.product
+        const entity = data.page || data.post || data.course || data.product
         if (!entity) throw new Error('Entity not found in response')
-        setEntity(entity, contentType)
+
+        // Auto-convert legacy HTML to Puck blocks if content_blocks is empty
+        if (!entity.content_blocks) {
+          const legacyHtml = getLegacyHtml(entity, contentType)
+          if (legacyHtml) {
+            entity.content_blocks = legacyHtmlToPuckData(legacyHtml)
+            entity.editor_version = 'puck'
+          }
+        }
+
+        setEntity(entity as ContentEntity, contentType)
         setLoading(false)
       })
       .catch((err) => {
@@ -241,7 +290,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} onToggleHistory={toggleHistory} isNew={isNew} />
+      <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} onToggleHistory={toggleHistory} onToggleEntitySettings={toggleEntitySettings} isNew={isNew} />
 
       {/* Left block panel — always visible */}
       <BlockPanel collapsed={panelCollapsed} onToggleCollapsed={() => setPanelCollapsed((v) => !v)} />
@@ -276,6 +325,9 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
       {/* Version history side panel */}
       <VersionHistoryPanel open={historyOpen} onClose={() => setHistoryOpen(false)} />
+
+      {/* Entity settings drawer (slug, metadata, course/product fields) */}
+      <EntitySettingsDrawer open={entitySettingsOpen} onClose={() => setEntitySettingsOpen(false)} contentType={contentType} />
 
       {/* Portal container for floating toolbar */}
       <div id="editor-portals" />

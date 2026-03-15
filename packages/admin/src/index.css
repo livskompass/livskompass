@@ -394,6 +394,12 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Editor slide-in-right for settings drawer */
+@keyframes editor-slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 /* Block selection pulse — one-shot on select */
 [data-block-id].editor-just-selected {
   animation: editor-focus-pulse 400ms var(--editor-ease, ease) forwards;

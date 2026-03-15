@@ -1,16 +1,18 @@
 import { ArrowLeft, Check, Loader2, AlertCircle, Globe } from 'lucide-react'
 import { useEditor } from '../context'
 import { VersionHistoryButton } from './VersionHistoryPanel'
+import { EntitySettingsButton } from './EntitySettingsDrawer'
 
 interface EditorTopBarProps {
   user: { name: string; avatar_url: string; role: string } | null
   onBack: () => void
   onPublish: () => void
   onToggleHistory?: () => void
+  onToggleEntitySettings?: () => void
   isNew?: boolean
 }
 
-export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, isNew }: EditorTopBarProps) {
+export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, onToggleEntitySettings, isNew }: EditorTopBarProps) {
   const { state } = useEditor()
   const { entity, saveStatus, isDirty, isPublished } = state
 
@@ -101,6 +103,10 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, isNew }
 
       {/* Right: Publish + User */}
       <div className="flex items-center gap-3">
+        {onToggleEntitySettings && (
+          <EntitySettingsButton onClick={onToggleEntitySettings} />
+        )}
+
         {onToggleHistory && (
           <VersionHistoryButton onClick={onToggleHistory} />
         )}
