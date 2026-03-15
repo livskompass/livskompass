@@ -68,6 +68,11 @@ export default function PagesList() {
                     >
                       {page.title}
                     </Link>
+                    {page.slug === 'home-2' && (
+                      <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                        Homepage
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell className="text-zinc-500 font-mono text-xs">
                     /{page.slug}

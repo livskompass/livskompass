@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Settings } from 'lucide-react'
+import { X, Settings, Home } from 'lucide-react'
 import { useEditor } from '../context'
 import type { ContentType } from '../types'
 import { MediaPickerField } from '../../components/MediaPickerField'
@@ -90,6 +90,64 @@ export function EntitySettingsButton({ onClick, contentType }: { onClick: () => 
     >
       <Settings className="h-4 w-4" />
       <span className="hidden sm:inline">{label}</span>
+    </button>
+  )
+}
+
+// ── Homepage toggle ──
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
+function HomepageToggle({ slug }: { slug: string }) {
+  const [homepageSlug, setHomepageSlug] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (!token) return
+    fetch(`${API_BASE}/admin/settings`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data: any) => {
+        const settings = data.settings || []
+        const hp = settings.find((s: any) => s.key === 'homepage_slug')
+        setHomepageSlug(hp?.value || 'home-2')
+      })
+      .catch(() => {})
+  }, [])
+
+  const isHomepage = homepageSlug === slug
+
+  const handleToggle = async () => {
+    if (isHomepage || saving) return
+    setSaving(true)
+    const token = localStorage.getItem('admin_token')
+    try {
+      await fetch(`${API_BASE}/admin/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ homepage_slug: slug }),
+      })
+      setHomepageSlug(slug)
+    } catch { /* ignore */ }
+    setSaving(false)
+  }
+
+  if (homepageSlug === null) return null
+
+  return (
+    <button
+      onClick={handleToggle}
+      disabled={isHomepage || saving}
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${
+        isHomepage
+          ? 'bg-amber-50 text-amber-700 border border-amber-200'
+          : 'bg-zinc-50 text-zinc-600 border border-zinc-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200'
+      }`}
+    >
+      <Home className="h-4 w-4" />
+      {isHomepage ? 'This is the homepage' : saving ? 'Setting...' : 'Set as homepage'}
     </button>
   )
 }
@@ -195,10 +253,17 @@ export function EntitySettingsDrawer({ open, onClose, contentType }: EntitySetti
         </div>
 
         {/* Status field (all types) */}
-        <div className="px-5 pb-4">
+        <div className="px-5 pb-2">
           <FieldLabel label="Status" />
           <StatusBadge status={entity.status || 'draft'} />
         </div>
+
+        {/* Homepage toggle (pages only) */}
+        {contentType === 'page' && (
+          <div className="px-5 pb-4">
+            <HomepageToggle slug={entity.slug} />
+          </div>
+        )}
 
         <div className="border-t" style={{ borderColor: 'var(--editor-border)' }} />
 

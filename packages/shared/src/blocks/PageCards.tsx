@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { Plus } from 'lucide-react'
 import { useFetchJson, useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText, useInlineEditBlock, InlineArrayOpsContext } from '../context'
 import { cn } from '../ui/utils'
 import { EditItemBadge } from './EditItemBadge'
-import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider } from './ArrayItemControls'
 
 export interface PageCardsProps {
   heading: string
