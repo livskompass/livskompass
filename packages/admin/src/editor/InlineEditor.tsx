@@ -105,6 +105,22 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const [entitySettingsOpen, setEntitySettingsOpen] = useState(false)
 
   const isNew = id === 'new'
+
+  // EMERGENCY: Force loading false for new entities immediately
+  if (isNew && loading) {
+    const blankEntity: ContentEntity = {
+      id: '', slug: '', title: CONTENT_TYPE_LABELS[contentType],
+      status: 'draft',
+      content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
+      editor_version: 'puck', updated_at: '', draft: null,
+    }
+    // Use queueMicrotask to set state outside render
+    queueMicrotask(() => {
+      setEntity(blankEntity, contentType)
+      dispatch({ type: 'MARK_DIRTY' })
+      setLoading(false)
+    })
+  }
   const toggleHistory = useCallback(() => setHistoryOpen((v) => !v), [])
   const toggleEntitySettings = useCallback(() => setEntitySettingsOpen((v) => !v), [])
 
@@ -308,7 +324,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
     navigate(ADMIN_LIST_ROUTES[contentType])
   }
 
-  if (loading) {
+  if (loading && !isNew) {
     return (
       <div className="flex items-center justify-center h-screen bg-zinc-50">
         <div className="flex items-center gap-2 text-zinc-400">
@@ -469,3 +485,4 @@ export default function InlineEditorPage({ contentType }: InlineEditorPageProps)
     </EditorProvider>
   )
 }
+// force-reload 1773588881
