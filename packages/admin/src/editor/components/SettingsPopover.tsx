@@ -176,7 +176,7 @@ export function SettingsPopover({
   if (!anchorRect) return null
 
   // Position: below the toolbar, centered on anchor
-  const popoverWidth = 400
+  const popoverWidth = Math.min(400, window.innerWidth - 16)
   const viewportW = window.innerWidth
   const viewportH = window.innerHeight
 

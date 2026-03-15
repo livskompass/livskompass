@@ -294,7 +294,7 @@ export function SlashMenu() {
         ref={menuRef}
         className="absolute left-1/2 top-[20%] -translate-x-1/2"
         style={{
-          width: 360,
+          width: Math.min(360, window.innerWidth - 32),
           maxHeight: '60vh',
           animation: 'editor-slide-down 150ms var(--editor-ease, ease) forwards',
         }}

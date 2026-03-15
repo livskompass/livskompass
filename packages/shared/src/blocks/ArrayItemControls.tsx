@@ -82,52 +82,7 @@ export function ArrayDragProvider({
       const state: ArrayDragState = { sourceIndex: itemIndex, ghostEl: ghost }
       setDragState(state)
 
-      const handleMove = (moveE: PointerEvent) => {
-        const dy = moveE.clientY - startY
-        const dx = moveE.clientX - startX
-        ghost.style.left = `${ghostStartLeft + dx}px`
-        ghost.style.top = `${ghostStartTop + dy}px`
-
-        // Find drop target
-        let closest = -1
-        let closestDist = Infinity
-        itemRefs.current.forEach((el, idx) => {
-          if (idx === itemIndex) return
-          const r = el.getBoundingClientRect()
-          const mid = r.top + r.height / 2
-          const dist = Math.abs(moveE.clientY - mid)
-          if (dist < closestDist) {
-            closestDist = dist
-            closest = moveE.clientY < mid ? idx : idx + 1
-          }
-        })
-        // Suppress no-op positions
-        if (closest === itemIndex || closest === itemIndex + 1) closest = -1
-        setDropTargetIndex(closest)
-      }
-
-      const handleUp = () => {
-        document.removeEventListener('pointermove', handleMove)
-        document.removeEventListener('pointerup', handleUp)
-
-        // Restore source
-        sourceEl.style.opacity = ''
-        sourceEl.style.transform = ''
-        sourceEl.style.transition = ''
-
-        // Remove ghost
-        ghost.remove()
-
-        // Commit reorder
-        const finalDrop = dropTargetIndex
-        setDragState(null)
-        setDropTargetIndex(-1)
-
-        // Need to read the latest dropTargetIndex from closure
-        // Use the ref-based approach instead
-      }
-
-      // Use a ref to track latest drop index
+      // Track latest drop index via closure
       let latestDrop = -1
       const handleMoveWithDrop = (moveE: PointerEvent) => {
         const dy = moveE.clientY - startY

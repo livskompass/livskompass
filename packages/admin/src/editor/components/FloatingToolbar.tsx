@@ -85,7 +85,7 @@ export function FloatingToolbar({
     <div
       className="fixed pointer-events-auto"
       style={{
-        left: position.x,
+        left: Math.max(120, Math.min(position.x, window.innerWidth - 120)),
         top: position.y,
         transform: `translate(-50%, ${position.placement === 'above' ? '-100%' : '0'})`,
         zIndex: 'var(--z-editor-toolbar)',

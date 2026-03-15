@@ -26,16 +26,20 @@ function derivePublishState(isPublished: boolean, hasDraftChanges: boolean): Pub
   return 'published'
 }
 
-// History stack — kept outside reducer for simplicity
-let historyStack: Data[] = []
-let historyIndex = -1
+// History stack — mutable ref shared between provider and reducer
+// Using a module-level object that gets REPLACED per EditorProvider instance
+const history = { stack: [] as Data[], index: -1 }
+
+function resetHistory() {
+  history.stack = []
+  history.index = -1
+}
 
 function pushHistory(data: Data) {
-  // Truncate any redo entries
-  historyStack = historyStack.slice(0, historyIndex + 1)
-  historyStack.push(JSON.parse(JSON.stringify(data)))
-  if (historyStack.length > MAX_HISTORY) historyStack.shift()
-  historyIndex = historyStack.length - 1
+  history.stack = history.stack.slice(0, history.index + 1)
+  history.stack.push(JSON.parse(JSON.stringify(data)))
+  if (history.stack.length > MAX_HISTORY) history.stack.shift()
+  history.index = history.stack.length - 1
 }
 
 function editorReducer(state: EditorState, action: EditorAction): EditorState {
@@ -122,14 +126,14 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
         publishState: derivePublishState(state.isPublished, action.hasDraftChanges),
       }
     case 'UNDO': {
-      if (historyIndex <= 0) return state
-      historyIndex--
-      return { ...state, puckData: JSON.parse(JSON.stringify(historyStack[historyIndex])), isDirty: true }
+      if (history.index <= 0) return state
+      history.index--
+      return { ...state, puckData: JSON.parse(JSON.stringify(history.stack[history.index])), isDirty: true }
     }
     case 'REDO': {
-      if (historyIndex >= historyStack.length - 1) return state
-      historyIndex++
-      return { ...state, puckData: JSON.parse(JSON.stringify(historyStack[historyIndex])), isDirty: true }
+      if (history.index >= history.stack.length - 1) return state
+      history.index++
+      return { ...state, puckData: JSON.parse(JSON.stringify(history.stack[history.index])), isDirty: true }
     }
     default:
       return state
@@ -324,20 +328,19 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
         e.preventDefault()
         if (e.shiftKey) {
-          dispatch({ type: 'REDO' })
+          redo()
         } else {
-          dispatch({ type: 'UNDO' })
+          undo()
         }
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [])
+  }, [undo, redo])
 
   // Reset history when entity changes
   useEffect(() => {
-    historyStack = []
-    historyIndex = -1
+    resetHistory()
     if (state.puckData) {
       pushHistory(state.puckData)
     }
@@ -351,6 +354,18 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       if (savedFeedbackRef.current) clearTimeout(savedFeedbackRef.current)
       if (abortControllerRef.current) abortControllerRef.current.abort()
     }
+  }, [])
+
+  // Warn on tab close/navigation with unsaved changes
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (stateRef.current.isDirty) {
+        e.preventDefault()
+        e.returnValue = ''
+      }
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
   }, [])
 
   // Discard draft: clear draft on server and reload published content
@@ -400,8 +415,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     setSaveStatus,
     undo,
     redo,
-    canUndo: historyIndex > 0,
-    canRedo: historyIndex < historyStack.length - 1,
+    canUndo: history.index > 0,
+    canRedo: history.index < history.stack.length - 1,
     discardDraft,
   }
 
