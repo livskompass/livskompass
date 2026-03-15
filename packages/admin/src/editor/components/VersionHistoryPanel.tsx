@@ -80,7 +80,11 @@ export function VersionHistoryPanel({ open, onClose }: VersionHistoryPanelProps)
         )
         // Parse and set the puck data
         if (result.entity.content_blocks) {
-          updateData(JSON.parse(result.entity.content_blocks))
+          try {
+            updateData(JSON.parse(result.entity.content_blocks))
+          } catch {
+            console.error('Failed to parse restored content_blocks')
+          }
         }
         setConfirmRestore(null)
         refetch()
