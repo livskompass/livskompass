@@ -41,16 +41,35 @@ function pushHistory(data: Data) {
 function editorReducer(state: EditorState, action: EditorAction): EditorState {
   switch (action.type) {
     case 'SET_ENTITY': {
-      const hasDraft = !!action.entity.draft
       const isPublished = action.entity.status === 'published'
-      // Load draft content if it exists (in-progress work), otherwise published content
-      const contentSource = action.entity.draft || action.entity.content_blocks
+
+      // Safely parse a JSON string into Puck Data, returning null on failure
+      const safeParse = (json: string | null | undefined): Data | null => {
+        if (!json) return null
+        try {
+          const parsed = JSON.parse(json)
+          // Validate that the parsed data has a non-empty content array
+          if (parsed && Array.isArray(parsed.content) && parsed.content.length > 0) {
+            return parsed as Data
+          }
+          return null
+        } catch {
+          return null
+        }
+      }
+
+      // Prefer draft if it has actual content, otherwise fall back to content_blocks
+      const draftData = safeParse(action.entity.draft)
+      const publishedData = safeParse(action.entity.content_blocks)
+      const puckData = draftData || publishedData
+      const hasDraft = draftData !== null
       const hasDraftChanges = hasDraft && isPublished
+
       return {
         ...state,
         entity: action.entity,
         contentType: action.contentType,
-        puckData: contentSource ? JSON.parse(contentSource) : null,
+        puckData,
         isDirty: false,
         isPublished,
         hasDraftChanges,

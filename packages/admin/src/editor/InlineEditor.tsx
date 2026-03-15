@@ -169,12 +169,34 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         const entity = data.page || data.post || data.course || data.product
         if (!entity) throw new Error('Entity not found in response')
 
-        // Auto-convert legacy HTML to Puck blocks if content_blocks is empty
-        if (!entity.content_blocks) {
+        // Auto-convert legacy HTML to Puck blocks if content_blocks is empty or has no blocks
+        const hasValidBlocks = (() => {
+          if (!entity.content_blocks) return false
+          try {
+            const parsed = JSON.parse(entity.content_blocks)
+            return Array.isArray(parsed.content) && parsed.content.length > 0
+          } catch {
+            return false
+          }
+        })()
+
+        if (!hasValidBlocks) {
           const legacyHtml = getLegacyHtml(entity, contentType)
           if (legacyHtml) {
             entity.content_blocks = legacyHtmlToPuckData(legacyHtml)
             entity.editor_version = 'puck'
+          }
+        }
+
+        // Also clear a bad draft that has empty content — prevents draft from hiding valid content_blocks
+        if (entity.draft) {
+          try {
+            const draftParsed = JSON.parse(entity.draft)
+            if (!Array.isArray(draftParsed.content) || draftParsed.content.length === 0) {
+              entity.draft = null
+            }
+          } catch {
+            entity.draft = null
           }
         }
 
