@@ -252,22 +252,22 @@ export function Hero({
         )}
         <div className="relative grid grid-cols-1 lg:grid-cols-5 items-center gap-10 lg:gap-16" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('lg:col-span-3 flex flex-col', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
-            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'light' ? 'text-forest-950' : 'text-white', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'stone' ? 'text-forest-950' : 'text-white', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed animate-hero-enter', bgStyle === 'light' ? 'text-stone-600' : 'text-white/80', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+              <p {...sEdit} className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed animate-hero-enter', bgStyle === 'stone' ? 'text-stone-600' : 'text-white/80', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
                 {subheading}
               </p>
             )}
             {ctaPrimaryText && ctaPrimaryLink && (
               <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', bgStyle === 'light' ? 'bg-forest-600 text-white hover:bg-forest-500' : 'bg-white text-forest-700 hover:bg-forest-50')}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', bgStyle === 'stone' ? 'bg-forest-600 text-white hover:bg-forest-500' : 'bg-white text-forest-700 hover:bg-forest-50')}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
                 {ctaSecondaryText && ctaSecondaryLink && (
-                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] transition-all', bgStyle === 'light' ? 'border-stone-300 text-stone-700 hover:bg-stone-100' : 'border-white/40 text-white hover:bg-white/10')}>
+                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] transition-all', bgStyle === 'stone' ? 'border-stone-300 text-stone-700 hover:bg-stone-100' : 'border-white/40 text-white hover:bg-white/10')}>
                     <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                   </a>
                 )}
