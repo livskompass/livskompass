@@ -28,3 +28,11 @@
 ### General
 - [ ] Clean, not overwhelming — progressive disclosure (basic options first, advanced behind toggle)
 - [ ] Consistent with other block settings patterns
+
+## Testimonial Component Enhancement
+- [ ] Support multiple testimonials (array of quotes, not single)
+- [ ] Display modes: static single, carousel (auto-rotate), marquee (scrolling)
+- [ ] Carousel: dots/arrows navigation, auto-play with pause on hover
+- [ ] Marquee: smooth continuous scroll with configurable speed
+- [ ] Per-testimonial: quote, author, role, avatar, rating (optional)
+- [ ] Layout options: single featured, grid of 2-3, full-width carousel
