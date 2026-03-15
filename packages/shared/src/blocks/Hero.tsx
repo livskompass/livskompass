@@ -114,6 +114,7 @@ export function Hero({
   if (preset === 'fullscreen') {
     const positionClasses: Record<HeroContentPosition, string> = {
       center: 'items-center justify-center text-center',
+      'top-left': 'items-start justify-start text-left pt-16 md:pt-24',
       'bottom-left': 'items-start justify-end text-left pb-16 md:pb-24',
       'bottom-center': 'items-center justify-end text-center pb-16 md:pb-24',
     }
