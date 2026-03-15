@@ -519,7 +519,7 @@ function PagePicker({ label, value, onChange }: { label: string; value: string; 
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      {(search || !value) && filtered.length > 0 && (
+      {search && filtered.length > 0 && (
         <div className="mt-1 max-h-[200px] overflow-y-auto rounded-md border border-zinc-200 bg-white">
           {filtered.slice(0, 20).map((p) => (
             <button

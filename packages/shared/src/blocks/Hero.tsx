@@ -227,7 +227,7 @@ export function Hero({
       <section className="overflow-hidden" style={{ backgroundColor: 'var(--surface-primary)', paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-lg)' }}>
         <div className="grid grid-cols-1 lg:grid-cols-5 items-center gap-10 lg:gap-16" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('lg:col-span-3 flex flex-col', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
-            <h1 {...hEdit} className={cn('text-h1 text-forest-950 max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+            <h1 {...hEdit} className={cn('text-display text-forest-950 max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
@@ -251,7 +251,14 @@ export function Hero({
               loading="eager"
               className="w-full h-auto rounded-xl object-cover shadow-lg animate-hero-enter"
               style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}
-              fallback={<div className="w-full rounded-xl bg-stone-200 animate-hero-enter" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }} />}
+              fallback={
+                <div className="w-full rounded-xl bg-stone-200 animate-hero-enter flex items-center justify-center" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}>
+                  <div className="text-center text-stone-400">
+                    <svg className="h-10 w-10 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5"/><circle cx="8.5" cy="8.5" r="1.5" strokeWidth="1.5"/><path d="M21 15l-5-5L5 21" strokeWidth="1.5"/></svg>
+                    <span className="text-xs">4:3 image</span>
+                  </div>
+                </div>
+              }
             />
           </div>
         </div>
