@@ -51,11 +51,29 @@ export function PageCards({
 
   const { data, loading } = useFetchJson<PageData>(parentSlug ? `/pages/${parentSlug}` : '')
 
+  // For manual pages, fetch each page's data to get title/description
+  const manualSlugs = !parentSlug && manualPages.length > 0
+    ? manualPages.map((p) => p.slug).filter(Boolean).join(',')
+    : ''
+  const { data: allPages } = useFetchJson<{ pages: Array<{ id: string; slug: string; title: string; meta_description: string }> }>(
+    manualSlugs ? '/pages' : ''
+  )
+
   const revealRef = useScrollReveal()
 
   const pages = parentSlug && data?.children
     ? data.children.map((p) => ({ id: p.id, title: p.title, description: p.meta_description || '', slug: p.slug, icon: '' }))
-    : manualPages.map((p) => ({ ...p, id: '' }))
+    : manualPages.map((p) => {
+        // Look up page data from the pages list
+        const pageData = allPages?.pages?.find((pg) => pg.slug === p.slug)
+        return {
+          id: pageData?.id || '',
+          title: pageData?.title || p.title || p.slug || '',
+          description: pageData?.meta_description || p.description || '',
+          slug: p.slug,
+          icon: p.icon || '',
+        }
+      })
 
   if (loading && parentSlug) {
     return (
