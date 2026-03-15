@@ -42,14 +42,14 @@ export default function Login() {
   const errorMessage = getErrorMessage(error)
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-stone-900 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-xl">L</span>
           </div>
-          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Livskompass</h1>
-          <p className="text-stone-500 mt-1 text-sm">Admin Dashboard</p>
+          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Livskompass</h1>
+          <p className="text-zinc-500 mt-1 text-sm">Admin Dashboard</p>
         </div>
 
         <Card>
@@ -90,7 +90,7 @@ export default function Login() {
               Sign in with Google
             </Button>
 
-            <p className="text-xs text-stone-400 text-center mt-5">
+            <p className="text-xs text-zinc-400 text-center mt-5">
               Only authorized users can sign in.
               <br />
               Contact the administrator for access.

@@ -49,10 +49,10 @@ export default function Dashboard() {
   })
 
   const stats = [
-    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/pages', icon: FileText, color: 'text-stone-600 bg-stone-100' },
-    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/posts', icon: Newspaper, color: 'text-stone-600 bg-stone-100' },
-    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/courses', icon: GraduationCap, color: 'text-stone-600 bg-stone-100' },
-    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bookings', icon: Ticket, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/pages', icon: FileText, color: 'text-zinc-600 bg-zinc-100' },
+    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/posts', icon: Newspaper, color: 'text-zinc-600 bg-zinc-100' },
+    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/courses', icon: GraduationCap, color: 'text-zinc-600 bg-zinc-100' },
+    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bookings', icon: Ticket, color: 'text-zinc-600 bg-zinc-100' },
   ]
 
   const unreadContacts = statsData?.stats?.unreadContacts ?? 0
@@ -60,8 +60,8 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-h3 text-stone-900">Dashboard</h1>
-        <p className="text-stone-500 mt-1">Overview of your website content and activity.</p>
+        <h1 className="text-h3 text-zinc-900">Dashboard</h1>
+        <p className="text-zinc-500 mt-1">Overview of your website content and activity.</p>
       </div>
 
       {/* Stats Grid */}
@@ -78,9 +78,9 @@ export default function Dashboard() {
                 {statsLoading ? (
                   <Skeleton className="h-8 w-16 mb-1" />
                 ) : (
-                  <p className="text-2xl font-bold text-stone-900">{stat.value}</p>
+                  <p className="text-2xl font-bold text-zinc-900">{stat.value}</p>
                 )}
-                <p className="text-sm text-stone-500">{stat.name}</p>
+                <p className="text-sm text-zinc-500">{stat.name}</p>
               </CardContent>
             </Card>
           </Link>
@@ -89,19 +89,19 @@ export default function Dashboard() {
 
       {/* Unread Messages Alert */}
       {unreadContacts > 0 && (
-        <Card className="border-stone-200 bg-stone-50">
+        <Card className="border-zinc-200 bg-zinc-50">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-stone-100 rounded-lg">
-                <Mail className="h-4 w-4 text-stone-600" />
+              <div className="p-2 bg-zinc-100 rounded-lg">
+                <Mail className="h-4 w-4 text-zinc-600" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-stone-800">
+                <p className="font-medium text-zinc-800">
                   {unreadContacts} {unreadContacts === 1 ? 'unread message' : 'unread messages'}
                 </p>
                 <Link
                   to="/messages"
-                  className="text-sm text-stone-600 hover:text-stone-500 inline-flex items-center gap-1"
+                  className="text-sm text-zinc-600 hover:text-zinc-500 inline-flex items-center gap-1"
                 >
                   View messages <ArrowRight className="h-3 w-3" />
                 </Link>
@@ -118,11 +118,11 @@ export default function Dashboard() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <Ticket className="h-4 w-4 text-stone-400" />
+                <Ticket className="h-4 w-4 text-zinc-400" />
                 Recent bookings
               </CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/bookings" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
+                <Link to="/bookings" className="text-xs text-zinc-500 hover:text-zinc-900 inline-flex items-center gap-1">
                   View all <ArrowRight className="h-3 w-3" />
                 </Link>
               </Button>
@@ -141,10 +141,10 @@ export default function Dashboard() {
                     className="flex items-center justify-between py-2"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-stone-900 truncate">
+                      <p className="text-sm font-medium text-zinc-900 truncate">
                         {booking.customer_name}
                       </p>
-                      <p className="text-xs text-stone-500">
+                      <p className="text-xs text-zinc-500">
                         <Users className="h-3 w-3 inline mr-1" />
                         {booking.participants} participants
                       </p>
@@ -164,7 +164,7 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-stone-400 text-center py-6">No bookings yet</p>
+              <p className="text-sm text-zinc-400 text-center py-6">No bookings yet</p>
             )}
           </CardContent>
         </Card>
@@ -174,11 +174,11 @@ export default function Dashboard() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-stone-400" />
+                <GraduationCap className="h-4 w-4 text-zinc-400" />
                 Upcoming courses
               </CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/courses" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
+                <Link to="/courses" className="text-xs text-zinc-500 hover:text-zinc-900 inline-flex items-center gap-1">
                   Manage <ArrowRight className="h-3 w-3" />
                 </Link>
               </Button>
@@ -200,21 +200,21 @@ export default function Dashboard() {
                       className="flex items-center justify-between py-2"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-stone-900 truncate">
+                        <p className="text-sm font-medium text-zinc-900 truncate">
                           {course.title}
                         </p>
-                        <p className="text-xs text-stone-500">
+                        <p className="text-xs text-zinc-500">
                           {new Date(course.start_date).toLocaleDateString('sv-SE')} &middot; {course.location}
                         </p>
                       </div>
-                      <span className="text-xs text-stone-500 font-mono ml-3">
+                      <span className="text-xs text-zinc-500 font-mono ml-3">
                         {course.current_participants}/{course.max_participants}
                       </span>
                     </div>
                   ))}
               </div>
             ) : (
-              <p className="text-sm text-stone-400 text-center py-6">No upcoming courses</p>
+              <p className="text-sm text-zinc-400 text-center py-6">No upcoming courses</p>
             )}
           </CardContent>
         </Card>

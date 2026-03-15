@@ -16,10 +16,10 @@ export default function EditToolbar({ onHide, savingStatus }: EditToolbarProps) 
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-center gap-1 rounded-full bg-stone-900/80 backdrop-blur-md px-2 py-1.5 shadow-2xl border border-white/10">
+      <div className="flex items-center gap-1 rounded-full bg-zinc-900/80 backdrop-blur-md px-2 py-1.5 shadow-2xl border border-white/10">
         {/* Edit mode badge */}
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-forest-300">
-          <span className="w-1.5 h-1.5 rounded-full bg-forest-400 animate-pulse" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
           {UI_STRINGS.editToolbar.editMode}
         </span>
         <div className="w-px h-5 bg-white/20" />
@@ -36,14 +36,14 @@ export default function EditToolbar({ onHide, savingStatus }: EditToolbarProps) 
               )}
               {savingStatus === 'saved' && (
                 <>
-                  <Check className="h-3.5 w-3.5 text-forest-300" />
-                  <span className="text-forest-300">{UI_STRINGS.editToolbar.saved}</span>
+                  <Check className="h-3.5 w-3.5 text-emerald-300" />
+                  <span className="text-emerald-300">{UI_STRINGS.editToolbar.saved}</span>
                 </>
               )}
               {savingStatus === 'error' && (
                 <>
-                  <AlertCircle className="h-3.5 w-3.5 text-[#E96B63]" />
-                  <span className="text-[#E96B63]">{UI_STRINGS.editToolbar.saveError}</span>
+                  <AlertCircle className="h-3.5 w-3.5 text-red-400" />
+                  <span className="text-red-400">{UI_STRINGS.editToolbar.saveError}</span>
                 </>
               )}
             </div>

@@ -120,7 +120,7 @@ export function FileEmbed({
           {editCtx && !showUrlInput && (
             <div
               className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover/file:opacity-100 transition-opacity cursor-pointer rounded-xl"
-              style={{ background: 'rgba(0,0,0,0.5)' }}
+              style={{ background: 'var(--overlay-light)' }}
               onClick={(e) => {
                 e.stopPropagation()
                 setUrlDraft(url)
@@ -188,7 +188,7 @@ function FileUrlInput({
   return (
     <div
       className="absolute inset-0 flex items-center justify-center p-6 rounded-xl"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+      style={{ background: 'var(--overlay-dark)', backdropFilter: 'blur(4px)' }}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="w-full max-w-md space-y-3">

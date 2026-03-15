@@ -35,8 +35,8 @@ export default function BookingsList() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-h3 text-stone-900">Bookings</h1>
-        <p className="text-stone-500 mt-1">View and manage course bookings.</p>
+        <h1 className="text-h3 text-zinc-900">Bookings</h1>
+        <p className="text-zinc-500 mt-1">View and manage course bookings.</p>
       </div>
 
       <Card>
@@ -49,7 +49,7 @@ export default function BookingsList() {
         ) : data?.bookings && data.bookings.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-100">
+              <TableRow className="bg-zinc-100">
                 <TableHead>Customer</TableHead>
                 <TableHead className="hidden lg:table-cell">Course</TableHead>
                 <TableHead className="hidden md:table-cell">Participants</TableHead>
@@ -61,22 +61,22 @@ export default function BookingsList() {
             </TableHeader>
             <TableBody>
               {data.bookings.map((booking) => (
-                <TableRow key={booking.id} className="hover:bg-stone-50 transition-colors">
+                <TableRow key={booking.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <div>
-                      <p className="font-medium text-stone-900 text-sm">
+                      <p className="font-medium text-zinc-900 text-sm">
                         {booking.customer_name}
                       </p>
-                      <p className="text-xs text-stone-500">{booking.customer_email}</p>
+                      <p className="text-xs text-zinc-500">{booking.customer_email}</p>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell text-stone-600 text-sm">
+                  <TableCell className="hidden lg:table-cell text-zinc-600 text-sm">
                     {booking.course_title || booking.course_id}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-stone-600 text-sm font-mono">
+                  <TableCell className="hidden md:table-cell text-zinc-600 text-sm font-mono">
                     {booking.participants}
                   </TableCell>
-                  <TableCell className="text-stone-900 text-sm font-medium">
+                  <TableCell className="text-zinc-900 text-sm font-medium">
                     {booking.total_price_sek?.toLocaleString('sv-SE')} kr
                   </TableCell>
                   <TableCell>
@@ -84,7 +84,7 @@ export default function BookingsList() {
                       {getPaymentLabel(booking.payment_status)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-stone-500 text-sm">
+                  <TableCell className="hidden sm:table-cell text-zinc-500 text-sm">
                     {new Date(booking.created_at).toLocaleDateString('sv-SE')}
                   </TableCell>
                   <TableCell className="text-right">
@@ -100,8 +100,8 @@ export default function BookingsList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Ticket className="h-10 w-10 text-stone-300 mb-3" />
-            <p className="text-stone-500">No bookings yet.</p>
+            <Ticket className="h-10 w-10 text-zinc-300 mb-3" />
+            <p className="text-zinc-500">No bookings yet.</p>
           </CardContent>
         )}
       </Card>

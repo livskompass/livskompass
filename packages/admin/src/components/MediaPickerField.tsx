@@ -66,7 +66,7 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
           <img
             src={resolvedUrl}
             alt="Selected media preview"
-            className="w-full h-28 rounded-lg object-cover border border-stone-200 bg-stone-50"
+            className="w-full h-28 rounded-lg object-cover border border-zinc-200 bg-zinc-50"
             onError={(e) => {
               ;(e.target as HTMLImageElement).style.display = 'none'
             }}
@@ -75,7 +75,7 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="flex-1 text-xs font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-md px-3 py-1.5 transition-colors"
+              className="flex-1 text-xs font-medium text-zinc-600 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 rounded-md px-3 py-1.5 transition-colors"
             >
               Change
             </button>
@@ -92,10 +92,10 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="w-full flex flex-col items-center justify-center gap-2 h-24 rounded-lg border-2 border-dashed border-stone-300 hover:border-stone-400 bg-stone-50 hover:bg-stone-100 transition-colors cursor-pointer"
+          className="w-full flex flex-col items-center justify-center gap-2 h-24 rounded-lg border-2 border-dashed border-zinc-300 hover:border-zinc-400 bg-zinc-50 hover:bg-zinc-100 transition-colors cursor-pointer"
         >
-          <ImageIcon className="h-5 w-5 text-stone-400" />
-          <span className="text-xs font-medium text-stone-500">Choose image</span>
+          <ImageIcon className="h-5 w-5 text-zinc-400" />
+          <span className="text-xs font-medium text-zinc-500">Choose image</span>
         </button>
       )}
 
@@ -107,7 +107,7 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
           </DialogHeader>
 
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-stone-500">
+            <p className="text-sm text-zinc-500">
               {data?.media ? `${data.media.length} files` : ''}
             </p>
             <div>
@@ -155,8 +155,8 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
                       className={cn(
                         'relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:shadow-md focus:outline-none',
                         value === media.url
-                          ? 'border-stone-900 ring-2 ring-stone-400/20'
-                          : 'border-transparent hover:border-stone-300'
+                          ? 'border-zinc-900 ring-2 ring-zinc-400/20'
+                          : 'border-transparent hover:border-zinc-300'
                       )}
                     >
                       <img
@@ -164,7 +164,7 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
                         alt={media.alt_text || media.filename}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-zinc-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
                         {media.filename}
                       </div>
                     </button>
@@ -172,9 +172,9 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <ImageIcon className="h-8 w-8 text-stone-300 mb-2" />
-                <p className="text-sm text-stone-500">No images yet</p>
-                <p className="text-xs text-stone-400 mt-1">Upload an image to get started.</p>
+                <ImageIcon className="h-8 w-8 text-zinc-300 mb-2" />
+                <p className="text-sm text-zinc-500">No images yet</p>
+                <p className="text-xs text-zinc-400 mt-1">Upload an image to get started.</p>
               </div>
             )}
           </div>

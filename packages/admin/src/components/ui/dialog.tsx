@@ -13,7 +13,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className="fixed inset-0 bg-stone-950/50 backdrop-blur-sm animate-fade-in"
+        className="fixed inset-0 bg-zinc-950/50 backdrop-blur-sm animate-fade-in"
         onClick={() => onOpenChange(false)}
       />
       <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -30,7 +30,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "relative z-50 w-full max-w-lg rounded-2xl border border-stone-200 bg-white p-6 shadow-xl animate-scale-in",
+      "relative z-50 w-full max-w-lg rounded-2xl border border-zinc-200 bg-white p-6 shadow-xl animate-scale-in",
       className
     )}
     {...props}
@@ -71,7 +71,7 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h2
     ref={ref}
-    className={cn("text-lg font-semibold leading-none tracking-tight text-stone-900", className)}
+    className={cn("text-lg font-semibold leading-none tracking-tight text-zinc-900", className)}
     {...props}
   />
 ))
@@ -83,7 +83,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-stone-500", className)}
+    className={cn("text-sm text-zinc-500", className)}
     {...props}
   />
 ))

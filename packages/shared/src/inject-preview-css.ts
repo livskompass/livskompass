@@ -106,18 +106,18 @@ export function injectPreviewCSS(iframeDoc: Document) {
     /* Inline editing visual feedback */
     [data-inline-edit] { cursor: text; }
     [data-inline-edit]:hover {
-      outline: 1.5px dashed rgba(138, 132, 122, 0.4);
+      outline: 1.5px dashed var(--inline-edit-hover, rgba(138, 132, 122, 0.4));
       outline-offset: 4px;
       border-radius: 2px;
     }
     [data-inline-edit]:focus {
-      outline: 2px solid rgba(138, 132, 122, 0.7);
+      outline: 2px solid var(--inline-edit-focus, rgba(138, 132, 122, 0.7));
       outline-offset: 4px;
       border-radius: 2px;
     }
     [data-inline-edit]:empty::before {
       content: 'Click to edit...';
-      color: rgba(138, 132, 122, 0.5);
+      color: var(--inline-edit-placeholder, rgba(138, 132, 122, 0.5));
       font-style: italic;
       pointer-events: none;
     }

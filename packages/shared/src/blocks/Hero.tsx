@@ -126,7 +126,7 @@ export function Hero({
           <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         )}
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
-        <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(var(--color-forest-950-rgb, 10,26,16), ${overlayOpacity[overlayDarkness]}), rgba(var(--color-forest-950-rgb, 10,26,16), 0.2), rgba(var(--color-forest-950-rgb, 10,26,16), ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />
         <div className="relative flex flex-col items-center text-center" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <h1 {...hEdit} className={cn('text-display text-white max-w-[24ch] mx-auto animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
             {heading}
@@ -166,7 +166,7 @@ export function Hero({
             )}
             {ctaPrimaryText && ctaPrimaryLink && (
               <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 bg-forest-600 text-white shadow-[0_1px_3px_rgba(50,102,71,0.2)] hover:bg-forest-500 hover:-translate-y-px transition-all">
+                <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 bg-forest-600 text-white shadow-[--shadow-btn-forest] hover:bg-forest-500 hover:-translate-y-px transition-all">
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>

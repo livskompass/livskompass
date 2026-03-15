@@ -30,8 +30,8 @@ export default function PostsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-h3 text-stone-900">Posts</h1>
-          <p className="text-stone-500 mt-1">Manage your blog posts.</p>
+          <h1 className="text-h3 text-zinc-900">Posts</h1>
+          <p className="text-zinc-500 mt-1">Manage your blog posts.</p>
         </div>
         <Button asChild>
           <Link to="/posts/new">
@@ -51,7 +51,7 @@ export default function PostsList() {
         ) : data?.posts && data.posts.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-100">
+              <TableRow className="bg-zinc-100">
                 <TableHead>Title</TableHead>
                 <TableHead>Published</TableHead>
                 <TableHead>Status</TableHead>
@@ -60,19 +60,19 @@ export default function PostsList() {
             </TableHeader>
             <TableBody>
               {data.posts.map((post) => (
-                <TableRow key={post.id} className="hover:bg-stone-50 transition-colors">
+                <TableRow key={post.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
                       to={`/posts/${post.id}`}
-                      className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
+                      className="font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
                     >
                       {post.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-stone-500 text-sm">
+                  <TableCell className="text-zinc-500 text-sm">
                     {post.published_at
                       ? new Date(post.published_at).toLocaleDateString('sv-SE')
-                      : <span className="text-stone-400">--</span>}
+                      : <span className="text-zinc-400">--</span>}
                   </TableCell>
                   <TableCell>
                     <Badge variant={post.status === 'published' ? 'success' : 'warning'}>
@@ -102,8 +102,8 @@ export default function PostsList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Newspaper className="h-10 w-10 text-stone-300 mb-3" />
-            <p className="text-stone-500 mb-2">No posts yet</p>
+            <Newspaper className="h-10 w-10 text-zinc-300 mb-3" />
+            <p className="text-zinc-500 mb-2">No posts yet</p>
             <Button variant="outline" size="sm" asChild>
               <Link to="/posts/new">Create your first post</Link>
             </Button>

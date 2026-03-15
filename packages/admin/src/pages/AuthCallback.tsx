@@ -31,10 +31,10 @@ export default function AuthCallback() {
   }, [searchParams, navigate])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50">
       <div className="text-center">
-        <Loader2 className="h-10 w-10 text-stone-600 animate-spin mx-auto mb-4" />
-        <p className="text-stone-500 text-sm">Signing in...</p>
+        <Loader2 className="h-10 w-10 text-zinc-600 animate-spin mx-auto mb-4" />
+        <p className="text-zinc-500 text-sm">Signing in...</p>
       </div>
     </div>
   )

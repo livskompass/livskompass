@@ -45,7 +45,7 @@ export default function BookingDetail() {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <p className="text-stone-500 mb-3">Booking not found.</p>
+          <p className="text-zinc-500 mb-3">Booking not found.</p>
           <Button variant="outline" size="sm" asChild>
             <Link to="/bookings">Back to bookings</Link>
           </Button>
@@ -83,8 +83,8 @@ export default function BookingDetail() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-h3 text-stone-900">Booking details</h1>
-          <p className="text-stone-500 text-sm font-mono">{booking.id}</p>
+          <h1 className="text-h3 text-zinc-900">Booking details</h1>
+          <p className="text-zinc-500 text-sm font-mono">{booking.id}</p>
         </div>
       </div>
 
@@ -96,36 +96,36 @@ export default function BookingDetail() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-start gap-3">
-              <Users className="h-4 w-4 text-stone-400 mt-0.5" />
+              <Users className="h-4 w-4 text-zinc-400 mt-0.5" />
               <div>
-                <p className="text-sm text-stone-500">Name</p>
-                <p className="font-medium text-stone-900">{booking.customer_name}</p>
+                <p className="text-sm text-zinc-500">Name</p>
+                <p className="font-medium text-zinc-900">{booking.customer_name}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Mail className="h-4 w-4 text-stone-400 mt-0.5" />
+              <Mail className="h-4 w-4 text-zinc-400 mt-0.5" />
               <div>
-                <p className="text-sm text-stone-500">Email</p>
-                <a href={`mailto:${booking.customer_email}`} className="font-medium text-stone-600 hover:text-stone-700">
+                <p className="text-sm text-zinc-500">Email</p>
+                <a href={`mailto:${booking.customer_email}`} className="font-medium text-zinc-600 hover:text-zinc-700">
                   {booking.customer_email}
                 </a>
               </div>
             </div>
             {booking.customer_phone && (
               <div className="flex items-start gap-3">
-                <Phone className="h-4 w-4 text-stone-400 mt-0.5" />
+                <Phone className="h-4 w-4 text-zinc-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-stone-500">Phone</p>
-                  <p className="font-medium text-stone-900">{booking.customer_phone}</p>
+                  <p className="text-sm text-zinc-500">Phone</p>
+                  <p className="font-medium text-zinc-900">{booking.customer_phone}</p>
                 </div>
               </div>
             )}
             {booking.customer_organization && (
               <div className="flex items-start gap-3">
-                <Building className="h-4 w-4 text-stone-400 mt-0.5" />
+                <Building className="h-4 w-4 text-zinc-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-stone-500">Organization</p>
-                  <p className="font-medium text-stone-900">{booking.customer_organization}</p>
+                  <p className="text-sm text-zinc-500">Organization</p>
+                  <p className="font-medium text-zinc-900">{booking.customer_organization}</p>
                 </div>
               </div>
             )}
@@ -139,38 +139,38 @@ export default function BookingDetail() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-start gap-3">
-              <Hash className="h-4 w-4 text-stone-400 mt-0.5" />
+              <Hash className="h-4 w-4 text-zinc-400 mt-0.5" />
               <div>
-                <p className="text-sm text-stone-500">Booking number</p>
-                <p className="font-mono text-sm text-stone-900">{booking.id}</p>
+                <p className="text-sm text-zinc-500">Booking number</p>
+                <p className="font-mono text-sm text-zinc-900">{booking.id}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Calendar className="h-4 w-4 text-stone-400 mt-0.5" />
+              <Calendar className="h-4 w-4 text-zinc-400 mt-0.5" />
               <div>
-                <p className="text-sm text-stone-500">Course</p>
-                <p className="font-medium text-stone-900">
+                <p className="text-sm text-zinc-500">Course</p>
+                <p className="font-medium text-zinc-900">
                   {booking.course_title || booking.course_id}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Users className="h-4 w-4 text-stone-400 mt-0.5" />
+              <Users className="h-4 w-4 text-zinc-400 mt-0.5" />
               <div>
-                <p className="text-sm text-stone-500">Participants</p>
-                <p className="font-medium text-stone-900">{booking.participants}</p>
+                <p className="text-sm text-zinc-500">Participants</p>
+                <p className="font-medium text-zinc-900">{booking.participants}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <CreditCard className="h-4 w-4 text-stone-400 mt-0.5" />
+              <CreditCard className="h-4 w-4 text-zinc-400 mt-0.5" />
               <div>
-                <p className="text-sm text-stone-500">Total</p>
-                <p className="font-semibold text-stone-900 text-lg">
+                <p className="text-sm text-zinc-500">Total</p>
+                <p className="font-semibold text-zinc-900 text-lg">
                   {booking.total_price_sek?.toLocaleString('sv-SE')} kr
                 </p>
               </div>
             </div>
-            <div className="text-sm text-stone-500">
+            <div className="text-sm text-zinc-500">
               Created {new Date(booking.created_at).toLocaleString('sv-SE')}
             </div>
           </CardContent>
@@ -183,7 +183,7 @@ export default function BookingDetail() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-stone-500">Payment status</span>
+              <span className="text-sm text-zinc-500">Payment status</span>
               <Badge variant={getPaymentVariant(booking.payment_status) as "default" | "success" | "warning" | "destructive" | "secondary" | "outline"}>
                 {booking.payment_status === 'paid'
                   ? 'Paid'
@@ -195,7 +195,7 @@ export default function BookingDetail() {
               </Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-stone-500">Booking status</span>
+              <span className="text-sm text-zinc-500">Booking status</span>
               <Badge variant={getBookingVariant(booking.booking_status) as "default" | "success" | "warning" | "destructive" | "secondary" | "outline"}>
                 {booking.booking_status === 'confirmed'
                   ? 'Confirmed'
@@ -229,7 +229,7 @@ export default function BookingDetail() {
             <CardTitle className="text-base">Message</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-stone-700 text-sm whitespace-pre-wrap leading-relaxed">
+            <p className="text-zinc-700 text-sm whitespace-pre-wrap leading-relaxed">
               {booking.notes}
             </p>
           </CardContent>

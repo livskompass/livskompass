@@ -30,8 +30,8 @@ export default function ProductsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-h3 text-stone-900">Products</h1>
-          <p className="text-stone-500 mt-1">Manage books, CDs, and other products.</p>
+          <h1 className="text-h3 text-zinc-900">Products</h1>
+          <p className="text-zinc-500 mt-1">Manage books, CDs, and other products.</p>
         </div>
         <Button asChild>
           <Link to="/products/new">
@@ -51,7 +51,7 @@ export default function ProductsList() {
         ) : data?.products && data.products.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-100">
+              <TableRow className="bg-zinc-100">
                 <TableHead>Product</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Price</TableHead>
@@ -61,19 +61,19 @@ export default function ProductsList() {
             </TableHeader>
             <TableBody>
               {data.products.map((product) => (
-                <TableRow key={product.id} className="hover:bg-stone-50 transition-colors">
+                <TableRow key={product.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {product.image_url && (
                         <img
                           src={getMediaUrl(product.image_url)}
                           alt={product.title || 'Product image'}
-                          className="h-9 w-9 rounded-md object-cover border border-stone-200"
+                          className="h-9 w-9 rounded-md object-cover border border-zinc-200"
                         />
                       )}
                       <Link
                         to={`/products/${product.id}`}
-                        className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
+                        className="font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
                       >
                         {product.title}
                       </Link>
@@ -84,10 +84,10 @@ export default function ProductsList() {
                       {product.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-stone-600 text-sm">
+                  <TableCell className="text-zinc-600 text-sm">
                     {product.price_sek
                       ? `${product.price_sek.toLocaleString('sv-SE')} kr`
-                      : <span className="text-stone-400">Free</span>}
+                      : <span className="text-zinc-400">Free</span>}
                   </TableCell>
                   <TableCell>
                     <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>
@@ -117,8 +117,8 @@ export default function ProductsList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <ShoppingBag className="h-10 w-10 text-stone-300 mb-3" />
-            <p className="text-stone-500 mb-2">No products yet</p>
+            <ShoppingBag className="h-10 w-10 text-zinc-300 mb-3" />
+            <p className="text-zinc-500 mb-2">No products yet</p>
             <Button variant="outline" size="sm" asChild>
               <Link to="/products/new">Add your first product</Link>
             </Button>

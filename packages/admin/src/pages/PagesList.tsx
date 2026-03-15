@@ -30,8 +30,8 @@ export default function PagesList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-h3 text-stone-900">Pages</h1>
-          <p className="text-stone-500 mt-1">Manage your web pages.</p>
+          <h1 className="text-h3 text-zinc-900">Pages</h1>
+          <p className="text-zinc-500 mt-1">Manage your web pages.</p>
         </div>
         <Button asChild>
           <Link to="/pages/new">
@@ -51,7 +51,7 @@ export default function PagesList() {
         ) : data?.pages && data.pages.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-stone-100">
+              <TableRow className="bg-zinc-100">
                 <TableHead>Title</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
@@ -60,16 +60,16 @@ export default function PagesList() {
             </TableHeader>
             <TableBody>
               {data.pages.map((page) => (
-                <TableRow key={page.id} className="hover:bg-stone-50 transition-colors">
+                <TableRow key={page.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
                       to={`/pages/${page.id}`}
-                      className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
+                      className="font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
                     >
                       {page.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-stone-500 font-mono text-xs">
+                  <TableCell className="text-zinc-500 font-mono text-xs">
                     /{page.slug}
                   </TableCell>
                   <TableCell>
@@ -100,8 +100,8 @@ export default function PagesList() {
           </Table>
         ) : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <FileText className="h-10 w-10 text-stone-300 mb-3" />
-            <p className="text-stone-500 mb-2">No pages yet</p>
+            <FileText className="h-10 w-10 text-zinc-300 mb-3" />
+            <p className="text-zinc-500 mb-2">No pages yet</p>
             <Button variant="outline" size="sm" asChild>
               <Link to="/pages/new">Create your first page</Link>
             </Button>

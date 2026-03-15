@@ -68,8 +68,8 @@ export default function MediaLibrary() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-h3 text-stone-900">Media Library</h1>
-          <p className="text-stone-500 mt-1">Upload and manage images, files, and media.</p>
+          <h1 className="text-h3 text-zinc-900">Media Library</h1>
+          <p className="text-zinc-500 mt-1">Upload and manage images, files, and media.</p>
         </div>
         <div>
           <input
@@ -105,7 +105,7 @@ export default function MediaLibrary() {
                 </div>
               ) : data?.media && data.media.length > 0 ? (
                 <div className="space-y-4">
-                <p className="text-sm text-stone-400">{data.media.length} files</p>
+                <p className="text-sm text-zinc-400">{data.media.length} files</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {data.media.map((media) => {
                     const FileIcon = getFileIcon(media.type)
@@ -116,8 +116,8 @@ export default function MediaLibrary() {
                         className={cn(
                           "relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-fast shadow-sm hover:shadow-md",
                           selectedMedia === media.id
-                            ? 'border-stone-900 ring-[3px] ring-stone-500/10'
-                            : 'border-transparent hover:border-stone-300'
+                            ? 'border-zinc-900 ring-[3px] ring-zinc-500/10'
+                            : 'border-transparent hover:border-zinc-300'
                         )}
                       >
                         {media.type?.startsWith('image') ? (
@@ -127,14 +127,14 @@ export default function MediaLibrary() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-stone-50 flex flex-col items-center justify-center gap-2">
-                            <FileIcon className="h-8 w-8 text-stone-400" />
-                            <span className="text-xs text-stone-500 px-2 text-center truncate w-full">
+                          <div className="w-full h-full bg-zinc-50 flex flex-col items-center justify-center gap-2">
+                            <FileIcon className="h-8 w-8 text-zinc-400" />
+                            <span className="text-xs text-zinc-500 px-2 text-center truncate w-full">
                               {media.filename}
                             </span>
                           </div>
                         )}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-950/60 to-transparent text-white text-[10px] p-2 pt-4 truncate">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-zinc-950/60 to-transparent text-white text-[10px] p-2 pt-4 truncate">
                           {media.filename}
                         </div>
                       </div>
@@ -144,9 +144,9 @@ export default function MediaLibrary() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <ImageIcon className="h-10 w-10 text-stone-300 mb-3" />
-                  <p className="text-stone-500 mb-1">No files yet</p>
-                  <p className="text-sm text-stone-400">Upload files to get started.</p>
+                  <ImageIcon className="h-10 w-10 text-zinc-300 mb-3" />
+                  <p className="text-zinc-500 mb-1">No files yet</p>
+                  <p className="text-sm text-zinc-400">Upload files to get started.</p>
                 </div>
               )}
             </CardContent>
@@ -165,30 +165,30 @@ export default function MediaLibrary() {
                   <img
                     src={getMediaUrl(selected.url)}
                     alt={selected.alt_text || selected.filename}
-                    className="w-full rounded-xl border border-stone-200"
+                    className="w-full rounded-xl border border-zinc-200"
                   />
                 )}
 
                 <dl className="space-y-3 text-sm">
                   <div>
-                    <dt className="text-stone-400 text-xs">Filename</dt>
-                    <dd className="font-medium text-stone-900 break-all text-sm">
+                    <dt className="text-zinc-400 text-xs">Filename</dt>
+                    <dd className="font-medium text-zinc-900 break-all text-sm">
                       {selected.filename}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-stone-400 text-xs">Type</dt>
-                    <dd className="text-stone-700">{selected.type}</dd>
+                    <dt className="text-zinc-400 text-xs">Type</dt>
+                    <dd className="text-zinc-700">{selected.type}</dd>
                   </div>
                   <div>
-                    <dt className="text-stone-400 text-xs">Size</dt>
-                    <dd className="text-stone-700">
+                    <dt className="text-zinc-400 text-xs">Size</dt>
+                    <dd className="text-zinc-700">
                       {(selected.size_bytes / 1024).toFixed(1)} KB
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-stone-400 text-xs">URL</dt>
-                    <dd className="font-mono text-[11px] text-stone-500 break-all">
+                    <dt className="text-zinc-400 text-xs">URL</dt>
+                    <dd className="font-mono text-[11px] text-zinc-500 break-all">
                       {getMediaUrl(selected.url)}
                     </dd>
                   </div>
@@ -200,7 +200,7 @@ export default function MediaLibrary() {
                   <Button
                     variant="outline"
                     onClick={() => copyToClipboard(getMediaUrl(selected.url))}
-                    className={cn("w-full", copied && "border-stone-400 text-stone-700")}
+                    className={cn("w-full", copied && "border-zinc-400 text-zinc-700")}
                   >
                     {copied ? (
                       <><Check className="h-4 w-4 mr-2" /> Copied!</>
@@ -222,8 +222,8 @@ export default function MediaLibrary() {
           ) : (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <ImageIcon className="h-8 w-8 text-stone-300 mb-2" />
-                <p className="text-sm text-stone-400">Select a file to view details</p>
+                <ImageIcon className="h-8 w-8 text-zinc-300 mb-2" />
+                <p className="text-sm text-zinc-400">Select a file to view details</p>
               </CardContent>
             </Card>
           )}

@@ -50,12 +50,12 @@ export default function EditableBlock({ children, blockType, blockIndex }: Edita
       {children}
 
       {/* Dashed border overlay */}
-      <div className="absolute inset-0 rounded-lg border-[1.5px] border-dashed border-forest-600 pointer-events-none opacity-0 group-hover/edit:opacity-50 transition-opacity duration-200" />
+      <div className="absolute inset-0 rounded-lg border-[1.5px] border-dashed border-blue-500 pointer-events-none opacity-0 group-hover/edit:opacity-50 transition-opacity duration-200" />
 
       {/* Edit button */}
       <button
         onClick={handleClick}
-        className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2.5 py-1 bg-forest-600 text-white rounded-full text-[13px] font-medium leading-snug shadow-sm cursor-pointer border-none opacity-0 -translate-y-1 group-hover/edit:opacity-100 group-hover/edit:translate-y-0 transition-all duration-200"
+        className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-full text-[13px] font-medium leading-snug shadow-sm cursor-pointer border-none opacity-0 -translate-y-1 group-hover/edit:opacity-100 group-hover/edit:translate-y-0 transition-all duration-200"
         title={`Redigera ${label} i CMS`}
       >
         <Pencil className="w-3.5 h-3.5" />

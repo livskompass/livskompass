@@ -48,9 +48,9 @@ function NavItemEditor({
   const hasChildren = item.children && item.children.length > 0
 
   return (
-    <div className="border border-stone-200 rounded-lg bg-white">
+    <div className="border border-zinc-200 rounded-lg bg-white">
       <div className="flex items-center gap-2 px-3 py-2">
-        <GripVertical className="h-4 w-4 text-stone-300 shrink-0" />
+        <GripVertical className="h-4 w-4 text-zinc-300 shrink-0" />
         <Input
           value={item.label}
           onChange={(e) => onChange(index, { ...item, label: e.target.value })}
@@ -66,7 +66,7 @@ function NavItemEditor({
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="p-1 rounded text-stone-400 hover:text-stone-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
+          className="p-1 rounded text-zinc-400 hover:text-zinc-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-1"
           title={hasChildren ? 'Edit sub-items' : 'Add sub-items'}
         >
           {expanded ? (
@@ -78,15 +78,15 @@ function NavItemEditor({
         <button
           type="button"
           onClick={() => onRemove(index)}
-          className="p-1 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
+          className="p-1 rounded text-zinc-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-1"
         >
           <Trash2 className="h-4 w-4" />
         </button>
       </div>
 
       {expanded && (
-        <div className="px-3 pb-3 pt-1 border-t border-stone-100 ml-6 space-y-2">
-          <p className="text-xs text-stone-500 font-medium">Dropdown items</p>
+        <div className="px-3 pb-3 pt-1 border-t border-zinc-100 ml-6 space-y-2">
+          <p className="text-xs text-zinc-500 font-medium">Dropdown items</p>
           {(item.children || []).map((child, ci) => (
             <div key={ci} className="flex items-center gap-2">
               <Input
@@ -115,7 +115,7 @@ function NavItemEditor({
                   const newChildren = (item.children || []).filter((_, i) => i !== ci)
                   onChange(index, { ...item, children: newChildren.length > 0 ? newChildren : undefined })
                 }}
-                className="p-0.5 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
+                className="p-0.5 rounded text-zinc-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-1"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -154,7 +154,7 @@ function FooterColumnEditor({
   onRemove: (index: number) => void
 }) {
   return (
-    <div className="border border-stone-200 rounded-lg bg-white p-3 space-y-3">
+    <div className="border border-zinc-200 rounded-lg bg-white p-3 space-y-3">
       <div className="flex items-center gap-2">
         <Input
           value={column.heading}
@@ -165,7 +165,7 @@ function FooterColumnEditor({
         <button
           type="button"
           onClick={() => onRemove(index)}
-          className="p-1 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
+          className="p-1 rounded text-zinc-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-1"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -199,7 +199,7 @@ function FooterColumnEditor({
                 const newLinks = column.links.filter((_, i) => i !== li)
                 onChange(index, { ...column, links: newLinks })
               }}
-              className="p-0.5 rounded text-stone-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1"
+              className="p-0.5 rounded text-zinc-400 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-1"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
@@ -358,15 +358,15 @@ export default function Settings() {
   return (
     <div className="space-y-8 max-w-4xl">
       <div>
-        <h1 className="text-h3 text-stone-900">Settings</h1>
-        <p className="text-stone-500 mt-1">Manage site configuration, navigation, and integrations.</p>
+        <h1 className="text-h3 text-zinc-900">Settings</h1>
+        <p className="text-zinc-500 mt-1">Manage site configuration, navigation, and integrations.</p>
       </div>
 
       {/* ── Site Header & Footer ── */}
-      <h2 className="text-h4 text-stone-900">Navigation & Structure</h2>
+      <h2 className="text-h4 text-zinc-900">Navigation & Structure</h2>
 
       {siteSaved && (
-        <div className="flex items-center gap-2 bg-stone-100 border border-stone-200 text-stone-700 px-4 py-3 rounded-xl text-sm">
+        <div className="flex items-center gap-2 bg-zinc-100 border border-zinc-200 text-zinc-700 px-4 py-3 rounded-xl text-sm">
           <CheckCircle className="h-4 w-4 shrink-0" />
           Header & footer saved!
         </div>
@@ -381,7 +381,7 @@ export default function Settings() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <PanelTop className="h-4 w-4 text-stone-400" />
+            <PanelTop className="h-4 w-4 text-zinc-400" />
             Site Header
           </CardTitle>
         </CardHeader>
@@ -422,7 +422,7 @@ export default function Settings() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <PanelBottom className="h-4 w-4 text-stone-400" />
+            <PanelBottom className="h-4 w-4 text-zinc-400" />
             Site Footer
           </CardTitle>
         </CardHeader>
@@ -451,7 +451,7 @@ export default function Settings() {
               onChange={(e) => setFooter({ ...footer, contactHeading: e.target.value })}
               placeholder="Kontakt"
             />
-            <p className="text-xs text-stone-400">Heading shown above the contact info in the footer. Defaults to "Kontakt".</p>
+            <p className="text-xs text-zinc-400">Heading shown above the contact info in the footer. Defaults to "Kontakt".</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -482,8 +482,8 @@ export default function Settings() {
               onChange={(e) => setFooter({ ...footer, copyright: e.target.value })}
               placeholder="Use {year} for dynamic year"
             />
-            <p className="text-xs text-stone-400">
-              Use <code className="bg-stone-100 px-1 rounded">{'{year}'}</code> to insert the current year automatically.
+            <p className="text-xs text-zinc-400">
+              Use <code className="bg-zinc-100 px-1 rounded">{'{year}'}</code> to insert the current year automatically.
             </p>
           </div>
 
@@ -510,7 +510,7 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      <div className="sticky bottom-0 bg-stone-50 py-3 flex justify-end">
+      <div className="sticky bottom-0 bg-zinc-50 py-3 flex justify-end">
         <Button
           type="button"
           onClick={handleSiteSave}
@@ -527,10 +527,10 @@ export default function Settings() {
       <Separator className="my-2" />
 
       {/* ── General Settings ── */}
-      <h2 className="text-h4 text-stone-900">General Settings</h2>
+      <h2 className="text-h4 text-zinc-900">General Settings</h2>
 
       {saved && (
-        <div className="flex items-center gap-2 bg-stone-100 border border-stone-200 text-stone-700 px-4 py-3 rounded-xl text-sm">
+        <div className="flex items-center gap-2 bg-zinc-100 border border-zinc-200 text-zinc-700 px-4 py-3 rounded-xl text-sm">
           <CheckCircle className="h-4 w-4 shrink-0" />
           Settings saved!
         </div>
@@ -546,7 +546,7 @@ export default function Settings() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Globe className="h-4 w-4 text-stone-400" />
+                <Globe className="h-4 w-4 text-zinc-400" />
                 General
               </CardTitle>
             </CardHeader>
@@ -568,7 +568,7 @@ export default function Settings() {
                   placeholder="home-2"
                   className="font-mono text-sm"
                 />
-                <p className="text-xs text-stone-400">The page slug that loads as the homepage (e.g. "home-2" from WordPress migration).</p>
+                <p className="text-xs text-zinc-400">The page slug that loads as the homepage (e.g. "home-2" from WordPress migration).</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="site-desc">Description</Label>
@@ -585,7 +585,7 @@ export default function Settings() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Phone className="h-4 w-4 text-stone-400" />
+                <Phone className="h-4 w-4 text-zinc-400" />
                 Contact details
               </CardTitle>
             </CardHeader>
@@ -614,7 +614,7 @@ export default function Settings() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-stone-400" />
+                <CreditCard className="h-4 w-4 text-zinc-400" />
                 Integrations
               </CardTitle>
             </CardHeader>
@@ -628,12 +628,12 @@ export default function Settings() {
                   className="font-mono text-sm"
                   placeholder="pk_live_..."
                 />
-                <p className="text-xs text-stone-400">Your public Stripe key for payments</p>
+                <p className="text-xs text-zinc-400">Your public Stripe key for payments</p>
               </div>
               <Separator />
               <div className="space-y-2">
                 <Label htmlFor="ga-id" className="flex items-center gap-2">
-                  <BarChart3 className="h-3.5 w-3.5 text-stone-400" />
+                  <BarChart3 className="h-3.5 w-3.5 text-zinc-400" />
                   Google Analytics ID
                 </Label>
                 <Input
@@ -647,7 +647,7 @@ export default function Settings() {
             </CardContent>
           </Card>
 
-          <div className="sticky bottom-0 bg-stone-50 py-3 flex justify-end">
+          <div className="sticky bottom-0 bg-zinc-50 py-3 flex justify-end">
             <Button type="submit" disabled={saveMutation.isPending}>
               {saveMutation.isPending ? (
                 <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>

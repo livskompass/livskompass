@@ -36,39 +36,41 @@
   --tracking-body: 0;
   --tracking-overline: 0.08em;
 
-  /* Colors */
-  --color-forest-950-rgb: 10, 26, 16;
-  --forest-950: #0A1A10;
-  --forest-900: #132B1C;
-  --forest-800: #1C3D29;
-  --forest-700: #275137;
-  --forest-600: #326647;
-  --forest-500: #3E7B57;
-  --forest-400: #5C9873;
-  --forest-300: #84B496;
-  --forest-200: #B0D1BC;
-  --forest-100: #D7E9DD;
-  --forest-50:  #ECF5EF;
+  /* Colors — space-separated RGB channels for Tailwind alpha support
+     Usage in CSS:  color: rgb(var(--forest-600));
+     With alpha:    background: rgb(var(--forest-600) / 0.5);
+     Tailwind:      bg-forest-600/50 works automatically */
+  --forest-950: 10 26 16;
+  --forest-900: 19 43 28;
+  --forest-800: 28 61 41;
+  --forest-700: 39 81 55;
+  --forest-600: 50 102 71;
+  --forest-500: 62 123 87;
+  --forest-400: 92 152 115;
+  --forest-300: 132 180 150;
+  --forest-200: 176 209 188;
+  --forest-100: 215 233 221;
+  --forest-50:  236 245 239;
 
-  --stone-950: #1A1816;
-  --stone-900: #2C2924;
-  --stone-800: #403C36;
-  --stone-700: #575249;
-  --stone-600: #6E685E;
-  --stone-500: #8A847A;
-  --stone-400: #A9A49B;
-  --stone-300: #C8C4BC;
-  --stone-200: #E2DFD9;
-  --stone-100: #EFECE7;
-  --stone-50:  #F8F6F2;
+  --stone-950: 26 24 22;
+  --stone-900: 44 41 36;
+  --stone-800: 64 60 54;
+  --stone-700: 87 82 73;
+  --stone-600: 110 104 94;
+  --stone-500: 138 132 122;
+  --stone-400: 169 164 155;
+  --stone-300: 200 196 188;
+  --stone-200: 226 223 217;
+  --stone-100: 239 236 231;
+  --stone-50:  248 246 242;
 
-  --amber-600: #8C6534;
-  --amber-500: #B08350;
-  --amber-400: #C0955F;
-  --amber-300: #D5B68A;
-  --amber-200: #EAD5B5;
-  --amber-100: #F4EADB;
-  --amber-50:  #FBF5EC;
+  --amber-600: 140 101 52;
+  --amber-500: 176 131 80;
+  --amber-400: 192 149 95;
+  --amber-300: 213 182 138;
+  --amber-200: 234 213 181;
+  --amber-100: 244 234 219;
+  --amber-50:  251 245 236;
 
   --color-success-fg: #2F7A42;
   --color-success-bg: #EFF7F1;
@@ -79,20 +81,26 @@
   --color-info-fg:    #2E6FA0;
   --color-info-bg:    #EFF5FB;
 
-  /* Surfaces */
-  --surface-primary:       #F8F6F2;
-  --surface-secondary:     #EFECE7;
+  /* Surfaces — reference brand color vars */
+  --surface-primary:       rgb(var(--stone-50));
+  --surface-secondary:     rgb(var(--stone-100));
   --surface-elevated:      #FFFFFF;
-  --surface-glass:         rgba(248, 246, 242, 0.72);
-  --surface-glass-border:  rgba(200, 196, 188, 0.25);
-  --surface-overlay:       rgba(10, 26, 16, 0.6);
-  --surface-overlay-heavy: rgba(10, 26, 16, 0.8);
+  --surface-glass:         rgb(var(--stone-50) / 0.72);
+  --surface-glass-border:  rgb(var(--stone-300) / 0.25);
+  --surface-overlay:       rgb(var(--forest-950) / 0.6);
+  --surface-overlay-heavy: rgb(var(--forest-950) / 0.8);
 
-  /* Gradients */
-  --gradient-hero:    linear-gradient(145deg, #0A1A10 0%, #1C3D29 45%, #275137 100%);
+  /* Modal overlays */
+  --overlay-light:         rgba(0, 0, 0, 0.5);
+  --overlay-dark:          rgba(0, 0, 0, 0.7);
+
+  /* Gradients — reference brand color vars */
+  --gradient-hero:    linear-gradient(145deg, rgb(var(--forest-950)) 0%, rgb(var(--forest-800)) 45%, rgb(var(--forest-700)) 100%);
   --gradient-section: linear-gradient(180deg, var(--surface-primary) 0%, var(--surface-secondary) 100%);
-  --gradient-glow:    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(62, 123, 87, 0.12) 0%, transparent 70%);
+  --gradient-glow:    radial-gradient(ellipse 60% 50% at 80% 20%, rgb(var(--forest-500) / 0.12) 0%, transparent 70%);
   --gradient-shimmer: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
+  --gradient-testimonial-glow: radial-gradient(circle at 100% 0%, rgb(var(--forest-500) / 0.08) 0%, transparent 70%);
+  --gradient-pricing-glow:     radial-gradient(circle at 100% 0%, rgb(var(--amber-500) / 0.08) 0%, transparent 70%);
 
   /* Spacing */
   --section-xs: clamp(1.5rem, 1rem + 1.667vw, 3rem);
@@ -128,14 +136,24 @@
   --duration-reveal:   700ms;
   --duration-dramatic: 1000ms;
 
-  /* Shadows */
-  --shadow-xs:    0 1px 2px rgba(10, 26, 16, 0.05);
-  --shadow-sm:    0 2px 4px rgba(10, 26, 16, 0.04), 0 1px 2px rgba(10, 26, 16, 0.06);
-  --shadow-md:    0 4px 12px rgba(10, 26, 16, 0.05), 0 2px 4px rgba(10, 26, 16, 0.06);
-  --shadow-lg:    0 8px 24px rgba(10, 26, 16, 0.07), 0 4px 8px rgba(10, 26, 16, 0.05);
-  --shadow-xl:    0 16px 48px rgba(10, 26, 16, 0.1), 0 8px 16px rgba(10, 26, 16, 0.05);
-  --shadow-glow:  0 0 0 1px rgba(62, 123, 87, 0.15), 0 4px 16px rgba(62, 123, 87, 0.1);
-  --shadow-amber: 0 2px 8px rgba(166, 123, 74, 0.2), 0 1px 3px rgba(166, 123, 74, 0.15);
+  /* Shadows — reference brand color vars */
+  --shadow-xs:    0 1px 2px rgb(var(--forest-950) / 0.05);
+  --shadow-sm:    0 2px 4px rgb(var(--forest-950) / 0.04), 0 1px 2px rgb(var(--forest-950) / 0.06);
+  --shadow-md:    0 4px 12px rgb(var(--forest-950) / 0.05), 0 2px 4px rgb(var(--forest-950) / 0.06);
+  --shadow-lg:    0 8px 24px rgb(var(--forest-950) / 0.07), 0 4px 8px rgb(var(--forest-950) / 0.05);
+  --shadow-xl:    0 16px 48px rgb(var(--forest-950) / 0.1), 0 8px 16px rgb(var(--forest-950) / 0.05);
+  --shadow-glow:  0 0 0 1px rgb(var(--forest-500) / 0.15), 0 4px 16px rgb(var(--forest-500) / 0.1);
+  --shadow-amber: 0 2px 8px rgb(var(--amber-500) / 0.2), 0 1px 3px rgb(var(--amber-500) / 0.15);
+
+  /* Button shadows */
+  --shadow-btn-forest:       0 1px 3px rgb(var(--forest-600) / 0.2), 0 1px 2px rgb(var(--forest-600) / 0.12);
+  --shadow-btn-forest-hover: 0 4px 12px rgb(var(--forest-600) / 0.2), 0 2px 4px rgb(var(--forest-600) / 0.12);
+  --shadow-btn-amber-hover:  0 4px 12px rgb(var(--amber-500) / 0.25), 0 2px 4px rgb(var(--amber-500) / 0.15);
+
+  /* Inline edit feedback */
+  --inline-edit-hover:   rgb(var(--stone-500) / 0.4);
+  --inline-edit-focus:   rgb(var(--stone-500) / 0.7);
+  --inline-edit-placeholder: rgb(var(--stone-500) / 0.5);
 
   /* Radius */
   --radius-xs:   4px;
@@ -264,11 +282,21 @@
   --editor-blue-selection-ring: 0 0 0 2px rgba(var(--editor-blue-rgb), 0.2);
   --editor-surface-active-dark: rgba(96, 165, 250, 0.2);
   --editor-surface-hover-dark: rgba(255, 255, 255, 0.1);
+
+  /* Editor drag placeholder */
+  --editor-drag-placeholder-bg: #F9FAFB;
+  --editor-drag-placeholder-border: #E5E7EB;
+
+  /* Editor icon color (for SVG data URIs) */
+  --editor-icon-color: #71717A;
+
+  /* Tiptap placeholder color */
+  --editor-placeholder-color: #A1A1AA;
 }
 
 /* Admin body — uses secondary surface for sidebar distinction */
 body {
-  @apply antialiased bg-stone-50;
+  @apply antialiased bg-zinc-50;
   font-family: var(--font-body);
 }
 
@@ -426,7 +454,7 @@ body {
 }
 .tiptap.ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  color: #A1A1AA;
+  color: var(--editor-placeholder-color);
   pointer-events: none;
   float: left;
   height: 0;

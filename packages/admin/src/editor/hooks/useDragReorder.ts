@@ -113,8 +113,8 @@ export function useDragReorder(onReorder: (from: number, to: number) => void) {
     const placeholder = document.createElement('div')
     placeholder.style.cssText = `
       height: ${rect.height}px;
-      background: #F9FAFB;
-      border: 2px dashed #E5E7EB;
+      background: var(--editor-drag-placeholder-bg);
+      border: 2px dashed var(--editor-drag-placeholder-border);
       border-radius: 8px;
       transition: height 200ms ease-out;
     `

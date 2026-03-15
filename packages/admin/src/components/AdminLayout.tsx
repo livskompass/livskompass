@@ -82,11 +82,11 @@ export default function AdminLayout() {
   })
 
   return (
-    <div className="min-h-screen flex bg-stone-50">
+    <div className="min-h-screen flex bg-zinc-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-stone-950/60 backdrop-blur-sm z-20 lg:hidden"
+          className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -94,18 +94,18 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 bg-stone-950 flex flex-col transform transition-all duration-200 ease-in-out lg:translate-x-0 lg:static",
+          "fixed inset-y-0 left-0 z-30 bg-zinc-950 flex flex-col transform transition-all duration-200 ease-in-out lg:translate-x-0 lg:static",
           collapsed ? 'w-16' : 'w-64',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Logo */}
         <div className={cn(
-          "flex items-center justify-between h-16 border-b border-stone-800",
+          "flex items-center justify-between h-16 border-b border-zinc-800",
           collapsed ? 'px-3' : 'px-5'
         )}>
           <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 bg-stone-700 rounded-lg flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 bg-zinc-700 rounded-lg flex items-center justify-center shrink-0">
               <span className="text-white font-bold text-sm">L</span>
             </div>
             {!collapsed && (
@@ -115,7 +115,7 @@ export default function AdminLayout() {
             )}
           </Link>
           <button
-            className="lg:hidden text-stone-400 hover:text-white transition-colors"
+            className="lg:hidden text-zinc-400 hover:text-white transition-colors"
             onClick={() => setSidebarOpen(false)}
           >
             <X className="h-5 w-5" />
@@ -142,8 +142,8 @@ export default function AdminLayout() {
                       "group flex items-center rounded-lg text-sm font-medium transition-all duration-150 relative",
                       collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5',
                       isActive
-                        ? 'bg-stone-800 text-white'
-                        : 'text-stone-400 hover:bg-stone-800/60 hover:text-stone-200'
+                        ? 'bg-zinc-800 text-white'
+                        : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200'
                     )}
                   >
                     {isActive && !collapsed && (
@@ -151,20 +151,20 @@ export default function AdminLayout() {
                     )}
                     <item.icon className={cn(
                       "h-[18px] w-[18px] shrink-0 transition-colors duration-150",
-                      isActive ? 'text-white' : 'text-stone-500 group-hover:text-stone-400'
+                      isActive ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-400'
                     )} />
                     {!collapsed && (
                       <>
                         <span className="transition-opacity duration-150">{item.name}</span>
                         {isActive && (
-                          <ChevronRight className="ml-auto h-4 w-4 text-stone-500" />
+                          <ChevronRight className="ml-auto h-4 w-4 text-zinc-500" />
                         )}
                       </>
                     )}
                   </Link>
                   {item.dividerAfter && (
                     <div className={cn("my-2", collapsed ? 'mx-2' : 'mx-3')}>
-                      <div className="h-px bg-stone-800/80" />
+                      <div className="h-px bg-zinc-800/80" />
                     </div>
                   )}
                 </div>
@@ -172,7 +172,7 @@ export default function AdminLayout() {
             })}
         </nav>
 
-        <Separator className="bg-stone-800" />
+        <Separator className="bg-zinc-800" />
 
         {/* User / Logout */}
         <div className={cn("p-3", collapsed && 'px-2')}>
@@ -185,17 +185,17 @@ export default function AdminLayout() {
                   className="w-8 h-8 rounded-full"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-stone-700 flex items-center justify-center">
-                  <span className="text-stone-300 text-sm font-medium">
+                <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center">
+                  <span className="text-zinc-300 text-sm font-medium">
                     {currentUser.name?.[0] || currentUser.email[0].toUpperCase()}
                   </span>
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-stone-200 truncate">
+                <p className="text-sm font-medium text-zinc-200 truncate">
                   {currentUser.name || 'User'}
                 </p>
-                <p className="text-xs text-stone-500 truncate">
+                <p className="text-xs text-zinc-500 truncate">
                   {currentUser.email}
                 </p>
               </div>
@@ -205,11 +205,11 @@ export default function AdminLayout() {
             onClick={() => logoutMutation.mutate()}
             title={collapsed ? 'Log out' : undefined}
             className={cn(
-              "w-full flex items-center text-stone-400 hover:bg-stone-900 hover:text-stone-200 rounded-lg text-sm font-medium transition-all duration-150",
+              "w-full flex items-center text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 rounded-lg text-sm font-medium transition-all duration-150",
               collapsed ? 'justify-center py-2.5' : 'gap-3 px-3 py-2.5'
             )}
           >
-            <LogOut className="h-[18px] w-[18px] text-stone-500" />
+            <LogOut className="h-[18px] w-[18px] text-zinc-500" />
             {!collapsed && 'Log out'}
           </button>
 
@@ -217,7 +217,7 @@ export default function AdminLayout() {
           <button
             onClick={() => setCollapsed(!collapsed)}
             className={cn(
-              "hidden lg:flex w-full items-center text-stone-500 hover:bg-stone-900 hover:text-stone-300 rounded-lg text-sm font-medium transition-all duration-150 mt-1",
+              "hidden lg:flex w-full items-center text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300 rounded-lg text-sm font-medium transition-all duration-150 mt-1",
               collapsed ? 'justify-center py-2.5' : 'gap-3 px-3 py-2.5'
             )}
           >
@@ -236,7 +236,7 @@ export default function AdminLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
-        <header className="lg:hidden bg-white border-b border-stone-200 h-14 flex items-center px-4 sticky top-0 z-10">
+        <header className="lg:hidden bg-white border-b border-zinc-200 h-14 flex items-center px-4 sticky top-0 z-10">
           <Button
             variant="ghost"
             size="icon"
@@ -246,10 +246,10 @@ export default function AdminLayout() {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-stone-700 rounded-lg flex items-center justify-center">
+            <div className="w-7 h-7 bg-zinc-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xs">L</span>
             </div>
-            <span className="font-semibold text-stone-900">Livskompass</span>
+            <span className="font-semibold text-zinc-900">Livskompass</span>
           </div>
         </header>
 

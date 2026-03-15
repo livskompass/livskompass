@@ -45,7 +45,7 @@ function PricingTierItem({ item, index, highlightLabel }: { item: PricingTablePr
     >
       {item.highlighted && (
         <>
-          <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: 'radial-gradient(circle at 100% 0%, rgba(176, 131, 80, 0.08) 0%, transparent 70%)' }} />
+          <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: 'var(--gradient-pricing-glow)' }} />
           <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">{highlightLabel}</span>
         </>
       )}
