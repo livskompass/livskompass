@@ -12,6 +12,77 @@ import { InlineRichTextProvider } from './InlineRichTextProvider'
 import { InlineArrayOpsProvider } from './InlineArrayOpsProvider'
 import { InlineMediaPickerProvider } from './InlineMediaPickerProvider'
 
+/** Big + button for empty state that opens block picker inline */
+function EmptyStateInsertButton() {
+  const [open, setOpen] = useState(false)
+  const { state, updateData } = useEditor()
+  const components = puckConfig.components as Record<string, any>
+  const [search, setSearch] = useState('')
+
+  const categories = (puckConfig as any).categories as Record<string, { title: string; components: string[] }> | undefined
+  const allBlocks = categories
+    ? Object.values(categories).flatMap((cat) => cat.components.map((name) => ({ name, label: components[name]?.label || name, category: cat.title })))
+    : Object.keys(components).map((name) => ({ name, label: components[name]?.label || name, category: '' }))
+
+  const filtered = search
+    ? allBlocks.filter((b) => b.label.toLowerCase().includes(search.toLowerCase()) || b.name.toLowerCase().includes(search.toLowerCase()))
+    : allBlocks
+
+  const insertBlock = (blockType: string) => {
+    if (!state.puckData) return
+    const comp = components[blockType]
+    const defaultProps = comp?.defaultProps ? JSON.parse(JSON.stringify(comp.defaultProps)) : {}
+    defaultProps.id = `${blockType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+    const newBlock = { type: blockType, props: defaultProps }
+    const content = [...state.puckData.content, newBlock]
+    updateData({ ...state.puckData, content } as Data)
+    setOpen(false)
+    setSearch('')
+  }
+
+  return (
+    <div className="relative mb-4">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+        style={{ background: 'var(--editor-blue-lightest)', color: 'var(--editor-blue)', border: '2px solid var(--editor-blue-light, #93C5FD)' }}
+        aria-label="Add first block"
+      >
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[320px] bg-white rounded-xl border border-zinc-200 shadow-xl z-50 max-h-[400px] overflow-hidden flex flex-col">
+          <div className="p-2.5 border-b border-zinc-100">
+            <input
+              type="text"
+              placeholder="Search blocks..."
+              className="w-full text-sm px-3 py-2 rounded-lg border border-zinc-200 outline-none focus:border-blue-400"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <div className="overflow-y-auto flex-1 p-1.5">
+            {filtered.map((block) => (
+              <button
+                key={block.name}
+                onClick={() => insertBlock(block.name)}
+                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2"
+              >
+                <span className="font-medium text-zinc-800">{block.label}</span>
+                <span className="text-[10px] text-zinc-400 ml-auto">{block.category}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface PuckItem {
   type: string
   props: Record<string, any>
@@ -199,22 +270,12 @@ export function BlockList() {
             : 'transparent',
         }}
       >
-        <BlockInserter insertIndex={0} />
-        <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 pointer-events-none"
-          style={{ background: 'var(--editor-blue-lightest)', color: 'var(--editor-blue)' }}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <line x1="12" y1="8" x2="12" y2="16" />
-            <line x1="8" y1="12" x2="16" y2="12" />
-          </svg>
-        </div>
+        <EmptyStateInsertButton />
         <p className="text-base font-medium mb-1" style={{ color: 'var(--editor-text-primary)' }}>
           {isPanelDragOver ? 'Drop here to add block' : 'Start building your page'}
         </p>
         <p className="text-sm mb-2" style={{ color: 'var(--editor-text-subtle)' }}>
-          {isPanelDragOver ? '' : 'Drag blocks from the panel on the left'}
+          {isPanelDragOver ? '' : 'Click + or drag blocks from the panel'}
         </p>
         {!isPanelDragOver && (
           <p className="text-xs" style={{ color: 'var(--editor-text-disabled)' }}>
