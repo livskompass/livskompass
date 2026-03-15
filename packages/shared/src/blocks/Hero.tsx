@@ -254,7 +254,7 @@ export function Hero({
         {bgStyle === 'gradient' && (
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />
         )}
-        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] items-center gap-8 lg:gap-12" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
+        <div className="relative grid grid-cols-1 lg:grid-cols-[2fr_3fr] items-center gap-6 lg:gap-10" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('flex flex-col justify-center', imageFirst ? 'lg:order-2' : 'lg:order-1', textAlignment === 'center' ? 'items-center text-center' : 'items-start text-left')}>
             <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'stone' ? 'text-forest-950' : 'text-white', hCls)} style={{ fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400, animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
