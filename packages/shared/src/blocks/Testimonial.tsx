@@ -10,6 +10,7 @@ export interface TestimonialProps {
   role: string
   avatar: string
   style: 'card' | 'minimal' | 'featured'
+  showQuoteIcon?: boolean
 }
 
 /** Helper: extract handlers from editable props (everything except className) */
@@ -25,6 +26,7 @@ export function Testimonial({
   role = '',
   avatar = '',
   style = 'card',
+  showQuoteIcon = true,
   id,
 }: TestimonialProps & { puck?: { isEditing: boolean }; id?: string }) {
   const revealRef = useScrollReveal()
@@ -67,7 +69,7 @@ export function Testimonial({
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
         <div className="bg-forest-50 rounded-2xl p-8 md:p-12 border border-forest-100 relative overflow-hidden reveal">
           <div className="absolute top-0 right-0 w-48 h-48 pointer-events-none" style={{ background: 'var(--gradient-testimonial-glow)' }} />
-          <Quote className="absolute top-6 left-6 h-10 w-10 text-forest-200" />
+          {showQuoteIcon !== false && <Quote className="absolute top-6 left-6 h-10 w-10 text-forest-200" />}
           <blockquote className="relative z-10">
             <p {...qHandlers} className={cn('font-display text-h3 text-stone-800 italic leading-relaxed mb-6', quoteEdit?.className)}>
               &ldquo;{quote}&rdquo;

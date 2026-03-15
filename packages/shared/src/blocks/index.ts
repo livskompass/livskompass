@@ -70,7 +70,7 @@ export type { BookingFormProps } from './BookingForm'
 
 // Inline editing
 export { InlineImage } from './InlineImage'
-export { ArrayItemControls } from './ArrayItemControls'
+export { ArrayItemControls, ArrayDragProvider } from './ArrayItemControls'
 
 // Data-bound
 export { CourseInfo } from './CourseInfo'

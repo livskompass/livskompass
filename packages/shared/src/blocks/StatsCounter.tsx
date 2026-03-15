@@ -1,12 +1,13 @@
 import { cn } from '../ui/utils'
 import { useScrollReveal } from '../helpers'
 import { useEditableText } from '../context'
-import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface StatsCounterProps {
   items: Array<{ value: string; label: string; prefix: string; suffix: string }>
   columns: 2 | 3 | 4
   style: 'default' | 'bordered'
+  animation?: 'none' | 'countUp'
 }
 
 const colMap = { 2: 'grid-cols-2', 3: 'grid-cols-2 md:grid-cols-3', 4: 'grid-cols-2 md:grid-cols-4' }
@@ -50,6 +51,7 @@ export function StatsCounter({
   items = [],
   columns = 4,
   style = 'default',
+  animation: _animation = 'none',
 }: StatsCounterProps) {
   const revealRef = useScrollReveal()
 
@@ -65,11 +67,13 @@ export function StatsCounter({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
+      <ArrayDragProvider fieldName="items">
       <div className={cn('grid gap-8', colMap[columns] || colMap[4])}>
         {items.map((item, i) => (
           <StatItem key={i} item={item} index={i} style={style} totalItems={items.length} />
         ))}
       </div>
+      </ArrayDragProvider>
       <AddItemButton fieldName="items" label="Add stat" />
     </div>
   )

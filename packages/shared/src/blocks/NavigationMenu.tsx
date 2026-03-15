@@ -1,6 +1,6 @@
 import { cn } from '../ui/utils'
 import { useEditableText } from '../context'
-import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface NavigationMenuProps {
   items: Array<{ label: string; link: string }>
@@ -49,6 +49,7 @@ export function NavigationMenu({
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <nav>
+        <ArrayDragProvider fieldName="items">
         <div className={cn(
           'flex',
           isVertical ? 'flex-col gap-1' : `flex-wrap gap-2 ${alignMap[alignment] || 'justify-center'}`
@@ -60,6 +61,7 @@ export function NavigationMenu({
             <span className="text-stone-400 text-sm">Add menu items in settings</span>
           )}
         </div>
+        </ArrayDragProvider>
         <AddItemButton fieldName="items" label="Add menu item" />
       </nav>
     </div>

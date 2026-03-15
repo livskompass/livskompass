@@ -265,9 +265,9 @@ export const puckConfig: Config = {
           ],
         },
         ctaPrimaryText: { type: 'text', label: 'Primary button text' },
-        ctaPrimaryLink: { type: 'text', label: 'Primary button link' },
+        ctaPrimaryLink: { type: 'text', label: 'Primary button link', metadata: { isPagePicker: true } },
         ctaSecondaryText: { type: 'text', label: 'Secondary button text' },
-        ctaSecondaryLink: { type: 'text', label: 'Secondary button link' },
+        ctaSecondaryLink: { type: 'text', label: 'Secondary button link', metadata: { isPagePicker: true } },
         image: { type: 'text', label: 'Image URL', metadata: { isImage: true } },
         backgroundImage: { type: 'text', label: 'Background image URL', metadata: { isImage: true } },
         backgroundVideo: { type: 'text', label: 'Background video URL' },
@@ -285,6 +285,7 @@ export const puckConfig: Config = {
           label: 'Content position',
           options: [
             { label: 'Center', value: 'center' },
+            { label: 'Top Left', value: 'top-left' },
             { label: 'Bottom Left', value: 'bottom-left' },
             { label: 'Bottom Center', value: 'bottom-center' },
           ],
@@ -317,9 +318,9 @@ export const puckConfig: Config = {
               ],
             },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
             ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
-            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link' },
+            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
           }
         }
         if (p === 'split-right' || p === 'split-left') {
@@ -327,7 +328,7 @@ export const puckConfig: Config = {
             ...base,
             image: { type: 'text' as const, label: 'Image URL', metadata: { isImage: true } },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
           }
         }
         if (p === 'full-image') {
@@ -344,7 +345,7 @@ export const puckConfig: Config = {
               ],
             },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
           }
         }
         if (p === 'fullscreen') {
@@ -366,14 +367,15 @@ export const puckConfig: Config = {
               label: 'Content position',
               options: [
                 { label: 'Center', value: 'center' },
+                { label: 'Top Left', value: 'top-left' },
                 { label: 'Bottom Left', value: 'bottom-left' },
                 { label: 'Bottom Center', value: 'bottom-center' },
               ],
             },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
             ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
-            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link' },
+            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
             showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
           }
         }
@@ -384,86 +386,96 @@ export const puckConfig: Config = {
     },
     RichText: {
       label: 'Rich Text',
-      defaultProps: { content: '<p>Write your content here...</p>', maxWidth: 'medium' },
+      defaultProps: { content: '<p>Write your content here...</p>', maxWidth: 'medium', alignment: 'left', fontSize: 'normal' },
       fields: {
         maxWidth: { type: 'select', label: 'Max width', options: [{ label: 'Narrow (65ch)', value: 'narrow' }, { label: 'Medium (80ch)', value: 'medium' }, { label: 'Full', value: 'full' }] },
+        alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
+        fontSize: { type: 'radio', label: 'Font size', options: [{ label: 'Small', value: 'small' }, { label: 'Normal', value: 'normal' }, { label: 'Large', value: 'large' }] },
       },
-      render: ({ content, maxWidth, id }: any) => (
+      render: ({ content, maxWidth, alignment, fontSize, id }: any) => (
         <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-          <RichText content={content} maxWidth={maxWidth} id={id} />
+          <RichText content={content} maxWidth={maxWidth} alignment={alignment} fontSize={fontSize} id={id} />
         </div>
       ),
     },
     ImageBlock: {
       label: 'Image',
-      defaultProps: { src: '', alt: '', caption: '', size: 'full', alignment: 'center', rounded: 'small', link: '' },
+      defaultProps: { src: '', alt: '', caption: '', size: 'full', alignment: 'center', rounded: 'small', link: '', shadow: 'none', border: 'none' },
       fields: {
         src: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, alt: { type: 'text', label: 'Alt text' }, caption: { type: 'text', label: 'Caption' },
         size: { type: 'select', label: 'Size', options: [{ label: 'Small (50%)', value: 'small' }, { label: 'Medium (75%)', value: 'medium' }, { label: 'Full', value: 'full' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
         rounded: { type: 'radio', label: 'Corners', options: [{ label: 'None', value: 'none' }, { label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
-        link: { type: 'text', label: 'Link URL' },
+        shadow: { type: 'radio', label: 'Shadow', options: [{ label: 'None', value: 'none' }, { label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
+        border: { type: 'radio', label: 'Border', options: [{ label: 'None', value: 'none' }, { label: 'Thin', value: 'thin' }] },
+        link: { type: 'text', label: 'Link URL', metadata: { isPagePicker: true } },
       },
-      render: ({ src, alt, caption, size, alignment, rounded, link, id }: any) => (
+      render: ({ src, alt, caption, size, alignment, rounded, link, shadow, border, id }: any) => (
         <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-          <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} link={link} id={id} />
+          <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} shadow={shadow} border={border} link={link} id={id} />
         </div>
       ),
     },
     Accordion: {
       label: 'Accordion / FAQ',
-      defaultProps: { heading: '', items: [{ question: 'Question here', answer: 'Answer here' }], defaultOpen: 'none', style: 'default' },
+      defaultProps: { heading: '', items: [{ question: 'Question here', answer: 'Answer here' }], defaultOpen: 'none', style: 'default', iconPosition: 'right' },
       fields: {
         heading: { type: 'text', label: 'Heading' },
         items: { type: 'array', label: 'Questions', arrayFields: { question: { type: 'text', label: 'Question' }, answer: { type: 'textarea', label: 'Answer' } } },
         defaultOpen: { type: 'select', label: 'Initially expanded', options: [{ label: 'None', value: 'none' }, { label: 'First item', value: 'first' }, { label: 'All items', value: 'all' }] },
         style: { type: 'select', label: 'Style', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }, { label: 'Minimal', value: 'minimal' }] },
+        iconPosition: { type: 'radio', label: 'Icon position', options: [{ label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }] },
       },
-      render: ({ heading, items, defaultOpen, style, id }: any) => (
+      render: ({ heading, items, defaultOpen, style, iconPosition, id }: any) => (
         <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-          <Accordion heading={heading} items={items} defaultOpen={defaultOpen} style={style} id={id} />
+          <Accordion heading={heading} items={items} defaultOpen={defaultOpen} style={style} iconPosition={iconPosition} id={id} />
         </div>
       ),
     },
     PageHeader: {
       label: 'Page Header',
-      defaultProps: { heading: 'Heading', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Home' },
+      defaultProps: { heading: 'Heading', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Home', backgroundColor: 'transparent' },
       fields: {
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         size: { type: 'radio', label: 'Size', options: [{ label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
+        backgroundColor: { type: 'select', label: 'Background', options: [{ label: 'Transparent', value: 'transparent' }, { label: 'Light', value: 'light' }, { label: 'Primary (green)', value: 'primary' }] },
         showDivider: { type: 'radio', label: 'Show divider', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
-        breadcrumbs: { type: 'array', label: 'Breadcrumbs', arrayFields: { label: { type: 'text', label: 'Label' }, href: { type: 'text', label: 'Link' } } },
+        breadcrumbs: { type: 'array', label: 'Breadcrumbs', arrayFields: { label: { type: 'text', label: 'Label' }, href: { type: 'text', label: 'Link', metadata: { isPagePicker: true } } } },
         breadcrumbHomeText: { type: 'text', label: 'Home breadcrumb text' },
       },
       render: PageHeader as any,
     },
     PersonCard: {
       label: 'Person Card',
-      defaultProps: { name: 'Fredrik Livheim', title: 'Licensed psychologist', bio: '', image: '', email: '', phone: '', style: 'horizontal' },
+      defaultProps: { name: 'Fredrik Livheim', title: 'Licensed psychologist', bio: '', image: '', email: '', phone: '', style: 'horizontal', imageSize: 'medium' },
       fields: {
         name: { type: 'text', label: 'Name' }, title: { type: 'text', label: 'Title / Role' }, bio: { type: 'textarea', label: 'Bio' },
         image: { type: 'text', label: 'Photo URL', metadata: { isImage: true } }, email: { type: 'text', label: 'Email' }, phone: { type: 'text', label: 'Phone' },
         style: { type: 'radio', label: 'Layout', options: [{ label: 'Card', value: 'card' }, { label: 'Horizontal', value: 'horizontal' }] },
+        imageSize: { type: 'radio', label: 'Image size', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
       },
       render: PersonCard as any,
     },
     FeatureGrid: {
       label: 'Feature Grid',
-      defaultProps: { heading: '', subheading: '', columns: 3, items: [{ icon: 'heart', title: 'Feature one', description: 'Description of this feature' }, { icon: 'star', title: 'Feature two', description: 'Description of this feature' }, { icon: 'shield', title: 'Feature three', description: 'Description of this feature' }], style: 'cards' },
+      defaultProps: { heading: '', subheading: '', columns: 3, items: [{ icon: 'heart', title: 'Feature one', description: 'Description of this feature' }, { icon: 'star', title: 'Feature two', description: 'Description of this feature' }, { icon: 'shield', title: 'Feature three', description: 'Description of this feature' }], style: 'cards', iconSize: 'medium', padding: 'medium' },
       fields: {
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         items: { type: 'array', label: 'Features', arrayFields: { icon: { type: 'text', label: 'Icon' }, title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' } } },
         style: { type: 'radio', label: 'Style', options: [{ label: 'Cards', value: 'cards' }, { label: 'Minimal', value: 'minimal' }] },
+        iconSize: { type: 'radio', label: 'Icon size', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
+        padding: { type: 'radio', label: 'Padding', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
       },
       render: FeatureGrid as any,
     },
     StatsCounter: {
       label: 'Stats Counter',
-      defaultProps: { items: [{ value: '100', label: 'Participants', prefix: '', suffix: '+' }, { value: '15', label: 'Years experience', prefix: '', suffix: '' }, { value: '98', label: 'Satisfaction', prefix: '', suffix: '%' }], columns: 3, style: 'default' },
+      defaultProps: { items: [{ value: '100', label: 'Participants', prefix: '', suffix: '+' }, { value: '15', label: 'Years experience', prefix: '', suffix: '' }, { value: '98', label: 'Satisfaction', prefix: '', suffix: '%' }], columns: 3, style: 'default', animation: 'none' },
       fields: {
         items: { type: 'array', label: 'Stats', arrayFields: { value: { type: 'text', label: 'Value' }, label: { type: 'text', label: 'Label' }, prefix: { type: 'text', label: 'Prefix' }, suffix: { type: 'text', label: 'Suffix' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         style: { type: 'radio', label: 'Style', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }] },
+        animation: { type: 'radio', label: 'Animation', options: [{ label: 'None', value: 'none' }, { label: 'Count up', value: 'countUp' }] },
       },
       render: StatsCounter as any,
     },
@@ -507,7 +519,7 @@ export const puckConfig: Config = {
         source: { type: 'select', label: 'Data source', options: [{ label: 'Manual', value: 'manual' }, { label: 'Posts', value: 'posts' }, { label: 'Courses', value: 'courses' }, { label: 'Products', value: 'products' }] },
         maxItems: { type: 'number', label: 'Max items' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
-        manualCards: { type: 'array', label: 'Cards', arrayFields: { title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' }, image: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, link: { type: 'text', label: 'Link' }, badge: { type: 'text', label: 'Badge' } } },
+        manualCards: { type: 'array', label: 'Cards', arrayFields: { title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' }, image: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, link: { type: 'text', label: 'Link', metadata: { isPagePicker: true } }, badge: { type: 'text', label: 'Badge' } } },
         cardStyle: { type: 'select', label: 'Card style', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }, { label: 'Shadow', value: 'shadow' }] },
         fullBadgeText: { type: 'text', label: 'Full badge text' },
         spotsAvailableText: { type: 'text', label: 'Spots available text' },
@@ -518,10 +530,11 @@ export const puckConfig: Config = {
     },
     Testimonial: {
       label: 'Testimonial',
-      defaultProps: { quote: 'A great quote here...', author: '', role: '', avatar: '', style: 'card' },
+      defaultProps: { quote: 'A great quote here...', author: '', role: '', avatar: '', style: 'card', showQuoteIcon: true },
       fields: {
         avatar: { type: 'text', label: 'Avatar URL', metadata: { isImage: true } },
         style: { type: 'select', label: 'Style', options: [{ label: 'Card', value: 'card' }, { label: 'Minimal', value: 'minimal' }, { label: 'Featured', value: 'featured' }] },
+        showQuoteIcon: { type: 'radio', label: 'Show quote icon', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
       render: Testimonial as any,
     },
@@ -529,7 +542,7 @@ export const puckConfig: Config = {
       label: 'Buttons',
       defaultProps: { buttons: [{ text: 'Primary button', link: '/', variant: 'primary' }], alignment: 'center', direction: 'horizontal', size: 'medium' },
       fields: {
-        buttons: { type: 'array', label: 'Buttons', arrayFields: { text: { type: 'text', label: 'Text' }, link: { type: 'text', label: 'Link' }, variant: { type: 'select', label: 'Variant', options: [{ label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Outline', value: 'outline' }] } } },
+        buttons: { type: 'array', label: 'Buttons', arrayFields: { text: { type: 'text', label: 'Text' }, link: { type: 'text', label: 'Link', metadata: { isPagePicker: true } }, variant: { type: 'select', label: 'Variant', options: [{ label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Outline', value: 'outline' }] } } },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
         direction: { type: 'radio', label: 'Direction', options: [{ label: 'Horizontal', value: 'horizontal' }, { label: 'Vertical', value: 'vertical' }] },
         size: { type: 'select', label: 'Size', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
@@ -542,11 +555,12 @@ export const puckConfig: Config = {
     },
     PricingTable: {
       label: 'Pricing Table',
-      defaultProps: { heading: '', items: [], columns: 2, highlightLabel: 'Popular choice', emptyText: 'Add pricing plans in settings...' },
+      defaultProps: { heading: '', items: [], columns: 2, highlightLabel: 'Popular choice', emptyText: 'Add pricing plans in settings...', showCurrency: true },
       fields: {
-        items: { type: 'array', label: 'Plans', arrayFields: { name: { type: 'text', label: 'Name' }, price: { type: 'text', label: 'Price' }, description: { type: 'textarea', label: 'Description' }, features: { type: 'textarea', label: 'Features (one per line)' }, highlighted: { type: 'radio', label: 'Highlighted', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] }, ctaText: { type: 'text', label: 'Button text' }, ctaLink: { type: 'text', label: 'Button link' } } },
+        items: { type: 'array', label: 'Plans', arrayFields: { name: { type: 'text', label: 'Name' }, price: { type: 'text', label: 'Price' }, description: { type: 'textarea', label: 'Description' }, features: { type: 'textarea', label: 'Features (one per line)' }, highlighted: { type: 'radio', label: 'Highlighted', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] }, ctaText: { type: 'text', label: 'Button text' }, ctaLink: { type: 'text', label: 'Button link', metadata: { isPagePicker: true } } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         highlightLabel: { type: 'text', label: 'Highlight label' },
+        showCurrency: { type: 'radio', label: 'Show currency (kr)', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         emptyText: { type: 'text', label: 'Empty text' },
       },
       render: PricingTable as any,
@@ -555,12 +569,14 @@ export const puckConfig: Config = {
     // ── Media ──
     ImageGallery: {
       label: 'Image Gallery',
-      defaultProps: { images: [{ src: '', alt: 'Image 1', caption: '' }, { src: '', alt: 'Image 2', caption: '' }, { src: '', alt: 'Image 3', caption: '' }], columns: 3, gap: 'medium', aspectRatio: 'landscape' },
+      defaultProps: { images: [{ src: '', alt: 'Image 1', caption: '' }, { src: '', alt: 'Image 2', caption: '' }, { src: '', alt: 'Image 3', caption: '' }], columns: 3, gap: 'medium', aspectRatio: 'landscape', rounded: 'medium', lightbox: false },
       fields: {
         images: { type: 'array', label: 'Images', arrayFields: { src: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, alt: { type: 'text', label: 'Alt text' }, caption: { type: 'text', label: 'Caption' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         gap: { type: 'select', label: 'Gap', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
         aspectRatio: { type: 'select', label: 'Aspect ratio', options: [{ label: 'Square', value: 'square' }, { label: 'Landscape', value: 'landscape' }, { label: 'Portrait', value: 'portrait' }, { label: 'Auto', value: 'auto' }] },
+        rounded: { type: 'radio', label: 'Corners', options: [{ label: 'None', value: 'none' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
+        lightbox: { type: 'radio', label: 'Lightbox on click', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
       render: ImageGallery as any,
     },
@@ -610,12 +626,14 @@ export const puckConfig: Config = {
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, readMoreText: 'Read more', bookButtonText: 'Book spot', fullLabel: 'Fully booked', spotsText: 'spots remaining', emptyText: 'No courses currently planned.' },
+      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Read more', bookButtonText: 'Book spot', fullLabel: 'Fully booked', spotsText: 'spots remaining', emptyText: 'No courses currently planned.' },
       fields: {
         maxItems: { type: 'number', label: 'Max items (0 = all)' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         showBookButton: { type: 'radio', label: 'Show book button', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         compactMode: { type: 'radio', label: 'Compact mode', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        showLocation: { type: 'radio', label: 'Show location', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        showPrice: { type: 'radio', label: 'Show price', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         readMoreText: { type: 'text', label: 'Read more text' },
         bookButtonText: { type: 'text', label: 'Book button text' },
         fullLabel: { type: 'text', label: 'Full label' },
@@ -626,10 +644,12 @@ export const puckConfig: Config = {
     },
     ProductList: {
       label: 'Product List',
-      defaultProps: { heading: '', filterType: '', columns: 3, buyButtonText: 'Buy', freeLabel: 'Free', outOfStockLabel: 'Out of stock', emptyText: 'No products found.' },
+      defaultProps: { heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Buy', freeLabel: 'Free', outOfStockLabel: 'Out of stock', emptyText: 'No products found.' },
       fields: {
         filterType: { type: 'select', label: 'Filter by type', options: [{ label: 'All', value: '' }, { label: 'Books', value: 'book' }, { label: 'CDs', value: 'cd' }, { label: 'Cards', value: 'cards' }, { label: 'Apps', value: 'app' }, { label: 'Downloads', value: 'download' }] },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
+        showImage: { type: 'radio', label: 'Show image', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        showPrice: { type: 'radio', label: 'Show price', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         buyButtonText: { type: 'text', label: 'Buy button text' },
         freeLabel: { type: 'text', label: 'Free label' },
         outOfStockLabel: { type: 'text', label: 'Out of stock label' },
@@ -668,7 +688,7 @@ export const puckConfig: Config = {
       label: 'Navigation Menu',
       defaultProps: { items: [{ label: 'Home', link: '/' }], layout: 'horizontal', style: 'pills', alignment: 'center' },
       fields: {
-        items: { type: 'array', label: 'Menu items', arrayFields: { label: { type: 'text', label: 'Label' }, link: { type: 'text', label: 'Link' } } },
+        items: { type: 'array', label: 'Menu items', arrayFields: { label: { type: 'text', label: 'Label' }, link: { type: 'text', label: 'Link', metadata: { isPagePicker: true } } } },
         layout: { type: 'radio', label: 'Layout', options: [{ label: 'Horizontal', value: 'horizontal' }, { label: 'Vertical', value: 'vertical' }] },
         style: { type: 'select', label: 'Style', options: [{ label: 'Pills', value: 'pills' }, { label: 'Underline', value: 'underline' }, { label: 'Buttons', value: 'buttons' }, { label: 'Minimal', value: 'minimal' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
@@ -722,9 +742,10 @@ export const puckConfig: Config = {
     // ── Data-bound ──
     CourseInfo: {
       label: 'Course Info',
-      defaultProps: { showDeadline: true, layout: 'grid', locationLabel: 'Location', dateLabel: 'Date', priceLabel: 'Price', spotsLabel: 'Spots', deadlineLabel: 'Registration deadline', fullLabel: 'Fully booked', spotsOfText: 'of', spotsRemainingText: 'remaining' },
+      defaultProps: { showDeadline: true, showEmpty: false, layout: 'grid', locationLabel: 'Location', dateLabel: 'Date', priceLabel: 'Price', spotsLabel: 'Spots', deadlineLabel: 'Registration deadline', fullLabel: 'Fully booked', spotsOfText: 'of', spotsRemainingText: 'remaining' },
       fields: {
         showDeadline: { type: 'radio', label: 'Show deadline', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        showEmpty: { type: 'radio', label: 'Show empty fields', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         layout: { type: 'radio', label: 'Layout', options: [{ label: 'Grid', value: 'grid' }, { label: 'Stacked', value: 'stacked' }] },
         locationLabel: { type: 'text', label: 'Location label' },
         dateLabel: { type: 'text', label: 'Date label' },
@@ -756,7 +777,7 @@ export const puckConfig: Config = {
       defaultProps: { showBackLink: true, backLinkText: 'All posts', backLinkUrl: '/blog' },
       fields: {
         showBackLink: { type: 'radio', label: 'Show back link', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
-        backLinkText: { type: 'text', label: 'Back link text' }, backLinkUrl: { type: 'text', label: 'Back link URL' },
+        backLinkText: { type: 'text', label: 'Back link text' }, backLinkUrl: { type: 'text', label: 'Back link URL', metadata: { isPagePicker: true } },
       },
       render: PostHeader as any,
     },

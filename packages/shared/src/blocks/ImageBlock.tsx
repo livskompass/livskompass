@@ -11,6 +11,8 @@ export interface ImageBlockProps {
   alignment: 'left' | 'center' | 'right'
   rounded: 'none' | 'small' | 'large'
   link: string
+  shadow?: 'none' | 'small' | 'large'
+  border?: 'none' | 'thin'
 }
 
 const sizeMap = {
@@ -31,6 +33,17 @@ const roundedMap = {
   large: 'rounded-2xl',
 } as const
 
+const shadowMap = {
+  none: '',
+  small: 'shadow-md',
+  large: 'shadow-xl',
+} as const
+
+const borderMap = {
+  none: '',
+  thin: 'border border-stone-200',
+} as const
+
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
   if (!edit) return {}
@@ -46,6 +59,8 @@ export function ImageBlock({
   alignment = 'center',
   rounded = 'none',
   link = '',
+  shadow = 'none',
+  border = 'none',
   id,
 }: ImageBlockProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -73,7 +88,7 @@ export function ImageBlock({
       src={src}
       propName="src"
       alt={alt}
-      className={cn('w-full h-auto', roundedMap[rounded])}
+      className={cn('w-full h-auto', roundedMap[rounded], shadowMap[shadow || 'none'], borderMap[border || 'none'])}
     />
   )
 

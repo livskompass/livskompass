@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { Button } from '../ui/button'
 import { useEditableText } from '../context'
-import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface ButtonItem {
   text: string
@@ -82,6 +82,7 @@ export function ButtonGroup({
 
   return (
     <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
+      <ArrayDragProvider fieldName="buttons">
       <div
         className={cn(
           'flex flex-wrap gap-3',
@@ -93,6 +94,7 @@ export function ButtonGroup({
           <ButtonItem key={i} btn={btn} index={i} size={size} totalItems={buttons.length} />
         ))}
       </div>
+      </ArrayDragProvider>
       <AddItemButton fieldName="buttons" label="Add button" />
     </div>
   )

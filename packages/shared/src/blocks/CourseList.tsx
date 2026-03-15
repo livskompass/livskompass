@@ -10,6 +10,8 @@ export interface CourseListProps {
   columns: 2 | 3
   showBookButton: boolean
   compactMode: boolean
+  showLocation?: boolean
+  showPrice?: boolean
   readMoreText: string
   bookButtonText: string
   fullLabel: string
@@ -62,6 +64,8 @@ export function CourseList({
   columns = 2,
   showBookButton = true,
   compactMode = false,
+  showLocation = true,
+  showPrice = true,
   readMoreText = 'Read more',
   bookButtonText = 'Book a spot',
   fullLabel = 'Fully booked',
@@ -129,7 +133,7 @@ export function CourseList({
                     <p className="text-stone-500 text-sm line-clamp-2 mb-4">{course.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                   )}
                   <div className={cn('flex flex-wrap gap-4 text-sm text-stone-500', compactMode ? 'mb-3' : 'mb-5')}>
-                    {course.location && (
+                    {showLocation !== false && course.location && (
                       <span className="inline-flex items-center gap-1.5">
                         <MapPin className="h-4 w-4 text-stone-400" />{course.location}
                       </span>
@@ -142,7 +146,7 @@ export function CourseList({
                     )}
                   </div>
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    {course.price_sek != null ? (
+                    {showPrice !== false && course.price_sek != null ? (
                     <span className="font-display text-h3 text-stone-800">
                       {course.price_sek.toLocaleString('sv-SE')} <span className="text-base font-normal text-stone-500">kr</span>
                     </span>

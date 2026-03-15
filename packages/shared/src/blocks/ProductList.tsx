@@ -8,6 +8,8 @@ export interface ProductListProps {
   heading: string
   filterType: string
   columns: 2 | 3
+  showImage?: boolean
+  showPrice?: boolean
   buyButtonText: string
   freeLabel: string
   outOfStockLabel: string
@@ -48,6 +50,8 @@ export function ProductList({
   heading = '',
   filterType = '',
   columns = 3,
+  showImage = true,
+  showPrice = true,
   buyButtonText = 'Buy',
   freeLabel = 'Free',
   outOfStockLabel = 'Out of stock',
@@ -113,7 +117,7 @@ export function ProductList({
                 {typeProducts.map((product) => (
                   <div key={product.slug} className="relative group bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
                     <EditItemBadge cmsRoute="products" entityId={product.id} label="Edit product" />
-                    {product.image_url && (
+                    {showImage !== false && product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
                           src={resolveMediaUrl(product.image_url)}
@@ -132,15 +136,17 @@ export function ProductList({
                         <p className="text-sm text-stone-500 line-clamp-3 mb-4">{product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                       )}
                       <div className="flex items-center justify-between mt-auto pt-2">
-                        {product.price_sek ? (
-                          <span className="font-display text-h4 text-stone-800">
-                            {product.price_sek.toLocaleString('sv-SE')} kr
-                          </span>
-                        ) : (
-                          <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">
-                            <span {...editHandlers(freeLabelEdit)} className={freeLabelEdit?.className}>{freeLabel}</span>
-                          </span>
-                        )}
+                        {showPrice !== false ? (
+                          product.price_sek ? (
+                            <span className="font-display text-h4 text-stone-800">
+                              {product.price_sek.toLocaleString('sv-SE')} kr
+                            </span>
+                          ) : (
+                            <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">
+                              <span {...editHandlers(freeLabelEdit)} className={freeLabelEdit?.className}>{freeLabel}</span>
+                            </span>
+                          )
+                        ) : <span />}
                         {!product.in_stock ? (
                           <span className="text-xs text-stone-400 font-medium">
                             <span {...editHandlers(outOfStockEdit)} className={outOfStockEdit?.className}>{outOfStockLabel}</span>

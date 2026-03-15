@@ -15,6 +15,7 @@ export interface PageHeaderProps {
   showDivider: boolean
   breadcrumbs: BreadcrumbItem[]
   breadcrumbHomeText: string
+  backgroundColor?: 'transparent' | 'light' | 'primary'
 }
 
 /** Extract event handlers from editable props (everything except className) */
@@ -41,6 +42,12 @@ function BreadcrumbItemEl({ crumb, index, isLast }: { crumb: BreadcrumbItem; ind
   )
 }
 
+const bgColorMap = {
+  transparent: '',
+  light: 'bg-stone-100',
+  primary: 'bg-forest-50',
+} as const
+
 export function PageHeader({
   heading = 'Heading',
   subheading = '',
@@ -49,6 +56,7 @@ export function PageHeader({
   showDivider = false,
   breadcrumbs = [],
   breadcrumbHomeText = 'Home',
+  backgroundColor = 'transparent',
   id,
 }: PageHeaderProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -72,9 +80,9 @@ export function PageHeader({
 
   return (
     <div
-      className="mx-auto"
+      className={cn('mx-auto', bgColorMap[backgroundColor || 'transparent'])}
       style={{
-        maxWidth: 'var(--width-content)',
+        maxWidth: backgroundColor === 'transparent' ? 'var(--width-content)' : undefined,
         paddingInline: 'var(--container-px)',
         paddingTop: 'var(--section-md)',
         paddingBottom: 'var(--section-xs)',

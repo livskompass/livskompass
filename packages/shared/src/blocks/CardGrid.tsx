@@ -6,7 +6,7 @@ import { Calendar, MapPin } from 'lucide-react'
 import { getApiBase, useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { InlineImage } from './InlineImage'
-import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface ManualCard {
   title: string
@@ -266,9 +266,11 @@ export function CardGrid({
           {source === 'manual' ? emptyManualText : emptyDynamicText}
         </div>
       ) : (
+        <ArrayDragProvider fieldName="manualCards">
         <div className={cn('grid grid-cols-1 gap-6 reveal', columnsMap[columns])}>
           {source === 'manual' ? renderManualCards() : renderDynamicCards()}
         </div>
+        </ArrayDragProvider>
       )}
       {source === 'manual' && <AddItemButton fieldName="manualCards" label="Add card" />}
     </section>

@@ -2,7 +2,7 @@ import { cn } from '../ui/utils'
 import { Check } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText } from '../context'
-import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface PricingTableProps {
   heading: string
@@ -18,6 +18,7 @@ export interface PricingTableProps {
   columns: 2 | 3
   highlightLabel: string
   emptyText: string
+  showCurrency?: boolean
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-3' }
@@ -29,7 +30,7 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
-function PricingTierItem({ item, index, highlightLabel, totalItems }: { item: PricingTableProps['items'][number]; index: number; highlightLabel: string; totalItems: number }) {
+function PricingTierItem({ item, index, highlightLabel, showCurrency = true, totalItems }: { item: PricingTableProps['items'][number]; index: number; highlightLabel: string; showCurrency?: boolean; totalItems: number }) {
   const nameEdit = useEditableText(`items[${index}].name`, item.name)
   const descEdit = useEditableText(`items[${index}].description`, item.description)
   const priceEdit = useEditableText(`items[${index}].price`, item.price)
@@ -54,7 +55,7 @@ function PricingTierItem({ item, index, highlightLabel, totalItems }: { item: Pr
       <h3 {...editHandlers(nameEdit)} className={cn('text-h4 text-stone-800', nameEdit?.className)}>{item.name}</h3>
       <div className="mt-4 mb-2">
         <span {...editHandlers(priceEdit)} className={cn('font-display text-h2 text-stone-900', priceEdit?.className)}>{item.price}</span>
-        {item.price && !item.price.toLowerCase().includes('gratis') && (
+        {showCurrency !== false && item.price && !item.price.toLowerCase().includes('gratis') && (
           <span className="text-stone-500 ml-1">kr</span>
         )}
       </div>
@@ -95,6 +96,7 @@ export function PricingTable({
   columns = 2,
   highlightLabel = 'Popular choice',
   emptyText = 'Add pricing plans in settings...',
+  showCurrency = true,
   id,
 }: PricingTableProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -121,11 +123,13 @@ export function PricingTable({
       {(heading || headingEdit) && (
         <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 text-center mb-10 reveal', headingEdit?.className)}>{heading}</h2>
       )}
+      <ArrayDragProvider fieldName="items">
       <div className={cn('grid grid-cols-1 gap-6 items-start reveal', colMap[columns] || colMap[2])}>
         {items.map((item, i) => (
-          <PricingTierItem key={i} item={item} index={i} highlightLabel={highlightLabel} totalItems={items.length} />
+          <PricingTierItem key={i} item={item} index={i} highlightLabel={highlightLabel} showCurrency={showCurrency} totalItems={items.length} />
         ))}
       </div>
+      </ArrayDragProvider>
       <AddItemButton fieldName="items" label="Add tier" />
     </div>
   )

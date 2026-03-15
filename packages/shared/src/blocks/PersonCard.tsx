@@ -11,6 +11,7 @@ export interface PersonCardProps {
   email: string
   phone: string
   style: 'card' | 'horizontal'
+  imageSize?: 'small' | 'medium' | 'large'
 }
 
 /** Helper: extract handlers from inline edit props */
@@ -20,6 +21,21 @@ function editHandlers(edit: ReturnType<typeof useInlineEdit> | ReturnType<typeof
   return rest
 }
 
+const imageSizeMap = {
+  horizontal: { small: 'w-32 h-32', medium: 'w-48 h-48', large: 'w-64 h-64' },
+  card: { small: 'w-24 h-24', medium: 'w-32 h-32', large: 'w-40 h-40' },
+} as const
+
+const fallbackSizeMap = {
+  horizontal: { small: 'w-32 h-32', medium: 'w-48 h-48', large: 'w-64 h-64' },
+  card: { small: 'w-24 h-24', medium: 'w-32 h-32', large: 'w-40 h-40' },
+} as const
+
+const fallbackTextMap = {
+  horizontal: { small: 'text-2xl', medium: 'text-4xl', large: 'text-5xl' },
+  card: { small: 'text-xl', medium: 'text-3xl', large: 'text-4xl' },
+} as const
+
 export function PersonCard({
   name = 'Fredrik Livheim',
   title = 'Legitimerad psykolog',
@@ -28,6 +44,7 @@ export function PersonCard({
   email = '',
   phone = '',
   style = 'card',
+  imageSize = 'medium',
   id,
 }: PersonCardProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -61,10 +78,10 @@ export function PersonCard({
             src={image}
             propName="image"
             alt={name}
-            className="w-48 h-48 rounded-xl object-cover flex-shrink-0"
+            className={cn(imageSizeMap.horizontal[imageSize || 'medium'], 'rounded-xl object-cover flex-shrink-0')}
             fallback={
-              <div className="w-48 h-48 rounded-xl bg-forest-100 flex items-center justify-center flex-shrink-0">
-                <span className="font-display text-4xl text-forest-600">{name.charAt(0)}</span>
+              <div className={cn(fallbackSizeMap.horizontal[imageSize || 'medium'], 'rounded-xl bg-forest-100 flex items-center justify-center flex-shrink-0')}>
+                <span className={cn('font-display text-forest-600', fallbackTextMap.horizontal[imageSize || 'medium'])}>{name.charAt(0)}</span>
               </div>
             }
           />
@@ -99,10 +116,10 @@ export function PersonCard({
           src={image}
           propName="image"
           alt={name}
-          className="w-32 h-32 rounded-full object-cover mx-auto mb-4"
+          className={cn(imageSizeMap.card[imageSize || 'medium'], 'rounded-full object-cover mx-auto mb-4')}
           fallback={
-            <div className="w-32 h-32 rounded-full bg-forest-100 flex items-center justify-center mx-auto mb-4">
-              <span className="font-display text-3xl text-forest-600">{name.charAt(0)}</span>
+            <div className={cn(fallbackSizeMap.card[imageSize || 'medium'], 'rounded-full bg-forest-100 flex items-center justify-center mx-auto mb-4')}>
+              <span className={cn('font-display text-forest-600', fallbackTextMap.card[imageSize || 'medium'])}>{name.charAt(0)}</span>
             </div>
           }
         />

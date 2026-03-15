@@ -4,6 +4,7 @@ import { MapPin, Calendar, CreditCard, Users, Clock } from 'lucide-react'
 
 export interface CourseInfoProps {
   showDeadline: boolean
+  showEmpty?: boolean
   layout: 'grid' | 'stacked'
   locationLabel: string
   dateLabel: string
@@ -46,6 +47,7 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
 
 export function CourseInfo({
   showDeadline = true,
+  showEmpty = false,
   layout = 'grid',
   locationLabel = 'Location',
   dateLabel = 'Date',
@@ -94,18 +96,20 @@ export function CourseInfo({
     items.push({ icon: Clock, label: deadlineLabel, value: formatDate(course.registration_deadline), labelEdit: deadlineLabelEdit })
   }
 
+  const visibleItems = showEmpty ? items : items.filter(i => i.value)
+
   if (layout === 'stacked') {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
         <div className="bg-white rounded-xl border border-stone-200 shadow-sm divide-y divide-stone-100">
-          {items.filter(i => i.value).map((item, idx) => (
+          {visibleItems.map((item, idx) => (
             <div key={idx} className="flex items-center gap-4 px-6 py-4">
               <item.icon className="h-5 w-5 text-forest-500 flex-shrink-0" />
               <div>
                 <div className="text-xs text-stone-400 uppercase tracking-wide">
                   <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
                 </div>
-                <div className="text-stone-800 font-medium">{item.value}</div>
+                <div className="text-stone-800 font-medium">{item.value || <span className="text-stone-300">—</span>}</div>
               </div>
             </div>
           ))}
@@ -119,9 +123,9 @@ export function CourseInfo({
       <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
         <div className={cn(
           'grid gap-6',
-          items.filter(i => i.value).length <= 2 ? 'grid-cols-2' : items.filter(i => i.value).length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
+          visibleItems.length <= 2 ? 'grid-cols-2' : visibleItems.length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
         )}>
-          {items.filter(i => i.value).map((item, idx) => (
+          {visibleItems.map((item, idx) => (
             <div key={idx} className="text-center">
               <item.icon className="h-5 w-5 text-forest-500 mx-auto mb-2" />
               <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">
@@ -130,7 +134,7 @@ export function CourseInfo({
               <div className={cn(
                 'font-medium',
                 item.label === spotsLabel && isFull ? 'text-amber-600' : 'text-stone-800'
-              )}>{item.value}</div>
+              )}>{item.value || <span className="text-stone-300">—</span>}</div>
             </div>
           ))}
         </div>

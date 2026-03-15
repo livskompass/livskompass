@@ -34,11 +34,6 @@ const widthMap: Record<string, string> = {
   narrow: 'rounded-2xl max-w-3xl mx-auto',
 }
 
-const paddingMap: Record<string, string> = {
-  small: 'py-8 px-6',
-  medium: '',
-  large: 'py-16 px-10',
-}
 
 /** Button styles based on banner background + button variant */
 function getButtonClass(bgColor: string, variant: string): string {

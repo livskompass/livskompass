@@ -12,6 +12,8 @@ function sanitize(html: string): string {
 export interface RichTextProps {
   content: string
   maxWidth: 'narrow' | 'medium' | 'full'
+  alignment?: 'left' | 'center'
+  fontSize?: 'small' | 'normal' | 'large'
 }
 
 const maxWidthMap = {
@@ -20,9 +22,17 @@ const maxWidthMap = {
   full: 'max-w-none',
 } as const
 
+const fontSizeMap = {
+  small: 'prose-sm',
+  normal: 'prose-lg',
+  large: 'prose-xl',
+} as const
+
 export function RichText({
   content = '',
   maxWidth = 'medium',
+  alignment = 'left',
+  fontSize = 'normal',
   id,
 }: RichTextProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -39,8 +49,10 @@ export function RichText({
   useEffect(() => { setLocalContent(content) }, [content])
 
   const baseClass = cn(
-    'prose prose-lg prose-headings:font-display prose-headings:tracking-tight prose-a:text-forest-600 prose-neutral',
+    'prose prose-headings:font-display prose-headings:tracking-tight prose-a:text-forest-600 prose-neutral',
+    fontSizeMap[fontSize] || fontSizeMap.normal,
     maxWidthMap[maxWidth],
+    alignment === 'center' && 'text-center',
   )
 
   const wrapContent = (inner: React.ReactNode) => (

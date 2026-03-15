@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { cn } from '../ui/utils'
 import { ChevronDown } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
-import { ArrayItemControls, AddItemButton } from './ArrayItemControls'
+import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 
 export interface AccordionItem {
   question: string
@@ -14,6 +14,7 @@ export interface AccordionProps {
   items: AccordionItem[]
   defaultOpen: 'none' | 'first' | 'all'
   style: 'default' | 'bordered' | 'minimal'
+  iconPosition?: 'left' | 'right'
 }
 
 /** Extract event handlers from editable props (everything except className) */
@@ -29,6 +30,7 @@ function AccordionItemComponent({
   isOpen,
   onToggle,
   style,
+  iconPosition = 'right',
   totalItems,
 }: {
   item: AccordionItem
@@ -36,10 +38,21 @@ function AccordionItemComponent({
   isOpen: boolean
   onToggle: () => void
   style: AccordionProps['style']
+  iconPosition?: 'left' | 'right'
   totalItems: number
 }) {
   const questionEdit = useEditableText(`items[${index}].question`, item.question)
   const answerEdit = useEditableText(`items[${index}].answer`, item.answer)
+
+  const chevron = (
+    <ChevronDown
+      className={cn(
+        'h-5 w-5 text-stone-400 shrink-0 transition-transform duration-300',
+        isOpen && 'rotate-180',
+        iconPosition === 'right' ? 'ml-4' : 'mr-4'
+      )}
+    />
+  )
 
   return (
     <ArrayItemControls fieldName="items" itemIndex={index} totalItems={totalItems}>
@@ -47,18 +60,15 @@ function AccordionItemComponent({
       <button
         onClick={onToggle}
         className={cn(
-          'flex w-full items-center justify-between py-4 px-5 text-left font-medium text-stone-800 hover:bg-stone-50 transition-colors',
+          'flex w-full items-center py-4 px-5 text-left font-medium text-stone-800 hover:bg-stone-50 transition-colors',
+          iconPosition === 'right' ? 'justify-between' : 'flex-row',
           style === 'minimal' && 'px-0'
         )}
         aria-expanded={isOpen}
       >
+        {iconPosition === 'left' && chevron}
         <span {...editHandlers(questionEdit)} className={questionEdit?.className}>{item.question}</span>
-        <ChevronDown
-          className={cn(
-            'h-5 w-5 text-stone-400 shrink-0 ml-4 transition-transform duration-300',
-            isOpen && 'rotate-180'
-          )}
-        />
+        {iconPosition === 'right' && chevron}
       </button>
       <div
         className={cn(
@@ -89,6 +99,7 @@ export function Accordion({
   items = [],
   defaultOpen = 'none',
   style = 'default',
+  iconPosition = 'right',
   id,
 }: AccordionProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -136,6 +147,7 @@ export function Accordion({
           style === 'minimal' && 'divide-y divide-stone-200'
         )}
       >
+        <ArrayDragProvider fieldName="items">
         {items.map((item, index) => (
           <AccordionItemComponent
             key={index}
@@ -144,9 +156,11 @@ export function Accordion({
             isOpen={openIndices.has(index)}
             onToggle={() => toggle(index)}
             style={style}
+            iconPosition={iconPosition}
             totalItems={items.length}
           />
         ))}
+        </ArrayDragProvider>
       </div>
       <AddItemButton fieldName="items" label="Add question" />
     </div>
