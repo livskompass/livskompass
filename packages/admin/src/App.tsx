@@ -66,11 +66,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
-        {/* Full-screen inline editor — /new routes skip ProtectedRoute (editor has own auth) */}
-        <Route path="/pages/new" element={<InlineEditorPage contentType="page" />} />
-        <Route path="/posts/new" element={<InlineEditorPage contentType="post" />} />
-        <Route path="/courses/new" element={<InlineEditorPage contentType="course" />} />
-        <Route path="/products/new" element={<InlineEditorPage contentType="product" />} />
+        {/* Full-screen inline editor — /:id catches both "new" and actual IDs */}
         <Route path="/pages/:id" element={<ProtectedRoute><InlineEditorPage contentType="page" /></ProtectedRoute>} />
         <Route path="/posts/:id" element={<ProtectedRoute><InlineEditorPage contentType="post" /></ProtectedRoute>} />
         <Route path="/courses/:id" element={<ProtectedRoute><InlineEditorPage contentType="course" /></ProtectedRoute>} />
