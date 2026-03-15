@@ -226,8 +226,8 @@ export const puckConfig: Config = {
       label: 'Hero',
       defaultProps: {
         preset: 'centered',
-        heading: 'Heading here',
-        subheading: 'Subheading here',
+        heading: 'Rubrik här',
+        subheading: '',
         bgStyle: 'gradient',
         ctaPrimaryText: '',
         ctaPrimaryLink: '',
