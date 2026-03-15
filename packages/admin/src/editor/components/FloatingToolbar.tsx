@@ -4,7 +4,6 @@ import { GripVertical, ChevronUp, ChevronDown, Copy, Trash2, Settings, X } from 
 import { useToolbarPosition } from '../hooks/useToolbarPosition'
 import { useEditor } from '../context'
 import { SettingsPopover } from './SettingsPopover'
-import { InlineVisualControls } from './InlineVisualControls'
 import type { Data } from '../types'
 
 interface FloatingToolbarProps {
@@ -192,11 +191,6 @@ export function FloatingToolbar({
           </>
         )}
       </div>
-
-      {/* Visual controls row */}
-      {!confirmDelete && (
-        <InlineVisualControls blockType={blockType} blockIndex={blockIndex} />
-      )}
 
       {/* Settings popover */}
       {showSettings && blockId && (

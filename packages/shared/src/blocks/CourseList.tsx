@@ -126,7 +126,7 @@ export function CourseList({
                   )}
                   <h3 className="text-h4 text-stone-800 mb-2">{course.title}</h3>
                   {!compactMode && course.description && (
-                    <p className="text-stone-500 text-sm line-clamp-2 mb-4">{course.description}</p>
+                    <p className="text-stone-500 text-sm line-clamp-2 mb-4">{course.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                   )}
                   <div className={cn('flex flex-wrap gap-4 text-sm text-stone-500', compactMode ? 'mb-3' : 'mb-5')}>
                     {course.location && (

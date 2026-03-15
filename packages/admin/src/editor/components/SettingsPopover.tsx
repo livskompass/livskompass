@@ -16,7 +16,7 @@ interface FieldOption {
 interface BaseField {
   type: string
   label?: string
-  metadata?: { isImage?: boolean }
+  metadata?: { isImage?: boolean; isPagePicker?: boolean }
 }
 
 interface TextField extends BaseField {
@@ -176,7 +176,7 @@ export function SettingsPopover({
   if (!anchorRect) return null
 
   // Position: below the toolbar, centered on anchor
-  const popoverWidth = 320
+  const popoverWidth = 400
   const viewportW = window.innerWidth
   const viewportH = window.innerHeight
 
@@ -185,11 +185,11 @@ export function SettingsPopover({
 
   let top = anchorRect.bottom + 8
   // If it would go off-screen bottom, position above and recalculate maxHeight
-  let maxHeight = Math.min(480, viewportH - top - 16)
+  let maxHeight = Math.min(600, viewportH - top - 16)
   const flippedAbove = maxHeight < 200
   if (flippedAbove) {
     // When flipped above, maxHeight is the space above the anchor
-    maxHeight = Math.min(480, anchorRect.top - 16)
+    maxHeight = Math.min(600, anchorRect.top - 16)
     top = anchorRect.top - 8
   }
 
@@ -284,6 +284,8 @@ function FieldRenderer({ fieldKey, field, value, onChange, expanded, onToggle }:
     case 'text':
       return field.metadata?.isImage ? (
         <ImageField label={field.label || fieldKey} value={value || ''} onChange={onChange} />
+      ) : field.metadata?.isPagePicker ? (
+        <PagePicker label={field.label || fieldKey} value={value || ''} onChange={onChange} />
       ) : (
         <TextInput label={field.label || fieldKey} value={value || ''} onChange={onChange} />
       )
@@ -456,6 +458,65 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
     <div>
       <FieldLabel label={label} />
       <MediaPickerField value={value} onChange={onChange} />
+    </div>
+  )
+}
+
+/** Page picker — fetches pages from API and shows a searchable select */
+function PagePicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const [pages, setPages] = useState<Array<{ slug: string; title: string }>>([])
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    const apiBase = (typeof window !== 'undefined' && (window as any).__PUCK_API_BASE__) || '/api'
+    fetch(`${apiBase}/pages`)
+      .then((r) => r.json())
+      .then((data: any) => {
+        const list = (data.pages || []).map((p: any) => ({ slug: p.slug, title: p.title }))
+        setPages(list)
+      })
+      .catch(() => {})
+  }, [])
+
+  const filtered = search
+    ? pages.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()) || p.slug.includes(search.toLowerCase()))
+    : pages
+
+  return (
+    <div>
+      <FieldLabel label={label} />
+      {value && (
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-sm text-zinc-700 flex-1 truncate">{pages.find((p) => p.slug === value)?.title || value}</span>
+          <button
+            onClick={() => onChange('')}
+            className="text-[10px] text-zinc-400 hover:text-red-500 transition-colors"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+      <input
+        type="text"
+        placeholder="Search pages..."
+        className={INPUT_CLASS}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      {(search || !value) && filtered.length > 0 && (
+        <div className="mt-1 max-h-[200px] overflow-y-auto rounded-md border border-zinc-200 bg-white">
+          {filtered.slice(0, 20).map((p) => (
+            <button
+              key={p.slug}
+              onClick={() => { onChange(p.slug); setSearch('') }}
+              className={`w-full text-left px-2.5 py-1.5 text-sm hover:bg-blue-50 transition-colors ${p.slug === value ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-700'}`}
+            >
+              {p.title}
+              <span className="text-[10px] text-zinc-400 ml-1.5">/{p.slug}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

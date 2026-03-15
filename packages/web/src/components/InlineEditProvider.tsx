@@ -13,6 +13,7 @@ interface PageEditData {
 
 interface InlineEditContextValue {
   isAdmin: boolean
+  editUiVisible: boolean
   pageData: PageEditData | null
   /** Update a specific block's prop and save to API */
   saveBlockProp: (blockIndex: number, propName: string, value: string) => void
@@ -21,6 +22,7 @@ interface InlineEditContextValue {
 
 const InlineEditContext = createContext<InlineEditContextValue>({
   isAdmin: false,
+  editUiVisible: true,
   pageData: null,
   saveBlockProp: () => {},
   savingStatus: 'idle',
@@ -38,7 +40,8 @@ let _setPageData: ((data: PageEditData | null) => void) | null = null
 
 export default function InlineEditProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
-  const [hidden, setHidden] = useState(false)
+  const [toolbarHidden, setToolbarHidden] = useState(false)
+  const [overlaysVisible, setOverlaysVisible] = useState(true)
   const [pageData, setPageData] = useState<PageEditData | null>(null)
   const [savingStatus, setSavingStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const savedTimerRef = useRef<ReturnType<typeof setTimeout>>()
@@ -137,10 +140,17 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
   )
 
   return (
-    <InlineEditContext.Provider value={{ isAdmin, pageData, saveBlockProp, savingStatus }}>
+    <InlineEditContext.Provider value={{ isAdmin, editUiVisible: overlaysVisible, pageData, saveBlockProp, savingStatus }}>
+      {/* Data attribute for shared components to check overlay visibility */}
+      {isAdmin && <style>{overlaysVisible ? '' : '[data-edit-badge] { display: none !important; }'}</style>}
       {children}
-      {isAdmin && !hidden && (
-        <EditToolbar onHide={() => setHidden(true)} savingStatus={savingStatus} />
+      {isAdmin && !toolbarHidden && (
+        <EditToolbar
+          onHide={() => setToolbarHidden(true)}
+          savingStatus={savingStatus}
+          editUiVisible={overlaysVisible}
+          onToggleEditUi={() => setOverlaysVisible((v) => !v)}
+        />
       )}
     </InlineEditContext.Provider>
   )

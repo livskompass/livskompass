@@ -1,4 +1,4 @@
-import { ExternalLink, X, Check, Loader2, AlertCircle } from 'lucide-react'
+import { ExternalLink, X, Check, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { UI_STRINGS } from '@livskompass/shared'
 import { getCmsUrl } from '../lib/cms-url'
 import { useInlineEdit } from './InlineEditProvider'
@@ -6,9 +6,11 @@ import { useInlineEdit } from './InlineEditProvider'
 interface EditToolbarProps {
   onHide: () => void
   savingStatus: 'idle' | 'saving' | 'saved' | 'error'
+  editUiVisible?: boolean
+  onToggleEditUi?: () => void
 }
 
-export default function EditToolbar({ onHide, savingStatus }: EditToolbarProps) {
+export default function EditToolbar({ onHide, savingStatus, editUiVisible = true, onToggleEditUi }: EditToolbarProps) {
   const { pageData } = useInlineEdit()
   const cmsUrl = pageData
     ? getCmsUrl(pageData.contentType, pageData.pageId)
@@ -47,6 +49,21 @@ export default function EditToolbar({ onHide, savingStatus }: EditToolbarProps) 
                 </>
               )}
             </div>
+            <div className="w-px h-5 bg-white/20" />
+          </>
+        )}
+
+        {/* Toggle edit UI visibility */}
+        {onToggleEditUi && (
+          <>
+            <button
+              onClick={onToggleEditUi}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              title={editUiVisible ? 'Hide edit overlays' : 'Show edit overlays'}
+            >
+              {editUiVisible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              {editUiVisible ? 'Hide overlays' : 'Show overlays'}
+            </button>
             <div className="w-px h-5 bg-white/20" />
           </>
         )}

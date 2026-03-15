@@ -637,8 +637,8 @@ export const puckConfig: Config = {
       label: 'Page Cards',
       defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'No subpages found', emptyManualText: 'Add pages manually or specify a parent page' },
       fields: {
-        parentSlug: { type: 'text', label: 'Parent page slug' },
-        manualPages: { type: 'array', label: 'Manual pages', arrayFields: { title: { type: 'text', label: 'Title' }, description: { type: 'text', label: 'Description' }, slug: { type: 'text', label: 'Slug' } } },
+        parentSlug: { type: 'text', label: 'Show child pages of', metadata: { isPagePicker: true } },
+        manualPages: { type: 'array', label: 'Or pick pages manually', arrayFields: { slug: { type: 'text', label: 'Page', metadata: { isPagePicker: true } } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         showDescription: { type: 'radio', label: 'Show description', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         style: { type: 'select', label: 'Style', options: [{ label: 'Card', value: 'card' }, { label: 'List', value: 'list' }, { label: 'Minimal', value: 'minimal' }] },

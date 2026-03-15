@@ -129,7 +129,7 @@ export function ProductList({
                       </span>
                       <h4 className="font-semibold text-stone-800 mt-1 mb-2">{product.title}</h4>
                       {product.description && (
-                        <p className="text-sm text-stone-500 line-clamp-3 mb-4">{product.description}</p>
+                        <p className="text-sm text-stone-500 line-clamp-3 mb-4">{product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                       )}
                       <div className="flex items-center justify-between mt-auto pt-2">
                         {product.price_sek ? (

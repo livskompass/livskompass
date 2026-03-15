@@ -46,9 +46,9 @@ const BLOCK_LABELS: Record<string, string> = {
 }
 
 export default function EditableBlock({ children, blockType, blockIndex }: EditableBlockProps) {
-  const { isAdmin, pageData } = useInlineEdit()
+  const { isAdmin, editUiVisible, pageData } = useInlineEdit()
 
-  if (!isAdmin) return <>{children}</>
+  if (!isAdmin || !editUiVisible) return <>{children}</>
 
   const cmsUrl = pageData
     ? getCmsUrl(pageData.contentType, pageData.pageId, blockIndex)

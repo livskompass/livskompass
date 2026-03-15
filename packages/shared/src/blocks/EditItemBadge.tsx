@@ -62,6 +62,7 @@ export function EditItemBadge({ cmsRoute, entityId, slug, label = 'Edit' }: Edit
   return (
     <button
       onClick={handleClick}
+      data-edit-badge=""
       className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium shadow-sm cursor-pointer"
       style={{
         background: 'var(--editor-blue, #2563EB)',
