@@ -41,11 +41,11 @@ export const defaultHeader: SiteHeaderConfig = {
 
 export const defaultFooter: SiteFooterConfig = {
   companyName: 'Livskompass',
-  tagline: 'ACT and mindfulness training with Fredrik Livheim',
+  tagline: 'ACT och mindfulnessträning med Fredrik Livheim',
   contact: { email: 'livheim@gmail.com', phone: '070-694 03 64' },
   columns: [
     {
-      heading: 'Links',
+      heading: 'Länkar',
       links: [
         { label: 'ACT', href: '/act' },
         { label: 'Utbildningar', href: '/utbildningar' },
@@ -58,7 +58,7 @@ export const defaultFooter: SiteFooterConfig = {
       ],
     },
   ],
-  copyright: '© {year} Livskompass. All rights reserved.',
+  copyright: '© {year} Livskompass. Alla rättigheter förbehållna.',
 }
 
 // Default homepage slug — used by the router to resolve "/" to a page

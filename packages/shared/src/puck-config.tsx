@@ -434,7 +434,7 @@ export const puckConfig: Config = {
     },
     PageHeader: {
       label: 'Page Header',
-      defaultProps: { heading: 'Heading', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Home', backgroundColor: 'transparent' },
+      defaultProps: { heading: 'Heading', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Hem', backgroundColor: 'transparent' },
       fields: {
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         size: { type: 'radio', label: 'Size', options: [{ label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
@@ -514,7 +514,7 @@ export const puckConfig: Config = {
     },
     CardGrid: {
       label: 'Card Grid',
-      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fully booked', spotsAvailableText: 'Spots remaining', emptyManualText: 'Add cards in settings...', emptyDynamicText: 'No content available.' },
+      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fullbokat', spotsAvailableText: 'Platser kvar', emptyManualText: 'Add cards in settings...', emptyDynamicText: 'Inget innehåll tillgängligt.' },
       fields: {
         source: { type: 'select', label: 'Data source', options: [{ label: 'Manual', value: 'manual' }, { label: 'Posts', value: 'posts' }, { label: 'Courses', value: 'courses' }, { label: 'Products', value: 'products' }] },
         maxItems: { type: 'number', label: 'Max items' },
@@ -555,7 +555,7 @@ export const puckConfig: Config = {
     },
     PricingTable: {
       label: 'Pricing Table',
-      defaultProps: { heading: '', items: [], columns: 2, highlightLabel: 'Popular choice', emptyText: 'Add pricing plans in settings...', showCurrency: true },
+      defaultProps: { heading: '', items: [], columns: 2, highlightLabel: 'Populärt val', emptyText: 'Add pricing plans in settings...', showCurrency: true },
       fields: {
         items: { type: 'array', label: 'Plans', arrayFields: { name: { type: 'text', label: 'Name' }, price: { type: 'text', label: 'Price' }, description: { type: 'textarea', label: 'Description' }, features: { type: 'textarea', label: 'Features (one per line)' }, highlighted: { type: 'radio', label: 'Highlighted', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] }, ctaText: { type: 'text', label: 'Button text' }, ctaLink: { type: 'text', label: 'Button link', metadata: { isPagePicker: true } } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
@@ -626,7 +626,7 @@ export const puckConfig: Config = {
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Read more', bookButtonText: 'Book spot', fullLabel: 'Fully booked', spotsText: 'spots remaining', emptyText: 'No courses currently planned.' },
+      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.' },
       fields: {
         maxItems: { type: 'number', label: 'Max items (0 = all)' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
@@ -644,7 +644,7 @@ export const puckConfig: Config = {
     },
     ProductList: {
       label: 'Product List',
-      defaultProps: { heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Buy', freeLabel: 'Free', outOfStockLabel: 'Out of stock', emptyText: 'No products found.' },
+      defaultProps: { heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.' },
       fields: {
         filterType: { type: 'select', label: 'Filter by type', options: [{ label: 'All', value: '' }, { label: 'Books', value: 'book' }, { label: 'CDs', value: 'cd' }, { label: 'Cards', value: 'cards' }, { label: 'Apps', value: 'app' }, { label: 'Downloads', value: 'download' }] },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
@@ -659,7 +659,7 @@ export const puckConfig: Config = {
     },
     PostGrid: {
       label: 'Post Grid',
-      defaultProps: { heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, emptyText: 'No posts found' },
+      defaultProps: { heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, emptyText: 'Inga inlägg hittades' },
       fields: {
         count: { type: 'number', label: 'Number of posts', min: 1, max: 12 },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
@@ -672,7 +672,7 @@ export const puckConfig: Config = {
     },
     PageCards: {
       label: 'Page Cards',
-      defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'No subpages found', emptyManualText: 'Add pages manually or specify a parent page' },
+      defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'Inga undersidor hittades', emptyManualText: 'Add pages manually or specify a parent page' },
       fields: {
         parentSlug: { type: 'text', label: 'Show child pages of', metadata: { isPagePicker: true } },
         manualPages: { type: 'array', label: 'Or pick pages manually', arrayFields: { slug: { type: 'text', label: 'Page', metadata: { isPagePicker: true } } } },
@@ -774,7 +774,7 @@ export const puckConfig: Config = {
     },
     PostHeader: {
       label: 'Post Header',
-      defaultProps: { showBackLink: true, backLinkText: 'All posts', backLinkUrl: '/blog' },
+      defaultProps: { showBackLink: true, backLinkText: 'Alla inlägg', backLinkUrl: '/blog' },
       fields: {
         showBackLink: { type: 'radio', label: 'Show back link', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         backLinkText: { type: 'text', label: 'Back link text' }, backLinkUrl: { type: 'text', label: 'Back link URL', metadata: { isPagePicker: true } },

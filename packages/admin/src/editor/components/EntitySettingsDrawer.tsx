@@ -30,6 +30,12 @@ const POST_FIELDS: FieldDef[] = [
 
 const COURSE_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'Slug', type: 'text' },
+  { key: 'status', label: 'Status', type: 'select', options: [
+    { label: 'Active', value: 'active' },
+    { label: 'Full', value: 'full' },
+    { label: 'Completed', value: 'completed' },
+    { label: 'Cancelled', value: 'cancelled' },
+  ]},
   { key: 'description', label: 'Short description', type: 'textarea' },
   { key: 'location', label: 'Location', type: 'text' },
   { key: 'start_date', label: 'Start date', type: 'date' },
