@@ -16,7 +16,7 @@ interface FieldOption {
 interface BaseField {
   type: string
   label?: string
-  metadata?: { isImage?: boolean; isPagePicker?: boolean }
+  metadata?: { isImage?: boolean; isVideo?: boolean; isPagePicker?: boolean }
 }
 
 interface TextField extends BaseField {
@@ -287,6 +287,8 @@ function FieldRenderer({ fieldKey, field, value, onChange, expanded, onToggle }:
     case 'text':
       return field.metadata?.isImage ? (
         <ImageField label={field.label || fieldKey} value={value || ''} onChange={onChange} />
+      ) : field.metadata?.isVideo ? (
+        <VideoField label={field.label || fieldKey} value={value || ''} onChange={onChange} />
       ) : field.metadata?.isPagePicker ? (
         <PagePicker label={field.label || fieldKey} value={value || ''} onChange={onChange} />
       ) : (
@@ -474,6 +476,23 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
     <div>
       <FieldLabel label={label} />
       <MediaPickerField value={value} onChange={onChange} />
+    </div>
+  )
+}
+
+function VideoField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <FieldLabel label={label} />
+      <MediaPickerField value={value} onChange={onChange} mediaType="video" />
+      {/* Also allow pasting a URL manually for YouTube/Vimeo/external links */}
+      <input
+        type="text"
+        className={INPUT_CLASS + ' mt-1.5'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Or paste YouTube / Vimeo / direct URL"
+      />
     </div>
   )
 }

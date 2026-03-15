@@ -245,12 +245,12 @@ export const puckConfig: Config = {
           type: 'select',
           label: 'Preset',
           options: [
-            { label: 'Centered', value: 'centered' },
-            { label: 'Split Image Right', value: 'split-right' },
-            { label: 'Split Image Left', value: 'split-left' },
-            { label: 'Full Image', value: 'full-image' },
-            { label: 'Fullscreen', value: 'fullscreen' },
-            { label: 'Minimal', value: 'minimal' },
+            { label: 'Centered (text over background)', value: 'centered' },
+            { label: 'Split — Image Right', value: 'split-right' },
+            { label: 'Split — Image Left', value: 'split-left' },
+            { label: 'Full Background Image', value: 'full-image' },
+            { label: 'Fullscreen (100vh)', value: 'fullscreen' },
+            { label: 'Minimal (text only)', value: 'minimal' },
           ],
         },
         heading: { type: 'text', label: 'Heading' },
@@ -270,7 +270,7 @@ export const puckConfig: Config = {
         ctaSecondaryLink: { type: 'text', label: 'Secondary button link', metadata: { isPagePicker: true } },
         image: { type: 'text', label: 'Image URL', metadata: { isImage: true } },
         backgroundImage: { type: 'text', label: 'Background image URL', metadata: { isImage: true } },
-        backgroundVideo: { type: 'text', label: 'Background video URL' },
+        backgroundVideo: { type: 'text', label: 'Background video URL', metadata: { isVideo: true } },
         overlayDarkness: {
           type: 'select',
           label: 'Overlay darkness',
@@ -295,12 +295,12 @@ export const puckConfig: Config = {
       resolveFields: (data: any) => {
         const p = data.props?.preset || 'centered'
         const presetOptions = [
-          { label: 'Centered', value: 'centered' },
-          { label: 'Split Image Right', value: 'split-right' },
-          { label: 'Split Image Left', value: 'split-left' },
-          { label: 'Full Image', value: 'full-image' },
-          { label: 'Fullscreen', value: 'fullscreen' },
-          { label: 'Minimal', value: 'minimal' },
+          { label: 'Centered (text over background)', value: 'centered' },
+          { label: 'Split — Image Right', value: 'split-right' },
+          { label: 'Split — Image Left', value: 'split-left' },
+          { label: 'Full Background Image', value: 'full-image' },
+          { label: 'Fullscreen (100vh)', value: 'fullscreen' },
+          { label: 'Minimal (text only)', value: 'minimal' },
         ]
         const base = {
           preset: { type: 'select' as const, label: 'Preset', options: presetOptions },
@@ -329,6 +329,8 @@ export const puckConfig: Config = {
             image: { type: 'text' as const, label: 'Image URL', metadata: { isImage: true } },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
             ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
+            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
+            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
           }
         }
         if (p === 'full-image') {
@@ -346,13 +348,15 @@ export const puckConfig: Config = {
             },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
             ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
+            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
+            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
           }
         }
         if (p === 'fullscreen') {
           return {
             ...base,
             backgroundImage: { type: 'text' as const, label: 'Background image URL', metadata: { isImage: true } },
-            backgroundVideo: { type: 'text' as const, label: 'Background video URL' },
+            backgroundVideo: { type: 'text' as const, label: 'Background video URL', metadata: { isVideo: true } },
             overlayDarkness: {
               type: 'select' as const,
               label: 'Overlay darkness',

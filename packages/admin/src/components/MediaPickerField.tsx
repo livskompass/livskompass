@@ -10,16 +10,31 @@ import {
 } from './ui/dialog'
 import { Button } from './ui/button'
 import { Skeleton } from './ui/skeleton'
-import { ImageIcon, Upload, Loader2, X } from 'lucide-react'
+import { ImageIcon, Film, Upload, Loader2, X } from 'lucide-react'
 import { cn } from '../lib/utils'
+
+type MediaType = 'image' | 'video' | 'all'
 
 interface MediaPickerFieldProps {
   value: string
   onChange: (value: string) => void
   label?: string
+  /** Which media types to show/accept. Default: 'image' */
+  mediaType?: MediaType
 }
 
-export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
+const acceptMap: Record<MediaType, string> = {
+  image: 'image/*',
+  video: 'video/*',
+  all: 'image/*,video/*,audio/*,.pdf',
+}
+
+function mediaFilter(m: { type?: string }, mediaType: MediaType): boolean {
+  if (mediaType === 'all') return true
+  return !!m.type?.startsWith(mediaType)
+}
+
+export function MediaPickerField({ value, onChange, mediaType = 'image' }: MediaPickerFieldProps) {
   const [open, setOpen] = useState(false)
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -57,20 +72,39 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
   }
 
   const resolvedUrl = value ? getMediaUrl(value) : ''
+  const isVideoType = mediaType === 'video'
+  const PickerIcon = isVideoType ? Film : ImageIcon
+  const chooseLabel = isVideoType ? 'Choose video' : 'Choose image'
+  const dialogTitle = isVideoType ? 'Choose video' : mediaType === 'all' ? 'Choose media' : 'Choose image'
+  const emptyLabel = isVideoType ? 'No videos yet' : mediaType === 'all' ? 'No media yet' : 'No images yet'
+  const emptyHint = isVideoType ? 'Upload a video to get started.' : mediaType === 'all' ? 'Upload a file to get started.' : 'Upload an image to get started.'
+  const isDirectVideo = (url: string) => /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url)
 
   return (
     <div>
       {/* Current value display */}
       {value ? (
         <div className="relative group">
-          <img
-            src={resolvedUrl}
-            alt="Selected media preview"
-            className="w-full h-28 rounded-lg object-cover border border-zinc-200 bg-zinc-50"
-            onError={(e) => {
-              ;(e.target as HTMLImageElement).style.display = 'none'
-            }}
-          />
+          {isVideoType || isDirectVideo(value) ? (
+            <div className="w-full h-28 rounded-lg border border-zinc-200 bg-zinc-900 flex items-center justify-center overflow-hidden">
+              <video
+                src={resolvedUrl}
+                className="w-full h-full object-cover"
+                muted
+                preload="metadata"
+              />
+              <Film className="absolute h-6 w-6 text-white/60" />
+            </div>
+          ) : (
+            <img
+              src={resolvedUrl}
+              alt="Selected media preview"
+              className="w-full h-28 rounded-lg object-cover border border-zinc-200 bg-zinc-50"
+              onError={(e) => {
+                ;(e.target as HTMLImageElement).style.display = 'none'
+              }}
+            />
+          )}
           <div className="flex gap-1.5 mt-2">
             <button
               type="button"
@@ -94,8 +128,8 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
           onClick={() => setOpen(true)}
           className="w-full flex flex-col items-center justify-center gap-2 h-24 rounded-lg border-2 border-dashed border-zinc-300 hover:border-zinc-400 bg-zinc-50 hover:bg-zinc-100 transition-colors cursor-pointer"
         >
-          <ImageIcon className="h-5 w-5 text-zinc-400" />
-          <span className="text-xs font-medium text-zinc-500">Choose image</span>
+          <PickerIcon className="h-5 w-5 text-zinc-400" />
+          <span className="text-xs font-medium text-zinc-500">{chooseLabel}</span>
         </button>
       )}
 
@@ -103,18 +137,18 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Choose image</DialogTitle>
+            <DialogTitle>{dialogTitle}</DialogTitle>
           </DialogHeader>
 
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm text-zinc-500">
-              {data?.media ? `${data.media.length} files` : ''}
+              {data?.media ? `${data.media.filter((m) => mediaFilter(m, mediaType)).length} files` : ''}
             </p>
             <div>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={acceptMap[mediaType]}
                 onChange={handleUpload}
                 className="hidden"
               />
@@ -140,10 +174,10 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
                   <Skeleton key={i} className="aspect-square rounded-lg" />
                 ))}
               </div>
-            ) : data?.media && data.media.length > 0 ? (
+            ) : data?.media && data.media.filter((m) => mediaFilter(m, mediaType)).length > 0 ? (
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
                 {data.media
-                  .filter((m) => m.type?.startsWith('image'))
+                  .filter((m) => mediaFilter(m, mediaType))
                   .map((media) => (
                     <button
                       key={media.id}
@@ -159,11 +193,17 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
                           : 'border-transparent hover:border-zinc-300'
                       )}
                     >
-                      <img
-                        src={getMediaUrl(media.url)}
-                        alt={media.alt_text || media.filename}
-                        className="w-full h-full object-cover"
-                      />
+                      {media.type?.startsWith('video') ? (
+                        <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
+                          <Film className="h-8 w-8 text-zinc-400" />
+                        </div>
+                      ) : (
+                        <img
+                          src={getMediaUrl(media.url)}
+                          alt={media.alt_text || media.filename}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-zinc-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
                         {media.filename}
                       </div>
@@ -172,9 +212,9 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <ImageIcon className="h-8 w-8 text-zinc-300 mb-2" />
-                <p className="text-sm text-zinc-500">No images yet</p>
-                <p className="text-xs text-zinc-400 mt-1">Upload an image to get started.</p>
+                <PickerIcon className="h-8 w-8 text-zinc-300 mb-2" />
+                <p className="text-sm text-zinc-500">{emptyLabel}</p>
+                <p className="text-xs text-zinc-400 mt-1">{emptyHint}</p>
               </div>
             )}
           </div>

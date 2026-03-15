@@ -314,15 +314,6 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* DEBUG BANNER — remove after fixing */}
-      {import.meta.env.DEV && (
-        <div className="fixed bottom-0 right-0 z-[9999] bg-black text-green-400 text-[10px] font-mono p-2 rounded-tl-lg max-w-sm opacity-80">
-          <div>Entity: {state.entity?.title || 'none'} (id: {state.entity?.id?.slice(0,8) || '?'})</div>
-          <div>PuckData: {state.puckData ? `${state.puckData.content?.length} blocks` : 'NULL'}</div>
-          <div>Status: {state.publishState} | Dirty: {String(state.isDirty)}</div>
-          <div>Draft: {state.hasDraftChanges ? 'YES' : 'NO'}</div>
-        </div>
-      )}
       <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} onToggleHistory={toggleHistory} onToggleEntitySettings={toggleEntitySettings} isNew={isNew} />
 
       {/* Legacy conversion banner */}
