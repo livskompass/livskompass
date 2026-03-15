@@ -28,35 +28,41 @@ packages/shared/ → Shared Puck block components + config (used by admin + web)
 - `packages/api/schema.sql` - D1 database schema
 - `packages/api/wrangler.toml` - Cloudflare config
 
-## Current Status (updated 2026-02-15)
+## Current Status (updated 2026-03-09)
 - Phase 1 (Setup): DONE
 - Phase 2 (Backend API): DONE + bug fixes applied
 - Phase 3 (Booking/Payments): DONE (webhook, refund, race condition all fixed)
-- Phase 4 (Admin CMS): DONE — Puck visual editor for ALL content types (pages, posts, courses, products)
+- Phase 4 (Admin CMS): DONE — Custom InlineEditor (no Puck UI), 35 blocks, 7 categories, drag-and-drop block panel
 - Phase 5 (Public Frontend): DONE + shadcn/ui redesign
 - Phase 6 (WordPress Migration): DONE (72 pages, 10 posts, ~534 media, 7 courses, 6 products)
 - Phase 7 (Launch): IN PROGRESS (CI/CD done, domain setup TODO)
+- Phase 8 (Inline Editor Rebuild): IN PROGRESS — Puck sidebar killed, true inline editing built
 
-## CMS Architecture (Puck Visual Editor)
+## CMS Architecture (InlineEditor — Custom Visual Editor)
 
-All four content types (pages, posts, courses, products) use the **Puck** (`@puckeditor/core` v0.21.1) drag-and-drop visual page builder. Legacy TipTap editor is removed for pages/posts; courses/products upgraded from form-based editing to Puck.
+All four content types (pages, posts, courses, products) use a **custom InlineEditor** — no `<Puck>` component, no Puck sidebar. Blocks are rendered directly via `puckConfig.components[type].render(props)` with true inline editing.
 
 ### How it works
-- **Shared blocks** in `packages/shared/src/puck-config.tsx` — 16 block components in 6 categories
-- **Admin editors** use `<Puck>` component: `PageBuilder.tsx`, `PostBuilder.tsx`, `CourseBuilder.tsx`, `ProductBuilder.tsx`
+- **Shared blocks** in `packages/shared/src/puck-config.tsx` — 35 block components in 7 categories
+- **Admin editor**: `InlineEditor.tsx` renders `BlockList` → `EditableBlock` → component `.render()` — NO `<Puck>` UI at all
+- **Inline text editing**: `useEditableText` hook provides `contentEditable` props on any text field (163 instances across 25 blocks)
+- **Inline image editing**: `InlineImage` component with click-to-replace overlay (22 instances across 8 blocks)
+- **Drag-and-drop block panel**: Persistent left sidebar (`BlockPanel.tsx`) with all blocks visible, drag to page
+- **Settings popover**: `SettingsPopover.tsx` shows only non-inline fields (INLINE_FIELDS map filters out inline-editable props)
+- **Auto-save**: Debounced 1s PATCH with AbortController race prevention
 - **Public rendering** via `<Render>` from `@puckeditor/core` in `BlockRenderer.tsx`
 - Content stored as JSON in `content_blocks` column, `editor_version` = `'puck'`
-- Metadata (title, slug, status, dates, prices) edited via **settings dropdown** (gear icon) in the Puck header bar
 
-### Block categories
+### Block categories (35 blocks, 7 categories)
 | Category | Blocks |
 |---|---|
-| Layout | Columns, Separator |
-| Content | Hero, Rich Text, Image, Accordion/FAQ |
-| Marketing | CTA Banner, Card Grid, Testimonial, Buttons |
-| Dynamic Content | Post Grid, Page Cards, Navigation Menu |
-| Media | Image Gallery, Video |
-| Advanced | Contact Form |
+| Layout | Columns, Separator, Spacer |
+| Content | Hero, Rich Text, Image, Accordion, Page Header, Person Card, Feature Grid, Stats Counter |
+| Marketing | CTA Banner, Card Grid, Testimonial, Button Group, Pricing Table |
+| Media | Image Gallery, Video Embed, Audio Embed, File Embed, Embed Block |
+| Dynamic | Course List, Product List, Post Grid, Page Cards, Navigation Menu |
+| Interactive | Contact Form, Booking Form |
+| Data-bound | Course Info, Booking CTA, Post Header |
 
 ### Key files
 - `packages/shared/src/puck-config.tsx` — All block definitions, root.render with site chrome
@@ -98,6 +104,178 @@ Both frontends use **shadcn/ui** as the UI component library foundation:
 - `packages/web/src/components/ui/` — button, card, badge, input, textarea, label, separator, skeleton
 - `packages/admin/src/components/ui/` — button, card, badge, input, textarea, label, table, separator, skeleton, dialog, select
 - Utility: `cn()` from `lib/utils.ts` (clsx + tailwind-merge)
+
+---
+
+## SESSION HANDOFF - 2026-03-09 — InlineEditor UX Overhaul (Strict Build Take 1)
+
+### What was done this session
+
+#### 1. All Admin Routes — Swedish → English
+Changed every admin route from Swedish to English across 12+ files:
+- `/sidor/` → `/pages/`, `/nyheter/` → `/posts/`, `/utbildningar/` → `/courses/`, `/bokningar/` → `/bookings/`, `/material/` → `/products/`
+- Files touched: `App.tsx`, `AdminLayout.tsx`, `Dashboard.tsx`, `PagesList.tsx`, `PostsList.tsx`, `CoursesList.tsx`, `BookingsList.tsx`, `BookingDetail.tsx`, `ProductsList.tsx`, `InlineEditor.tsx`
+- New entity check: `id === 'ny'` → `id === 'new'`
+- Verified with grep: zero Swedish route references remain
+
+#### 2. Hardcoded Values → CSS Variables
+Eliminated all remaining hardcoded `rgba()` values in the editor:
+- Created 5 new CSS variables in `index.css`: `--editor-shadow-blue-glow`, `--editor-shadow-drag`, `--editor-blue-selection-ring`, `--editor-surface-active-dark`, `--editor-surface-hover-dark`
+- Updated: `useDragReorder.ts`, `BlockList.tsx`, `InlineImagePickerProvider.tsx`, `InlineMediaPickerProvider.tsx`, `TiptapEditor.tsx`
+
+#### 3. Inline Editing Completeness Audit
+- Verified all 25 block components have proper `useEditableText` wiring (163 instances)
+- Verified 8 blocks have `InlineImage` support (22 instances)
+- Fixed: `ContactForm` missing `contactEmail`/`contactPhone` in SettingsPopover INLINE_FIELDS
+- Fixed: `Testimonial` avatar — was showing placeholder initials, now renders actual `InlineImage`
+
+#### 4. Draggable Block Panel (NEW — major UX improvement)
+**`BlockPanel.tsx`** — Persistent left sidebar replacing the old hidden hover-only inserters:
+- Fixed 240px panel on the left, below top bar
+- All 35 blocks shown organized by 7 categories with icons
+- Search bar to filter blocks by name
+- **Drag-and-drop**: Each block has a grip handle, `draggable="true"`, HTML5 drag events
+- Collapsible via chevron (shrinks to 36px tab), content area adjusts padding smoothly
+- Panel items use `cursor: grab` / `active:cursor-grabbing`, dim on drag start
+
+**`BlockList.tsx`** — Updated to accept drops from the panel:
+- `onDragOver`/`onDrop` handlers detect `PANEL_DRAG_TYPE` from dataTransfer
+- Drop position calculated from cursor Y vs block midpoints
+- **`PanelDropIndicator`** — thick blue line with "Drop here" label between blocks
+- Empty state becomes a large dashed-border drop target
+- Coexists with existing pointer-based reorder drag (no conflicts)
+
+#### 5. Between-Block Inserters Improved
+- `BlockInserter.tsx` updated: shows subtle gray dot + faint line even without hover
+- On hover: dot expands to blue + button, line turns blue
+- Still available as secondary insertion method alongside the panel
+
+### Key architecture files (current state)
+```
+packages/admin/src/editor/
+├── InlineEditor.tsx          — Main editor page (auth, load entity, layout with BlockPanel)
+├── context.tsx               — EditorProvider (reducer, auto-save, dirty tracking)
+├── components/
+│   ├── BlockPanel.tsx         — NEW: Persistent draggable block sidebar (240px left panel)
+│   ├── BlockList.tsx          — Block rendering + panel drop handling + reorder
+│   ├── BlockInserter.tsx      — Between-block + button inserters (hover-to-reveal)
+│   ├── EditableBlock.tsx      — Selection chrome, drag handles, settings popover trigger
+│   ├── SettingsPopover.tsx    — Non-inline field editor (INLINE_FIELDS filter map)
+│   ├── FloatingToolbar.tsx    — Move up/down/delete toolbar for selected block
+│   ├── EditorTopBar.tsx       — Top bar (back, title, save status, publish, settings)
+│   ├── SlashMenu.tsx          — "/" keyboard shortcut block search
+│   ├── TiptapEditor.tsx       — Rich text inline editor (Tiptap)
+│   ├── InlineImagePickerProvider.tsx  — Image picker overlay context
+│   ├── InlineMediaPickerProvider.tsx  — Media picker overlay context
+│   ├── InlineRichTextProvider.tsx     — Rich text context
+│   ├── InlineArrayControls.tsx        — Array item add/remove controls
+│   └── VersionHistoryPanel.tsx        — Version history side panel
+├── hooks/
+│   ├── useDragReorder.ts      — Pointer-based block reorder (existing blocks)
+│   ├── useEditorSelection.ts  — Block selection state
+│   └── useSlashMenu.ts        — "/" key listener
+└── types.ts                   — ContentType, ContentEntity, Data interfaces
+```
+
+---
+
+## TODO — NEXT SESSION (Strict Build Continues)
+
+### P0 — CRITICAL (Must fix)
+
+#### Quality Control & Testing
+- [ ] **Runtime verification**: Open browser, navigate to `/pages/new`, verify editor loads without spinning
+- [ ] **Drag-and-drop testing**: Verify blocks drag from panel and drop at correct positions
+- [ ] **Block reorder testing**: Verify existing pointer-based reorder still works alongside panel drag
+- [ ] **Auto-save testing**: Edit inline text, wait 1s, verify PATCH fires and succeeds
+- [ ] **Publish flow testing**: Create new page → add blocks → publish → verify it appears on public site
+- [ ] **All content types**: Test editor for pages, posts, courses, products — all 4 must work
+
+#### Stripe Payment Integration
+- [ ] **Stripe keys**: Verify `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set in production
+- [ ] **Booking flow end-to-end**: Course page → book → Stripe checkout → webhook → booking confirmed
+- [ ] **Refund flow**: Admin booking detail → issue refund → Stripe refund created → booking updated
+- [ ] **Webhook signature verification**: Test with Stripe CLI (`stripe trigger checkout.session.completed`)
+- [ ] **Price display consistency**: Verify SEK amounts display correctly across booking form, checkout, confirmation
+- [ ] **Abandoned booking cleanup**: Implement Cron Trigger to release spots from bookings that never entered checkout (>30min old with no `stripe_session_id`)
+
+### P1 — HIGH (Should fix before launch)
+
+#### Code Quality
+- [ ] **TypeScript strict mode audit**: Check for `any` casts, missing types, unsafe assertions across all packages
+- [ ] **Dead code cleanup**: Remove old Puck builder files if still present (`PageBuilder.tsx`, `PostBuilder.tsx`, `CourseBuilder.tsx`, `ProductBuilder.tsx`)
+- [ ] **Import audit**: Check for unused imports, circular dependencies
+- [ ] **Error handling**: Ensure all fetch calls have proper error handling with user-visible feedback (not just console.error)
+- [ ] **API input validation**: Admin CRUD endpoints accept raw JSON with zero validation — add schema validation (zod or manual)
+- [ ] **File upload validation**: Media upload has no type/size checks — add allowlist (image/*, video/*, pdf) and max size (10MB)
+
+#### Responsiveness
+- [ ] **Editor mobile/tablet**: BlockPanel should auto-collapse on small screens (<1024px)
+- [ ] **Admin layout**: Test all admin pages on mobile (tables, forms, dashboard)
+- [ ] **Public site mobile**: Verify all 35 block components render correctly on mobile
+- [ ] **Touch drag-and-drop**: Test panel drag on iPad/touch devices — may need touch event fallback
+- [ ] **Breakpoint consistency**: Audit Tailwind breakpoint usage (sm/md/lg/xl) for consistency
+
+#### User Experience
+- [ ] **Block preview thumbnails**: Add small visual previews in the block panel (not just text labels)
+- [ ] **Undo/redo**: Implement ctrl+Z / ctrl+shift+Z for block operations
+- [ ] **Block duplication**: Add duplicate button to FloatingToolbar
+- [ ] **Keyboard navigation**: Tab through blocks, Enter to select, arrow keys to reorder
+- [ ] **Loading states**: Ensure all async operations show loading feedback (publish, save, delete)
+- [ ] **Error toasts**: Replace console.error with user-visible toast notifications
+- [ ] **Block panel categories**: Allow collapsing/expanding categories in the panel
+- [ ] **Empty block defaults**: Verify all 35 blocks have sensible defaultProps (not blank/broken on drop)
+
+### P2 — MEDIUM (Should fix)
+
+#### Module Review (all 35 blocks)
+- [ ] **Render audit**: Verify every block renders correctly on both admin (inline edit mode) and public site
+- [ ] **Props audit**: Verify every block's puck-config fields match the component's actual props interface
+- [ ] **Image handling**: Verify all image fields use InlineImage in admin and plain `<img>` on public
+- [ ] **Rich text fields**: Verify all rich text fields use TiptapEditor in admin
+- [ ] **Array fields**: Verify all array fields (items, buttons, images, tiers) support add/remove/reorder
+- [ ] **Data-bound blocks**: Test CourseList, ProductList, PostGrid, PageCards with real API data
+- [ ] **Interactive blocks**: Test ContactForm submission, BookingForm flow end-to-end
+- [ ] **Responsive blocks**: Test every block at mobile/tablet/desktop breakpoints
+
+#### Component Flexibility (Can user build anything?)
+- [ ] **Full page templates**: Can user build a landing page from scratch? (Hero + Features + CTA + Testimonials + Contact)
+- [ ] **Blog layout**: Can user build a blog post with images, headings, quotes, code blocks?
+- [ ] **Course page**: Can user build a course detail page with info, pricing, booking CTA?
+- [ ] **Product showcase**: Can user build a product page with gallery, description, pricing?
+- [ ] **Custom layouts**: Test Columns block with various split ratios (50/50, 33/67, etc.)
+- [ ] **Nested content**: Can user put blocks inside Columns? Test all combinations
+- [ ] **Missing blocks?**: Evaluate if any common block types are missing (quote, table, map, countdown, testimonial slider, FAQ accordion groups)
+
+#### Security
+- [ ] **XSS audit**: All `dangerouslySetInnerHTML` locations use DOMPurify — verify
+- [ ] **CSRF protection**: Add CSRF tokens to public forms (contact, booking)
+- [ ] **Rate limiting**: Add rate limits to contact form, booking creation, login attempts
+- [ ] **Session cleanup**: Implement expired session pruning (Cron Trigger)
+- [ ] **Content Security Policy**: Add CSP headers to API responses
+- [ ] **Auth token handling**: Session token in URL during OAuth callback — move to httpOnly cookie
+
+### P3 — LOW (Post-launch)
+
+#### SEO & Analytics
+- [ ] **sitemap.xml**: Auto-generate from published pages/posts
+- [ ] **robots.txt**: Proper crawl directives
+- [ ] **Google Analytics**: Wire up GA ID from settings
+- [ ] **Open Graph tags**: Per-page OG title, description, image for social sharing
+- [ ] **Structured data**: JSON-LD for courses, products, organization
+
+#### Performance
+- [ ] **Bundle size**: Audit admin and web bundles — check for heavy dependencies
+- [ ] **Image optimization**: R2 image serving with resize/format transforms
+- [ ] **Lazy loading**: Lazy-load blocks below the fold on public site
+- [ ] **API caching**: Add cache headers to public GET endpoints
+
+#### Infrastructure
+- [ ] **Domain setup**: Connect livskompass.se to Cloudflare
+- [ ] **WordPress redirects**: 301 redirects for all old URLs
+- [ ] **Email notifications**: Booking confirmation, contact form alerts (Resend/Mailgun)
+- [ ] **Error monitoring**: Sentry or similar for runtime error tracking
+- [ ] **Database migrations**: Strategy for schema changes without data loss
 
 ---
 
