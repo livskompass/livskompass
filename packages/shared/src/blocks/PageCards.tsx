@@ -1,5 +1,7 @@
+import React, { useState, useContext } from 'react'
+import { Plus } from 'lucide-react'
 import { useFetchJson, useScrollReveal } from '../helpers'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock, InlineArrayOpsContext } from '../context'
 import { cn } from '../ui/utils'
 import { EditItemBadge } from './EditItemBadge'
 import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
@@ -155,7 +157,80 @@ export function PageCards({
         )}
       </div>
       </ArrayDragProvider>
-      {!parentSlug && <AddItemButton fieldName="manualPages" label="Add page" />}
+      {!parentSlug && <AddPageButton allPages={allPages?.pages || []} fieldName="manualPages" existingSlugs={manualPages.map(p => p.slug)} />}
     </div>
   )
 }
+
+/** Custom "Add page" button that shows a page picker popover on click */
+function AddPageButton({ allPages, fieldName, existingSlugs }: {
+  allPages: Array<{ id: string; slug: string; title: string; meta_description: string }>
+  fieldName: string
+  existingSlugs: string[]
+}) {
+  const editCtx = useInlineEditBlock()
+  const arrayOps = useContext(InlineArrayOpsContext)
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+
+  if (!editCtx || !arrayOps) return null
+
+  const filtered = allPages
+    .filter((p) => !existingSlugs.includes(p.slug))
+    .filter((p) => !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.slug.includes(search.toLowerCase()))
+
+  const handleSelect = (slug: string) => {
+    // Add the page to manualPages array
+    const { blockIndex } = editCtx
+    arrayOps.addItem(blockIndex, fieldName)
+    // The addItem creates an empty item — we need to set its slug
+    // Use a timeout to let React update, then set the slug on the new item
+    setTimeout(() => {
+      editCtx.saveBlockProp(blockIndex, `${fieldName}[${existingSlugs.length}].slug`, slug)
+    }, 50)
+    setOpen(false)
+    setSearch('')
+  }
+
+  return (
+    <div className="relative mt-3">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg border-2 border-dashed border-blue-300 text-blue-500 text-sm font-medium hover:border-blue-400 hover:bg-blue-50/50 transition-colors"
+      >
+        <Plus className="h-4 w-4" />
+        Add page
+      </button>
+      {open && (
+        <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg border border-zinc-200 shadow-lg z-50 max-h-[300px] overflow-hidden flex flex-col">
+          <div className="p-2 border-b border-zinc-100">
+            <input
+              type="text"
+              placeholder="Search pages..."
+              className="w-full text-sm px-2.5 py-1.5 rounded-md border border-zinc-200 bg-white outline-none focus:border-blue-400"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <div className="overflow-y-auto flex-1">
+            {filtered.slice(0, 20).map((p) => (
+              <button
+                key={p.slug}
+                onClick={() => handleSelect(p.slug)}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 transition-colors border-b border-zinc-50 last:border-0"
+              >
+                <span className="font-medium text-zinc-800">{p.title}</span>
+                <span className="text-[10px] text-zinc-400 ml-2">/{p.slug}</span>
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="text-center py-4 text-sm text-zinc-400">No pages found</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
