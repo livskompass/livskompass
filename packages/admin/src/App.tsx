@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getMe, getAuthToken } from './lib/api'
@@ -20,27 +21,39 @@ import InlineEditorPage from './editor/InlineEditor'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = getAuthToken()
+  const [timedOut, setTimedOut] = useState(false)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['me'],
     queryFn: getMe,
     enabled: !!token,
     retry: false,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
+
+  // Safety timeout — don't block forever on slow API
+  useEffect(() => {
+    if (!isLoading) return
+    const timer = setTimeout(() => setTimedOut(true), 5000)
+    return () => clearTimeout(timer)
+  }, [isLoading])
 
   if (!token) {
     return <Navigate to="/login" replace />
   }
 
-  if (isLoading) {
+  if (isLoading && !timedOut) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-zinc-600 border-t-transparent"></div>
+        <div className="flex items-center gap-2 text-zinc-400">
+          <div className="animate-spin rounded-full h-6 w-6 border-2 border-zinc-300 border-t-zinc-600"></div>
+          Loading...
+        </div>
       </div>
     )
   }
 
-  if (error || !data?.user) {
+  if (error || (!data?.user && !timedOut)) {
     return <Navigate to="/login" replace />
   }
 
