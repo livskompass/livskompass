@@ -55,6 +55,41 @@ export function useInlineEditBlock(): InlineEditContextValue | null {
   return useContext(InlineEditBlockContext)
 }
 
+// ── Inline image picker context ──
+
+export interface InlineImagePickerContextValue {
+  /** Open image picker. Calls onPick with the selected URL, or null if cancelled. */
+  requestImagePick: (currentUrl: string, onPick: (url: string) => void) => void
+}
+
+export const InlineImagePickerContext = createContext<InlineImagePickerContextValue | null>(null)
+
+// ── Inline media picker context (generic — all file types) ──
+
+export type MediaPickerType = 'image' | 'video' | 'audio' | 'document' | 'all'
+
+export interface InlineMediaPickerContextValue {
+  /** Open media picker with optional type filter. Calls onPick with the selected URL. */
+  requestMediaPick: (typeFilter: MediaPickerType, currentUrl: string, onPick: (url: string) => void) => void
+}
+
+export const InlineMediaPickerContext = createContext<InlineMediaPickerContextValue | null>(null)
+
+// ── Inline rich text editor context ──
+
+export interface InlineRichTextContextValue {
+  /** A Tiptap-based rich text editor component injected by admin */
+  Editor: React.ComponentType<{
+    content: string
+    onSave: (html: string) => void
+    onCancel: () => void
+    className?: string
+    placeholder?: string
+  }>
+}
+
+export const InlineRichTextContext = createContext<InlineRichTextContextValue | null>(null)
+
 /**
  * Hook that returns contentEditable props for a text element.
  * Call with the propName that maps to the block's Puck prop.
@@ -104,6 +139,17 @@ export function useEditableText(propName: string, currentValue: string) {
     className: 'outline-none ring-0 hover:ring-1 hover:ring-stone-400/40 hover:ring-offset-2 focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 rounded-sm transition-shadow cursor-text',
   }
 }
+
+// ── Inline array operations context ──
+
+export interface InlineArrayOpsContextValue {
+  /** Remove an item from an array field */
+  removeItem: (blockIndex: number, fieldName: string, itemIndex: number) => void
+  /** Move an item within an array field (reorder) */
+  moveItem: (blockIndex: number, fieldName: string, fromIndex: number, toIndex: number) => void
+}
+
+export const InlineArrayOpsContext = createContext<InlineArrayOpsContextValue | null>(null)
 
 // ── Puck inline editing (inside editor iframe) ──
 

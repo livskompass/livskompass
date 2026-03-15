@@ -34,8 +34,8 @@ export function PageCards({
   columns = 3,
   showDescription = true,
   style = 'card',
-  emptyText = 'Inga undersidor hittades',
-  emptyManualText = 'Lägg till sidor manuellt eller ange en föräldersida',
+  emptyText = 'No subpages found',
+  emptyManualText = 'Add pages manually or specify a parent page',
   id,
 }: PageCardsProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)

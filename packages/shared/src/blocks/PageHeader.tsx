@@ -17,14 +17,38 @@ export interface PageHeaderProps {
   breadcrumbHomeText: string
 }
 
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
+function BreadcrumbItemEl({ crumb, index, isLast }: { crumb: BreadcrumbItem; index: number; isLast: boolean }) {
+  const labelEdit = useEditableText(`breadcrumbs[${index}].label`, crumb.label)
+
+  return (
+    <li className="flex items-center gap-1.5">
+      <ChevronRight className="h-3.5 w-3.5 text-stone-400" />
+      {isLast ? (
+        <span {...editHandlers(labelEdit)} className={cn('text-stone-700 font-medium', labelEdit?.className)}>{crumb.label}</span>
+      ) : (
+        <a href={crumb.href} className="hover:text-forest-600 transition-colors">
+          <span {...editHandlers(labelEdit)} className={labelEdit?.className}>{crumb.label}</span>
+        </a>
+      )}
+    </li>
+  )
+}
+
 export function PageHeader({
-  heading = 'Rubrik',
+  heading = 'Heading',
   subheading = '',
   alignment = 'left',
   size = 'large',
   showDivider = false,
   breadcrumbs = [],
-  breadcrumbHomeText = 'Hem',
+  breadcrumbHomeText = 'Home',
   id,
 }: PageHeaderProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -35,29 +59,16 @@ export function PageHeader({
   const headingEditCtx = useEditableText('heading', heading)
   const subheadingEditCtx = useEditableText('subheading', subheading)
 
+  // Inline editing for breadcrumb home text
+  const homeTextEdit = useEditableText('breadcrumbHomeText', breadcrumbHomeText)
+
   // Puck takes priority
   const headingEdit = headingPuck || headingEditCtx
   const subheadingEdit = subheadingPuck || subheadingEditCtx
   const hasBreadcrumbs = breadcrumbs && breadcrumbs.length > 0
 
-  // Build editable props with merged classNames
-  const headingProps = headingEdit
-    ? {
-        contentEditable: headingEdit.contentEditable,
-        suppressContentEditableWarning: headingEdit.suppressContentEditableWarning,
-        onBlur: headingEdit.onBlur,
-        onKeyDown: headingEdit.onKeyDown,
-      }
-    : {}
-
-  const subheadingProps = subheadingEdit
-    ? {
-        contentEditable: subheadingEdit.contentEditable,
-        suppressContentEditableWarning: subheadingEdit.suppressContentEditableWarning,
-        onBlur: subheadingEdit.onBlur,
-        onKeyDown: subheadingEdit.onKeyDown,
-      }
-    : {}
+  const headingProps = editHandlers(headingEdit)
+  const subheadingProps = editHandlers(subheadingEdit)
 
   return (
     <div
@@ -73,17 +84,12 @@ export function PageHeader({
         <nav aria-label="Breadcrumb" className="mb-5 reveal">
           <ol className="flex items-center gap-1.5 text-body-sm text-stone-500">
             <li>
-              <a href="/" className="hover:text-forest-600 transition-colors">{breadcrumbHomeText}</a>
+              <a href="/" className="hover:text-forest-600 transition-colors">
+                <span {...editHandlers(homeTextEdit)} className={homeTextEdit?.className}>{breadcrumbHomeText}</span>
+              </a>
             </li>
             {breadcrumbs.map((crumb, i) => (
-              <li key={i} className="flex items-center gap-1.5">
-                <ChevronRight className="h-3.5 w-3.5 text-stone-400" />
-                {i === breadcrumbs.length - 1 ? (
-                  <span className="text-stone-700 font-medium">{crumb.label}</span>
-                ) : (
-                  <a href={crumb.href} className="hover:text-forest-600 transition-colors">{crumb.label}</a>
-                )}
-              </li>
+              <BreadcrumbItemEl key={i} crumb={crumb} index={i} isLast={i === breadcrumbs.length - 1} />
             ))}
           </ol>
         </nav>

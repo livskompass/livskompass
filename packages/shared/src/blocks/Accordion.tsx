@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { cn } from '../ui/utils'
 import { ChevronDown } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
+import { ArrayItemControls } from './ArrayItemControls'
 
 export interface AccordionItem {
   question: string
@@ -28,17 +29,20 @@ function AccordionItemComponent({
   isOpen,
   onToggle,
   style,
+  totalItems,
 }: {
   item: AccordionItem
   index: number
   isOpen: boolean
   onToggle: () => void
   style: AccordionProps['style']
+  totalItems: number
 }) {
   const questionEdit = useEditableText(`items[${index}].question`, item.question)
   const answerEdit = useEditableText(`items[${index}].answer`, item.answer)
 
   return (
+    <ArrayItemControls fieldName="items" itemIndex={index} totalItems={totalItems}>
     <div className={cn(style !== 'minimal' && 'overflow-hidden')}>
       <button
         onClick={onToggle}
@@ -76,6 +80,7 @@ function AccordionItemComponent({
         </div>
       </div>
     </div>
+    </ArrayItemControls>
   )
 }
 
@@ -112,7 +117,7 @@ export function Accordion({
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
         <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-          Lägg till frågor i inställningarna...
+          Add questions in settings...
         </div>
       </div>
     )
@@ -139,6 +144,7 @@ export function Accordion({
             isOpen={openIndices.has(index)}
             onToggle={() => toggle(index)}
             style={style}
+            totalItems={items.length}
           />
         ))}
       </div>

@@ -1,16 +1,14 @@
 import { useState, useRef, useEffect, useContext } from 'react'
-import { Film, Link as LinkIcon, Play, X, Check, ExternalLink, FolderOpen } from 'lucide-react'
+import { Music, Link as LinkIcon, X, Check, ExternalLink, FolderOpen } from 'lucide-react'
 import { useInlineEdit, useEditableText, useInlineEditBlock, InlineMediaPickerContext } from '../context'
 import { cn } from '../ui/utils'
 import { resolveMediaUrl } from '../helpers'
 
-export interface VideoEmbedProps {
+export interface AudioEmbedProps {
   url: string
-  aspectRatio: '16:9' | '4:3' | '1:1'
   caption: string
+  style: 'minimal' | 'card'
 }
-
-const ratioMap = { '16:9': 'aspect-video', '4:3': 'aspect-[4/3]', '1:1': 'aspect-square' }
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -19,60 +17,49 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
-function getEmbedUrl(url: string): string {
-  if (!url) return ''
-  if (url.includes('youtube.com/watch')) {
-    try {
-      const videoId = new URL(url).searchParams.get('v')
-      if (videoId) return `https://www.youtube.com/embed/${videoId}`
-    } catch { /* ignore */ }
-  } else if (url.includes('youtu.be/')) {
-    const videoId = url.split('youtu.be/')[1]?.split('?')[0]
-    if (videoId) return `https://www.youtube.com/embed/${videoId}`
-  } else if (url.includes('vimeo.com/')) {
-    const videoId = url.split('vimeo.com/')[1]?.split('?')[0]
-    if (videoId) return `https://player.vimeo.com/video/${videoId}`
-  } else if (url.includes('loom.com/share/')) {
-    const videoId = url.split('loom.com/share/')[1]?.split('?')[0]
-    if (videoId) return `https://www.loom.com/embed/${videoId}`
-  }
-  return url
-}
-
-function getProviderName(url: string): string | null {
+function getAudioEmbedUrl(url: string): string | null {
   if (!url) return null
-  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube'
-  if (url.includes('vimeo.com')) return 'Vimeo'
-  if (url.includes('loom.com')) return 'Loom'
+  // Spotify track/album/playlist
+  if (url.includes('open.spotify.com/')) {
+    // Convert open.spotify.com/track/xxx → open.spotify.com/embed/track/xxx
+    return url.replace('open.spotify.com/', 'open.spotify.com/embed/')
+  }
+  // SoundCloud
+  if (url.includes('soundcloud.com/')) {
+    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`
+  }
   return null
 }
 
-function isDirectVideo(url: string): boolean {
-  if (!url) return false
-  return /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url)
+function getAudioProvider(url: string): string | null {
+  if (!url) return null
+  if (url.includes('spotify.com')) return 'Spotify'
+  if (url.includes('soundcloud.com')) return 'SoundCloud'
+  return null
 }
 
-export function VideoEmbed({
+function isDirectAudio(url: string): boolean {
+  if (!url) return false
+  return /\.(mp3|wav|ogg|m4a|aac|flac|webm)((\?|#).*)?$/i.test(url)
+}
+
+export function AudioEmbed({
   url = '',
-  aspectRatio = '16:9',
   caption = '',
+  style = 'minimal',
   id,
-}: VideoEmbedProps & { puck?: { isEditing: boolean }; id?: string }) {
-  // Puck editor inline editing (via postMessage)
+}: AudioEmbedProps & { puck?: { isEditing: boolean }; id?: string }) {
   const captionPuck = useInlineEdit('caption', caption, id || '')
-  // Public site admin editing (via InlineEditBlockContext)
   const captionEditCtx = useEditableText('caption', caption)
-  // Puck takes priority
   const captionEdit = captionPuck || captionEditCtx
 
   const editCtx = useInlineEditBlock()
   const [showUrlInput, setShowUrlInput] = useState(false)
   const [urlDraft, setUrlDraft] = useState(url)
 
-  const embedUrl = getEmbedUrl(url)
-  const ratio = ratioMap[aspectRatio] || 'aspect-video'
-  const provider = getProviderName(url)
-  const isDirect = isDirectVideo(url)
+  const embedUrl = getAudioEmbedUrl(url)
+  const provider = getAudioProvider(url)
+  const isDirect = isDirectAudio(url)
 
   const handleSaveUrl = (newUrl: string) => {
     if (editCtx) {
@@ -81,22 +68,45 @@ export function VideoEmbed({
     setShowUrlInput(false)
   }
 
-  // Render the video content
-  const videoContent = embedUrl ? (
+  const cardClass = style === 'card'
+    ? 'bg-white rounded-xl border border-stone-200 shadow-sm p-4'
+    : ''
+
+  const audioContent = url ? (
     isDirect ? (
-      <video
+      <audio
         src={resolveMediaUrl(url)}
-        className="w-full h-full object-cover"
+        className="w-full"
         controls
         preload="metadata"
       />
+    ) : embedUrl ? (
+      provider === 'Spotify' ? (
+        <iframe
+          src={embedUrl}
+          className="w-full rounded-xl"
+          style={{ height: 152 }}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          title={caption || 'Audio'}
+        />
+      ) : (
+        <iframe
+          src={embedUrl}
+          className="w-full"
+          style={{ height: 166 }}
+          allow="autoplay"
+          loading="lazy"
+          title={caption || 'Audio'}
+        />
+      )
     ) : (
-      <iframe
-        src={embedUrl}
-        className="w-full h-full"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        title={caption || 'Video'}
+      // Unknown URL — try as direct audio
+      <audio
+        src={resolveMediaUrl(url)}
+        className="w-full"
+        controls
+        preload="metadata"
       />
     )
   ) : null
@@ -104,18 +114,21 @@ export function VideoEmbed({
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <figure>
-        <div className={cn(ratio, 'w-full rounded-xl overflow-hidden bg-stone-100 relative', editCtx && 'group/video')}>
-          {videoContent || (
-            <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 gap-2">
-              <Film className="h-10 w-10 text-stone-300" />
-              <span className="text-sm">Paste a video URL</span>
+        <div className={cn(cardClass, 'relative', editCtx && 'group/audio')}>
+          {audioContent || (
+            <div className={cn(
+              'w-full flex flex-col items-center justify-center text-stone-400 gap-2 py-8',
+              style === 'card' ? '' : 'border-2 border-dashed border-stone-200 rounded-xl',
+            )}>
+              <Music className="h-10 w-10 text-stone-300" />
+              <span className="text-sm">Paste an audio URL</span>
             </div>
           )}
 
-          {/* Admin overlay — click to edit video */}
+          {/* Admin overlay */}
           {editCtx && !showUrlInput && (
             <div
-              className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 group-hover/video:opacity-100 transition-opacity cursor-pointer"
+              className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover/audio:opacity-100 transition-opacity cursor-pointer rounded-xl"
               style={{ background: 'rgba(0,0,0,0.5)' }}
               onClick={(e) => {
                 e.stopPropagation()
@@ -125,10 +138,10 @@ export function VideoEmbed({
             >
               {url ? (
                 <>
-                  <Play className="h-8 w-8 text-white" />
-                  <span className="text-white text-sm font-medium">Change video</span>
+                  <Music className="h-5 w-5 text-white" />
+                  <span className="text-white text-sm font-medium">Change audio</span>
                   {provider && (
-                    <span className="text-white/60 text-xs flex items-center gap-1">
+                    <span className="text-white/60 text-xs flex items-center gap-1 ml-2">
                       <ExternalLink className="h-3 w-3" />
                       {provider}
                     </span>
@@ -136,8 +149,8 @@ export function VideoEmbed({
                 </>
               ) : (
                 <>
-                  <Film className="h-8 w-8 text-white" />
-                  <span className="text-white text-sm font-medium">Add video</span>
+                  <Music className="h-5 w-5 text-white" />
+                  <span className="text-white text-sm font-medium">Add audio</span>
                 </>
               )}
             </div>
@@ -145,7 +158,7 @@ export function VideoEmbed({
 
           {/* Inline URL input */}
           {editCtx && showUrlInput && (
-            <VideoUrlInput
+            <AudioUrlInput
               value={urlDraft}
               onChange={setUrlDraft}
               onSave={handleSaveUrl}
@@ -167,8 +180,8 @@ export function VideoEmbed({
   )
 }
 
-/** Inline URL input overlay for video blocks */
-function VideoUrlInput({
+/** Inline URL input overlay for audio blocks */
+function AudioUrlInput({
   value,
   onChange,
   onSave,
@@ -189,7 +202,7 @@ function VideoUrlInput({
 
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center p-6"
+      className="absolute inset-0 flex items-center justify-center p-6 rounded-xl"
       style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -197,11 +210,11 @@ function VideoUrlInput({
         <div className="flex items-center justify-between text-white/80 text-xs mb-2">
           <div className="flex items-center gap-2">
             <LinkIcon className="h-3.5 w-3.5" />
-            <span>YouTube, Vimeo, Loom, or direct video URL</span>
+            <span>Spotify, SoundCloud, or direct audio URL</span>
           </div>
           {mediaPicker && (
             <button
-              onClick={() => mediaPicker.requestMediaPick('video', value, (url) => onSave(url))}
+              onClick={() => mediaPicker.requestMediaPick('audio', value, (url) => onSave(url))}
               className="flex items-center gap-1 text-white/60 hover:text-white transition-colors"
             >
               <FolderOpen className="h-3.5 w-3.5" />
@@ -214,7 +227,7 @@ function VideoUrlInput({
           <input
             ref={inputRef}
             type="url"
-            placeholder="https://youtube.com/watch?v=..."
+            placeholder="https://open.spotify.com/track/..."
             className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm outline-none placeholder:text-white/30 focus:border-white/40 focus:bg-white/15"
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -237,21 +250,19 @@ function VideoUrlInput({
           </button>
         </div>
 
-        {/* Provider detection preview */}
-        {value && getProviderName(value) && (
+        {value && getAudioProvider(value) && (
           <div className="text-xs text-white/50 flex items-center gap-1">
             <ExternalLink className="h-3 w-3" />
-            Detected: {getProviderName(value)}
+            Detected: {getAudioProvider(value)}
           </div>
         )}
 
-        {/* Remove video option */}
         {value && (
           <button
             onClick={() => onSave('')}
             className="text-xs text-red-300 hover:text-red-200 transition-colors"
           >
-            Remove video
+            Remove audio
           </button>
         )}
       </div>

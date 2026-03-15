@@ -20,12 +20,12 @@ export const defaultHomeTemplate = JSON.stringify({
       props: {
         id: 'hero',
         preset: 'centered',
-        heading: 'ACT och Mindfulness',
-        subheading: 'Utbildningar och verktyg för att hantera stress och leva ett rikare liv',
+        heading: 'ACT and Mindfulness',
+        subheading: 'Courses and tools to manage stress and live a richer life',
         bgStyle: 'gradient',
-        ctaPrimaryText: 'Se utbildningar',
+        ctaPrimaryText: 'View courses',
         ctaPrimaryLink: '/utbildningar',
-        ctaSecondaryText: 'Vad är ACT?',
+        ctaSecondaryText: 'What is ACT?',
         ctaSecondaryLink: '/act',
         image: '',
         backgroundImage: '',
@@ -36,7 +36,7 @@ export const defaultHomeTemplate = JSON.stringify({
       type: 'CourseList',
       props: {
         id: 'courses',
-        heading: 'Kommande utbildningar',
+        heading: 'Upcoming courses',
         maxItems: 3,
         columns: 3,
         showBookButton: true,
@@ -51,7 +51,7 @@ export const defaultHomeTemplate = JSON.stringify({
       type: 'PostGrid',
       props: {
         id: 'posts',
-        heading: 'Senaste nytt',
+        heading: 'Latest news',
         subheading: '',
         count: 3,
         columns: 3,
@@ -65,9 +65,9 @@ export const defaultHomeTemplate = JSON.stringify({
       type: 'CTABanner',
       props: {
         id: 'cta',
-        heading: 'Vill du veta mer?',
-        description: 'Kontakta oss för frågor om utbildningar, material eller samarbeten.',
-        buttonText: 'Kontakta oss',
+        heading: 'Want to know more?',
+        description: 'Contact us for questions about courses, materials, or collaborations.',
+        buttonText: 'Contact us',
         buttonLink: '/kontakt',
         backgroundColor: 'dark',
         alignment: 'center',
@@ -111,8 +111,8 @@ export const defaultBlogTemplate = JSON.stringify({
       type: 'PageHeader',
       props: {
         id: 'page-header',
-        heading: 'Nyheter',
-        subheading: 'Senaste nytt från Livskompass',
+        heading: 'News',
+        subheading: 'Latest news from Livskompass',
         alignment: 'left',
         size: 'large',
         showDivider: true,
@@ -140,7 +140,7 @@ export const defaultBlogTemplate = JSON.stringify({
 
 export const defaultPostTemplate = JSON.stringify({
   content: [
-    { type: 'PostHeader', props: { id: 'post-header', showBackLink: true, backLinkText: 'Alla inlägg', backLinkUrl: '/nyhet' } },
+    { type: 'PostHeader', props: { id: 'post-header', showBackLink: true, backLinkText: 'All posts', backLinkUrl: '/nyhet' } },
     { type: 'RichText', props: { id: 'content', content: '__LEGACY_CONTENT__', maxWidth: 'medium' } },
   ],
   root: { props: {} },

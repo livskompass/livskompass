@@ -25,7 +25,7 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Bokningsformuläret visas när en utbildning är vald.</p>
+        <p className="text-stone-400 text-sm">The booking form is shown when a course is selected.</p>
       </div>
     </div>
   )
@@ -38,18 +38,18 @@ function formatDate(date: string): string {
 export function BookingForm({
   showOrganization = true,
   showNotes = true,
-  submitButtonText = 'Gå till betalning',
-  processingText = 'Bearbetar...',
-  fullMessage = 'Denna utbildning är fullbokad.',
-  completedMessage = 'Denna utbildning har genomförts.',
-  totalLabel = 'Totalt',
-  nameLabel = 'Namn *',
-  emailLabel = 'E-post *',
-  phoneLabel = 'Telefon',
-  organizationLabel = 'Organisation',
-  participantsLabel = 'Antal deltagare *',
-  notesLabel = 'Meddelande',
-  priceSuffix = 'kr/person',
+  submitButtonText = 'Proceed to payment',
+  processingText = 'Processing...',
+  fullMessage = 'This course is fully booked.',
+  completedMessage = 'This course has been completed.',
+  totalLabel = 'Total',
+  nameLabel = 'Name *',
+  emailLabel = 'Email *',
+  phoneLabel = 'Phone',
+  organizationLabel = 'Organization',
+  participantsLabel = 'Number of participants *',
+  notesLabel = 'Message',
+  priceSuffix = 'SEK/person',
 }: BookingFormProps) {
   const course = useCourseData()
   const isEditor = typeof window !== 'undefined' && window.frameElement !== null
@@ -118,7 +118,7 @@ export function BookingForm({
       }
     } catch (err: any) {
       setStatus('error')
-      setErrorMsg(err.message || 'Något gick fel')
+      setErrorMsg(err.message || 'Something went wrong')
     }
   }
 

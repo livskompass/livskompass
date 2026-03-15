@@ -1,6 +1,9 @@
+import { useContext } from 'react'
 import { cn } from '../ui/utils'
-import { ArrowRight } from 'lucide-react'
-import { useEditableText, useInlineEdit } from '../context'
+import { ArrowRight, Camera } from 'lucide-react'
+import { useEditableText, useInlineEdit, useInlineEditBlock, InlineImagePickerContext } from '../context'
+import { InlineImage } from './InlineImage'
+import { resolveMediaUrl } from '../helpers'
 
 export type HeroPreset = 'centered' | 'split-right' | 'split-left' | 'full-image' | 'minimal'
 export type HeroBgStyle = 'gradient' | 'forest' | 'stone'
@@ -39,9 +42,32 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
+/** Camera button overlay for background images (admin only) */
+function BgImageButton({ propName, src }: { propName: string; src: string }) {
+  const editCtx = useInlineEditBlock()
+  const pickerCtx = useContext(InlineImagePickerContext)
+  if (!editCtx || !pickerCtx) return null
+
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation()
+        pickerCtx.requestImagePick(src, (newUrl) => {
+          editCtx.saveBlockProp(editCtx.blockIndex, propName, newUrl)
+        })
+      }}
+      className="absolute top-4 right-4 z-20 opacity-0 group-hover/hero-bg:opacity-100 transition-opacity bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg"
+      aria-label="Change background image"
+    >
+      <Camera className="h-4 w-4 text-stone-700" />
+    </button>
+  )
+}
+
 export function Hero({
   preset = 'centered',
-  heading = 'Rubrik här',
+  heading = 'Heading here',
   subheading = '',
   bgStyle = 'gradient',
   ctaPrimaryText = '',
@@ -60,6 +86,8 @@ export function Hero({
   // Public site admin editing (via InlineEditBlockContext)
   const headingEditCtx = useEditableText('heading', heading)
   const subheadingEditCtx = useEditableText('subheading', subheading)
+  const ctaPrimaryTextEdit = useEditableText('ctaPrimaryText', ctaPrimaryText)
+  const ctaSecondaryTextEdit = useEditableText('ctaSecondaryText', ctaSecondaryText)
 
   // Puck takes priority
   const headingEdit = headingPuck || headingEditCtx
@@ -69,6 +97,8 @@ export function Hero({
   const sEdit = editHandlers(subheadingEdit)
   const hCls = headingEdit?.className
   const sCls = subheadingEdit?.className
+  const ctaPEdit = editHandlers(ctaPrimaryTextEdit)
+  const ctaSEdit = editHandlers(ctaSecondaryTextEdit)
 
   // ── Minimal preset ──
   if (preset === 'minimal') {
@@ -91,10 +121,11 @@ export function Hero({
   // ── Full-image preset ──
   if (preset === 'full-image') {
     return (
-      <section className="relative overflow-hidden min-h-[70vh] flex items-center" style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)' }}>
+      <section className="relative overflow-hidden min-h-[70vh] flex items-center group/hero-bg" style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)' }}>
         {backgroundImage && (
-          <div className="absolute inset-0" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+          <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         )}
+        <BgImageButton propName="backgroundImage" src={backgroundImage} />
         <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(var(--color-forest-950-rgb, 10,26,16), ${overlayOpacity[overlayDarkness]}), rgba(var(--color-forest-950-rgb, 10,26,16), 0.2), rgba(var(--color-forest-950-rgb, 10,26,16), ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />
         <div className="relative flex flex-col items-center text-center" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <h1 {...hEdit} className={cn('text-display text-white max-w-[24ch] mx-auto animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
@@ -108,7 +139,7 @@ export function Hero({
           {ctaPrimaryText && ctaPrimaryLink && (
             <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
               <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 bg-white text-forest-700 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all">
-                {ctaPrimaryText}
+                <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </div>
@@ -136,18 +167,20 @@ export function Hero({
             {ctaPrimaryText && ctaPrimaryLink && (
               <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
                 <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 bg-forest-600 text-white shadow-[0_1px_3px_rgba(50,102,71,0.2)] hover:bg-forest-500 hover:-translate-y-px transition-all">
-                  {ctaPrimaryText}
+                  <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </div>
             )}
           </div>
           <div className={cn('lg:col-span-2', imageFirst ? 'lg:order-1' : 'lg:order-2')}>
-            {image ? (
-              <img src={image} alt="" loading="lazy" className="w-full h-auto rounded-xl object-cover shadow-lg animate-hero-enter" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }} />
-            ) : (
-              <div className="w-full rounded-xl bg-stone-200 animate-hero-enter" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }} />
-            )}
+            <InlineImage
+              src={image}
+              propName="image"
+              className="w-full h-auto rounded-xl object-cover shadow-lg animate-hero-enter"
+              style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}
+              fallback={<div className="w-full rounded-xl bg-stone-200 animate-hero-enter" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }} />}
+            />
           </div>
         </div>
       </section>
@@ -178,13 +211,13 @@ export function Hero({
           <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
             {ctaPrimaryText && ctaPrimaryLink && (
               <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 bg-white text-forest-700 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all">
-                {ctaPrimaryText}
+                <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             )}
             {ctaSecondaryText && ctaSecondaryLink && (
               <a href={ctaSecondaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] border-white/40 text-white hover:bg-white/10 transition-all">
-                {ctaSecondaryText}
+                <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
               </a>
             )}
           </div>

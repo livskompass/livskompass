@@ -60,11 +60,11 @@ export function CourseList({
   columns = 2,
   showBookButton = true,
   compactMode = false,
-  readMoreText = 'Läs mer',
-  bookButtonText = 'Boka plats',
-  fullLabel = 'Fullbokad',
-  spotsText = 'platser kvar',
-  emptyText = 'Det finns inga utbildningar planerade just nu.',
+  readMoreText = 'Read more',
+  bookButtonText = 'Book a spot',
+  fullLabel = 'Fully booked',
+  spotsText = 'spots left',
+  emptyText = 'There are no courses scheduled right now.',
   id,
 }: CourseListProps & { puck?: { isEditing: boolean }; id?: string }) {
   const { data, loading } = useFetchJson<{ courses: Course[] }>('/courses')
@@ -77,6 +77,12 @@ export function CourseList({
   const headingEditCtx = useEditableText('heading', heading)
   // Puck takes priority
   const headingEdit = headingPuck || headingEditCtx
+
+  // Template text inline editing
+  const readMoreEdit = useEditableText('readMoreText', readMoreText)
+  const bookBtnEdit = useEditableText('bookButtonText', bookButtonText)
+  const fullLabelEdit = useEditableText('fullLabel', fullLabel)
+  const emptyTextEdit = useEditableText('emptyText', emptyText)
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
@@ -111,7 +117,7 @@ export function CourseList({
                         ? 'bg-amber-50 text-amber-700'
                         : 'bg-forest-50 text-forest-700'
                     )}>
-                      {isFull ? fullLabel : `${spotsLeft} ${spotsText}`}
+                      {isFull ? <span {...editHandlers(fullLabelEdit)} className={fullLabelEdit?.className}>{fullLabel}</span> : `${spotsLeft} ${spotsText}`}
                     </span>
                   </div>
                   )}
@@ -143,14 +149,14 @@ export function CourseList({
                         href={`/utbildningar/${course.slug}`}
                         className="inline-flex items-center h-9 px-4 text-sm font-medium text-forest-600 hover:text-forest-700 hover:bg-forest-50 rounded-full transition-colors"
                       >
-                        {readMoreText}
+                        <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText}</span>
                       </a>
                       {showBookButton && !isFull && (
                         <a
                           href={`/utbildningar/${course.slug}/boka`}
                           className="inline-flex items-center h-9 px-4 text-sm font-medium bg-forest-500 text-white hover:bg-forest-600 rounded-full transition-all active:scale-[0.97]"
                         >
-                          {bookButtonText}
+                          <span {...editHandlers(bookBtnEdit)} className={bookBtnEdit?.className}>{bookButtonText}</span>
                           <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                         </a>
                       )}
@@ -163,7 +169,7 @@ export function CourseList({
         </div>
       ) : (
         <div className="text-center py-16 text-stone-400 border-2 border-dashed border-stone-200 rounded-xl">
-          {emptyText}
+          <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
         </div>
       )}
     </div>

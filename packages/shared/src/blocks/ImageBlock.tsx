@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { ImageIcon } from 'lucide-react'
-import { resolveMediaUrl } from '../helpers'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { InlineImage } from './InlineImage'
 
 export interface ImageBlockProps {
   src: string
@@ -55,27 +55,29 @@ export function ImageBlock({
   // Puck takes priority
   const captionEdit = captionPuck || captionEditCtx
 
-  if (!src) {
+  const editCtx = useInlineEditBlock()
+
+  if (!src && !editCtx) {
     return (
       <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
         <div className="py-12 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
           <ImageIcon className="h-12 w-12 mx-auto mb-2 text-stone-300" />
-          <p>Välj en bild...</p>
+          <p>Choose an image...</p>
         </div>
       </div>
     )
   }
 
   const img = (
-    <img
-      src={resolveMediaUrl(src)}
+    <InlineImage
+      src={src}
+      propName="src"
       alt={alt}
-      loading="lazy"
       className={cn('w-full h-auto', roundedMap[rounded])}
     />
   )
 
-  const wrappedImg = link ? (
+  const wrappedImg = link && !editCtx ? (
     <a href={link} target="_blank" rel="noopener noreferrer">
       {img}
     </a>

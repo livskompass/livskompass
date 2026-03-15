@@ -4,7 +4,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui
 import { Badge } from '../ui/badge'
 import { Calendar, MapPin } from 'lucide-react'
 import { getApiBase, useScrollReveal } from '../helpers'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { InlineImage } from './InlineImage'
+import { ArrayItemControls } from './ArrayItemControls'
 
 export interface ManualCard {
   title: string
@@ -47,6 +49,47 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
+function ManualCardItem({ card, index, cardStyle, totalItems }: { card: ManualCard; index: number; cardStyle: string; totalItems: number }) {
+  const editCtx = useInlineEditBlock()
+  const titleEdit = useEditableText(`manualCards[${index}].title`, card.title)
+  const descEdit = useEditableText(`manualCards[${index}].description`, card.description)
+  const badgeEdit = useEditableText(`manualCards[${index}].badge`, card.badge)
+
+  return (
+    <ArrayItemControls fieldName="manualCards" itemIndex={index} totalItems={totalItems}>
+    <a href={card.link || '#'} className="block group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2" onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}>
+      <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle as keyof typeof cardStyleMap])}>
+        {(card.image || editCtx) && (
+          <div className="aspect-video overflow-hidden rounded-t-xl">
+            <InlineImage
+              src={card.image}
+              propName={`manualCards[${index}].image`}
+              alt={card.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        )}
+        <CardHeader>
+          {(card.badge || badgeEdit) && (
+            <Badge variant="default" className="w-fit mb-1">
+              <span {...editHandlers(badgeEdit)} className={badgeEdit?.className}>{card.badge}</span>
+            </Badge>
+          )}
+          <CardTitle {...editHandlers(titleEdit)} className={cn('text-h4 group-hover:text-forest-600 transition-colors', titleEdit?.className)}>
+            {card.title}
+          </CardTitle>
+          {(card.description || descEdit) && (
+            <CardDescription {...editHandlers(descEdit)} className={cn('line-clamp-2', descEdit?.className)}>
+              {card.description}
+            </CardDescription>
+          )}
+        </CardHeader>
+      </Card>
+    </a>
+    </ArrayItemControls>
+  )
+}
+
 interface DynamicItem {
   id: string
   slug: string
@@ -69,10 +112,10 @@ export function CardGrid({
   columns = 3,
   cardStyle = 'default',
   manualCards = [],
-  fullBadgeText = 'Fullbokad',
-  spotsAvailableText = 'Platser kvar',
-  emptyManualText = 'Lägg till kort i inställningarna...',
-  emptyDynamicText = 'Inget innehåll tillgängligt.',
+  fullBadgeText = 'Fully booked',
+  spotsAvailableText = 'Spots available',
+  emptyManualText = 'Add cards in settings...',
+  emptyDynamicText = 'No content available.',
   id,
 }: CardGridProps & { puck?: { isEditing: boolean }; id?: string }) {
   const [dynamicItems, setDynamicItems] = useState<DynamicItem[]>([])
@@ -116,35 +159,7 @@ export function CardGrid({
 
   const renderManualCards = () =>
     manualCards.slice(0, maxItems).map((card, i) => (
-      <a key={i} href={card.link || '#'} className="block group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
-        <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle])}>
-          {card.image && (
-            <div className="aspect-video overflow-hidden rounded-t-xl">
-              <img
-                src={card.image}
-                alt={card.title}
-                loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          )}
-          <CardHeader>
-            {card.badge && (
-              <Badge variant="default" className="w-fit mb-1">
-                {card.badge}
-              </Badge>
-            )}
-            <CardTitle className="text-h4 group-hover:text-forest-600 transition-colors">
-              {card.title}
-            </CardTitle>
-            {card.description && (
-              <CardDescription className="line-clamp-2">
-                {card.description}
-              </CardDescription>
-            )}
-          </CardHeader>
-        </Card>
-      </a>
+      <ManualCardItem key={i} card={card} index={i} cardStyle={cardStyle} totalItems={manualCards.length} />
     ))
 
   const renderDynamicCards = () =>

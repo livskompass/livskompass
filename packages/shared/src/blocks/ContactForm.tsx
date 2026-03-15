@@ -34,24 +34,24 @@ function editHandlers(edit: ReturnType<typeof useEditableText> | ReturnType<type
 }
 
 export function ContactForm({
-  heading = 'Kontakta oss',
+  heading = 'Contact us',
   description = '',
   showPhone = true,
   showSubject = true,
   layout = 'full',
   contactName = 'Fredrik Livheim',
-  contactTitle = 'Legitimerad psykolog och ACT-utbildare',
+  contactTitle = 'Licensed psychologist and ACT trainer',
   contactEmail = 'livheim@gmail.com',
   contactPhone = '070-694 03 64',
-  submitButtonText = 'Skicka meddelande',
-  submittingText = 'Skickar...',
-  successHeading = 'Tack för ditt meddelande!',
-  successMessage = 'Vi återkommer så snart vi kan.',
-  nameLabel = 'Namn *',
-  emailLabel = 'E-post *',
-  phoneLabel = 'Telefon',
-  subjectLabel = 'Ämne',
-  messageLabel = 'Meddelande *',
+  submitButtonText = 'Send message',
+  submittingText = 'Sending...',
+  successHeading = 'Thank you for your message!',
+  successMessage = 'We will get back to you as soon as we can.',
+  nameLabel = 'Name *',
+  emailLabel = 'Email *',
+  phoneLabel = 'Phone',
+  subjectLabel = 'Subject',
+  messageLabel = 'Message *',
   id,
 }: ContactFormProps & { puck?: { isEditing: boolean }; id?: string }) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
@@ -69,6 +69,18 @@ export function ContactForm({
   // Puck takes priority
   const headingEdit = headingPuck || headingEditCtx
   const descriptionEdit = descriptionPuck || descriptionEditCtx
+
+  // Inline editing for form labels and contact info
+  const nameLabelEdit = useEditableText('nameLabel', nameLabel)
+  const emailLabelEdit = useEditableText('emailLabel', emailLabel)
+  const phoneLabelEdit = useEditableText('phoneLabel', phoneLabel)
+  const subjectLabelEdit = useEditableText('subjectLabel', subjectLabel)
+  const messageLabelEdit = useEditableText('messageLabel', messageLabel)
+  const submitBtnEdit = useEditableText('submitButtonText', submitButtonText)
+  const contactNameEdit = useEditableText('contactName', contactName)
+  const contactTitleEdit = useEditableText('contactTitle', contactTitle)
+  const contactEmailEdit = useEditableText('contactEmail', contactEmail)
+  const contactPhoneEdit = useEditableText('contactPhone', contactPhone)
 
   const hHandlers = editHandlers(headingEdit)
   const dHandlers = editHandlers(descriptionEdit)
@@ -102,7 +114,9 @@ export function ContactForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">{nameLabel}</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <span {...editHandlers(nameLabelEdit)} className={nameLabelEdit?.className}>{nameLabel}</span>
+          </label>
           <input
             type="text"
             required
@@ -113,7 +127,9 @@ export function ContactForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">{emailLabel}</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <span {...editHandlers(emailLabelEdit)} className={emailLabelEdit?.className}>{emailLabel}</span>
+          </label>
           <input
             type="email"
             required
@@ -126,7 +142,9 @@ export function ContactForm({
       </div>
       {showPhone && (
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">{phoneLabel}</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <span {...editHandlers(phoneLabelEdit)} className={phoneLabelEdit?.className}>{phoneLabel}</span>
+          </label>
           <input
             type="tel"
             value={formData.phone}
@@ -138,7 +156,9 @@ export function ContactForm({
       )}
       {showSubject && (
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">{subjectLabel}</label>
+          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <span {...editHandlers(subjectLabelEdit)} className={subjectLabelEdit?.className}>{subjectLabel}</span>
+          </label>
           <input
             type="text"
             value={formData.subject}
@@ -149,7 +169,9 @@ export function ContactForm({
         </div>
       )}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1.5">{messageLabel}</label>
+        <label className="block text-sm font-medium text-stone-700 mb-1.5">
+          <span {...editHandlers(messageLabelEdit)} className={messageLabelEdit?.className}>{messageLabel}</span>
+        </label>
         <textarea
           required
           rows={5}
@@ -164,7 +186,9 @@ export function ContactForm({
         disabled={status === 'submitting' || isEditor}
         className="w-full inline-flex items-center justify-center h-12 px-7 bg-forest-500 text-white hover:bg-forest-600 font-semibold rounded-full transition-colors disabled:opacity-50"
       >
-        {status === 'submitting' ? submittingText : submitButtonText}
+        <span {...editHandlers(submitBtnEdit)} className={submitBtnEdit?.className}>
+          {status === 'submitting' ? submittingText : submitButtonText}
+        </span>
         <Send className="ml-2 h-4 w-4" />
       </button>
     </form>
@@ -190,17 +214,19 @@ export function ContactForm({
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-12">
           <div className="space-y-4">
             <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
-              <h3 className="font-semibold text-stone-800 mb-1">{contactName}</h3>
-              <p className="text-sm text-stone-500 mb-4">{contactTitle}</p>
+              <h3 {...editHandlers(contactNameEdit)} className={cn('font-semibold text-stone-800 mb-1', contactNameEdit?.className)}>{contactName}</h3>
+              <p {...editHandlers(contactTitleEdit)} className={cn('text-sm text-stone-500 mb-4', contactTitleEdit?.className)}>{contactTitle}</p>
               <div className="space-y-3">
-                {contactEmail && (
+                {(contactEmail || contactEmailEdit) && (
                   <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-sm text-stone-600 hover:text-forest-600 transition-colors">
-                    <Mail className="h-4 w-4 text-forest-500" />{contactEmail}
+                    <Mail className="h-4 w-4 text-forest-500" />
+                    <span {...editHandlers(contactEmailEdit)} className={contactEmailEdit?.className}>{contactEmail}</span>
                   </a>
                 )}
-                {contactPhone && (
+                {(contactPhone || contactPhoneEdit) && (
                   <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-sm text-stone-600 hover:text-forest-600 transition-colors">
-                    <Phone className="h-4 w-4 text-forest-500" />{contactPhone}
+                    <Phone className="h-4 w-4 text-forest-500" />
+                    <span {...editHandlers(contactPhoneEdit)} className={contactPhoneEdit?.className}>{contactPhone}</span>
                   </a>
                 )}
               </div>

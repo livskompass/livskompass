@@ -39,7 +39,7 @@ export function PostGrid({
   showImage = true,
   showExcerpt = true,
   showDate = true,
-  emptyText = 'Inga inlägg hittades',
+  emptyText = 'No posts found',
   id,
 }: PostGridProps & { puck?: { isEditing: boolean }; id?: string }) {
   const limit = count || 3

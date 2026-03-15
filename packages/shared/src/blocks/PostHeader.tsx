@@ -1,4 +1,4 @@
-import { usePostData } from '../context'
+import { usePostData, useEditableText } from '../context'
 import { resolveMediaUrl } from '../helpers'
 import { ArrowLeft } from 'lucide-react'
 
@@ -12,18 +12,26 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Inläggsrubrik visas här (data-bunden)</p>
+        <p className="text-stone-400 text-sm">Post header is shown here (data-bound)</p>
       </div>
     </div>
   )
 }
 
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
 export function PostHeader({
   showBackLink = true,
-  backLinkText = 'Alla inlägg',
+  backLinkText = 'All posts',
   backLinkUrl = '/nyhet',
 }: PostHeaderProps) {
   const post = usePostData()
+  const backLinkTextEdit = useEditableText('backLinkText', backLinkText)
 
   if (!post) return <Placeholder />
 
@@ -35,7 +43,7 @@ export function PostHeader({
           className="inline-flex items-center gap-2 text-sm text-forest-600 hover:text-forest-700 transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
-          {backLinkText}
+          <span {...editHandlers(backLinkTextEdit)} className={backLinkTextEdit?.className}>{backLinkText}</span>
         </a>
       )}
       {post.published_at && (

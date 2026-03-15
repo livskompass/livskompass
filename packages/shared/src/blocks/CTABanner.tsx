@@ -33,7 +33,7 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
 }
 
 export function CTABanner({
-  heading = 'Redo att börja?',
+  heading = 'Ready to get started?',
   description = '',
   buttonText = 'Boka nu',
   buttonLink = '/utbildningar',

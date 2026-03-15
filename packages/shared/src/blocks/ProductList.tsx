@@ -26,11 +26,11 @@ interface Product {
 }
 
 const defaultTypeLabels: Record<string, string> = {
-  book: 'Böcker',
-  cd: 'CD-skivor',
-  cards: 'Kort',
-  app: 'Appar',
-  download: 'Nedladdningar',
+  book: 'Books',
+  cd: 'CDs',
+  cards: 'Cards',
+  app: 'Apps',
+  download: 'Downloads',
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
@@ -46,10 +46,10 @@ export function ProductList({
   heading = '',
   filterType = '',
   columns = 3,
-  buyButtonText = 'Köp',
-  freeLabel = 'Gratis',
-  outOfStockLabel = 'Slut i lager',
-  emptyText = 'Inga produkter hittades.',
+  buyButtonText = 'Buy',
+  freeLabel = 'Free',
+  outOfStockLabel = 'Out of stock',
+  emptyText = 'No products found.',
   typeLabels = defaultTypeLabels,
   id,
 }: ProductListProps & { puck?: { isEditing: boolean }; id?: string }) {
@@ -59,6 +59,12 @@ export function ProductList({
   const headingEditCtx = useEditableText('heading', heading)
   // Puck takes priority
   const headingEdit = headingPuck || headingEditCtx
+
+  // Template text inline editing
+  const buyBtnEdit = useEditableText('buyButtonText', buyButtonText)
+  const freeLabelEdit = useEditableText('freeLabel', freeLabel)
+  const outOfStockEdit = useEditableText('outOfStockLabel', outOfStockLabel)
+  const emptyTextEdit = useEditableText('emptyText', emptyText)
 
   const { data, loading } = useFetchJson<{ products: Product[] }>('/products')
   const allProducts = data?.products || []
@@ -128,10 +134,14 @@ export function ProductList({
                             {product.price_sek.toLocaleString('sv-SE')} kr
                           </span>
                         ) : (
-                          <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">{freeLabel}</span>
+                          <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">
+                            <span {...editHandlers(freeLabelEdit)} className={freeLabelEdit?.className}>{freeLabel}</span>
+                          </span>
                         )}
                         {!product.in_stock ? (
-                          <span className="text-xs text-stone-400 font-medium">{outOfStockLabel}</span>
+                          <span className="text-xs text-stone-400 font-medium">
+                            <span {...editHandlers(outOfStockEdit)} className={outOfStockEdit?.className}>{outOfStockLabel}</span>
+                          </span>
                         ) : product.external_url ? (
                           <a
                             href={product.external_url}
@@ -139,7 +149,7 @@ export function ProductList({
                             rel="noopener noreferrer"
                             className="inline-flex items-center h-9 px-4 text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 rounded-full transition-colors"
                           >
-                            {buyButtonText}
+                            <span {...editHandlers(buyBtnEdit)} className={buyBtnEdit?.className}>{buyButtonText}</span>
                             <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
                           </a>
                         ) : null}
@@ -153,7 +163,7 @@ export function ProductList({
         </div>
       ) : (
         <div className="text-center py-16 text-stone-400 border-2 border-dashed border-stone-200 rounded-xl">
-          {emptyText}
+          <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
         </div>
       )}
     </div>

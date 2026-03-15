@@ -1,5 +1,7 @@
 import { cn } from '../ui/utils'
 import { Button } from '../ui/button'
+import { useEditableText } from '../context'
+import { ArrayItemControls } from './ArrayItemControls'
 
 export interface ButtonItem {
   text: string
@@ -37,6 +39,31 @@ const variantMap = {
   outline: 'outline' as const,
 }
 
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
+function ButtonItem({ btn, index, size, totalItems }: { btn: ButtonItem; index: number; size: 'small' | 'medium' | 'large'; totalItems: number }) {
+  const textEdit = useEditableText(`buttons[${index}].text`, btn.text)
+
+  return (
+    <ArrayItemControls fieldName="buttons" itemIndex={index} totalItems={totalItems}>
+    <a href={btn.link || '#'}>
+      <Button
+        variant={variantMap[btn.variant] || 'default'}
+        size={sizeMap[size]}
+        type="button"
+      >
+        <span {...editHandlers(textEdit)} className={textEdit?.className}>{btn.text || 'Knapp'}</span>
+      </Button>
+    </a>
+    </ArrayItemControls>
+  )
+}
+
 export function ButtonGroup({
   buttons = [],
   alignment = 'center',
@@ -47,7 +74,7 @@ export function ButtonGroup({
     return (
       <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
         <div className="py-4 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-          Lägg till knappar i inställningarna...
+          Add buttons in settings...
         </div>
       </div>
     )
@@ -63,15 +90,7 @@ export function ButtonGroup({
         )}
       >
         {buttons.map((btn, i) => (
-          <a key={i} href={btn.link || '#'}>
-            <Button
-              variant={variantMap[btn.variant] || 'default'}
-              size={sizeMap[size]}
-              type="button"
-            >
-              {btn.text || 'Knapp'}
-            </Button>
-          </a>
+          <ButtonItem key={i} btn={btn} index={i} size={size} totalItems={buttons.length} />
         ))}
       </div>
     </div>

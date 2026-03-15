@@ -1,4 +1,4 @@
-import { useCourseData, useInlineEdit } from '../context'
+import { useCourseData, useInlineEdit, useEditableText } from '../context'
 import { ArrowRight, AlertCircle, CheckCircle } from 'lucide-react'
 import { cn } from '../ui/utils'
 
@@ -16,14 +16,14 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Boknings-CTA visas när en utbildning är vald.</p>
+        <p className="text-stone-400 text-sm">Booking CTA is shown when a course is selected.</p>
       </div>
     </div>
   )
 }
 
 /** Helper: extract handlers from inline edit props */
-function editHandlers(edit: ReturnType<typeof useInlineEdit>) {
+function editHandlers(edit: ReturnType<typeof useInlineEdit> | ReturnType<typeof useEditableText>) {
   if (!edit) return {}
   const { className: _, ...rest } = edit
   return rest
@@ -31,18 +31,30 @@ function editHandlers(edit: ReturnType<typeof useInlineEdit>) {
 
 export function BookingCTA({
   style = 'card',
-  buttonText = 'Boka plats',
-  heading = 'Intresserad av att delta?',
-  description = 'Boka din plats redan idag',
-  completedMessage = 'Denna utbildning har genomförts.',
-  fullMessage = 'Denna utbildning är fullbokad.',
-  fullSubMessage = 'Kontakta oss om du vill ställas i kö.',
+  buttonText = 'Book a spot',
+  heading = 'Interested in participating?',
+  description = 'Book your spot today',
+  completedMessage = 'This course has been completed.',
+  fullMessage = 'This course is fully booked.',
+  fullSubMessage = 'Contact us to be placed on the waiting list.',
   id,
 }: BookingCTAProps & { puck?: { isEditing: boolean }; id?: string }) {
   const course = useCourseData()
-  const headingEdit = useInlineEdit('heading', heading, id || '')
-  const descriptionEdit = useInlineEdit('description', description, id || '')
-  const buttonTextEdit = useInlineEdit('buttonText', buttonText, id || '')
+
+  // Puck editor inline editing (via postMessage)
+  const headingPuck = useInlineEdit('heading', heading, id || '')
+  const descriptionPuck = useInlineEdit('description', description, id || '')
+  const buttonTextPuck = useInlineEdit('buttonText', buttonText, id || '')
+
+  // Public site admin editing (via InlineEditBlockContext)
+  const headingEditCtx = useEditableText('heading', heading)
+  const descriptionEditCtx = useEditableText('description', description)
+  const buttonTextEditCtx = useEditableText('buttonText', buttonText)
+
+  // Puck takes priority
+  const headingEdit = headingPuck || headingEditCtx
+  const descriptionEdit = descriptionPuck || descriptionEditCtx
+  const buttonTextEdit = buttonTextPuck || buttonTextEditCtx
 
   const hHandlers = editHandlers(headingEdit)
   const dHandlers = editHandlers(descriptionEdit)

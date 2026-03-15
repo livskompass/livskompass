@@ -2,6 +2,7 @@ import { Quote } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
+import { InlineImage } from './InlineImage'
 
 export interface TestimonialProps {
   quote: string
@@ -19,9 +20,10 @@ function editHandlers(edit: ReturnType<typeof useEditableText> | ReturnType<type
 }
 
 export function Testimonial({
-  quote = 'Ett fantastiskt citat här...',
+  quote = 'An amazing quote here...',
   author = '',
   role = '',
+  avatar = '',
   style = 'card',
   id,
 }: TestimonialProps & { puck?: { isEditing: boolean }; id?: string }) {
@@ -72,9 +74,13 @@ export function Testimonial({
             </p>
             {(author || authorEdit) && (
               <footer className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-forest-700 font-semibold text-sm">
-                  {author.charAt(0)}
-                </div>
+                {avatar ? (
+                  <InlineImage src={avatar} propName="avatar" alt={author} className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-forest-700 font-semibold text-sm">
+                    {author.charAt(0)}
+                  </div>
+                )}
                 <div>
                   <div {...aHandlers} className={cn('font-medium text-stone-800', authorEdit?.className)}>{author}</div>
                   {(role || roleEdit) && <div {...rHandlers} className={cn('text-sm text-stone-500', roleEdit?.className)}>{role}</div>}
@@ -93,9 +99,13 @@ export function Testimonial({
         <p {...qHandlers} className={cn('text-lg text-stone-700 italic mb-4 leading-relaxed', quoteEdit?.className)}>"{quote}"</p>
         {(author || authorEdit) && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-medium text-xs">
-              {author.charAt(0)}
-            </div>
+            {avatar ? (
+              <InlineImage src={avatar} propName="avatar" alt={author} className="w-8 h-8 rounded-full object-cover" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-medium text-xs">
+                {author.charAt(0)}
+              </div>
+            )}
             <div>
               <div {...aHandlers} className={cn('font-medium text-stone-800', authorEdit?.className)}>{author}</div>
               {(role || roleEdit) && <div {...rHandlers} className={cn('text-sm text-stone-500', roleEdit?.className)}>{role}</div>}

@@ -31,6 +31,8 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
 function PricingTierItem({ item, index, highlightLabel }: { item: PricingTableProps['items'][number]; index: number; highlightLabel: string }) {
   const nameEdit = useEditableText(`items[${index}].name`, item.name)
   const descEdit = useEditableText(`items[${index}].description`, item.description)
+  const priceEdit = useEditableText(`items[${index}].price`, item.price)
+  const ctaTextEdit = useEditableText(`items[${index}].ctaText`, item.ctaText)
 
   return (
     <div
@@ -49,7 +51,7 @@ function PricingTierItem({ item, index, highlightLabel }: { item: PricingTablePr
       )}
       <h3 {...editHandlers(nameEdit)} className={cn('text-h4 text-stone-800', nameEdit?.className)}>{item.name}</h3>
       <div className="mt-4 mb-2">
-        <span className="font-display text-h2 text-stone-900">{item.price}</span>
+        <span {...editHandlers(priceEdit)} className={cn('font-display text-h2 text-stone-900', priceEdit?.className)}>{item.price}</span>
         {item.price && !item.price.toLowerCase().includes('gratis') && (
           <span className="text-stone-500 ml-1">kr</span>
         )}
@@ -67,7 +69,7 @@ function PricingTierItem({ item, index, highlightLabel }: { item: PricingTablePr
           ))}
         </ul>
       )}
-      {item.ctaText && (
+      {(item.ctaText || ctaTextEdit) && (
         <a
           href={item.ctaLink || '#'}
           className={cn(
@@ -77,7 +79,7 @@ function PricingTierItem({ item, index, highlightLabel }: { item: PricingTablePr
               : 'bg-forest-500 text-white hover:bg-forest-600'
           )}
         >
-          {item.ctaText}
+          <span {...editHandlers(ctaTextEdit)} className={ctaTextEdit?.className}>{item.ctaText}</span>
         </a>
       )}
     </div>
@@ -88,8 +90,8 @@ export function PricingTable({
   heading = '',
   items = [],
   columns = 2,
-  highlightLabel = 'Populärt val',
-  emptyText = 'Lägg till priser i inställningarna...',
+  highlightLabel = 'Popular choice',
+  emptyText = 'Add pricing plans in settings...',
   id,
 }: PricingTableProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)

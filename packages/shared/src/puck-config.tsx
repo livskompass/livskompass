@@ -16,6 +16,9 @@ import { ButtonGroup } from './blocks/ButtonGroup'
 import { PricingTable } from './blocks/PricingTable'
 import { ImageGallery } from './blocks/ImageGallery'
 import { VideoEmbed } from './blocks/VideoEmbed'
+import { AudioEmbed } from './blocks/AudioEmbed'
+import { FileEmbed } from './blocks/FileEmbed'
+import { EmbedBlock } from './blocks/EmbedBlock'
 import { PostGrid } from './blocks/PostGrid'
 import { PageCards } from './blocks/PageCards'
 import { NavigationMenu } from './blocks/NavigationMenu'
@@ -180,7 +183,7 @@ export const puckConfig: Config = {
     layout: { title: 'Layout', components: ['Columns', 'SeparatorBlock', 'Spacer'] },
     content: { title: 'Content', components: ['Hero', 'RichText', 'ImageBlock', 'Accordion', 'PageHeader', 'PersonCard', 'FeatureGrid', 'StatsCounter'] },
     marketing: { title: 'Marketing', components: ['CTABanner', 'CardGrid', 'Testimonial', 'ButtonGroup', 'PricingTable'] },
-    media: { title: 'Media', components: ['ImageGallery', 'VideoEmbed'] },
+    media: { title: 'Media', components: ['ImageGallery', 'VideoEmbed', 'AudioEmbed', 'FileEmbed', 'EmbedBlock'] },
     dynamic: { title: 'Dynamic', components: ['CourseList', 'ProductList', 'PostGrid', 'PageCards', 'NavigationMenu'] },
     interactive: { title: 'Interactive', components: ['ContactForm', 'BookingForm'] },
     data: { title: 'Data-bound', components: ['CourseInfo', 'BookingCTA', 'PostHeader'] },
@@ -221,8 +224,8 @@ export const puckConfig: Config = {
       label: 'Hero',
       defaultProps: {
         preset: 'centered',
-        heading: 'Rubrik här',
-        subheading: 'Underrubrik här',
+        heading: 'Heading here',
+        subheading: 'Subheading here',
         bgStyle: 'gradient',
         ctaPrimaryText: '',
         ctaPrimaryLink: '',
@@ -285,8 +288,6 @@ export const puckConfig: Config = {
               { label: 'Minimal', value: 'minimal' },
             ],
           },
-          heading: { type: 'text' as const, label: 'Heading' },
-          subheading: { type: 'textarea' as const, label: 'Subheading' },
         }
         if (p === 'centered') {
           return {
@@ -338,9 +339,8 @@ export const puckConfig: Config = {
     },
     RichText: {
       label: 'Rich Text',
-      defaultProps: { content: '<p>Skriv ditt innehåll här...</p>', maxWidth: 'medium' },
+      defaultProps: { content: '<p>Write your content here...</p>', maxWidth: 'medium' },
       fields: {
-        content: { type: 'textarea', label: 'Content' },
         maxWidth: { type: 'select', label: 'Max width', options: [{ label: 'Narrow (65ch)', value: 'narrow' }, { label: 'Medium (80ch)', value: 'medium' }, { label: 'Full', value: 'full' }] },
       },
       render: ({ content, maxWidth, id }: any) => (
@@ -367,7 +367,7 @@ export const puckConfig: Config = {
     },
     Accordion: {
       label: 'Accordion / FAQ',
-      defaultProps: { heading: '', items: [{ question: 'Fråga här', answer: 'Svar här' }], defaultOpen: 'none', style: 'default' },
+      defaultProps: { heading: '', items: [{ question: 'Question here', answer: 'Answer here' }], defaultOpen: 'none', style: 'default' },
       fields: {
         heading: { type: 'text', label: 'Heading' },
         items: { type: 'array', label: 'Questions', arrayFields: { question: { type: 'text', label: 'Question' }, answer: { type: 'textarea', label: 'Answer' } } },
@@ -382,9 +382,8 @@ export const puckConfig: Config = {
     },
     PageHeader: {
       label: 'Page Header',
-      defaultProps: { heading: 'Rubrik', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Hem' },
+      defaultProps: { heading: 'Heading', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Home' },
       fields: {
-        heading: { type: 'text', label: 'Heading' }, subheading: { type: 'textarea', label: 'Subheading' },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         size: { type: 'radio', label: 'Size', options: [{ label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
         showDivider: { type: 'radio', label: 'Show divider', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -395,7 +394,7 @@ export const puckConfig: Config = {
     },
     PersonCard: {
       label: 'Person Card',
-      defaultProps: { name: 'Fredrik Livheim', title: 'Legitimerad psykolog', bio: '', image: '', email: '', phone: '', style: 'horizontal' },
+      defaultProps: { name: 'Fredrik Livheim', title: 'Licensed psychologist', bio: '', image: '', email: '', phone: '', style: 'horizontal' },
       fields: {
         name: { type: 'text', label: 'Name' }, title: { type: 'text', label: 'Title / Role' }, bio: { type: 'textarea', label: 'Bio' },
         image: { type: 'text', label: 'Photo URL', metadata: { isImage: true } }, email: { type: 'text', label: 'Email' }, phone: { type: 'text', label: 'Phone' },
@@ -407,7 +406,6 @@ export const puckConfig: Config = {
       label: 'Feature Grid',
       defaultProps: { heading: '', subheading: '', columns: 3, items: [], style: 'cards' },
       fields: {
-        heading: { type: 'text', label: 'Heading' }, subheading: { type: 'textarea', label: 'Subheading' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         items: { type: 'array', label: 'Features', arrayFields: { icon: { type: 'text', label: 'Icon' }, title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' } } },
         style: { type: 'radio', label: 'Style', options: [{ label: 'Cards', value: 'cards' }, { label: 'Minimal', value: 'minimal' }] },
@@ -428,9 +426,9 @@ export const puckConfig: Config = {
     // ── Marketing ──
     CTABanner: {
       label: 'CTA Banner',
-      defaultProps: { heading: 'Redo att börja?', description: 'Boka din plats på nästa utbildning', buttonText: 'Boka nu', buttonLink: '/utbildningar', backgroundColor: 'primary', alignment: 'center' },
+      defaultProps: { heading: 'Ready to start?', description: 'Book your spot for the next session', buttonText: 'Book now', buttonLink: '/courses', backgroundColor: 'primary', alignment: 'center' },
       fields: {
-        heading: { type: 'text', label: 'Heading' }, description: { type: 'textarea', label: 'Description' }, buttonText: { type: 'text', label: 'Button text' }, buttonLink: { type: 'text', label: 'Button link' },
+        buttonLink: { type: 'text', label: 'Button link' },
         backgroundColor: { type: 'select', label: 'Background', options: [{ label: 'Primary (green)', value: 'primary' }, { label: 'Gradient', value: 'gradient' }, { label: 'Dark', value: 'dark' }, { label: 'Light', value: 'light' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
       },
@@ -442,9 +440,8 @@ export const puckConfig: Config = {
     },
     CardGrid: {
       label: 'Card Grid',
-      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fullbokad', spotsAvailableText: 'Platser kvar', emptyManualText: 'Lägg till kort i inställningarna...', emptyDynamicText: 'Inget innehåll tillgängligt.' },
+      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fully booked', spotsAvailableText: 'Spots remaining', emptyManualText: 'Add cards in settings...', emptyDynamicText: 'No content available.' },
       fields: {
-        heading: { type: 'text', label: 'Heading' }, subheading: { type: 'text', label: 'Subheading' },
         source: { type: 'select', label: 'Data source', options: [{ label: 'Manual', value: 'manual' }, { label: 'Posts', value: 'posts' }, { label: 'Courses', value: 'courses' }, { label: 'Products', value: 'products' }] },
         maxItems: { type: 'number', label: 'Max items' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
@@ -459,16 +456,16 @@ export const puckConfig: Config = {
     },
     Testimonial: {
       label: 'Testimonial',
-      defaultProps: { quote: 'Ett fantastiskt citat här...', author: '', role: '', avatar: '', style: 'card' },
+      defaultProps: { quote: 'A great quote here...', author: '', role: '', avatar: '', style: 'card' },
       fields: {
-        quote: { type: 'textarea', label: 'Quote' }, author: { type: 'text', label: 'Author' }, role: { type: 'text', label: 'Role / Title' }, avatar: { type: 'text', label: 'Avatar URL', metadata: { isImage: true } },
+        avatar: { type: 'text', label: 'Avatar URL', metadata: { isImage: true } },
         style: { type: 'select', label: 'Style', options: [{ label: 'Card', value: 'card' }, { label: 'Minimal', value: 'minimal' }, { label: 'Featured', value: 'featured' }] },
       },
       render: Testimonial as any,
     },
     ButtonGroup: {
       label: 'Buttons',
-      defaultProps: { buttons: [{ text: 'Primär knapp', link: '/', variant: 'primary' }], alignment: 'center', direction: 'horizontal', size: 'medium' },
+      defaultProps: { buttons: [{ text: 'Primary button', link: '/', variant: 'primary' }], alignment: 'center', direction: 'horizontal', size: 'medium' },
       fields: {
         buttons: { type: 'array', label: 'Buttons', arrayFields: { text: { type: 'text', label: 'Text' }, link: { type: 'text', label: 'Link' }, variant: { type: 'select', label: 'Variant', options: [{ label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Outline', value: 'outline' }] } } },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
@@ -483,9 +480,8 @@ export const puckConfig: Config = {
     },
     PricingTable: {
       label: 'Pricing Table',
-      defaultProps: { heading: '', items: [], columns: 2, highlightLabel: 'Populärt val', emptyText: 'Lägg till priser i inställningarna...' },
+      defaultProps: { heading: '', items: [], columns: 2, highlightLabel: 'Popular choice', emptyText: 'Add pricing plans in settings...' },
       fields: {
-        heading: { type: 'text', label: 'Heading' },
         items: { type: 'array', label: 'Plans', arrayFields: { name: { type: 'text', label: 'Name' }, price: { type: 'text', label: 'Price' }, description: { type: 'textarea', label: 'Description' }, features: { type: 'textarea', label: 'Features (one per line)' }, highlighted: { type: 'radio', label: 'Highlighted', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] }, ctaText: { type: 'text', label: 'Button text' }, ctaLink: { type: 'text', label: 'Button link' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         highlightLabel: { type: 'text', label: 'Highlight label' },
@@ -516,13 +512,44 @@ export const puckConfig: Config = {
       },
       render: VideoEmbed as any,
     },
+    AudioEmbed: {
+      label: 'Audio',
+      defaultProps: { url: '', caption: '', style: 'minimal' },
+      fields: {
+        url: { type: 'text', label: 'Audio URL' },
+        caption: { type: 'text', label: 'Caption' },
+        style: { type: 'select', label: 'Style', options: [{ label: 'Minimal', value: 'minimal' }, { label: 'Card', value: 'card' }] },
+      },
+      render: AudioEmbed as any,
+    },
+    FileEmbed: {
+      label: 'File / Document',
+      defaultProps: { url: '', fileName: '', caption: '', showPreview: true },
+      fields: {
+        url: { type: 'text', label: 'File URL' },
+        fileName: { type: 'text', label: 'File name' },
+        caption: { type: 'text', label: 'Caption' },
+        showPreview: { type: 'radio', label: 'Show preview', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+      },
+      render: FileEmbed as any,
+    },
+    EmbedBlock: {
+      label: 'Embed',
+      defaultProps: { url: '', html: '', caption: '', aspectRatio: 'auto' },
+      fields: {
+        url: { type: 'text', label: 'Embed URL' },
+        html: { type: 'textarea', label: 'Embed HTML' },
+        caption: { type: 'text', label: 'Caption' },
+        aspectRatio: { type: 'select', label: 'Aspect ratio', options: [{ label: 'Auto', value: 'auto' }, { label: '16:9', value: '16:9' }, { label: '4:3', value: '4:3' }, { label: '1:1', value: '1:1' }] },
+      },
+      render: EmbedBlock as any,
+    },
 
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokad', spotsText: 'platser kvar', emptyText: 'Det finns inga utbildningar planerade just nu.' },
+      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, readMoreText: 'Read more', bookButtonText: 'Book spot', fullLabel: 'Fully booked', spotsText: 'spots remaining', emptyText: 'No courses currently planned.' },
       fields: {
-        heading: { type: 'text', label: 'Heading' },
         maxItems: { type: 'number', label: 'Max items (0 = all)' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         showBookButton: { type: 'radio', label: 'Show book button', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -537,9 +564,8 @@ export const puckConfig: Config = {
     },
     ProductList: {
       label: 'Product List',
-      defaultProps: { heading: '', filterType: '', columns: 3, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.' },
+      defaultProps: { heading: '', filterType: '', columns: 3, buyButtonText: 'Buy', freeLabel: 'Free', outOfStockLabel: 'Out of stock', emptyText: 'No products found.' },
       fields: {
-        heading: { type: 'text', label: 'Heading' },
         filterType: { type: 'select', label: 'Filter by type', options: [{ label: 'All', value: '' }, { label: 'Books', value: 'book' }, { label: 'CDs', value: 'cd' }, { label: 'Cards', value: 'cards' }, { label: 'Apps', value: 'app' }, { label: 'Downloads', value: 'download' }] },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         buyButtonText: { type: 'text', label: 'Buy button text' },
@@ -551,9 +577,8 @@ export const puckConfig: Config = {
     },
     PostGrid: {
       label: 'Post Grid',
-      defaultProps: { heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, cardStyle: 'default', emptyText: 'Inga inlägg hittades' },
+      defaultProps: { heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, cardStyle: 'default', emptyText: 'No posts found' },
       fields: {
-        heading: { type: 'text', label: 'Heading' }, subheading: { type: 'text', label: 'Subheading' },
         count: { type: 'number', label: 'Number of posts', min: 1, max: 12 },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         showImage: { type: 'radio', label: 'Show image', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -565,9 +590,9 @@ export const puckConfig: Config = {
     },
     PageCards: {
       label: 'Page Cards',
-      defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'Inga undersidor hittades', emptyManualText: 'Lägg till sidor manuellt eller ange en föräldersida' },
+      defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'No subpages found', emptyManualText: 'Add pages manually or specify a parent page' },
       fields: {
-        heading: { type: 'text', label: 'Heading' }, parentSlug: { type: 'text', label: 'Parent page slug' },
+        parentSlug: { type: 'text', label: 'Parent page slug' },
         manualPages: { type: 'array', label: 'Manual pages', arrayFields: { title: { type: 'text', label: 'Title' }, description: { type: 'text', label: 'Description' }, slug: { type: 'text', label: 'Slug' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         showDescription: { type: 'radio', label: 'Show description', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -592,9 +617,8 @@ export const puckConfig: Config = {
     // ── Interactive ──
     ContactForm: {
       label: 'Contact Form',
-      defaultProps: { heading: 'Kontakta oss', description: 'Har du frågor? Hör av dig så återkommer vi så snart vi kan.', showPhone: true, showSubject: true, layout: 'full', contactName: 'Fredrik Livheim', contactTitle: 'Legitimerad psykolog och ACT-utbildare', contactEmail: 'livheim@gmail.com', contactPhone: '070-694 03 64', submitButtonText: 'Skicka meddelande', submittingText: 'Skickar...', successHeading: 'Tack för ditt meddelande!', successMessage: 'Vi återkommer så snart vi kan.', nameLabel: 'Namn *', emailLabel: 'E-post *', phoneLabel: 'Telefon', subjectLabel: 'Ämne', messageLabel: 'Meddelande *' },
+      defaultProps: { heading: 'Contact us', description: 'Have questions? Get in touch and we will get back to you as soon as possible.', showPhone: true, showSubject: true, layout: 'full', contactName: 'Fredrik Livheim', contactTitle: 'Licensed psychologist and ACT trainer', contactEmail: 'livheim@gmail.com', contactPhone: '070-694 03 64', submitButtonText: 'Send message', submittingText: 'Sending...', successHeading: 'Thank you for your message!', successMessage: 'We will get back to you as soon as possible.', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', subjectLabel: 'Subject', messageLabel: 'Message *' },
       fields: {
-        heading: { type: 'text', label: 'Heading' }, description: { type: 'textarea', label: 'Description' },
         showPhone: { type: 'radio', label: 'Show phone field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showSubject: { type: 'radio', label: 'Show subject field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         layout: { type: 'radio', label: 'Layout', options: [{ label: 'Full', value: 'full' }, { label: 'Split', value: 'split' }] },
@@ -613,7 +637,7 @@ export const puckConfig: Config = {
     },
     BookingForm: {
       label: 'Booking Form',
-      defaultProps: { showOrganization: true, showNotes: true, submitButtonText: 'Gå till betalning', processingText: 'Bearbetar...', fullMessage: 'Denna utbildning är fullbokad.', completedMessage: 'Denna utbildning har genomförts.', totalLabel: 'Totalt', nameLabel: 'Namn *', emailLabel: 'E-post *', phoneLabel: 'Telefon', organizationLabel: 'Organisation', participantsLabel: 'Antal deltagare *', notesLabel: 'Meddelande', priceSuffix: 'kr/person' },
+      defaultProps: { showOrganization: true, showNotes: true, submitButtonText: 'Go to payment', processingText: 'Processing...', fullMessage: 'This course is fully booked.', completedMessage: 'This course has been completed.', totalLabel: 'Total', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', organizationLabel: 'Organization', participantsLabel: 'Number of participants *', notesLabel: 'Notes', priceSuffix: 'kr/person' },
       fields: {
         showOrganization: { type: 'radio', label: 'Show organization field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showNotes: { type: 'radio', label: 'Show notes field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -636,7 +660,7 @@ export const puckConfig: Config = {
     // ── Data-bound ──
     CourseInfo: {
       label: 'Course Info',
-      defaultProps: { showDeadline: true, layout: 'grid', locationLabel: 'Plats', dateLabel: 'Datum', priceLabel: 'Pris', spotsLabel: 'Platser', deadlineLabel: 'Sista anmälningsdag', fullLabel: 'Fullbokad', spotsOfText: 'av', spotsRemainingText: 'kvar' },
+      defaultProps: { showDeadline: true, layout: 'grid', locationLabel: 'Location', dateLabel: 'Date', priceLabel: 'Price', spotsLabel: 'Spots', deadlineLabel: 'Registration deadline', fullLabel: 'Fully booked', spotsOfText: 'of', spotsRemainingText: 'remaining' },
       fields: {
         showDeadline: { type: 'radio', label: 'Show deadline', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         layout: { type: 'radio', label: 'Layout', options: [{ label: 'Grid', value: 'grid' }, { label: 'Stacked', value: 'stacked' }] },
@@ -653,7 +677,7 @@ export const puckConfig: Config = {
     },
     BookingCTA: {
       label: 'Booking CTA',
-      defaultProps: { style: 'card', buttonText: 'Boka plats', heading: 'Intresserad av att delta?', description: 'Boka din plats redan idag', completedMessage: 'Denna utbildning har genomförts.', fullMessage: 'Denna utbildning är fullbokad.', fullSubMessage: 'Kontakta oss om du vill ställas i kö.' },
+      defaultProps: { style: 'card', buttonText: 'Book spot', heading: 'Interested in joining?', description: 'Book your spot today', completedMessage: 'This course has been completed.', fullMessage: 'This course is fully booked.', fullSubMessage: 'Contact us if you want to be on the waiting list.' },
       fields: {
         style: { type: 'radio', options: [{ label: 'Card', value: 'card' }, { label: 'Inline', value: 'inline' }] },
         buttonText: { type: 'text', label: 'Button text' },
@@ -667,7 +691,7 @@ export const puckConfig: Config = {
     },
     PostHeader: {
       label: 'Post Header',
-      defaultProps: { showBackLink: true, backLinkText: 'Alla inlägg', backLinkUrl: '/nyhet' },
+      defaultProps: { showBackLink: true, backLinkText: 'All posts', backLinkUrl: '/blog' },
       fields: {
         showBackLink: { type: 'radio', label: 'Show back link', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         backLinkText: { type: 'text', label: 'Back link text' }, backLinkUrl: { type: 'text', label: 'Back link URL' },

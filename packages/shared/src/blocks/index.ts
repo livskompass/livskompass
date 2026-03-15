@@ -43,6 +43,12 @@ export { ImageGallery } from './ImageGallery'
 export type { ImageGalleryProps } from './ImageGallery'
 export { VideoEmbed } from './VideoEmbed'
 export type { VideoEmbedProps } from './VideoEmbed'
+export { AudioEmbed } from './AudioEmbed'
+export type { AudioEmbedProps } from './AudioEmbed'
+export { FileEmbed } from './FileEmbed'
+export type { FileEmbedProps } from './FileEmbed'
+export { EmbedBlock } from './EmbedBlock'
+export type { EmbedBlockProps } from './EmbedBlock'
 
 // Dynamic Content
 export { PostGrid } from './PostGrid'
@@ -61,6 +67,10 @@ export { ContactForm } from './ContactForm'
 export type { ContactFormProps } from './ContactForm'
 export { BookingForm } from './BookingForm'
 export type { BookingFormProps } from './BookingForm'
+
+// Inline editing
+export { InlineImage } from './InlineImage'
+export { ArrayItemControls } from './ArrayItemControls'
 
 // Data-bound
 export { CourseInfo } from './CourseInfo'

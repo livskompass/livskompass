@@ -23,9 +23,9 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Kursdetaljer visas när en utbildning är vald.</p>
+        <p className="text-stone-400 text-sm">Course details are shown when a course is selected.</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          {['Plats', 'Datum', 'Pris', 'Platser'].map((label) => (
+          {['Location', 'Date', 'Price', 'Spots'].map((label) => (
             <div key={label} className="bg-white rounded-lg border border-stone-200 p-3">
               <div className="h-4 bg-stone-100 rounded w-1/2 mx-auto mb-2" />
               <div className="text-xs text-stone-400">{label}</div>
@@ -40,14 +40,14 @@ function Placeholder() {
 export function CourseInfo({
   showDeadline = true,
   layout = 'grid',
-  locationLabel = 'Plats',
-  dateLabel = 'Datum',
-  priceLabel = 'Pris',
-  spotsLabel = 'Platser',
-  deadlineLabel = 'Sista anmälningsdag',
-  fullLabel = 'Fullbokad',
-  spotsOfText = 'av',
-  spotsRemainingText = 'kvar',
+  locationLabel = 'Location',
+  dateLabel = 'Date',
+  priceLabel = 'Price',
+  spotsLabel = 'Spots',
+  deadlineLabel = 'Registration deadline',
+  fullLabel = 'Fully booked',
+  spotsOfText = 'of',
+  spotsRemainingText = 'remaining',
 }: CourseInfoProps) {
   const course = useCourseData()
 
