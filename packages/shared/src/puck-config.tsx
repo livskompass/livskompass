@@ -471,15 +471,32 @@ export const puckConfig: Config = {
     // ── Marketing ──
     CTABanner: {
       label: 'CTA Banner',
-      defaultProps: { heading: 'Ready to start?', description: 'Book your spot for the next session', buttonText: 'Book now', buttonLink: '/courses', backgroundColor: 'primary', alignment: 'center' },
-      fields: {
-        buttonLink: { type: 'text', label: 'Button link' },
-        backgroundColor: { type: 'select', label: 'Background', options: [{ label: 'Primary (green)', value: 'primary' }, { label: 'Gradient', value: 'gradient' }, { label: 'Dark', value: 'dark' }, { label: 'Light', value: 'light' }] },
-        alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
+      defaultProps: {
+        heading: 'Ready to start?',
+        description: 'Book your spot for the next session',
+        buttonText: 'Book now',
+        buttonLink: '/utbildningar',
+        buttons: [{ text: 'Book now', link: '/utbildningar', variant: 'primary' }],
+        backgroundColor: 'primary',
+        alignment: 'center',
+        width: 'contained',
+        padding: 'medium',
       },
-      render: ({ heading, description, buttonText, buttonLink, backgroundColor, alignment, id }: any) => (
+      fields: {
+        buttonLink: { type: 'text', label: 'Button link (legacy)', metadata: { isPagePicker: true } },
+        buttons: { type: 'array', label: 'Buttons', arrayFields: {
+          text: { type: 'text', label: 'Label' },
+          link: { type: 'text', label: 'Link to', metadata: { isPagePicker: true } },
+          variant: { type: 'select', label: 'Style', options: [{ label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Outline', value: 'outline' }] },
+        } },
+        backgroundColor: { type: 'select', label: 'Background', options: [{ label: 'Primary (green)', value: 'primary' }, { label: 'Gradient', value: 'gradient' }, { label: 'Dark', value: 'dark' }, { label: 'Light', value: 'light' }] },
+        alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
+        width: { type: 'radio', label: 'Width', options: [{ label: 'Full', value: 'full' }, { label: 'Contained', value: 'contained' }, { label: 'Narrow', value: 'narrow' }] },
+        padding: { type: 'radio', label: 'Padding', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
+      },
+      render: ({ heading, description, buttonText, buttonLink, buttons, backgroundColor, alignment, width, padding, id }: any) => (
         <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
-          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} backgroundColor={backgroundColor} alignment={alignment} id={id} />
+          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} buttons={buttons} backgroundColor={backgroundColor} alignment={alignment} width={width} padding={padding} id={id} />
         </div>
       ),
     },

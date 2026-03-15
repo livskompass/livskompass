@@ -1,14 +1,24 @@
 import { cn } from '../ui/utils'
 import { ArrowRight } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
+import { AddItemButton } from './ArrayItemControls'
+
+export interface CTAButton {
+  text: string
+  link: string
+  variant: 'primary' | 'secondary' | 'outline'
+}
 
 export interface CTABannerProps {
   heading: string
   description: string
   buttonText: string
   buttonLink: string
+  buttons?: CTAButton[]
   backgroundColor: 'primary' | 'dark' | 'light' | 'gradient'
-  alignment: 'left' | 'center'
+  alignment: 'left' | 'center' | 'right'
+  width?: 'full' | 'contained' | 'narrow'
+  padding?: 'small' | 'medium' | 'large'
 }
 
 const bgMap: Record<string, string> = {
@@ -18,11 +28,38 @@ const bgMap: Record<string, string> = {
   gradient: 'text-white',
 }
 
-const buttonStyleMap: Record<string, string> = {
-  primary: 'bg-white text-forest-700 hover:bg-forest-50 shadow-lg hover:shadow-xl',
-  dark: 'bg-white text-stone-900 hover:bg-stone-100 shadow-lg hover:shadow-xl',
-  light: 'bg-forest-500 text-white hover:bg-forest-600 shadow-md hover:shadow-lg',
-  gradient: 'bg-white text-forest-700 hover:bg-forest-50 shadow-lg hover:shadow-xl',
+const widthMap: Record<string, string> = {
+  full: 'rounded-none',
+  contained: 'rounded-2xl',
+  narrow: 'rounded-2xl max-w-3xl mx-auto',
+}
+
+const paddingMap: Record<string, string> = {
+  small: 'py-8 px-6',
+  medium: '',
+  large: 'py-16 px-10',
+}
+
+/** Button styles based on banner background + button variant */
+function getButtonClass(bgColor: string, variant: string): string {
+  if (variant === 'outline') {
+    return bgColor === 'light'
+      ? 'border-2 border-stone-400 text-stone-800 hover:bg-stone-200'
+      : 'border-2 border-white/40 text-white hover:bg-white/10'
+  }
+  if (variant === 'secondary') {
+    return bgColor === 'light'
+      ? 'bg-stone-200 text-stone-800 hover:bg-stone-300'
+      : 'bg-white/20 text-white hover:bg-white/30'
+  }
+  // primary
+  const btnStyleMap: Record<string, string> = {
+    primary: 'bg-white text-forest-700 hover:bg-forest-50 shadow-lg hover:shadow-xl',
+    dark: 'bg-white text-stone-900 hover:bg-stone-100 shadow-lg hover:shadow-xl',
+    light: 'bg-forest-500 text-white hover:bg-forest-600 shadow-md hover:shadow-lg',
+    gradient: 'bg-white text-forest-700 hover:bg-forest-50 shadow-lg hover:shadow-xl',
+  }
+  return btnStyleMap[bgColor] || btnStyleMap.primary
 }
 
 /** Extract event handlers from editable props (everything except className) */
@@ -35,10 +72,13 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
 export function CTABanner({
   heading = 'Ready to get started?',
   description = '',
-  buttonText = 'Boka nu',
-  buttonLink = '/utbildningar',
+  buttonText = '',
+  buttonLink = '',
+  buttons,
   backgroundColor = 'primary',
   alignment = 'center',
+  width = 'contained',
+  padding = 'medium',
   id,
 }: CTABannerProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -57,15 +97,21 @@ export function CTABanner({
   const buttonTextEdit = buttonTextPuck || buttonTextEditCtx
 
   const bg = bgMap[backgroundColor] || bgMap.primary
-  const btnStyle = buttonStyleMap[backgroundColor] || buttonStyleMap.primary
   const isGradient = backgroundColor === 'gradient'
 
+  // Use buttons array if available, otherwise fall back to single button
+  const renderButtons = buttons && buttons.length > 0
+    ? buttons
+    : buttonText ? [{ text: buttonText, link: buttonLink, variant: 'primary' as const }] : []
+
+  const alignClass = alignment === 'center' ? 'text-center items-center' : alignment === 'right' ? 'text-right items-end' : 'text-left items-start'
+
   return (
-    <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
+    <div className={cn('mx-auto px-4 sm:px-6', width === 'full' ? '' : '')} style={{ maxWidth: width === 'narrow' ? 'var(--width-narrow)' : 'var(--width-content)' }}>
     <section
-      className={cn('rounded-2xl relative overflow-hidden', bg)}
+      className={cn('relative overflow-hidden', bg, widthMap[width] || widthMap.contained)}
       style={{
-        paddingBlock: 'var(--section-md)',
+        paddingBlock: padding === 'small' ? 'var(--section-xs)' : padding === 'large' ? 'var(--section-lg)' : 'var(--section-md)',
         paddingInline: 'var(--container-px)',
         ...(isGradient ? { background: 'var(--gradient-hero)' } : {}),
       }}
@@ -73,28 +119,33 @@ export function CTABanner({
       {isGradient && (
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />
       )}
-      <div
-        className={cn(
-          'relative max-w-3xl mx-auto',
-          alignment === 'center' ? 'text-center' : 'text-left'
-        )}
-      >
+      <div className={cn('relative max-w-3xl flex flex-col', alignClass, alignment === 'center' && 'mx-auto')}>
         <h2 {...editHandlers(headingEdit)} className={cn('text-h2 mb-4', headingEdit?.className)}>{heading}</h2>
         {(description || descriptionEdit) && (
           <p {...editHandlers(descriptionEdit)} className={cn('text-lg mb-8 opacity-90 leading-relaxed', descriptionEdit?.className)}>{description}</p>
         )}
-        {buttonText && (
-          <a
-            href={buttonLink || '#'}
-            className={cn(
-              'inline-flex items-center justify-center h-12 px-8 font-semibold text-base rounded-full transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
-              btnStyle
-            )}
-          >
-            <span {...editHandlers(buttonTextEdit)} className={buttonTextEdit?.className}>{buttonText}</span>
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </a>
+        {renderButtons.length > 0 && (
+          <div className={cn('flex flex-wrap gap-3', alignment === 'center' ? 'justify-center' : alignment === 'right' ? 'justify-end' : 'justify-start')}>
+            {renderButtons.map((btn, i) => (
+              <a
+                key={i}
+                href={btn.link || '#'}
+                className={cn(
+                  'inline-flex items-center justify-center h-12 px-8 font-semibold text-base rounded-full transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
+                  getButtonClass(backgroundColor, btn.variant || 'primary')
+                )}
+              >
+                {i === 0 ? (
+                  <span {...editHandlers(buttonTextEdit)} className={buttonTextEdit?.className}>{btn.text}</span>
+                ) : (
+                  btn.text
+                )}
+                {btn.variant !== 'outline' && <ArrowRight className="ml-2 h-4 w-4" />}
+              </a>
+            ))}
+          </div>
         )}
+        <AddItemButton fieldName="buttons" label="Add button" />
       </div>
     </section>
     </div>
