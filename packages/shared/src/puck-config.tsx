@@ -199,6 +199,7 @@ export const puckConfig: Config = {
         layout: { type: 'select', label: 'Layout', options: [{ label: '50/50', value: '50-50' }, { label: '33/33/33', value: '33-33-33' }, { label: '66/33', value: '66-33' }, { label: '33/66', value: '33-66' }] },
         gap: { type: 'select', label: 'Gap', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
         verticalAlignment: { type: 'select', label: 'Vertical alignment', options: [{ label: 'Top', value: 'top' }, { label: 'Center', value: 'center' }, { label: 'Bottom', value: 'bottom' }] },
+        stackOnMobile: { type: 'radio', label: 'Stack on mobile', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
       render: Columns as any,
     },
@@ -288,7 +289,7 @@ export const puckConfig: Config = {
             { label: 'Bottom Center', value: 'bottom-center' },
           ],
         },
-        showScrollIndicator: { type: 'custom', label: 'Show scroll indicator' },
+        showScrollIndicator: { type: 'radio', label: 'Show scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
       },
       resolveFields: (data: any) => {
         const p = data.props?.preset || 'centered'
@@ -448,7 +449,7 @@ export const puckConfig: Config = {
     },
     FeatureGrid: {
       label: 'Feature Grid',
-      defaultProps: { heading: '', subheading: '', columns: 3, items: [], style: 'cards' },
+      defaultProps: { heading: '', subheading: '', columns: 3, items: [{ icon: 'heart', title: 'Feature one', description: 'Description of this feature' }, { icon: 'star', title: 'Feature two', description: 'Description of this feature' }, { icon: 'shield', title: 'Feature three', description: 'Description of this feature' }], style: 'cards' },
       fields: {
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         items: { type: 'array', label: 'Features', arrayFields: { icon: { type: 'text', label: 'Icon' }, title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' } } },
@@ -458,7 +459,7 @@ export const puckConfig: Config = {
     },
     StatsCounter: {
       label: 'Stats Counter',
-      defaultProps: { items: [], columns: 4, style: 'default' },
+      defaultProps: { items: [{ value: '100', label: 'Participants', prefix: '', suffix: '+' }, { value: '15', label: 'Years experience', prefix: '', suffix: '' }, { value: '98', label: 'Satisfaction', prefix: '', suffix: '%' }], columns: 3, style: 'default' },
       fields: {
         items: { type: 'array', label: 'Stats', arrayFields: { value: { type: 'text', label: 'Value' }, label: { type: 'text', label: 'Label' }, prefix: { type: 'text', label: 'Prefix' }, suffix: { type: 'text', label: 'Suffix' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
@@ -537,7 +538,7 @@ export const puckConfig: Config = {
     // ── Media ──
     ImageGallery: {
       label: 'Image Gallery',
-      defaultProps: { images: [], columns: 3, gap: 'medium', aspectRatio: 'landscape' },
+      defaultProps: { images: [{ src: '', alt: 'Image 1', caption: '' }, { src: '', alt: 'Image 2', caption: '' }, { src: '', alt: 'Image 3', caption: '' }], columns: 3, gap: 'medium', aspectRatio: 'landscape' },
       fields: {
         images: { type: 'array', label: 'Images', arrayFields: { src: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, alt: { type: 'text', label: 'Alt text' }, caption: { type: 'text', label: 'Caption' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },

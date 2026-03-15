@@ -1,6 +1,7 @@
 import { cn } from '../ui/utils'
 import { useScrollReveal } from '../helpers'
 import { useEditableText } from '../context'
+import { ArrayItemControls } from './ArrayItemControls'
 
 export interface StatsCounterProps {
   items: Array<{ value: string; label: string; prefix: string; suffix: string }>
@@ -17,13 +18,14 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
-function StatItem({ item, index, style }: { item: { value: string; label: string; prefix: string; suffix: string }; index: number; style: 'default' | 'bordered' }) {
+function StatItem({ item, index, style, totalItems }: { item: { value: string; label: string; prefix: string; suffix: string }; index: number; style: 'default' | 'bordered'; totalItems: number }) {
   const valueEdit = useEditableText(`items[${index}].value`, item.value)
   const labelEdit = useEditableText(`items[${index}].label`, item.label)
   const prefixEdit = useEditableText(`items[${index}].prefix`, item.prefix)
   const suffixEdit = useEditableText(`items[${index}].suffix`, item.suffix)
 
   return (
+    <ArrayItemControls fieldName="items" itemIndex={index} totalItems={totalItems}>
     <div
       className={cn(
         'text-center reveal',
@@ -40,6 +42,7 @@ function StatItem({ item, index, style }: { item: { value: string; label: string
         {item.label}
       </div>
     </div>
+    </ArrayItemControls>
   )
 }
 
@@ -64,7 +67,7 @@ export function StatsCounter({
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       <div className={cn('grid gap-8', colMap[columns] || colMap[4])}>
         {items.map((item, i) => (
-          <StatItem key={i} item={item} index={i} style={style} />
+          <StatItem key={i} item={item} index={i} style={style} totalItems={items.length} />
         ))}
       </div>
     </div>
