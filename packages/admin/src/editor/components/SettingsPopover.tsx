@@ -57,8 +57,8 @@ const INLINE_FIELDS: Record<string, Set<string>> = {
   Hero: new Set(['heading', 'subheading', 'ctaPrimaryText', 'ctaSecondaryText', 'image', 'backgroundImage']),
   CTABanner: new Set(['heading', 'description', 'buttonText']),
   Testimonial: new Set(['quote', 'author', 'role', 'avatar']),
-  PostGrid: new Set(['heading', 'subheading']),
-  PageCards: new Set(['heading']),
+  PostGrid: new Set(['heading', 'subheading', 'emptyText']),
+  PageCards: new Set(['heading', 'emptyText', 'emptyManualText']),
   CardGrid: new Set(['heading', 'subheading']),
   ContactForm: new Set(['heading', 'description', 'nameLabel', 'emailLabel', 'phoneLabel', 'subjectLabel', 'messageLabel', 'submitButtonText', 'contactName', 'contactTitle', 'contactEmail', 'contactPhone']),
   CourseList: new Set(['heading', 'readMoreText', 'bookButtonText', 'fullLabel', 'emptyText']),
@@ -73,6 +73,8 @@ const INLINE_FIELDS: Record<string, Set<string>> = {
   PageHeader: new Set(['heading', 'subheading', 'breadcrumbHomeText']),
   PersonCard: new Set(['name', 'title', 'bio', 'email', 'phone', 'image']),
   BookingCTA: new Set(['heading', 'description', 'buttonText']),
+  BookingForm: new Set(['nameLabel', 'emailLabel', 'phoneLabel', 'organizationLabel', 'participantsLabel', 'notesLabel', 'submitButtonText', 'totalLabel']),
+  CourseInfo: new Set(['locationLabel', 'dateLabel', 'priceLabel', 'spotsLabel', 'deadlineLabel']),
   PricingTable: new Set(['heading']),
   PostHeader: new Set(['backLinkText']),
 }
@@ -216,13 +218,13 @@ export function SettingsPopover({
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-stone-100">
-          <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-100">
+          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
             {components[blockType]?.label || blockType} Settings
           </span>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+            className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
             aria-label="Close settings"
           >
             <X className="h-3.5 w-3.5" />
@@ -310,14 +312,14 @@ function FieldRenderer({ fieldKey, field, value, onChange, expanded, onToggle }:
 
 function FieldLabel({ label }: { label: string }) {
   return (
-    <label className="block text-[11px] font-medium text-stone-500 mb-1">
+    <label className="block text-[11px] font-medium text-zinc-500 mb-1">
       {label}
     </label>
   )
 }
 
 const INPUT_CLASS =
-  'w-full text-sm px-2.5 py-1.5 rounded-md border border-stone-200 bg-white text-stone-800 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/30 transition-colors placeholder:text-stone-300'
+  'w-full text-sm px-2.5 py-1.5 rounded-md border border-zinc-200 bg-white text-zinc-800 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/30 transition-colors placeholder:text-zinc-300'
 
 function TextInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
@@ -489,14 +491,14 @@ function ArrayInput({
         onClick={onToggle}
       >
         {expanded ? (
-          <ChevronDown className="h-3 w-3 text-stone-400" />
+          <ChevronDown className="h-3 w-3 text-zinc-400" />
         ) : (
-          <ChevronRight className="h-3 w-3 text-stone-400" />
+          <ChevronRight className="h-3 w-3 text-zinc-400" />
         )}
-        <span className="text-[11px] font-medium text-stone-500">
+        <span className="text-[11px] font-medium text-zinc-500">
           {label}
         </span>
-        <span className="text-[10px] text-stone-300 ml-auto">
+        <span className="text-[10px] text-zinc-300 ml-auto">
           {value.length} item{value.length !== 1 ? 's' : ''}
         </span>
       </button>
@@ -506,15 +508,15 @@ function ArrayInput({
           {value.map((item, index) => (
             <div
               key={index}
-              className="rounded-md border border-stone-100 bg-stone-50/50 p-2"
+              className="rounded-md border border-zinc-100 bg-zinc-50/50 p-2"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-medium text-stone-400">
+                <span className="text-[10px] font-medium text-zinc-400">
                   #{index + 1}
                 </span>
                 <button
                   onClick={() => removeItem(index)}
-                  className="p-0.5 rounded text-stone-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  className="p-0.5 rounded text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-colors"
                   aria-label={`Remove item ${index + 1}`}
                 >
                   <Trash2 className="h-3 w-3" />
@@ -536,7 +538,7 @@ function ArrayInput({
 
           <button
             onClick={addItem}
-            className="flex items-center gap-1 justify-center text-xs text-stone-400 hover:text-blue-500 py-1.5 rounded-md border border-dashed border-stone-200 hover:border-blue-300 transition-colors"
+            className="flex items-center gap-1 justify-center text-xs text-zinc-400 hover:text-blue-500 py-1.5 rounded-md border border-dashed border-zinc-200 hover:border-blue-300 transition-colors"
           >
             <Plus className="h-3 w-3" />
             Add {label.toLowerCase().replace(/s$/, '')}

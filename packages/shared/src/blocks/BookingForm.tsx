@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useCourseData } from '../context'
+import { useCourseData, useEditableText } from '../context'
 import { getApiBase } from '../helpers'
 import { Calendar, MapPin, CreditCard, AlertCircle, ArrowRight } from 'lucide-react'
 import { UI_STRINGS } from '../ui-strings'
@@ -19,6 +19,13 @@ export interface BookingFormProps {
   participantsLabel: string
   notesLabel: string
   priceSuffix: string
+}
+
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
 }
 
 function Placeholder() {
@@ -53,6 +60,16 @@ export function BookingForm({
 }: BookingFormProps) {
   const course = useCourseData()
   const isEditor = typeof window !== 'undefined' && window.frameElement !== null
+
+  // Inline editing for form labels
+  const nameLabelEdit = useEditableText('nameLabel', nameLabel)
+  const emailLabelEdit = useEditableText('emailLabel', emailLabel)
+  const phoneLabelEdit = useEditableText('phoneLabel', phoneLabel)
+  const orgLabelEdit = useEditableText('organizationLabel', organizationLabel)
+  const participantsLabelEdit = useEditableText('participantsLabel', participantsLabel)
+  const notesLabelEdit = useEditableText('notesLabel', notesLabel)
+  const submitBtnEdit = useEditableText('submitButtonText', submitButtonText)
+  const totalLabelEdit = useEditableText('totalLabel', totalLabel)
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -158,7 +175,9 @@ export function BookingForm({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">{nameLabel}</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+                <span {...editHandlers(nameLabelEdit)} className={nameLabelEdit?.className}>{nameLabel}</span>
+              </label>
               <input
                 type="text"
                 required
@@ -169,7 +188,9 @@ export function BookingForm({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">{emailLabel}</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+                <span {...editHandlers(emailLabelEdit)} className={emailLabelEdit?.className}>{emailLabel}</span>
+              </label>
               <input
                 type="email"
                 required
@@ -181,7 +202,9 @@ export function BookingForm({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">{phoneLabel}</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">
+              <span {...editHandlers(phoneLabelEdit)} className={phoneLabelEdit?.className}>{phoneLabel}</span>
+            </label>
             <input
               type="tel"
               value={formData.customerPhone}
@@ -192,7 +215,9 @@ export function BookingForm({
           </div>
           {showOrganization && (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">{organizationLabel}</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+                <span {...editHandlers(orgLabelEdit)} className={orgLabelEdit?.className}>{organizationLabel}</span>
+              </label>
               <input
                 type="text"
                 value={formData.organization}
@@ -203,7 +228,9 @@ export function BookingForm({
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">{participantsLabel}</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">
+              <span {...editHandlers(participantsLabelEdit)} className={participantsLabelEdit?.className}>{participantsLabel}</span>
+            </label>
             <div className="relative">
               <select
                 value={formData.participants}
@@ -222,7 +249,9 @@ export function BookingForm({
           </div>
           {showNotes && (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">{notesLabel}</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+                <span {...editHandlers(notesLabelEdit)} className={notesLabelEdit?.className}>{notesLabel}</span>
+              </label>
               <textarea
                 rows={3}
                 value={formData.notes}
@@ -235,7 +264,9 @@ export function BookingForm({
 
           {/* Price summary */}
           <div className="bg-stone-50 rounded-lg p-4 flex items-center justify-between">
-            <span className="text-stone-600 font-medium">{totalLabel}</span>
+            <span className="text-stone-600 font-medium">
+              <span {...editHandlers(totalLabelEdit)} className={totalLabelEdit?.className}>{totalLabel}</span>
+            </span>
             <span className="font-display text-h3 text-stone-800">
               {totalPrice.toLocaleString('sv-SE')} kr
             </span>
@@ -246,7 +277,9 @@ export function BookingForm({
             disabled={status === 'submitting' || isEditor}
             className="w-full inline-flex items-center justify-center h-12 bg-amber-500 text-white hover:bg-amber-600 font-semibold rounded-full transition-colors disabled:opacity-50 text-base"
           >
-            {status === 'submitting' ? processingText : submitButtonText}
+            <span {...editHandlers(submitBtnEdit)} className={submitBtnEdit?.className}>
+              {status === 'submitting' ? processingText : submitButtonText}
+            </span>
             <ArrowRight className="ml-2 h-4 w-4" />
           </button>
         </form>

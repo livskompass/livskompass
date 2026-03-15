@@ -42,6 +42,8 @@ export function PageCards({
   const headingPuck = useInlineEdit('heading', heading, id || '')
   // Public site admin editing (via InlineEditBlockContext)
   const headingEditCtx = useEditableText('heading', heading)
+  const emptyTextEdit = useEditableText('emptyText', emptyText)
+  const emptyManualTextEdit = useEditableText('emptyManualText', emptyManualText)
   // Puck takes priority
   const headingEdit = headingPuck || headingEditCtx
 
@@ -116,7 +118,10 @@ export function PageCards({
         ))}
         {pages.length === 0 && (
           <div className="col-span-full text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-            {parentSlug ? emptyText : emptyManualText}
+            {parentSlug
+              ? <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
+              : <span {...editHandlers(emptyManualTextEdit)} className={emptyManualTextEdit?.className}>{emptyManualText}</span>
+            }
           </div>
         )}
       </div>

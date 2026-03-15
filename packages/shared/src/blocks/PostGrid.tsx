@@ -10,7 +10,6 @@ export interface PostGridProps {
   showImage: boolean
   showExcerpt: boolean
   showDate: boolean
-  cardStyle: 'default' | 'minimal' | 'featured'
   emptyText: string
 }
 
@@ -53,6 +52,7 @@ export function PostGrid({
   // Public site admin editing (via InlineEditBlockContext)
   const headingEditCtx = useEditableText('heading', heading)
   const subheadingEditCtx = useEditableText('subheading', subheading)
+  const emptyTextEdit = useEditableText('emptyText', emptyText)
 
   // Puck takes priority
   const headingEdit = headingPuck || headingEditCtx
@@ -104,7 +104,7 @@ export function PostGrid({
         </div>
       ) : (
         <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-          {emptyText}
+          <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
         </div>
       )}
     </div>

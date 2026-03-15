@@ -1,5 +1,5 @@
 import { cn } from '../ui/utils'
-import { useCourseData } from '../context'
+import { useCourseData, useEditableText } from '../context'
 import { MapPin, Calendar, CreditCard, Users, Clock } from 'lucide-react'
 
 export interface CourseInfoProps {
@@ -37,6 +37,13 @@ function Placeholder() {
   )
 }
 
+/** Extract event handlers from editable props (everything except className) */
+function editHandlers(edit: ReturnType<typeof useEditableText>) {
+  if (!edit) return {}
+  const { className: _, ...rest } = edit
+  return rest
+}
+
 export function CourseInfo({
   showDeadline = true,
   layout = 'grid',
@@ -50,6 +57,13 @@ export function CourseInfo({
   spotsRemainingText = 'remaining',
 }: CourseInfoProps) {
   const course = useCourseData()
+
+  // Inline editing for labels
+  const locationLabelEdit = useEditableText('locationLabel', locationLabel)
+  const dateLabelEdit = useEditableText('dateLabel', dateLabel)
+  const priceLabelEdit = useEditableText('priceLabel', priceLabel)
+  const spotsLabelEdit = useEditableText('spotsLabel', spotsLabel)
+  const deadlineLabelEdit = useEditableText('deadlineLabel', deadlineLabel)
 
   if (!course) return <Placeholder />
 
@@ -70,14 +84,14 @@ export function CourseInfo({
       : ''
 
   const items = [
-    { icon: MapPin, label: locationLabel, value: course.location },
-    { icon: Calendar, label: dateLabel, value: dateValue },
-    { icon: CreditCard, label: priceLabel, value: course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '' },
-    ...(spotsValue ? [{ icon: Users, label: spotsLabel, value: spotsValue }] : []),
+    { icon: MapPin, label: locationLabel, value: course.location, labelEdit: locationLabelEdit },
+    { icon: Calendar, label: dateLabel, value: dateValue, labelEdit: dateLabelEdit },
+    { icon: CreditCard, label: priceLabel, value: course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '', labelEdit: priceLabelEdit },
+    ...(spotsValue ? [{ icon: Users, label: spotsLabel, value: spotsValue, labelEdit: spotsLabelEdit }] : []),
   ]
 
   if (showDeadline && course.registration_deadline) {
-    items.push({ icon: Clock, label: deadlineLabel, value: formatDate(course.registration_deadline) })
+    items.push({ icon: Clock, label: deadlineLabel, value: formatDate(course.registration_deadline), labelEdit: deadlineLabelEdit })
   }
 
   if (layout === 'stacked') {
@@ -88,7 +102,9 @@ export function CourseInfo({
             <div key={idx} className="flex items-center gap-4 px-6 py-4">
               <item.icon className="h-5 w-5 text-forest-500 flex-shrink-0" />
               <div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">{item.label}</div>
+                <div className="text-xs text-stone-400 uppercase tracking-wide">
+                  <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
+                </div>
                 <div className="text-stone-800 font-medium">{item.value}</div>
               </div>
             </div>
@@ -108,7 +124,9 @@ export function CourseInfo({
           {items.filter(i => i.value).map((item, idx) => (
             <div key={idx} className="text-center">
               <item.icon className="h-5 w-5 text-forest-500 mx-auto mb-2" />
-              <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{item.label}</div>
+              <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">
+                <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
+              </div>
               <div className={cn(
                 'font-medium',
                 item.label === spotsLabel && isFull ? 'text-amber-600' : 'text-stone-800'
