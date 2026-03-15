@@ -233,7 +233,10 @@ export const puckConfig: Config = {
         ctaSecondaryLink: '',
         image: '',
         backgroundImage: '',
+        backgroundVideo: '',
         overlayDarkness: 'medium',
+        contentPosition: 'center',
+        showScrollIndicator: true,
       },
       fields: {
         preset: {
@@ -244,6 +247,7 @@ export const puckConfig: Config = {
             { label: 'Split Image Right', value: 'split-right' },
             { label: 'Split Image Left', value: 'split-left' },
             { label: 'Full Image', value: 'full-image' },
+            { label: 'Fullscreen', value: 'fullscreen' },
             { label: 'Minimal', value: 'minimal' },
           ],
         },
@@ -264,6 +268,7 @@ export const puckConfig: Config = {
         ctaSecondaryLink: { type: 'text', label: 'Secondary button link' },
         image: { type: 'text', label: 'Image URL', metadata: { isImage: true } },
         backgroundImage: { type: 'text', label: 'Background image URL', metadata: { isImage: true } },
+        backgroundVideo: { type: 'text', label: 'Background video URL' },
         overlayDarkness: {
           type: 'select',
           label: 'Overlay darkness',
@@ -273,21 +278,29 @@ export const puckConfig: Config = {
             { label: 'Heavy', value: 'heavy' },
           ],
         },
+        contentPosition: {
+          type: 'select',
+          label: 'Content position',
+          options: [
+            { label: 'Center', value: 'center' },
+            { label: 'Bottom Left', value: 'bottom-left' },
+            { label: 'Bottom Center', value: 'bottom-center' },
+          ],
+        },
+        showScrollIndicator: { type: 'custom', label: 'Show scroll indicator' },
       },
       resolveFields: (data: any) => {
         const p = data.props?.preset || 'centered'
+        const presetOptions = [
+          { label: 'Centered', value: 'centered' },
+          { label: 'Split Image Right', value: 'split-right' },
+          { label: 'Split Image Left', value: 'split-left' },
+          { label: 'Full Image', value: 'full-image' },
+          { label: 'Fullscreen', value: 'fullscreen' },
+          { label: 'Minimal', value: 'minimal' },
+        ]
         const base = {
-          preset: {
-            type: 'select' as const,
-            label: 'Preset',
-            options: [
-              { label: 'Centered', value: 'centered' },
-              { label: 'Split Image Right', value: 'split-right' },
-              { label: 'Split Image Left', value: 'split-left' },
-              { label: 'Full Image', value: 'full-image' },
-              { label: 'Minimal', value: 'minimal' },
-            ],
-          },
+          preset: { type: 'select' as const, label: 'Preset', options: presetOptions },
         }
         if (p === 'centered') {
           return {
@@ -330,6 +343,36 @@ export const puckConfig: Config = {
             },
             ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
             ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+          }
+        }
+        if (p === 'fullscreen') {
+          return {
+            ...base,
+            backgroundImage: { type: 'text' as const, label: 'Background image URL', metadata: { isImage: true } },
+            backgroundVideo: { type: 'text' as const, label: 'Background video URL' },
+            overlayDarkness: {
+              type: 'select' as const,
+              label: 'Overlay darkness',
+              options: [
+                { label: 'Light', value: 'light' },
+                { label: 'Medium', value: 'medium' },
+                { label: 'Heavy', value: 'heavy' },
+              ],
+            },
+            contentPosition: {
+              type: 'select' as const,
+              label: 'Content position',
+              options: [
+                { label: 'Center', value: 'center' },
+                { label: 'Bottom Left', value: 'bottom-left' },
+                { label: 'Bottom Center', value: 'bottom-center' },
+              ],
+            },
+            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
+            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link' },
+            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
+            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link' },
+            showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
           }
         }
         // minimal — just heading + subheading

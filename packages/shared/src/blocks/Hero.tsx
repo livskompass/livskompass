@@ -1,13 +1,14 @@
 import { useContext } from 'react'
 import { cn } from '../ui/utils'
-import { ArrowRight, Camera } from 'lucide-react'
+import { ArrowRight, Camera, ChevronDown } from 'lucide-react'
 import { useEditableText, useInlineEdit, useInlineEditBlock, InlineImagePickerContext } from '../context'
 import { InlineImage } from './InlineImage'
 import { resolveMediaUrl } from '../helpers'
 
-export type HeroPreset = 'centered' | 'split-right' | 'split-left' | 'full-image' | 'minimal'
+export type HeroPreset = 'centered' | 'split-right' | 'split-left' | 'full-image' | 'minimal' | 'fullscreen'
 export type HeroBgStyle = 'gradient' | 'forest' | 'stone'
 export type HeroOverlay = 'light' | 'medium' | 'heavy'
+export type HeroContentPosition = 'center' | 'bottom-left' | 'bottom-center'
 
 export interface HeroProps {
   preset: HeroPreset
@@ -20,7 +21,10 @@ export interface HeroProps {
   ctaSecondaryLink: string
   image: string
   backgroundImage: string
+  backgroundVideo: string
   overlayDarkness: HeroOverlay
+  contentPosition: HeroContentPosition
+  showScrollIndicator: boolean
 }
 
 const bgStyles: Record<HeroBgStyle, string> = {
@@ -76,7 +80,10 @@ export function Hero({
   ctaSecondaryLink = '',
   image = '',
   backgroundImage = '',
+  backgroundVideo = '',
   overlayDarkness = 'medium',
+  contentPosition = 'center',
+  showScrollIndicator = true,
   id,
 }: HeroProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -99,6 +106,70 @@ export function Hero({
   const sCls = subheadingEdit?.className
   const ctaPEdit = editHandlers(ctaPrimaryTextEdit)
   const ctaSEdit = editHandlers(ctaSecondaryTextEdit)
+
+  // ── Fullscreen preset ──
+  if (preset === 'fullscreen') {
+    const positionClasses: Record<HeroContentPosition, string> = {
+      center: 'items-center justify-center text-center',
+      'bottom-left': 'items-start justify-end text-left pb-16 md:pb-24',
+      'bottom-center': 'items-center justify-end text-center pb-16 md:pb-24',
+    }
+
+    return (
+      <section className="relative overflow-hidden group/hero-bg" style={{ height: '100svh', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
+        {/* Background video */}
+        {backgroundVideo && (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            src={resolveMediaUrl(backgroundVideo)}
+          />
+        )}
+        {/* Background image (fallback when no video) */}
+        {!backgroundVideo && backgroundImage && (
+          <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        )}
+        <BgImageButton propName="backgroundImage" src={backgroundImage} />
+        {/* Overlay */}
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.15), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.6).toFixed(2)}))` }} />
+        {/* Content */}
+        <div className={cn('relative flex flex-col h-full px-6 md:px-12 lg:px-20', positionClasses[contentPosition || 'center'])}>
+          <div className={cn('max-w-3xl', contentPosition === 'center' && 'mx-auto')}>
+            <h1 {...hEdit} className={cn('text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.1] tracking-tight max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+              {heading}
+            </h1>
+            {(subheading || subheadingEdit) && (
+              <p {...sEdit} className={cn('text-lg md:text-xl lg:text-2xl text-white/80 mt-4 md:mt-6 max-w-[540px] leading-relaxed animate-hero-enter', contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+                {subheading}
+              </p>
+            )}
+            {ctaPrimaryText && ctaPrimaryLink && (
+              <div className={cn('flex flex-col sm:flex-row gap-4 mt-8 md:mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+                <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 md:h-14 px-7 md:px-9 bg-white text-forest-700 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all text-base md:text-lg">
+                  <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
+                  <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                </a>
+                {ctaSecondaryText && ctaSecondaryLink && (
+                  <a href={ctaSecondaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 md:h-14 px-7 md:px-9 border-[1.5px] border-white/40 text-white hover:bg-white/10 transition-all text-base md:text-lg">
+                    <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Scroll indicator */}
+        {showScrollIndicator !== false && (
+          <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-hero-enter" style={{ animationDelay: '800ms', animationFillMode: 'both' }}>
+            <ChevronDown className="h-6 w-6 text-white/70 animate-bounce" />
+          </div>
+        )}
+      </section>
+    )
+  }
 
   // ── Minimal preset ──
   if (preset === 'minimal') {
