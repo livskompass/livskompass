@@ -11,6 +11,32 @@ type Variables = {
 
 export const adminRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
+/** Snapshot the current state of a content entity before overwriting (publish) */
+async function snapshotBeforePublish(
+  db: any,
+  table: string,
+  contentType: string,
+  entityId: string,
+  userId: string,
+) {
+  const current = await db.prepare(`SELECT * FROM ${table} WHERE id = ?`).bind(entityId).first()
+  if (!current || !current.content_blocks) return // Nothing to snapshot if no blocks yet
+
+  const versionId = nanoid()
+  await db.prepare(`
+    INSERT INTO content_versions (id, content_type, entity_id, title, content_blocks, snapshot, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    versionId,
+    contentType,
+    entityId,
+    current.title || 'Untitled',
+    current.content_blocks,
+    JSON.stringify(current),
+    userId,
+  ).run()
+}
+
 // Auth middleware for admin routes
 adminRoutes.use('*', async (c, next) => {
   const authHeader = c.req.header('Authorization')
@@ -91,6 +117,9 @@ adminRoutes.put('/pages/:id', async (c) => {
   const metaDescription = body.metaDescription ?? body.meta_description
   const parentSlug = body.parentSlug ?? body.parent_slug
   const sortOrder = body.sortOrder ?? body.sort_order
+
+  // Auto-snapshot before publish
+  await snapshotBeforePublish(c.env.DB, 'pages', 'page', id, c.get('userId'))
 
   await c.env.DB.prepare(`
     UPDATE pages
@@ -221,6 +250,9 @@ adminRoutes.put('/posts/:id', async (c) => {
   const featuredImage = body.featuredImage ?? body.featured_image
   const publishedAt = body.publishedAt ?? body.published_at
 
+  // Auto-snapshot before publish
+  await snapshotBeforePublish(c.env.DB, 'posts', 'post', id, c.get('userId'))
+
   await c.env.DB.prepare(`
     UPDATE posts
     SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
@@ -333,6 +365,9 @@ adminRoutes.put('/courses/:id', async (c) => {
   const maxParticipants = body.maxParticipants ?? body.max_participants
   const registrationDeadline = body.registrationDeadline ?? body.registration_deadline
 
+  // Auto-snapshot before publish
+  await snapshotBeforePublish(c.env.DB, 'courses', 'course', id, c.get('userId'))
+
   await c.env.DB.prepare(`
     UPDATE courses
     SET slug = ?, title = ?, description = ?, content = ?, content_blocks = ?,
@@ -357,7 +392,7 @@ adminRoutes.delete('/courses/:id', async (c) => {
 
   if (bookingCount && bookingCount.count > 0) {
     return c.json({
-      error: `Kan inte ta bort kurs med ${bookingCount.count} bokningar. Avboka eller ta bort bokningarna först.`
+      error: `Cannot delete course with ${bookingCount.count} bookings. Cancel or remove the bookings first.`
     }, 400)
   }
 
@@ -558,6 +593,9 @@ adminRoutes.put('/products/:id', async (c) => {
   const externalUrl = body.externalUrl ?? body.external_url
   const imageUrl = body.imageUrl ?? body.image_url
   const inStock = body.inStock ?? body.in_stock
+
+  // Auto-snapshot before publish
+  await snapshotBeforePublish(c.env.DB, 'products', 'product', id, c.get('userId'))
 
   await c.env.DB.prepare(`
     UPDATE products
@@ -838,4 +876,110 @@ adminRoutes.get('/stats', async (c) => {
       unreadContacts: (results[4].results?.[0] as { count: number } | undefined)?.count ?? 0,
     }
   })
+})
+
+// ============ CONTENT VERSIONS ============
+
+const VALID_CONTENT_TYPES = ['page', 'post', 'course', 'product'] as const
+const CONTENT_TYPE_TABLES: Record<string, string> = {
+  page: 'pages',
+  post: 'posts',
+  course: 'courses',
+  product: 'products',
+}
+
+// List versions for a content entity
+adminRoutes.get('/versions/:contentType/:entityId', async (c) => {
+  const contentType = c.req.param('contentType')
+  const entityId = c.req.param('entityId')
+
+  if (!VALID_CONTENT_TYPES.includes(contentType as any)) {
+    return c.json({ error: 'Invalid content type' }, 400)
+  }
+
+  const result = await c.env.DB.prepare(`
+    SELECT id, content_type, entity_id, title, created_by, created_at
+    FROM content_versions
+    WHERE content_type = ? AND entity_id = ?
+    ORDER BY created_at DESC
+    LIMIT 50
+  `).bind(contentType, entityId).all()
+
+  return c.json({ versions: result.results })
+})
+
+// Get a specific version (full snapshot)
+adminRoutes.get('/versions/:versionId', async (c) => {
+  const versionId = c.req.param('versionId')
+
+  const version = await c.env.DB.prepare(`
+    SELECT * FROM content_versions WHERE id = ?
+  `).bind(versionId).first()
+
+  if (!version) {
+    return c.json({ error: 'Version not found' }, 404)
+  }
+
+  return c.json({ version })
+})
+
+// Restore a version — overwrites the entity's content_blocks with the version's snapshot
+adminRoutes.post('/versions/:versionId/restore', async (c) => {
+  const versionId = c.req.param('versionId')
+  const userId = c.get('userId')
+
+  const version = await c.env.DB.prepare(`
+    SELECT * FROM content_versions WHERE id = ?
+  `).bind(versionId).first<{
+    id: string
+    content_type: string
+    entity_id: string
+    title: string
+    content_blocks: string | null
+    snapshot: string | null
+  }>()
+
+  if (!version) {
+    return c.json({ error: 'Version not found' }, 404)
+  }
+
+  const table = CONTENT_TYPE_TABLES[version.content_type]
+  if (!table) {
+    return c.json({ error: 'Invalid content type in version' }, 400)
+  }
+
+  // Snapshot current state before restoring (so restore is reversible)
+  const current = await c.env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`)
+    .bind(version.entity_id).first()
+
+  if (!current) {
+    return c.json({ error: 'Entity not found' }, 404)
+  }
+
+  const preRestoreId = nanoid()
+  await c.env.DB.prepare(`
+    INSERT INTO content_versions (id, content_type, entity_id, title, content_blocks, snapshot, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    preRestoreId,
+    version.content_type,
+    version.entity_id,
+    `Before restore: ${(current as any).title || 'Untitled'}`,
+    (current as any).content_blocks || null,
+    JSON.stringify(current),
+    userId,
+  ).run()
+
+  // Restore the version's content_blocks
+  await c.env.DB.prepare(`
+    UPDATE ${table}
+    SET content_blocks = ?, editor_version = 'puck', draft = NULL, updated_at = datetime('now')
+    WHERE id = ?
+  `).bind(version.content_blocks || null, version.entity_id).run()
+
+  // Re-fetch the updated entity
+  const updated = await c.env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`)
+    .bind(version.entity_id).first()
+
+  return c.json({ success: true, entity: updated })
 })

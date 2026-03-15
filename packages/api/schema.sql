@@ -152,6 +152,21 @@ ALTER TABLE posts ADD COLUMN draft TEXT;
 ALTER TABLE courses ADD COLUMN draft TEXT;
 ALTER TABLE products ADD COLUMN draft TEXT;
 
+-- Content version history (auto-snapshots on publish)
+CREATE TABLE IF NOT EXISTS content_versions (
+  id TEXT PRIMARY KEY,
+  content_type TEXT NOT NULL,    -- 'page' | 'post' | 'course' | 'product'
+  entity_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content_blocks TEXT,
+  snapshot TEXT,                  -- full entity JSON at time of snapshot
+  created_by TEXT,               -- user ID who triggered the snapshot
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_versions_entity ON content_versions(content_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_versions_created ON content_versions(created_at);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_pages_slug ON pages(slug);
 CREATE INDEX IF NOT EXISTS idx_pages_status ON pages(status);

@@ -12,15 +12,15 @@ bookingsRoutes.post('/', async (c) => {
 
   // Validate required fields
   if (!customerName || !customerEmail || !courseId || !participants) {
-    return c.json({ error: 'Namn, e-post, kurs-ID och antal deltagare krävs' }, 400)
+    return c.json({ error: 'Name, email, course ID, and number of participants are required' }, 400)
   }
 
   if (!customerEmail.includes('@')) {
-    return c.json({ error: 'Ogiltig e-postadress' }, 400)
+    return c.json({ error: 'Invalid email address' }, 400)
   }
 
   if (typeof participants !== 'number' || participants < 1) {
-    return c.json({ error: 'Antal deltagare måste vara minst 1' }, 400)
+    return c.json({ error: 'Number of participants must be at least 1' }, 400)
   }
 
   // Validate course exists
@@ -98,7 +98,7 @@ bookingsRoutes.post('/:id/checkout', async (c) => {
         currency: 'sek',
         product_data: {
           name: booking.course_title as string,
-          description: `Bokning: ${booking.participants} deltagare`,
+          description: `Booking: ${booking.participants} participant${(booking.participants as number) > 1 ? 's' : ''}`,
         },
         unit_amount: totalPriceSek * 100, // Convert to öre
       },
