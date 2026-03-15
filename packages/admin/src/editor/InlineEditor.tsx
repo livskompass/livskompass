@@ -123,23 +123,51 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
       .catch(() => {}) // Don't redirect — ProtectedRoute handles that
   }, [navigate])
 
+  // Safety timeout — if loading takes too long, force-show the editor
+  useEffect(() => {
+    if (!loading) return
+    const timer = setTimeout(() => {
+      if (isNew) {
+        console.warn('[Editor] Loading timeout — force-initializing new entity')
+        const blankEntity: ContentEntity = {
+          id: '',
+          slug: '',
+          title: CONTENT_TYPE_LABELS[contentType],
+          status: 'draft',
+          content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
+          editor_version: 'puck',
+          updated_at: '',
+          draft: null,
+        }
+        setEntity(blankEntity, contentType)
+        dispatch({ type: 'MARK_DIRTY' })
+        setLoading(false)
+      }
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [loading, isNew, contentType, setEntity, dispatch])
+
   // Load entity data (or init blank for new)
   useEffect(() => {
     if (isNew) {
-      const blankEntity: ContentEntity = {
-        id: '',
-        slug: '',
-        title: CONTENT_TYPE_LABELS[contentType],
-        status: 'draft',
-        content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
-        editor_version: 'puck',
-        updated_at: '',
-        draft: null,
+      try {
+        const blankEntity: ContentEntity = {
+          id: '',
+          slug: '',
+          title: CONTENT_TYPE_LABELS[contentType],
+          status: 'draft',
+          content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
+          editor_version: 'puck',
+          updated_at: '',
+          draft: null,
+        }
+        setEntity(blankEntity, contentType)
+        dispatch({ type: 'MARK_DIRTY' })
+        setLoading(false)
+      } catch (err) {
+        console.error('[Editor] Failed to init new entity:', err)
+        setLoading(false)
       }
-      setEntity(blankEntity, contentType)
-      // Mark dirty so publish button is enabled
-      dispatch({ type: 'MARK_DIRTY' })
-      setLoading(false)
       return
     }
 
