@@ -534,10 +534,31 @@ export const puckConfig: Config = {
     },
     Testimonial: {
       label: 'Testimonial',
-      defaultProps: { quote: 'A great quote here...', author: '', role: '', avatar: '', style: 'card', showQuoteIcon: true },
+      defaultProps: {
+        items: [
+          { quote: 'ACT-utbildningen förändrade mitt sätt att se på livet. Jag känner mig mer närvarande och engagerad i allt jag gör.', author: 'Maria Lindqvist', role: 'Deltagare, ACT-kurs 2025', avatar: '' },
+          { quote: 'Fredrik är en fantastisk utbildare. Hans kombination av vetenskap och personliga berättelser gör materialet verkligt levande.', author: 'Johan Eriksson', role: 'Psykolog, Stockholms kommun', avatar: '' },
+          { quote: 'Mindfulness-övningarna har blivit en naturlig del av min vardag. Jag rekommenderar detta varmt till alla.', author: 'Anna Bergström', role: 'Lärare, Göteborg', avatar: '' },
+        ],
+        style: 'card',
+        showQuoteIcon: true,
+        displayMode: 'carousel',
+        autoPlaySpeed: 5,
+      },
       fields: {
-        avatar: { type: 'text', label: 'Avatar URL', metadata: { isImage: true } },
-        style: { type: 'select', label: 'Style', options: [{ label: 'Card', value: 'card' }, { label: 'Minimal', value: 'minimal' }, { label: 'Featured', value: 'featured' }] },
+        items: {
+          type: 'array',
+          label: 'Testimonials',
+          arrayFields: {
+            quote: { type: 'textarea', label: 'Quote' },
+            author: { type: 'text', label: 'Author' },
+            role: { type: 'text', label: 'Role / Title' },
+            avatar: { type: 'text', label: 'Avatar URL', metadata: { isImage: true } },
+          },
+        },
+        displayMode: { type: 'select', label: 'Display mode', options: [{ label: 'Single', value: 'single' }, { label: 'Carousel', value: 'carousel' }, { label: 'Grid', value: 'grid' }] },
+        autoPlaySpeed: { type: 'number', label: 'Auto-play speed (seconds)', min: 1, max: 30 },
+        style: { type: 'select', label: 'Card style', options: [{ label: 'Card', value: 'card' }, { label: 'Minimal', value: 'minimal' }, { label: 'Featured', value: 'featured' }] },
         showQuoteIcon: { type: 'radio', label: 'Show quote icon', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
       render: Testimonial as any,
