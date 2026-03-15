@@ -94,7 +94,7 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 bg-zinc-950 flex flex-col transform transition-all duration-200 ease-in-out lg:translate-x-0 lg:static",
+          "fixed inset-y-0 left-0 z-30 bg-zinc-950 flex flex-col transform transition-all duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen",
           collapsed ? 'w-16' : 'w-64',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
