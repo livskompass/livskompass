@@ -332,9 +332,15 @@ function FieldRenderer({ fieldKey, field, value, onChange, expanded, onToggle }:
 
 // ── Atomic field components ──
 
-function FieldLabel({ label }: { label: string }) {
+let fieldIdCounter = 0
+function useFieldId() {
+  const idRef = useRef(`sf-${++fieldIdCounter}`)
+  return idRef.current
+}
+
+function FieldLabel({ label, htmlFor }: { label: string; htmlFor?: string }) {
   return (
-    <label className="block text-[11px] font-medium text-zinc-500 mb-1">
+    <label htmlFor={htmlFor} className="block text-[11px] font-medium text-zinc-500 mb-1">
       {label}
     </label>
   )
@@ -344,10 +350,12 @@ const INPUT_CLASS =
   'w-full text-sm px-2.5 py-1.5 rounded-md border border-zinc-200 bg-white text-zinc-800 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/30 transition-colors placeholder:text-zinc-300'
 
 function TextInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const id = useFieldId()
   return (
     <div>
-      <FieldLabel label={label} />
+      <FieldLabel label={label} htmlFor={id} />
       <input
+        id={id}
         type="text"
         className={INPUT_CLASS}
         value={value}
@@ -358,10 +366,12 @@ function TextInput({ label, value, onChange }: { label: string; value: string; o
 }
 
 function TextareaInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const id = useFieldId()
   return (
     <div>
-      <FieldLabel label={label} />
+      <FieldLabel label={label} htmlFor={id} />
       <textarea
+        id={id}
         className={INPUT_CLASS + ' resize-y min-h-[60px]'}
         rows={3}
         value={value}
@@ -382,14 +392,15 @@ function SelectInput({
   options: FieldOption[]
   onChange: (v: any) => void
 }) {
+  const id = useFieldId()
   return (
     <div>
-      <FieldLabel label={label} />
+      <FieldLabel label={label} htmlFor={id} />
       <select
+        id={id}
         className={INPUT_CLASS + ' appearance-none cursor-pointer'}
         value={String(value)}
         onChange={(e) => {
-          // Try to preserve original type (number)
           const opt = options.find((o) => String(o.value) === e.target.value)
           onChange(opt ? opt.value : e.target.value)
         }}
@@ -443,10 +454,12 @@ function RadioInput({
 }
 
 function NumberInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  const id = useFieldId()
   return (
     <div>
-      <FieldLabel label={label} />
+      <FieldLabel label={label} htmlFor={id} />
       <input
+        id={id}
         type="number"
         className={INPUT_CLASS + ' w-24'}
         value={value}

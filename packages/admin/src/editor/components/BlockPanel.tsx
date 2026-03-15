@@ -159,6 +159,7 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
         <input
           type="text"
           placeholder="Search blocks..."
+          aria-label="Search blocks"
           className="flex-1 text-sm outline-none bg-transparent"
           style={{ color: 'var(--editor-text-primary, #171717)' }}
           value={search}
@@ -188,6 +189,7 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
             <div key={cat.key} className="mb-3 last:mb-0">
               <button
                 onClick={() => toggleCategory(cat.key)}
+                aria-expanded={!isCatCollapsed}
                 className="flex items-center gap-1.5 px-2 py-1 w-full text-left group"
               >
                 <span style={{ color: 'var(--editor-text-disabled, #a3a3a3)' }}>
@@ -211,9 +213,24 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
                 <div
                   key={name}
                   draggable
+                  tabIndex={0}
+                  role="option"
+                  aria-label={`Add ${components[name]?.label || name} block`}
                   onDragStart={(e) => handleDragStart(e, name)}
                   onDragEnd={handleDragEnd}
-                  className="flex items-center gap-1.5 px-1 py-1.5 rounded-md text-left text-sm transition-all cursor-grab active:cursor-grabbing select-none"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handleDragStart({ dataTransfer: { setData: () => {}, effectAllowed: '' } } as any, name)
+                      handleDragEnd()
+                      // Insert block via click fallback
+                      const comp = components[name]
+                      if (comp && (window as any).__insertBlockFromPanel) {
+                        (window as any).__insertBlockFromPanel(name)
+                      }
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-1 py-1.5 rounded-md text-left text-sm transition-all cursor-grab active:cursor-grabbing select-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                   style={{
                     color: draggingBlock === name ? 'var(--editor-blue)' : 'var(--editor-text-muted, #737373)',
                     background: draggingBlock === name ? 'var(--editor-blue-lightest, #EFF6FF)' : 'transparent',
