@@ -362,8 +362,8 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 function SaveStatusAnnouncer() {
   const { state } = useEditor()
   const messages: Record<string, string> = {
-    saving: 'Saving changes...',
-    saved: 'Changes saved',
+    saving: 'Saving draft...',
+    saved: 'Draft saved',
     error: 'Save failed',
     idle: '',
   }

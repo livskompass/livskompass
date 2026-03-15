@@ -82,8 +82,9 @@ adminRoutes.get('/pages/:id', async (c) => {
 adminRoutes.patch('/pages/:id/draft', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
+  const draftValue = body ? JSON.stringify(body) : null
   await c.env.DB.prepare('UPDATE pages SET draft = ? WHERE id = ?')
-    .bind(JSON.stringify(body), id).run()
+    .bind(draftValue, id).run()
   return c.json({ success: true })
 })
 
@@ -190,8 +191,9 @@ adminRoutes.get('/posts/:id', async (c) => {
 adminRoutes.patch('/posts/:id/draft', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
+  const draftValue = body ? JSON.stringify(body) : null
   await c.env.DB.prepare('UPDATE posts SET draft = ? WHERE id = ?')
-    .bind(JSON.stringify(body), id).run()
+    .bind(draftValue, id).run()
   return c.json({ success: true })
 })
 
@@ -292,8 +294,9 @@ adminRoutes.get('/courses/:id', async (c) => {
 adminRoutes.patch('/courses/:id/draft', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
+  const draftValue = body ? JSON.stringify(body) : null
   await c.env.DB.prepare('UPDATE courses SET draft = ? WHERE id = ?')
-    .bind(JSON.stringify(body), id).run()
+    .bind(draftValue, id).run()
   return c.json({ success: true })
 })
 
@@ -528,8 +531,9 @@ adminRoutes.get('/products/:id', async (c) => {
 adminRoutes.patch('/products/:id/draft', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
+  const draftValue = body ? JSON.stringify(body) : null
   await c.env.DB.prepare('UPDATE products SET draft = ? WHERE id = ?')
-    .bind(JSON.stringify(body), id).run()
+    .bind(draftValue, id).run()
   return c.json({ success: true })
 })
 

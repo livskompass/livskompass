@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useCallback, useRef, useEffect, type ReactNode } from 'react'
-import type { Data, EditorState, EditorAction, ContentEntity, ContentType, SaveStatus } from './types'
+import type { Data, EditorState, EditorAction, ContentEntity, ContentType, SaveStatus, PublishState } from './types'
 
 // ── Reducer ──
 
@@ -16,6 +16,14 @@ const initialState: EditorState = {
   saveStatus: 'idle',
   isDirty: false,
   isPublished: false,
+  hasDraftChanges: false,
+  publishState: 'draft',
+}
+
+function derivePublishState(isPublished: boolean, hasDraftChanges: boolean): PublishState {
+  if (!isPublished) return 'draft'
+  if (hasDraftChanges) return 'unpublished-changes'
+  return 'published'
 }
 
 // History stack — kept outside reducer for simplicity
@@ -32,19 +40,34 @@ function pushHistory(data: Data) {
 
 function editorReducer(state: EditorState, action: EditorAction): EditorState {
   switch (action.type) {
-    case 'SET_ENTITY':
+    case 'SET_ENTITY': {
+      const hasDraft = !!action.entity.draft
+      const isPublished = action.entity.status === 'published'
+      // Load draft content if it exists (in-progress work), otherwise published content
+      const contentSource = action.entity.draft || action.entity.content_blocks
+      const hasDraftChanges = hasDraft && isPublished
       return {
         ...state,
         entity: action.entity,
         contentType: action.contentType,
-        puckData: action.entity.content_blocks
-          ? JSON.parse(action.entity.content_blocks)
-          : null,
+        puckData: contentSource ? JSON.parse(contentSource) : null,
         isDirty: false,
-        isPublished: action.entity.status === 'published',
+        isPublished,
+        hasDraftChanges,
+        publishState: derivePublishState(isPublished, hasDraftChanges),
       }
-    case 'SET_PUCK_DATA':
-      return { ...state, puckData: action.data, isDirty: true }
+    }
+    case 'SET_PUCK_DATA': {
+      // Once the user edits, there are always draft changes (relative to published)
+      const hasDraftChanges = state.isPublished ? true : state.hasDraftChanges
+      return {
+        ...state,
+        puckData: action.data,
+        isDirty: true,
+        hasDraftChanges,
+        publishState: derivePublishState(state.isPublished, hasDraftChanges),
+      }
+    }
     case 'SET_HOVERED':
       return { ...state, hoveredBlockId: action.blockId }
     case 'SET_SELECTED':
@@ -71,7 +94,13 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
     case 'MARK_CLEAN':
       return { ...state, isDirty: false }
     case 'MARK_PUBLISHED':
-      return { ...state, isPublished: true, isDirty: false }
+      return { ...state, isPublished: true, isDirty: false, hasDraftChanges: false, publishState: 'published' }
+    case 'SET_DRAFT_STATE':
+      return {
+        ...state,
+        hasDraftChanges: action.hasDraftChanges,
+        publishState: derivePublishState(state.isPublished, action.hasDraftChanges),
+      }
     case 'UNDO': {
       if (historyIndex <= 0) return state
       historyIndex--
@@ -94,7 +123,7 @@ interface EditorContextValue {
   dispatch: React.Dispatch<EditorAction>
   /** Set the entity being edited */
   setEntity: (entity: ContentEntity, contentType: ContentType) => void
-  /** Update Puck data (triggers auto-save) */
+  /** Update Puck data (triggers auto-save to draft) */
   updateData: (data: Data) => void
   /** Hover a block */
   hoverBlock: (blockId: string | null) => void
@@ -113,6 +142,8 @@ interface EditorContextValue {
   /** Whether undo/redo are available */
   canUndo: boolean
   canRedo: boolean
+  /** Discard draft and revert to published content */
+  discardDraft: () => Promise<void>
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -152,7 +183,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_SAVE_STATUS', status })
   }, [])
 
-  // Auto-save: debounced PATCH to API with AbortController to prevent race conditions
+  // Auto-save: debounced PATCH to /draft endpoint (never touches published content)
   const autoSave = useCallback((data: Data, entity: ContentEntity, contentType: ContentType) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
 
@@ -171,40 +202,28 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
       try {
         const route = CONTENT_TYPE_ROUTES[contentType]
-        const res = await fetch(`${API_BASE}/admin/${route}/${entity.id}`, {
+        const res = await fetch(`${API_BASE}/admin/${route}/${entity.id}/draft`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            content_blocks: JSON.stringify(data),
-            updated_at: entity.updated_at,
+            content: data.content,
+            root: data.root,
+            zones: data.zones,
           }),
           signal: controller.signal,
         })
 
-        if (!res.ok) {
-          if (res.status === 409) {
-            dispatch({ type: 'SET_SAVE_STATUS', status: 'error' })
-            return
-          }
-          throw new Error('Save failed')
-        }
-
-        const result = await res.json() as Record<string, any>
-        const updated = result.page || result.post || result.course || result.product
+        if (!res.ok) throw new Error('Save failed')
 
         dispatch({ type: 'SET_SAVE_STATUS', status: 'saved' })
         dispatch({ type: 'MARK_CLEAN' })
 
-        // Update entity's updated_at for conflict detection
-        if (updated?.updated_at) {
-          dispatch({
-            type: 'SET_ENTITY',
-            entity: { ...entity, updated_at: updated.updated_at, content_blocks: JSON.stringify(data) },
-            contentType,
-          })
+        // Mark that there are now draft changes (if entity is published)
+        if (entity.status === 'published') {
+          dispatch({ type: 'SET_DRAFT_STATE', hasDraftChanges: true })
         }
 
         if (savedFeedbackRef.current) clearTimeout(savedFeedbackRef.current)
@@ -314,6 +333,41 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // Discard draft: clear draft on server and reload published content
+  const discardDraft = useCallback(async () => {
+    const { entity, contentType } = stateRef.current
+    if (!entity?.id) return
+
+    const token = localStorage.getItem('admin_token')
+    if (!token) return
+
+    const route = CONTENT_TYPE_ROUTES[contentType]
+
+    // Clear draft on server by saving null
+    await fetch(`${API_BASE}/admin/${route}/${entity.id}/draft`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(null),
+    })
+
+    // Re-fetch the entity to get clean published content
+    const res = await fetch(`${API_BASE}/admin/${route}/${entity.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) throw new Error('Failed to reload entity')
+
+    const data = await res.json() as Record<string, any>
+    const refreshed = data.page || data.post || data.course || data.product
+    if (refreshed) {
+      // Force draft to null so SET_ENTITY loads from content_blocks
+      refreshed.draft = null
+      dispatch({ type: 'SET_ENTITY', entity: refreshed, contentType })
+    }
+  }, [dispatch])
+
   const value: EditorContextValue = {
     state,
     dispatch,
@@ -328,6 +382,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     redo,
     canUndo: historyIndex > 0,
     canRedo: historyIndex < historyStack.length - 1,
+    discardDraft,
   }
 
   return (

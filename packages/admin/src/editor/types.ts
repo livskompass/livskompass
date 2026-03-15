@@ -25,6 +25,8 @@ export interface ContentEntity {
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
+export type PublishState = 'draft' | 'published' | 'unpublished-changes'
+
 export interface EditorState {
   /** The content entity being edited */
   entity: ContentEntity | null
@@ -40,10 +42,14 @@ export interface EditorState {
   editingField: string | null
   /** Auto-save status */
   saveStatus: SaveStatus
-  /** Whether the editor is in "dirty" state (unsaved changes) */
+  /** Whether the editor is in "dirty" state (unsaved changes since last draft save) */
   isDirty: boolean
   /** Whether the content has been published since last edit */
   isPublished: boolean
+  /** Whether draft content differs from published content */
+  hasDraftChanges: boolean
+  /** Derived publish state: draft | published | unpublished-changes */
+  publishState: PublishState
 }
 
 // ── Editor Actions ──
@@ -59,6 +65,7 @@ export type EditorAction =
   | { type: 'MARK_DIRTY' }
   | { type: 'MARK_CLEAN' }
   | { type: 'MARK_PUBLISHED' }
+  | { type: 'SET_DRAFT_STATE'; hasDraftChanges: boolean }
   | { type: 'UNDO' }
   | { type: 'REDO' }
 
