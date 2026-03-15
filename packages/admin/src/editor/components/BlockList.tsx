@@ -199,8 +199,9 @@ export function BlockList() {
             : 'transparent',
         }}
       >
+        <BlockInserter insertIndex={0} />
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+          className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 pointer-events-none"
           style={{ background: 'var(--editor-blue-lightest)', color: 'var(--editor-blue)' }}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
