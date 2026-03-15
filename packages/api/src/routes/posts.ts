@@ -23,7 +23,7 @@ postsRoutes.get('/', async (c) => {
 
   const total = (countResult.results?.[0] as { total: number } | undefined)?.total ?? 0
 
-  c.header('Cache-Control', 'no-cache')
+  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
   return c.json({
     posts: result.results,
     total,
@@ -45,6 +45,6 @@ postsRoutes.get('/:slug', async (c) => {
     return c.json({ error: 'Post not found' }, 404)
   }
 
-  c.header('Cache-Control', 'no-cache')
+  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
   return c.json({ post: result })
 })

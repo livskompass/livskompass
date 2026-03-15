@@ -95,7 +95,7 @@ app.get('/api/site-settings', async (c) => {
     try { settings[row.key] = JSON.parse(row.value) } catch { settings[row.key] = row.value }
   })
 
-  c.header('Cache-Control', 'no-cache')
+  c.header('Cache-Control', 'public, max-age=120, stale-while-revalidate=600')
   return c.json({
     header: settings.site_header || null,
     footer: settings.site_footer || null,
@@ -116,6 +116,47 @@ app.get('/api/site-settings/ui-strings', async (c) => {
 
   c.header('Cache-Control', 'public, max-age=60')
   return c.json({ strings })
+})
+
+// Sitemap.xml — auto-generated from published pages and posts
+app.get('/api/sitemap.xml', async (c) => {
+  const baseUrl = c.env.SITE_URL || 'https://livskompass.se'
+
+  const [pagesResult, postsResult, coursesResult] = await c.env.DB.batch([
+    c.env.DB.prepare(`SELECT slug, updated_at FROM pages WHERE status = 'published'`),
+    c.env.DB.prepare(`SELECT slug, updated_at FROM posts WHERE status = 'published'`),
+    c.env.DB.prepare(`SELECT slug, updated_at FROM courses WHERE status IN ('active', 'full')`),
+  ])
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
+
+  // Homepage
+  xml += `  <url><loc>${baseUrl}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n`
+
+  // Pages
+  for (const page of (pagesResult.results || []) as { slug: string; updated_at: string }[]) {
+    const lastmod = page.updated_at ? `<lastmod>${page.updated_at.split('T')[0]}</lastmod>` : ''
+    xml += `  <url><loc>${baseUrl}/${page.slug}</loc>${lastmod}<changefreq>weekly</changefreq><priority>0.8</priority></url>\n`
+  }
+
+  // Posts
+  for (const post of (postsResult.results || []) as { slug: string; updated_at: string }[]) {
+    const lastmod = post.updated_at ? `<lastmod>${post.updated_at.split('T')[0]}</lastmod>` : ''
+    xml += `  <url><loc>${baseUrl}/nyhet/${post.slug}</loc>${lastmod}<changefreq>monthly</changefreq><priority>0.6</priority></url>\n`
+  }
+
+  // Courses
+  for (const course of (coursesResult.results || []) as { slug: string; updated_at: string }[]) {
+    const lastmod = course.updated_at ? `<lastmod>${course.updated_at.split('T')[0]}</lastmod>` : ''
+    xml += `  <url><loc>${baseUrl}/utbildningar/${course.slug}</loc>${lastmod}<changefreq>weekly</changefreq><priority>0.7</priority></url>\n`
+  }
+
+  xml += `</urlset>`
+
+  c.header('Content-Type', 'application/xml')
+  c.header('Cache-Control', 'public, max-age=3600')
+  return c.body(xml)
 })
 
 // Public routes

@@ -177,6 +177,7 @@ export function Hero({
             <InlineImage
               src={image}
               propName="image"
+              loading="eager"
               className="w-full h-auto rounded-xl object-cover shadow-lg animate-hero-enter"
               style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}
               fallback={<div className="w-full rounded-xl bg-stone-200 animate-hero-enter" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }} />}
