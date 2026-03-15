@@ -239,6 +239,7 @@ export const puckConfig: Config = {
         overlayDarkness: 'medium',
         contentPosition: 'center',
         showScrollIndicator: true,
+        textAlignment: 'left',
       },
       fields: {
         preset: {
@@ -291,6 +292,7 @@ export const puckConfig: Config = {
           ],
         },
         showScrollIndicator: { type: 'radio', label: 'Show scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+        textAlignment: { type: 'radio', label: 'Text alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
       },
       resolveFields: (data: any) => {
         const p = data.props?.preset || 'centered'

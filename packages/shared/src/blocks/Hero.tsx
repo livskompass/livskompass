@@ -8,7 +8,8 @@ import { resolveMediaUrl } from '../helpers'
 export type HeroPreset = 'centered' | 'split-right' | 'split-left' | 'full-image' | 'minimal' | 'fullscreen'
 export type HeroBgStyle = 'gradient' | 'forest' | 'stone'
 export type HeroOverlay = 'light' | 'medium' | 'heavy'
-export type HeroContentPosition = 'center' | 'bottom-left' | 'bottom-center'
+export type HeroContentPosition = 'center' | 'bottom-left' | 'bottom-center' | 'top-left'
+export type HeroTextAlign = 'left' | 'center'
 
 export interface HeroProps {
   preset: HeroPreset
@@ -25,6 +26,7 @@ export interface HeroProps {
   overlayDarkness: HeroOverlay
   contentPosition: HeroContentPosition
   showScrollIndicator: boolean
+  textAlignment?: HeroTextAlign
 }
 
 const bgStyles: Record<HeroBgStyle, string> = {
@@ -84,6 +86,7 @@ export function Hero({
   overlayDarkness = 'medium',
   contentPosition = 'center',
   showScrollIndicator = true,
+  textAlignment = 'left',
   id,
 }: HeroProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -250,8 +253,8 @@ export function Hero({
         {bgStyle === 'gradient' && (
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />
         )}
-        <div className="relative grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-20" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
-          <div className={cn('flex flex-col justify-center', imageFirst ? 'lg:order-2' : 'lg:order-1')}>
+        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] items-center gap-8 lg:gap-12" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
+          <div className={cn('flex flex-col justify-center', imageFirst ? 'lg:order-2' : 'lg:order-1', textAlignment === 'center' ? 'items-center text-center' : 'items-start text-left')}>
             <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'stone' ? 'text-forest-950' : 'text-white', hCls)} style={{ fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400, animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
