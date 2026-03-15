@@ -118,7 +118,7 @@ export default function ContactsList() {
             ) : (
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                 <Mail className="h-10 w-10 text-zinc-300 mb-3" />
-                <p className="text-zinc-500">No messages yet.</p>
+                <p className="text-zinc-500">No messages yet</p>
               </CardContent>
             )}
           </Card>

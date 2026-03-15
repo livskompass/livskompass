@@ -144,7 +144,7 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
         </span>
         <button
           onClick={() => onToggleCollapsed()}
-          className="p-1 rounded transition-colors hover:bg-stone-100"
+          className="p-1 rounded transition-colors hover:bg-zinc-100"
           style={{ color: 'var(--editor-text-muted, #737373)' }}
           aria-label="Collapse block panel"
         >

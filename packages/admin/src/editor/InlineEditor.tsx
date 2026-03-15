@@ -265,9 +265,9 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-stone-50">
-        <div className="flex items-center gap-2 text-stone-400">
-          <div className="w-4 h-4 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />
+      <div className="flex items-center justify-center h-screen bg-zinc-50">
+        <div className="flex items-center gap-2 text-zinc-400">
+          <div className="w-4 h-4 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin" />
           Loading...
         </div>
       </div>
@@ -276,11 +276,11 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-stone-50 gap-4">
+      <div className="flex flex-col items-center justify-center h-screen bg-zinc-50 gap-4">
         <p className="text-red-500">{error}</p>
         <button
           onClick={handleBack}
-          className="text-sm text-stone-500 hover:text-stone-900"
+          className="text-sm text-zinc-500 hover:text-zinc-900"
         >
           Go back
         </button>

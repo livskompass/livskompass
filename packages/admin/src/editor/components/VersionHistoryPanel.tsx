@@ -109,21 +109,21 @@ export function VersionHistoryPanel({ open, onClose }: VersionHistoryPanelProps)
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100">
         <div className="flex items-center gap-2">
-          <History className="h-4 w-4 text-stone-500" />
-          <span className="text-sm font-semibold text-stone-700">Version history</span>
+          <History className="h-4 w-4 text-zinc-500" />
+          <span className="text-sm font-semibold text-zinc-700">Version history</span>
         </div>
         <button
           onClick={onClose}
-          className="p-1 rounded-md text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+          className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
       {/* Info */}
-      <div className="px-4 py-2 border-b border-stone-50 text-[11px] text-stone-400">
+      <div className="px-4 py-2 border-b border-zinc-50 text-[11px] text-zinc-400">
         A snapshot is saved each time you publish.
       </div>
 
@@ -132,14 +132,14 @@ export function VersionHistoryPanel({ open, onClose }: VersionHistoryPanelProps)
         {isLoading ? (
           <div className="flex flex-col gap-2 p-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-16 rounded-lg bg-stone-50 animate-pulse" />
+              <div key={i} className="h-16 rounded-lg bg-zinc-50 animate-pulse" />
             ))}
           </div>
         ) : versions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center px-6">
-            <Clock className="h-8 w-8 text-stone-200 mb-3" />
-            <p className="text-sm text-stone-500 font-medium">No versions yet</p>
-            <p className="text-xs text-stone-400 mt-1">
+            <Clock className="h-8 w-8 text-zinc-200 mb-3" />
+            <p className="text-sm text-zinc-500 font-medium">No versions yet</p>
+            <p className="text-xs text-zinc-400 mt-1">
               Versions are created automatically each time you publish.
             </p>
           </div>
@@ -150,7 +150,7 @@ export function VersionHistoryPanel({ open, onClose }: VersionHistoryPanelProps)
                 key={version.id}
                 type="button"
                 onClick={() => setConfirmRestore(version)}
-                className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-stone-50 transition-colors group flex items-center gap-3"
+                className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-zinc-50 transition-colors group flex items-center gap-3"
               >
                 <div className="flex-shrink-0">
                   <div
@@ -161,14 +161,14 @@ export function VersionHistoryPanel({ open, onClose }: VersionHistoryPanelProps)
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-stone-700 truncate">
+                  <div className="text-sm font-medium text-zinc-700 truncate">
                     {version.title}
                   </div>
-                  <div className="text-[11px] text-stone-400 mt-0.5">
+                  <div className="text-[11px] text-zinc-400 mt-0.5">
                     {formatRelativeTime(version.created_at)}
                   </div>
                 </div>
-                <ChevronRight className="h-3.5 w-3.5 text-stone-300 group-hover:text-stone-500 transition-colors flex-shrink-0" />
+                <ChevronRight className="h-3.5 w-3.5 text-zinc-300 group-hover:text-zinc-500 transition-colors flex-shrink-0" />
               </button>
             ))}
           </div>
@@ -178,21 +178,21 @@ export function VersionHistoryPanel({ open, onClose }: VersionHistoryPanelProps)
       {/* Restore confirmation overlay */}
       {confirmRestore && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm">
-          <div className="mx-4 p-4 rounded-xl border border-stone-200 bg-white shadow-lg max-w-[280px]">
+          <div className="mx-4 p-4 rounded-xl border border-zinc-200 bg-white shadow-lg max-w-[280px]">
             <div className="flex items-center gap-2 text-amber-600 mb-3">
               <AlertTriangle className="h-4 w-4" />
               <span className="text-sm font-semibold">Restore version?</span>
             </div>
-            <p className="text-xs text-stone-500 mb-1">
+            <p className="text-xs text-zinc-500 mb-1">
               This will replace the current content with the version from:
             </p>
-            <p className="text-xs font-medium text-stone-700 mb-1">
+            <p className="text-xs font-medium text-zinc-700 mb-1">
               {confirmRestore.title}
             </p>
-            <p className="text-[11px] text-stone-400 mb-4">
+            <p className="text-[11px] text-zinc-400 mb-4">
               {formatFullDate(confirmRestore.created_at)}
             </p>
-            <p className="text-[11px] text-stone-400 mb-4">
+            <p className="text-[11px] text-zinc-400 mb-4">
               The current state will be saved as a snapshot before restoring.
             </p>
 
@@ -200,7 +200,7 @@ export function VersionHistoryPanel({ open, onClose }: VersionHistoryPanelProps)
               <button
                 onClick={() => setConfirmRestore(null)}
                 disabled={!!restoring}
-                className="flex-1 px-3 py-1.5 rounded-md text-xs font-medium text-stone-600 bg-stone-100 hover:bg-stone-200 transition-colors disabled:opacity-50"
+                className="flex-1 px-3 py-1.5 rounded-md text-xs font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -226,7 +226,7 @@ export function VersionHistoryButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1 px-2 py-1 rounded-md text-xs text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+      className="flex items-center gap-1 px-2 py-1 rounded-md text-xs text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
       title="Version history"
     >
       <History className="h-3.5 w-3.5" />

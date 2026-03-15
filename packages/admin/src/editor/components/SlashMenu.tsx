@@ -310,13 +310,13 @@ export function SlashMenu() {
           }}
         >
           {/* Search */}
-          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-stone-100">
-            <span className="text-stone-300 text-sm font-mono">/</span>
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100">
+            <span className="text-zinc-300 text-sm font-mono">/</span>
             <input
               ref={searchRef}
               type="text"
               placeholder="Search blocks..."
-              className="flex-1 text-sm text-stone-700 outline-none bg-transparent placeholder:text-stone-300"
+              className="flex-1 text-sm text-zinc-700 outline-none bg-transparent placeholder:text-zinc-300"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               role="combobox"
@@ -328,7 +328,7 @@ export function SlashMenu() {
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="p-0.5 rounded text-stone-300 hover:text-stone-500"
+                className="p-0.5 rounded text-zinc-300 hover:text-zinc-500"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -338,7 +338,7 @@ export function SlashMenu() {
           {/* Block list */}
           <div className="overflow-y-auto p-1.5" style={{ maxHeight: 'calc(60vh - 52px)' }} id="slash-menu-list" role="listbox" aria-label="Available blocks">
             {blockList.length === 0 ? (
-              <div className="text-center py-8 text-xs text-stone-400">
+              <div className="text-center py-8 text-xs text-zinc-400">
                 No blocks found
               </div>
             ) : (
@@ -350,14 +350,14 @@ export function SlashMenu() {
                   <div key={`${block.category}-${block.type}`}>
                     {showCategory && (
                       <div className="flex items-center gap-1.5 px-2.5 py-1.5 mt-1 first:mt-0">
-                        <span className="text-stone-300">
+                        <span className="text-zinc-300">
                           {block.category === '__recent' ? (
                             <Clock className="h-3.5 w-3.5" />
                           ) : (
                             CATEGORY_ICONS[block.category]
                           )}
                         </span>
-                        <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
                           {block.category === '__recent'
                             ? 'Recently used'
                             : CATEGORY_LABELS[block.category] || categories[block.category]?.title}
@@ -381,10 +381,10 @@ export function SlashMenu() {
                       onClick={() => insertBlock(block.type)}
                       onMouseEnter={() => setSelectedIndex(i)}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-stone-300 flex-shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 flex-shrink-0" />
                       {block.label}
                       {block.category !== '__recent' && BLOCK_LABELS[block.type] && (
-                        <span className="ml-auto text-[10px] text-stone-300">
+                        <span className="ml-auto text-[10px] text-zinc-300">
                           {components[block.type]?.label}
                         </span>
                       )}
@@ -396,15 +396,15 @@ export function SlashMenu() {
           </div>
 
           {/* Footer hint */}
-          <div className="px-3 py-1.5 border-t border-stone-100 flex items-center gap-3 text-[10px] text-stone-400">
+          <div className="px-3 py-1.5 border-t border-zinc-100 flex items-center gap-3 text-[10px] text-zinc-400">
             <span>
-              <kbd className="px-1 py-0.5 rounded border border-stone-200 bg-stone-50 font-mono text-[9px]">↑↓</kbd> navigate
+              <kbd className="px-1 py-0.5 rounded border border-zinc-200 bg-zinc-50 font-mono text-[9px]">↑↓</kbd> navigate
             </span>
             <span>
-              <kbd className="px-1 py-0.5 rounded border border-stone-200 bg-stone-50 font-mono text-[9px]">↵</kbd> select
+              <kbd className="px-1 py-0.5 rounded border border-zinc-200 bg-zinc-50 font-mono text-[9px]">↵</kbd> select
             </span>
             <span>
-              <kbd className="px-1 py-0.5 rounded border border-stone-200 bg-stone-50 font-mono text-[9px]">esc</kbd> close
+              <kbd className="px-1 py-0.5 rounded border border-zinc-200 bg-zinc-50 font-mono text-[9px]">esc</kbd> close
             </span>
           </div>
         </div>

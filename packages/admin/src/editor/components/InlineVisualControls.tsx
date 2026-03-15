@@ -530,7 +530,7 @@ function SegmentedControl({
 }) {
   return (
     <div className="flex items-center gap-1">
-      <span className="text-[10px] font-medium text-stone-400 select-none">{label}</span>
+      <span className="text-[10px] font-medium text-zinc-400 select-none">{label}</span>
       <div
         className="flex items-center rounded-md overflow-hidden"
         style={{

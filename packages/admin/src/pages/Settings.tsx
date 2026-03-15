@@ -366,13 +366,13 @@ export default function Settings() {
       <h2 className="text-h4 text-zinc-900">Navigation & Structure</h2>
 
       {siteSaved && (
-        <div className="flex items-center gap-2 bg-zinc-100 border border-zinc-200 text-zinc-700 px-4 py-3 rounded-xl text-sm">
+        <div className="flex items-center gap-2 bg-zinc-100 border border-zinc-200 text-zinc-700 px-4 py-3 rounded-lg text-sm">
           <CheckCircle className="h-4 w-4 shrink-0" />
           Header & footer saved!
         </div>
       )}
       {siteError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {siteError}
         </div>
       )}
@@ -530,13 +530,13 @@ export default function Settings() {
       <h2 className="text-h4 text-zinc-900">General Settings</h2>
 
       {saved && (
-        <div className="flex items-center gap-2 bg-zinc-100 border border-zinc-200 text-zinc-700 px-4 py-3 rounded-xl text-sm">
+        <div className="flex items-center gap-2 bg-zinc-100 border border-zinc-200 text-zinc-700 px-4 py-3 rounded-lg text-sm">
           <CheckCircle className="h-4 w-4 shrink-0" />
           Settings saved!
         </div>
       )}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}

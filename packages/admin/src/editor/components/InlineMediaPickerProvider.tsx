@@ -21,11 +21,11 @@ const TYPE_ACCEPT: Record<MediaPickerType, string> = {
 }
 
 const TYPE_ICONS: Record<MediaPickerType, React.ReactNode> = {
-  image: <ImageIcon className="h-10 w-10 text-stone-300" />,
-  video: <Film className="h-10 w-10 text-stone-300" />,
-  audio: <Music className="h-10 w-10 text-stone-300" />,
-  document: <FileText className="h-10 w-10 text-stone-300" />,
-  all: <FolderOpen className="h-10 w-10 text-stone-300" />,
+  image: <ImageIcon className="h-10 w-10 text-zinc-300" />,
+  video: <Film className="h-10 w-10 text-zinc-300" />,
+  audio: <Music className="h-10 w-10 text-zinc-300" />,
+  document: <FileText className="h-10 w-10 text-zinc-300" />,
+  all: <FolderOpen className="h-10 w-10 text-zinc-300" />,
 }
 
 function matchesTypeFilter(mediaType: string | undefined, filter: MediaPickerType): boolean {
@@ -147,8 +147,8 @@ export function InlineMediaPickerProvider({ children }: { children: React.ReactN
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-stone-100">
-              <span className="text-sm font-semibold text-stone-700">{TYPE_LABELS[typeFilter]}</span>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-100">
+              <span className="text-sm font-semibold text-zinc-700">{TYPE_LABELS[typeFilter]}</span>
               <div className="flex items-center gap-2">
                 <input
                   ref={fileInputRef}
@@ -161,7 +161,7 @@ export function InlineMediaPickerProvider({ children }: { children: React.ReactN
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 transition-colors disabled:opacity-50"
                 >
                   {uploading ? (
                     <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading...</>
@@ -172,7 +172,7 @@ export function InlineMediaPickerProvider({ children }: { children: React.ReactN
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="h-8 px-3 text-xs font-medium rounded-md text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                  className="h-8 px-3 text-xs font-medium rounded-md text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
                 >
                   Cancel
                 </button>
@@ -180,13 +180,13 @@ export function InlineMediaPickerProvider({ children }: { children: React.ReactN
             </div>
 
             {/* Search */}
-            <div className="px-5 py-2 border-b border-stone-50">
-              <div className="flex items-center gap-2 bg-stone-50 rounded-lg px-3 py-1.5">
-                <Search className="h-3.5 w-3.5 text-stone-400" />
+            <div className="px-5 py-2 border-b border-zinc-50">
+              <div className="flex items-center gap-2 bg-zinc-50 rounded-lg px-3 py-1.5">
+                <Search className="h-3.5 w-3.5 text-zinc-400" />
                 <input
                   type="text"
                   placeholder="Search files..."
-                  className="flex-1 text-sm bg-transparent outline-none text-stone-700 placeholder:text-stone-400"
+                  className="flex-1 text-sm bg-transparent outline-none text-zinc-700 placeholder:text-zinc-400"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -198,7 +198,7 @@ export function InlineMediaPickerProvider({ children }: { children: React.ReactN
               {isLoading ? (
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
                   {[...Array(10)].map((_, i) => (
-                    <div key={i} className="aspect-square rounded-lg bg-stone-100 animate-pulse" />
+                    <div key={i} className="aspect-square rounded-lg bg-zinc-100 animate-pulse" />
                   ))}
                 </div>
               ) : filtered.length > 0 ? (
@@ -223,16 +223,16 @@ export function InlineMediaPickerProvider({ children }: { children: React.ReactN
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-stone-100 flex flex-col items-center justify-center gap-1 p-2">
-                            {media.type?.startsWith('video') ? <Film className="h-6 w-6 text-stone-400" /> :
-                             media.type?.startsWith('audio') ? <Music className="h-6 w-6 text-stone-400" /> :
-                             <FileText className="h-6 w-6 text-stone-400" />}
-                            <span className="text-[9px] text-stone-500 font-medium uppercase">
+                          <div className="w-full h-full bg-zinc-100 flex flex-col items-center justify-center gap-1 p-2">
+                            {media.type?.startsWith('video') ? <Film className="h-6 w-6 text-zinc-400" /> :
+                             media.type?.startsWith('audio') ? <Music className="h-6 w-6 text-zinc-400" /> :
+                             <FileText className="h-6 w-6 text-zinc-400" />}
+                            <span className="text-[9px] text-zinc-500 font-medium uppercase">
                               {media.filename?.split('.').pop() || media.type}
                             </span>
                           </div>
                         )}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-zinc-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
                           {media.filename}
                         </div>
                       </button>
@@ -242,17 +242,17 @@ export function InlineMediaPickerProvider({ children }: { children: React.ReactN
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                   {TYPE_ICONS[typeFilter]}
-                  <p className="text-sm text-stone-500 font-medium mt-3">
+                  <p className="text-sm text-zinc-500 font-medium mt-3">
                     {search ? 'No files match your search' : `No ${typeFilter === 'all' ? 'files' : typeFilter + ' files'} yet`}
                   </p>
-                  <p className="text-xs text-stone-400 mt-1">Upload a file to get started.</p>
+                  <p className="text-xs text-zinc-400 mt-1">Upload a file to get started.</p>
                 </div>
               )}
             </div>
 
             {/* Footer with count */}
             {filtered.length > 0 && (
-              <div className="px-5 py-2 border-t border-stone-100 text-[11px] text-stone-400">
+              <div className="px-5 py-2 border-t border-zinc-100 text-[11px] text-zinc-400">
                 {filtered.length} file{filtered.length !== 1 ? 's' : ''}
               </div>
             )}

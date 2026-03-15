@@ -58,7 +58,7 @@ export default function Dashboard() {
   const unreadContacts = statsData?.stats?.unreadContacts ?? 0
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="text-h3 text-zinc-900">Dashboard</h1>
         <p className="text-zinc-500 mt-1">Overview of your website content and activity.</p>

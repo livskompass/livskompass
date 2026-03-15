@@ -212,11 +212,11 @@ export function EntitySettingsDrawer({ open, onClose, contentType }: EntitySetti
 
 const INPUT_CLASS =
   'w-full text-sm px-2.5 py-1.5 rounded-md border bg-white outline-none focus:ring-1 transition-colors'
-    + ' border-stone-200 text-stone-800 focus:border-blue-400 focus:ring-blue-400/30 placeholder:text-stone-300'
+    + ' border-zinc-200 text-zinc-800 focus:border-blue-400 focus:ring-blue-400/30 placeholder:text-zinc-300'
 
 function FieldLabel({ label }: { label: string }) {
   return (
-    <label className="block text-[11px] font-medium text-stone-500 mb-1">
+    <label className="block text-[11px] font-medium text-zinc-500 mb-1">
       {label}
     </label>
   )

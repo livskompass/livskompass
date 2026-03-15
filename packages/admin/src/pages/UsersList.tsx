@@ -82,17 +82,8 @@ export default function UsersList() {
 
   const currentUser = meData?.user
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    )
-  }
-
   // Check if current user is admin
-  if (currentUser?.role !== 'admin') {
+  if (!isLoading && currentUser?.role !== 'admin') {
     return (
       <Card className="border-zinc-200 bg-zinc-100">
         <CardContent className="flex items-center gap-3 p-4">
@@ -200,6 +191,13 @@ export default function UsersList() {
 
       {/* Users list */}
       <Card>
+        {isLoading ? (
+          <CardContent className="p-6 space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </CardContent>
+        ) : data?.users && data.users.length > 0 ? (
         <Table>
           <TableHeader>
             <TableRow className="bg-zinc-100">
@@ -210,7 +208,7 @@ export default function UsersList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.users?.map((user) => (
+            {data.users.map((user) => (
               <TableRow key={user.id} className="hover:bg-zinc-50 transition-colors">
                 <TableCell>
                   <div className="flex items-center gap-3">
@@ -270,24 +268,22 @@ export default function UsersList() {
                 </TableCell>
               </TableRow>
             ))}
-            {(!data?.users || data.users.length === 0) && (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-8">
-                  <UsersIcon className="h-8 w-8 text-zinc-300 mx-auto mb-2" />
-                  <p className="text-zinc-500">No users found</p>
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
+        ) : (
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <UsersIcon className="h-10 w-10 text-zinc-300 mb-3" />
+            <p className="text-zinc-500">No users yet</p>
+          </CardContent>
+        )}
       </Card>
 
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Remove user"
-        description={`Remove ${deleteTarget?.email}? They will no longer be able to sign in.`}
-        confirmLabel="Remove"
+        title="Delete user"
+        description={`Are you sure you want to delete "${deleteTarget?.email}"? They will no longer be able to sign in.`}
+        confirmLabel="Delete"
         onConfirm={() => {
           if (deleteTarget) deleteMutation.mutate(deleteTarget.id)
         }}

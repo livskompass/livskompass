@@ -105,8 +105,8 @@ export function InlineImagePickerProvider({ children }: { children: React.ReactN
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-stone-100">
-              <span className="text-sm font-semibold text-stone-700">Choose image</span>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-100">
+              <span className="text-sm font-semibold text-zinc-700">Choose image</span>
               <div className="flex items-center gap-2">
                 <input
                   ref={fileInputRef}
@@ -119,7 +119,7 @@ export function InlineImagePickerProvider({ children }: { children: React.ReactN
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-md border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 transition-colors disabled:opacity-50"
                 >
                   {uploading ? (
                     <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading...</>
@@ -130,7 +130,7 @@ export function InlineImagePickerProvider({ children }: { children: React.ReactN
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="h-8 px-3 text-xs font-medium rounded-md text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                  className="h-8 px-3 text-xs font-medium rounded-md text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
                 >
                   Cancel
                 </button>
@@ -142,7 +142,7 @@ export function InlineImagePickerProvider({ children }: { children: React.ReactN
               {isLoading ? (
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
                   {[...Array(10)].map((_, i) => (
-                    <div key={i} className="aspect-square rounded-lg bg-stone-100 animate-pulse" />
+                    <div key={i} className="aspect-square rounded-lg bg-zinc-100 animate-pulse" />
                   ))}
                 </div>
               ) : data?.media && data.media.filter((m) => m.type?.startsWith('image')).length > 0 ? (
@@ -167,7 +167,7 @@ export function InlineImagePickerProvider({ children }: { children: React.ReactN
                             alt={media.alt_text || media.filename}
                             className="w-full h-full object-cover"
                           />
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-zinc-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
                             {media.filename}
                           </div>
                         </button>
@@ -176,9 +176,9 @@ export function InlineImagePickerProvider({ children }: { children: React.ReactN
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <ImageIcon className="h-10 w-10 text-stone-300 mb-3" />
-                  <p className="text-sm text-stone-500 font-medium">No images yet</p>
-                  <p className="text-xs text-stone-400 mt-1">Upload an image to get started.</p>
+                  <ImageIcon className="h-10 w-10 text-zinc-300 mb-3" />
+                  <p className="text-sm text-zinc-500 font-medium">No images yet</p>
+                  <p className="text-xs text-zinc-400 mt-1">Upload an image to get started.</p>
                 </div>
               )}
             </div>

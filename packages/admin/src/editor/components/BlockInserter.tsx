@@ -232,13 +232,13 @@ function BlockPicker({
         }}
       >
         {/* Search */}
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-stone-100">
-          <Search className="h-3.5 w-3.5 text-stone-300 flex-shrink-0" />
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-zinc-100">
+          <Search className="h-3.5 w-3.5 text-zinc-300 flex-shrink-0" />
           <input
             ref={searchRef}
             type="text"
             placeholder="Search blocks..."
-            className="flex-1 text-sm text-stone-700 outline-none bg-transparent placeholder:text-stone-300"
+            className="flex-1 text-sm text-zinc-700 outline-none bg-transparent placeholder:text-zinc-300"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
@@ -266,7 +266,7 @@ function BlockPicker({
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="p-0.5 rounded text-stone-300 hover:text-stone-500"
+              className="p-0.5 rounded text-zinc-300 hover:text-zinc-500"
             >
               <X className="h-3 w-3" />
             </button>
@@ -276,7 +276,7 @@ function BlockPicker({
         {/* Block list */}
         <div className="overflow-y-auto p-1.5" style={{ maxHeight: 350 }} id="block-picker-list" role="listbox" aria-label="Available blocks">
           {filteredCategories.length === 0 ? (
-            <div className="text-center py-6 text-xs text-stone-400">
+            <div className="text-center py-6 text-xs text-zinc-400">
               No blocks found
             </div>
           ) : (
@@ -285,10 +285,10 @@ function BlockPicker({
               return filteredCategories.map((cat) => (
                 <div key={cat.key} className="mb-1.5 last:mb-0" role="group" aria-label={cat.title}>
                   <div className="flex items-center gap-1.5 px-2 py-1">
-                    <span className="text-stone-300">
+                    <span className="text-zinc-300">
                       {CATEGORY_ICONS[cat.key]}
                     </span>
-                    <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
                       {cat.title}
                     </span>
                   </div>
@@ -308,7 +308,7 @@ function BlockPicker({
                         onClick={() => insertBlock(name)}
                         onMouseEnter={() => setFocusedIndex(idx)}
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-stone-300 flex-shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 flex-shrink-0" />
                         {components[name]?.label || name}
                       </button>
                     )
