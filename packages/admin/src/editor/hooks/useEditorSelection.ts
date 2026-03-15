@@ -16,6 +16,13 @@ export function useEditorSelection() {
     (item: any, i: number) => item.props?.id || `${item.type}-${i}`,
   )
 
+  // Auto-deselect if selected block was deleted (no longer in blockIds)
+  useEffect(() => {
+    if (selectedBlockId && blockIds.length > 0 && !blockIds.includes(selectedBlockId)) {
+      selectBlock(null)
+    }
+  }, [selectedBlockId, blockIds, selectBlock])
+
   const selectByIndex = useCallback(
     (index: number) => {
       if (index >= 0 && index < blockIds.length) {
@@ -48,24 +55,53 @@ export function useEditorSelection() {
           e.preventDefault()
           break
 
-        case 'Tab': {
+        case 'Tab':
+        case 'ArrowDown':
+        case 'ArrowUp': {
           if (blockIds.length === 0) break
           e.preventDefault()
           const currentIndex = selectedBlockId
             ? blockIds.indexOf(selectedBlockId)
             : -1
 
-          if (e.shiftKey) {
-            // Previous block
+          const goBack = e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)
+
+          if (goBack) {
             const prev = currentIndex <= 0 ? blockIds.length - 1 : currentIndex - 1
             selectByIndex(prev)
           } else {
-            // Next block
             const next = currentIndex >= blockIds.length - 1 ? 0 : currentIndex + 1
             selectByIndex(next)
           }
+
+          // Scroll selected block into view
+          requestAnimationFrame(() => {
+            const el = document.querySelector(`[data-block-id="${blockIds[goBack
+              ? (currentIndex <= 0 ? blockIds.length - 1 : currentIndex - 1)
+              : (currentIndex >= blockIds.length - 1 ? 0 : currentIndex + 1)
+            ]}"]`)
+            el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+          })
           break
         }
+
+        case 'Enter': {
+          // Enter edit mode on selected block (focus first contentEditable)
+          if (selectedBlockId && !editingBlockId) {
+            e.preventDefault()
+            const blockEl = document.querySelector(`[data-block-id="${selectedBlockId}"]`)
+            const editable = blockEl?.querySelector('[contenteditable="true"]') as HTMLElement
+            if (editable) {
+              editable.focus()
+            }
+          }
+          break
+        }
+
+        case 'Delete':
+        case 'Backspace':
+          // Handled by toolbar — just prevent default when block selected
+          break
       }
     }
 

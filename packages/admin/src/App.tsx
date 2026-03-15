@@ -7,15 +7,11 @@ import Login from './pages/Login'
 import AuthCallback from './pages/AuthCallback'
 import Dashboard from './pages/Dashboard'
 import PagesList from './pages/PagesList'
-import PageEditor from './pages/PageEditor'
 import PostsList from './pages/PostsList'
-import PostEditor from './pages/PostEditor'
 import CoursesList from './pages/CoursesList'
-import CourseEditor from './pages/CourseEditor'
 import BookingsList from './pages/BookingsList'
 import BookingDetail from './pages/BookingDetail'
 import ProductsList from './pages/ProductsList'
-import ProductEditor from './pages/ProductEditor'
 import MediaLibrary from './pages/MediaLibrary'
 import ContactsList from './pages/ContactsList'
 import UsersList from './pages/UsersList'
@@ -57,23 +53,15 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
-        {/* Inline editor — full-screen, no AdminLayout chrome */}
-        <Route
-          path="/inline/sidor/:id"
-          element={<ProtectedRoute><InlineEditorPage contentType="page" /></ProtectedRoute>}
-        />
-        <Route
-          path="/inline/nyheter/:id"
-          element={<ProtectedRoute><InlineEditorPage contentType="post" /></ProtectedRoute>}
-        />
-        <Route
-          path="/inline/utbildningar/:id"
-          element={<ProtectedRoute><InlineEditorPage contentType="course" /></ProtectedRoute>}
-        />
-        <Route
-          path="/inline/material/:id"
-          element={<ProtectedRoute><InlineEditorPage contentType="product" /></ProtectedRoute>}
-        />
+        {/* Full-screen inline editor — no AdminLayout chrome */}
+        <Route path="/pages/new" element={<ProtectedRoute><InlineEditorPage contentType="page" /></ProtectedRoute>} />
+        <Route path="/pages/:id" element={<ProtectedRoute><InlineEditorPage contentType="page" /></ProtectedRoute>} />
+        <Route path="/posts/new" element={<ProtectedRoute><InlineEditorPage contentType="post" /></ProtectedRoute>} />
+        <Route path="/posts/:id" element={<ProtectedRoute><InlineEditorPage contentType="post" /></ProtectedRoute>} />
+        <Route path="/courses/new" element={<ProtectedRoute><InlineEditorPage contentType="course" /></ProtectedRoute>} />
+        <Route path="/courses/:id" element={<ProtectedRoute><InlineEditorPage contentType="course" /></ProtectedRoute>} />
+        <Route path="/products/new" element={<ProtectedRoute><InlineEditorPage contentType="product" /></ProtectedRoute>} />
+        <Route path="/products/:id" element={<ProtectedRoute><InlineEditorPage contentType="product" /></ProtectedRoute>} />
         <Route
           path="/"
           element={
@@ -84,24 +72,16 @@ function App() {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="sidor" element={<PagesList />} />
-          <Route path="sidor/ny" element={<PageEditor />} />
-          <Route path="sidor/:id" element={<PageEditor />} />
-          <Route path="nyheter" element={<PostsList />} />
-          <Route path="nyheter/ny" element={<PostEditor />} />
-          <Route path="nyheter/:id" element={<PostEditor />} />
-          <Route path="utbildningar" element={<CoursesList />} />
-          <Route path="utbildningar/ny" element={<CourseEditor />} />
-          <Route path="utbildningar/:id" element={<CourseEditor />} />
-          <Route path="bokningar" element={<BookingsList />} />
-          <Route path="bokningar/:id" element={<BookingDetail />} />
-          <Route path="material" element={<ProductsList />} />
-          <Route path="material/ny" element={<ProductEditor />} />
-          <Route path="material/:id" element={<ProductEditor />} />
+          <Route path="pages" element={<PagesList />} />
+          <Route path="posts" element={<PostsList />} />
+          <Route path="courses" element={<CoursesList />} />
+          <Route path="bookings" element={<BookingsList />} />
+          <Route path="bookings/:id" element={<BookingDetail />} />
+          <Route path="products" element={<ProductsList />} />
           <Route path="media" element={<MediaLibrary />} />
-          <Route path="meddelanden" element={<ContactsList />} />
-          <Route path="anvandare" element={<UsersList />} />
-          <Route path="installningar" element={<Settings />} />
+          <Route path="messages" element={<ContactsList />} />
+          <Route path="users" element={<UsersList />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </BrowserRouter>

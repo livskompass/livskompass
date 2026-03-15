@@ -217,7 +217,7 @@ export default function UsersList() {
                     {user.avatar_url ? (
                       <img
                         src={user.avatar_url}
-                        alt=""
+                        alt={user.name || 'User avatar'}
                         className="w-9 h-9 rounded-full"
                       />
                     ) : (

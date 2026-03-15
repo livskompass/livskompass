@@ -1,9 +1,11 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { GripVertical, ChevronUp, ChevronDown, Copy, Trash2, Settings, X } from 'lucide-react'
 import { useToolbarPosition } from '../hooks/useToolbarPosition'
 import { useEditor } from '../context'
-import type { Data } from '@puckeditor/core'
+import { SettingsPopover } from './SettingsPopover'
+import { InlineVisualControls } from './InlineVisualControls'
+import type { Data } from '../types'
 
 interface FloatingToolbarProps {
   blockId: string | null
@@ -21,12 +23,21 @@ export function FloatingToolbar({
   const position = useToolbarPosition(blockId)
   const { state, updateData } = useEditor()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const settingsBtnRef = useRef<HTMLButtonElement>(null)
 
   const puckData = state.puckData
+
+  // Reset confirmDelete and settings when switching blocks
+  useEffect(() => {
+    setConfirmDelete(false)
+    setShowSettings(false)
+  }, [blockId])
 
   const moveBlock = useCallback(
     (direction: -1 | 1) => {
       if (!puckData) return
+      if (blockIndex < 0 || blockIndex >= puckData.content.length) return
       const items = [...puckData.content]
       const newIndex = blockIndex + direction
       if (newIndex < 0 || newIndex >= items.length) return
@@ -43,12 +54,13 @@ export function FloatingToolbar({
 
   const duplicateBlock = useCallback(() => {
     if (!puckData) return
+    if (blockIndex < 0 || blockIndex >= puckData.content.length) return
     const items = [...puckData.content]
     const original = items[blockIndex]
     const clone = JSON.parse(JSON.stringify(original))
     // Give clone a new ID
     if (clone.props?.id) {
-      clone.props.id = `${clone.props.id}-copy-${Date.now()}`
+      clone.props.id = `${clone.props.id}-copy-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
     }
     items.splice(blockIndex + 1, 0, clone)
     updateData({ ...puckData, content: items } as Data)
@@ -56,6 +68,7 @@ export function FloatingToolbar({
 
   const deleteBlock = useCallback(() => {
     if (!puckData) return
+    if (blockIndex < 0 || blockIndex >= puckData.content.length) return
     const items = [...puckData.content]
     items.splice(blockIndex, 1)
     updateData({ ...puckData, content: items } as Data)
@@ -73,17 +86,17 @@ export function FloatingToolbar({
         left: position.x,
         top: position.y,
         transform: `translate(-50%, ${position.placement === 'above' ? '-100%' : '0'})`,
-        zIndex: 'var(--z-editor-toolbar, 100)',
-        animation: 'editor-bounce-in 150ms var(--ease-out, ease) forwards',
+        zIndex: 'var(--z-editor-toolbar)',
+        animation: 'editor-bounce-in 150ms var(--editor-ease) forwards',
       }}
     >
       <div
         className="flex items-center gap-px rounded-full px-1 py-0.5"
         style={{
-          background: 'rgba(255, 255, 255, 0.95)',
+          background: 'var(--editor-surface-glass)',
           backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(0, 0, 0, 0.06)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+          border: '1px solid var(--editor-border)',
+          boxShadow: 'var(--editor-shadow-md)',
         }}
         role="toolbar"
         aria-label={`${blockType} block actions`}
@@ -91,7 +104,7 @@ export function FloatingToolbar({
         {confirmDelete ? (
           /* Delete confirmation mode */
           <div className="flex items-center gap-1 px-1">
-            <span className="text-xs text-stone-500 px-1">
+            <span className="text-xs px-1" style={{ color: 'var(--editor-text-muted)' }}>
               Delete {blockType}?
             </span>
             <button
@@ -104,7 +117,8 @@ export function FloatingToolbar({
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
-              className="p-1 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+              className="p-1 rounded-full transition-colors"
+              style={{ color: 'var(--editor-text-subtle)' }}
               aria-label="Cancel delete"
             >
               <X className="h-3.5 w-3.5" />
@@ -113,16 +127,19 @@ export function FloatingToolbar({
         ) : (
           /* Normal toolbar mode */
           <>
-            {/* Drag handle (visual only in Take 1) */}
+            {/* Drag handle indicator */}
             <ToolbarButton
               icon={<GripVertical className="h-3.5 w-3.5" />}
-              label="Drag to reorder"
+              label="Use handle on block edge to drag"
               disabled
-              style={{ cursor: 'grab', opacity: 0.4 }}
+              style={{ cursor: 'default', opacity: 0.3 }}
             />
 
             {/* Block type label */}
-            <span className="text-[11px] font-medium text-stone-400 px-1.5 select-none">
+            <span
+              className="text-[11px] font-medium px-1.5 select-none"
+              style={{ color: 'var(--editor-text-subtle)' }}
+            >
               {blockType}
             </span>
 
@@ -161,18 +178,33 @@ export function FloatingToolbar({
 
             <ToolbarDivider />
 
-            {/* Settings (Phase 5) */}
+            {/* Settings */}
             <ToolbarButton
+              ref={settingsBtnRef}
               icon={<Settings className="h-3.5 w-3.5" />}
               label="Settings"
-              onClick={() => {
-                // TODO Phase 5: Open settings popover
-                console.log('Open settings for block', blockIndex)
-              }}
+              active={showSettings}
+              onClick={() => setShowSettings((v) => !v)}
             />
           </>
         )}
       </div>
+
+      {/* Visual controls row */}
+      {!confirmDelete && (
+        <InlineVisualControls blockType={blockType} blockIndex={blockIndex} />
+      )}
+
+      {/* Settings popover */}
+      {showSettings && blockId && (
+        <SettingsPopover
+          blockId={blockId}
+          blockType={blockType}
+          blockIndex={blockIndex}
+          anchorRect={settingsBtnRef.current?.getBoundingClientRect() ?? null}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
     </div>
   )
 
@@ -181,30 +213,33 @@ export function FloatingToolbar({
 
 // ── Sub-components ──
 
-function ToolbarButton({
-  icon,
-  label,
-  onClick,
-  disabled,
-  destructive,
-  style,
-}: {
-  icon: React.ReactNode
-  label: string
-  onClick?: () => void
-  disabled?: boolean
-  destructive?: boolean
-  style?: React.CSSProperties
-}) {
+import { forwardRef } from 'react'
+
+const ToolbarButton = forwardRef<
+  HTMLButtonElement,
+  {
+    icon: React.ReactNode
+    label: string
+    onClick?: () => void
+    disabled?: boolean
+    destructive?: boolean
+    active?: boolean
+    style?: React.CSSProperties
+  }
+>(function ToolbarButton({ icon, label, onClick, disabled, destructive, active, style }, ref) {
   return (
     <button
+      ref={ref}
       className="flex items-center justify-center w-7 h-7 rounded-md transition-colors"
       style={{
         color: destructive
-          ? 'var(--editor-red, #EF4444)'
-          : disabled
-            ? '#D1D5DB'
-            : '#6B7280',
+          ? 'var(--editor-red)'
+          : active
+            ? 'var(--editor-blue)'
+            : disabled
+              ? 'var(--editor-text-disabled)'
+              : 'var(--editor-text-muted)',
+        background: active ? 'var(--editor-blue-lightest)' : 'transparent',
         cursor: disabled ? 'not-allowed' : 'pointer',
         ...style,
       }}
@@ -213,29 +248,31 @@ function ToolbarButton({
       aria-label={label}
       title={label}
       onMouseEnter={(e) => {
-        if (!disabled) {
-          ;(e.target as HTMLElement).style.background = destructive
-            ? 'var(--editor-red-light, #FEE2E2)'
-            : '#F3F4F6'
-          ;(e.target as HTMLElement).style.color = destructive
-            ? 'var(--editor-red, #EF4444)'
-            : '#111827'
+        if (!disabled && !active) {
+          ;(e.currentTarget as HTMLElement).style.background = destructive
+            ? 'var(--editor-red-light)'
+            : 'var(--editor-surface-hover)'
+          ;(e.currentTarget as HTMLElement).style.color = destructive
+            ? 'var(--editor-red)'
+            : 'var(--editor-text-primary)'
         }
       }}
       onMouseLeave={(e) => {
-        ;(e.target as HTMLElement).style.background = 'transparent'
-        ;(e.target as HTMLElement).style.color = destructive
-          ? 'var(--editor-red, #EF4444)'
-          : disabled
-            ? '#D1D5DB'
-            : '#6B7280'
+        if (!active) {
+          ;(e.currentTarget as HTMLElement).style.background = 'transparent'
+          ;(e.currentTarget as HTMLElement).style.color = destructive
+            ? 'var(--editor-red)'
+            : disabled
+              ? 'var(--editor-text-disabled)'
+              : 'var(--editor-text-muted)'
+        }
       }}
     >
       {icon}
     </button>
   )
-}
+})
 
 function ToolbarDivider() {
-  return <div className="w-px h-4 bg-stone-200 mx-0.5" />
+  return <div className="w-px h-4 mx-0.5" style={{ background: 'var(--editor-neutral-200)' }} />
 }

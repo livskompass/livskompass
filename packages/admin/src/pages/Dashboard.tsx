@@ -49,10 +49,10 @@ export default function Dashboard() {
   })
 
   const stats = [
-    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/sidor', icon: FileText, color: 'text-stone-600 bg-stone-100' },
-    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/nyheter', icon: Newspaper, color: 'text-stone-600 bg-stone-100' },
-    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/utbildningar', icon: GraduationCap, color: 'text-stone-600 bg-stone-100' },
-    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bokningar', icon: Ticket, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Pages', value: statsData?.stats?.publishedPages ?? 0, href: '/pages', icon: FileText, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Posts', value: statsData?.stats?.publishedPosts ?? 0, href: '/posts', icon: Newspaper, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Courses', value: statsData?.stats?.activeCourses ?? 0, href: '/courses', icon: GraduationCap, color: 'text-stone-600 bg-stone-100' },
+    { name: 'Bookings', value: statsData?.stats?.paidBookings ?? 0, href: '/bookings', icon: Ticket, color: 'text-stone-600 bg-stone-100' },
   ]
 
   const unreadContacts = statsData?.stats?.unreadContacts ?? 0
@@ -100,7 +100,7 @@ export default function Dashboard() {
                   {unreadContacts} {unreadContacts === 1 ? 'unread message' : 'unread messages'}
                 </p>
                 <Link
-                  to="/meddelanden"
+                  to="/messages"
                   className="text-sm text-stone-600 hover:text-stone-500 inline-flex items-center gap-1"
                 >
                   View messages <ArrowRight className="h-3 w-3" />
@@ -122,7 +122,7 @@ export default function Dashboard() {
                 Recent bookings
               </CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/bokningar" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
+                <Link to="/bookings" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
                   View all <ArrowRight className="h-3 w-3" />
                 </Link>
               </Button>
@@ -178,7 +178,7 @@ export default function Dashboard() {
                 Upcoming courses
               </CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/utbildningar" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
+                <Link to="/courses" className="text-xs text-stone-500 hover:text-stone-900 inline-flex items-center gap-1">
                   Manage <ArrowRight className="h-3 w-3" />
                 </Link>
               </Button>

@@ -1,6 +1,5 @@
-import { createContext, useContext, useReducer, useCallback, useRef, type ReactNode } from 'react'
-import type { Data } from '@puckeditor/core'
-import type { EditorState, EditorAction, ContentEntity, ContentType, SaveStatus } from './types'
+import { createContext, useContext, useReducer, useCallback, useRef, useEffect, type ReactNode } from 'react'
+import type { Data, EditorState, EditorAction, ContentEntity, ContentType, SaveStatus } from './types'
 
 // ── Reducer ──
 
@@ -112,6 +111,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(editorReducer, initialState)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>()
   const savedFeedbackRef = useRef<ReturnType<typeof setTimeout>>()
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const setEntity = useCallback((entity: ContentEntity, contentType: ContentType) => {
     dispatch({ type: 'SET_ENTITY', entity, contentType })
@@ -121,13 +121,20 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_SAVE_STATUS', status })
   }, [])
 
-  // Auto-save: debounced PATCH to API
+  // Auto-save: debounced PATCH to API with AbortController to prevent race conditions
   const autoSave = useCallback((data: Data, entity: ContentEntity, contentType: ContentType) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
 
     saveTimerRef.current = setTimeout(async () => {
       const token = localStorage.getItem('admin_token')
       if (!token) return
+
+      // Abort any in-flight save request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+      const controller = new AbortController()
+      abortControllerRef.current = controller
 
       dispatch({ type: 'SET_SAVE_STATUS', status: 'saving' })
 
@@ -143,6 +150,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
             content_blocks: JSON.stringify(data),
             updated_at: entity.updated_at,
           }),
+          signal: controller.signal,
         })
 
         if (!res.ok) {
@@ -172,7 +180,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         savedFeedbackRef.current = setTimeout(() => {
           dispatch({ type: 'SET_SAVE_STATUS', status: 'idle' })
         }, 2000)
-      } catch {
+      } catch (err) {
+        // Ignore aborted requests — a newer save superseded this one
+        if (err instanceof DOMException && err.name === 'AbortError') return
+
         dispatch({ type: 'SET_SAVE_STATUS', status: 'error' })
         if (savedFeedbackRef.current) clearTimeout(savedFeedbackRef.current)
         savedFeedbackRef.current = setTimeout(() => {
@@ -189,7 +200,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const updateDataWithSave = useCallback((data: Data) => {
     dispatch({ type: 'SET_PUCK_DATA', data })
     const { entity, contentType } = stateRef.current
-    if (entity) {
+    // Skip auto-save for new entities (no ID yet — will be created on first publish)
+    if (entity && entity.id) {
       autoSave(data, entity, contentType)
     }
   }, [autoSave])
@@ -208,6 +220,15 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const exitEdit = useCallback(() => {
     dispatch({ type: 'EXIT_EDIT' })
+  }, [])
+
+  // Cleanup timers and in-flight requests on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+      if (savedFeedbackRef.current) clearTimeout(savedFeedbackRef.current)
+      if (abortControllerRef.current) abortControllerRef.current.abort()
+    }
   }, [])
 
   const value: EditorContextValue = {

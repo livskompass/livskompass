@@ -1,4 +1,10 @@
-import type { Data } from '@puckeditor/core'
+// ── Puck-compatible Data type (local definition to avoid @puckeditor/core dependency) ──
+
+export interface Data {
+  content: Array<{ type: string; props: Record<string, any> }>
+  root: { props: Record<string, any> }
+  zones?: Record<string, Array<{ type: string; props: Record<string, any> }>>
+}
 
 // ── Content Types ──
 

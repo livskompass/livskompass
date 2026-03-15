@@ -34,15 +34,15 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, dividerAfter: true },
-  { name: 'Pages', href: '/sidor', icon: FileText },
-  { name: 'Posts', href: '/nyheter', icon: Newspaper },
-  { name: 'Courses', href: '/utbildningar', icon: GraduationCap },
-  { name: 'Bookings', href: '/bokningar', icon: Ticket },
-  { name: 'Products', href: '/material', icon: ShoppingBag, dividerAfter: true },
+  { name: 'Pages', href: '/pages', icon: FileText },
+  { name: 'Posts', href: '/posts', icon: Newspaper },
+  { name: 'Courses', href: '/courses', icon: GraduationCap },
+  { name: 'Bookings', href: '/bookings', icon: Ticket },
+  { name: 'Products', href: '/products', icon: ShoppingBag, dividerAfter: true },
   { name: 'Media', href: '/media', icon: Image },
-  { name: 'Messages', href: '/meddelanden', icon: Mail },
-  { name: 'Users', href: '/anvandare', icon: Users, adminOnly: true },
-  { name: 'Settings', href: '/installningar', icon: Settings },
+  { name: 'Messages', href: '/messages', icon: Mail },
+  { name: 'Users', href: '/users', icon: Users, adminOnly: true },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export default function AdminLayout() {
@@ -55,7 +55,7 @@ export default function AdminLayout() {
   const queryClient = useQueryClient()
 
   // Auto-collapse sidebar on editor pages for maximum editing space
-  const isEditorPage = /\/(sidor|nyheter|utbildningar|material)\/.+/.test(location.pathname)
+  const isEditorPage = /\/(pages|posts|courses|products)\/.+/.test(location.pathname)
   useEffect(() => {
     if (isEditorPage) setCollapsed(true)
   }, [isEditorPage])
@@ -181,7 +181,7 @@ export default function AdminLayout() {
               {currentUser.avatar_url ? (
                 <img
                   src={currentUser.avatar_url}
-                  alt=""
+                  alt={currentUser.name || 'User avatar'}
                   className="w-8 h-8 rounded-full"
                 />
               ) : (

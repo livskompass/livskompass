@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useEffect } from 'react'
 import { useEditor } from '../context'
 
 const HOVER_DELAY = 150 // ms before registering hover
@@ -49,6 +49,13 @@ export function useHoverIntent() {
 
   const onMouseMove = useCallback((e: React.MouseEvent) => {
     lastPosRef.current = { x: e.clientX, y: e.clientY, t: performance.now() }
+  }, [])
+
+  // Cleanup hover timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
   }, [])
 
   return {

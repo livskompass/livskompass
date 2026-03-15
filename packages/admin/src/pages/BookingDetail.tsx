@@ -47,7 +47,7 @@ export default function BookingDetail() {
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
           <p className="text-stone-500 mb-3">Booking not found.</p>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/bokningar">Back to bookings</Link>
+            <Link to="/bookings">Back to bookings</Link>
           </Button>
         </CardContent>
       </Card>
@@ -77,7 +77,7 @@ export default function BookingDetail() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
-          <Link to="/bokningar">
+          <Link to="/bookings">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Link>

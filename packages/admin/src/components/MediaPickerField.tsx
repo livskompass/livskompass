@@ -65,7 +65,7 @@ export function MediaPickerField({ value, onChange }: MediaPickerFieldProps) {
         <div className="relative group">
           <img
             src={resolvedUrl}
-            alt=""
+            alt="Selected media preview"
             className="w-full h-28 rounded-lg object-cover border border-stone-200 bg-stone-50"
             onError={(e) => {
               ;(e.target as HTMLImageElement).style.display = 'none'

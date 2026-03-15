@@ -34,7 +34,7 @@ export default function PagesList() {
           <p className="text-stone-500 mt-1">Manage your web pages.</p>
         </div>
         <Button asChild>
-          <Link to="/sidor/ny">
+          <Link to="/pages/new">
             <Plus className="h-4 w-4 mr-2" />
             New page
           </Link>
@@ -63,7 +63,7 @@ export default function PagesList() {
                 <TableRow key={page.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <Link
-                      to={`/sidor/${page.id}`}
+                      to={`/pages/${page.id}`}
                       className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                     >
                       {page.title}
@@ -80,7 +80,7 @@ export default function PagesList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/sidor/${page.id}`}>
+                        <Link to={`/pages/${page.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
@@ -103,7 +103,7 @@ export default function PagesList() {
             <FileText className="h-10 w-10 text-stone-300 mb-3" />
             <p className="text-stone-500 mb-2">No pages yet</p>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/sidor/ny">Create your first page</Link>
+              <Link to="/pages/new">Create your first page</Link>
             </Button>
           </CardContent>
         )}

@@ -204,6 +204,29 @@ export const uploadMedia = async (file: File) => {
 export const deleteMedia = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/media/${id}`, { method: 'DELETE' })
 
+// Versions
+export interface ContentVersion {
+  id: string
+  content_type: string
+  entity_id: string
+  title: string
+  content_blocks: string | null
+  snapshot: string | null
+  created_by: string | null
+  created_at: string
+}
+
+export const getVersions = (contentType: string, entityId: string) =>
+  fetchApi<{ versions: ContentVersion[] }>(`/admin/versions/${contentType}/${entityId}`)
+
+export const getVersion = (versionId: string) =>
+  fetchApi<{ version: ContentVersion }>(`/admin/versions/${versionId}`)
+
+export const restoreVersion = (versionId: string) =>
+  fetchApi<{ success: boolean; entity: any }>(`/admin/versions/${versionId}/restore`, {
+    method: 'POST',
+  })
+
 // Contacts
 export const getContacts = () => fetchApi<{ contacts: Contact[] }>('/admin/contacts')
 export const markContactRead = (id: string) =>

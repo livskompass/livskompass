@@ -34,7 +34,7 @@ export default function ProductsList() {
           <p className="text-stone-500 mt-1">Manage books, CDs, and other products.</p>
         </div>
         <Button asChild>
-          <Link to="/material/ny">
+          <Link to="/products/new">
             <Plus className="h-4 w-4 mr-2" />
             New product
           </Link>
@@ -67,12 +67,12 @@ export default function ProductsList() {
                       {product.image_url && (
                         <img
                           src={getMediaUrl(product.image_url)}
-                          alt=""
+                          alt={product.title || 'Product image'}
                           className="h-9 w-9 rounded-md object-cover border border-stone-200"
                         />
                       )}
                       <Link
-                        to={`/material/${product.id}`}
+                        to={`/products/${product.id}`}
                         className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                       >
                         {product.title}
@@ -97,7 +97,7 @@ export default function ProductsList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/material/${product.id}`}>
+                        <Link to={`/products/${product.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
@@ -120,7 +120,7 @@ export default function ProductsList() {
             <ShoppingBag className="h-10 w-10 text-stone-300 mb-3" />
             <p className="text-stone-500 mb-2">No products yet</p>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/material/ny">Add your first product</Link>
+              <Link to="/products/new">Add your first product</Link>
             </Button>
           </CardContent>
         )}

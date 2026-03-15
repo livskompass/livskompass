@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { EditorProvider, useEditor } from './context'
 import { EditorTopBar } from './components/EditorTopBar'
 import { BlockList } from './components/BlockList'
+import { BlockPanel } from './components/BlockPanel'
 import { FloatingToolbar } from './components/FloatingToolbar'
+import { SlashMenu } from './components/SlashMenu'
+import { SelectedBlockArrayControls } from './components/InlineArrayControls'
+import { VersionHistoryPanel } from './components/VersionHistoryPanel'
 import { puckConfig } from '@livskompass/shared'
 import type { ContentType, ContentEntity } from './types'
 
@@ -17,23 +21,35 @@ const CONTENT_TYPE_ROUTES: Record<ContentType, string> = {
 }
 
 const ADMIN_LIST_ROUTES: Record<ContentType, string> = {
-  page: '/sidor',
-  post: '/nyheter',
-  course: '/utbildningar',
-  product: '/material',
+  page: '/pages',
+  post: '/posts',
+  course: '/courses',
+  product: '/products',
 }
 
 interface InlineEditorPageProps {
   contentType: ContentType
 }
 
+const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
+  page: 'New page',
+  post: 'New post',
+  course: 'New course',
+  product: 'New product',
+}
+
 function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { setEntity, state } = useEditor()
+  const { setEntity, state, dispatch } = useEditor()
   const [user, setUser] = useState<{ name: string; avatar_url: string; role: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [panelCollapsed, setPanelCollapsed] = useState(false)
+
+  const isNew = id === 'new'
+  const toggleHistory = useCallback(() => setHistoryOpen((v) => !v), [])
 
   // Auth check
   useEffect(() => {
@@ -57,8 +73,26 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
       .catch(() => navigate('/login'))
   }, [navigate])
 
-  // Load entity data
+  // Load entity data (or init blank for new)
   useEffect(() => {
+    if (isNew) {
+      const blankEntity: ContentEntity = {
+        id: '',
+        slug: '',
+        title: CONTENT_TYPE_LABELS[contentType],
+        status: 'draft',
+        content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
+        editor_version: 'puck',
+        updated_at: '',
+        draft: null,
+      }
+      setEntity(blankEntity, contentType)
+      // Mark dirty so publish button is enabled
+      dispatch({ type: 'MARK_DIRTY' })
+      setLoading(false)
+      return
+    }
+
     if (!id) return
     const token = localStorage.getItem('admin_token')
     if (!token) return
@@ -85,16 +119,49 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         setError(err.message)
         setLoading(false)
       })
-  }, [id, contentType, setEntity])
+  }, [id, contentType, setEntity, isNew, dispatch])
 
   const handlePublish = async () => {
-    if (!id || !state.entity || !state.puckData) return
+    if (!state.puckData) return
     const token = localStorage.getItem('admin_token')
     if (!token) return
 
     const route = CONTENT_TYPE_ROUTES[contentType]
 
     try {
+      if (isNew) {
+        // Create new entity
+        const slug = (state.entity?.title || CONTENT_TYPE_LABELS[contentType])
+          .toLowerCase()
+          .replace(/[åä]/g, 'a').replace(/ö/g, 'o')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')
+
+        const res = await fetch(`${API_BASE}/admin/${route}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: state.entity?.title || CONTENT_TYPE_LABELS[contentType],
+            slug,
+            content_blocks: JSON.stringify(state.puckData),
+            editor_version: 'puck',
+            status: 'draft',
+          }),
+        })
+
+        if (!res.ok) throw new Error('Create failed')
+        const result = await res.json() as Record<string, any>
+        const newEntity = result.page || result.post || result.course || result.product
+        if (newEntity?.id) {
+          navigate(`${ADMIN_LIST_ROUTES[contentType]}/${newEntity.id}`, { replace: true })
+        }
+        return
+      }
+
+      // Update existing entity
       const res = await fetch(`${API_BASE}/admin/${route}/${id}`, {
         method: 'PUT',
         headers: {
@@ -156,10 +223,19 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} />
+      <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} onToggleHistory={toggleHistory} isNew={isNew} />
 
-      {/* Content area — offset for top bar */}
-      <div className="pt-12">
+      {/* Left block panel — always visible */}
+      <BlockPanel collapsed={panelCollapsed} onToggleCollapsed={() => setPanelCollapsed((v) => !v)} />
+
+      {/* Content area — offset for top bar + left panel */}
+      <main
+        id="editor-content"
+        className="pt-12 transition-[padding-left] duration-200"
+        style={{ paddingLeft: panelCollapsed ? 36 : 240 }}
+        role="main"
+        aria-label="Page content"
+      >
         <div
           className="max-w-[1440px] mx-auto"
           style={{
@@ -169,13 +245,45 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         >
           <BlockList />
         </div>
-      </div>
+      </main>
+
+      {/* Array add controls for selected block */}
+      <SelectedBlockArrayControls />
 
       {/* Floating toolbar for selected block */}
       <SelectedBlockToolbar />
 
+      {/* "/" command for block insertion */}
+      <SlashMenu />
+
+      {/* Version history side panel */}
+      <VersionHistoryPanel open={historyOpen} onClose={() => setHistoryOpen(false)} />
+
       {/* Portal container for floating toolbar */}
       <div id="editor-portals" />
+
+      {/* Accessibility: live region for save status announcements */}
+      <SaveStatusAnnouncer />
+    </div>
+  )
+}
+
+function SaveStatusAnnouncer() {
+  const { state } = useEditor()
+  const messages: Record<string, string> = {
+    saving: 'Saving changes...',
+    saved: 'Changes saved',
+    error: 'Save failed',
+    idle: '',
+  }
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="sr-only"
+    >
+      {messages[state.saveStatus] || ''}
     </div>
   )
 }

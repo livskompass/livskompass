@@ -54,7 +54,7 @@ export default function CoursesList() {
           <p className="text-stone-500 mt-1">Manage courses and workshops.</p>
         </div>
         <Button asChild>
-          <Link to="/utbildningar/ny">
+          <Link to="/courses/new">
             <Plus className="h-4 w-4 mr-2" />
             New course
           </Link>
@@ -85,7 +85,7 @@ export default function CoursesList() {
                 <TableRow key={course.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <Link
-                      to={`/utbildningar/${course.id}`}
+                      to={`/courses/${course.id}`}
                       className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                     >
                       {course.title}
@@ -110,7 +110,7 @@ export default function CoursesList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/utbildningar/${course.id}`}>
+                        <Link to={`/courses/${course.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
@@ -133,7 +133,7 @@ export default function CoursesList() {
             <GraduationCap className="h-10 w-10 text-stone-300 mb-3" />
             <p className="text-stone-500 mb-2">No courses yet</p>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/utbildningar/ny">Create your first course</Link>
+              <Link to="/courses/new">Create your first course</Link>
             </Button>
           </CardContent>
         )}

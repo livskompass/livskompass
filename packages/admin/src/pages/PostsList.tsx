@@ -34,7 +34,7 @@ export default function PostsList() {
           <p className="text-stone-500 mt-1">Manage your blog posts.</p>
         </div>
         <Button asChild>
-          <Link to="/nyheter/ny">
+          <Link to="/posts/new">
             <Plus className="h-4 w-4 mr-2" />
             New post
           </Link>
@@ -63,7 +63,7 @@ export default function PostsList() {
                 <TableRow key={post.id} className="hover:bg-stone-50 transition-colors">
                   <TableCell>
                     <Link
-                      to={`/nyheter/${post.id}`}
+                      to={`/posts/${post.id}`}
                       className="font-medium text-stone-900 hover:text-stone-600 transition-colors"
                     >
                       {post.title}
@@ -82,7 +82,7 @@ export default function PostsList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/nyheter/${post.id}`}>
+                        <Link to={`/posts/${post.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
@@ -105,7 +105,7 @@ export default function PostsList() {
             <Newspaper className="h-10 w-10 text-stone-300 mb-3" />
             <p className="text-stone-500 mb-2">No posts yet</p>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/nyheter/ny">Create your first post</Link>
+              <Link to="/posts/new">Create your first post</Link>
             </Button>
           </CardContent>
         )}

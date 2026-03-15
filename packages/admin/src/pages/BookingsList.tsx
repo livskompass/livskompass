@@ -89,7 +89,7 @@ export default function BookingsList() {
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm" asChild>
-                      <Link to={`/bokningar/${booking.id}`}>
+                      <Link to={`/bookings/${booking.id}`}>
                         <Eye className="h-4 w-4" />
                       </Link>
                     </Button>

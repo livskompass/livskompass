@@ -211,6 +211,59 @@
   --editor-duration-fast: 150ms;
   --editor-duration-normal: 300ms;
   --editor-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Editor Neutral Palette (used across all chrome) */
+  --editor-neutral-950: #0A0A0B;
+  --editor-neutral-900: #18181B;
+  --editor-neutral-800: #27272A;
+  --editor-neutral-700: #3F3F46;
+  --editor-neutral-600: #52525B;
+  --editor-neutral-500: #71717A;
+  --editor-neutral-400: #A1A1AA;
+  --editor-neutral-300: #D4D4D8;
+  --editor-neutral-200: #E4E4E7;
+  --editor-neutral-100: #F4F4F5;
+  --editor-neutral-50: #FAFAFA;
+
+  /* Editor Surface Colors */
+  --editor-surface: #FFFFFF;
+  --editor-surface-hover: var(--editor-neutral-100);
+  --editor-surface-muted: var(--editor-neutral-50);
+  --editor-surface-glass: rgba(255, 255, 255, 0.95);
+  --editor-surface-glass-heavy: rgba(255, 255, 255, 0.97);
+  --editor-surface-overlay: rgba(0, 0, 0, 0.10);
+  --editor-surface-dark: rgba(30, 30, 30, 0.95);
+
+  /* Editor Border Colors */
+  --editor-border: rgba(0, 0, 0, 0.06);
+  --editor-border-strong: rgba(0, 0, 0, 0.08);
+  --editor-border-subtle: var(--editor-neutral-100);
+  --editor-border-input: var(--editor-neutral-200);
+  --editor-border-input-hover: var(--editor-neutral-300);
+
+  /* Editor Text Colors */
+  --editor-text-primary: var(--editor-neutral-900);
+  --editor-text-secondary: var(--editor-neutral-600);
+  --editor-text-muted: var(--editor-neutral-500);
+  --editor-text-subtle: var(--editor-neutral-400);
+  --editor-text-disabled: var(--editor-neutral-300);
+  --editor-text-on-dark: #D4D4D8;
+  --editor-text-on-dark-active: #93C5FD;
+  --editor-text-on-dark-hover: #FFFFFF;
+
+  /* Editor Shadows */
+  --editor-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --editor-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --editor-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --editor-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --editor-shadow-dark: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --editor-shadow-blue: 0 2px 8px rgba(var(--editor-blue-rgb), 0.3);
+  --editor-shadow-blue-glow: 0 0 8px rgba(var(--editor-blue-rgb), 0.4);
+  --editor-shadow-inset-blue: inset 0 0 0 1px rgba(var(--editor-blue-rgb), 0.1);
+  --editor-shadow-drag: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+  --editor-blue-selection-ring: 0 0 0 2px rgba(var(--editor-blue-rgb), 0.2);
+  --editor-surface-active-dark: rgba(96, 165, 250, 0.2);
+  --editor-surface-hover-dark: rgba(255, 255, 255, 0.1);
 }
 
 /* Admin body — uses secondary surface for sidebar distinction */
@@ -301,6 +354,18 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Editor slide-up for popovers flipped above anchor */
+@keyframes editor-slide-up {
+  from { opacity: 0; transform: translateY(calc(-100% + 8px)); }
+  to { opacity: 1; transform: translateY(-100%); }
+}
+
+/* Editor slide-left for side panels */
+@keyframes editor-slide-left {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 /* Block selection pulse — one-shot on select */
 [data-block-id].editor-just-selected {
   animation: editor-focus-pulse 400ms var(--editor-ease, ease) forwards;
@@ -353,6 +418,56 @@ body {
   50% { opacity: 0.5; }
 }
 
+/* ===== Tiptap Editor Styles ===== */
+
+/* Tiptap ProseMirror core styles */
+.tiptap.ProseMirror {
+  outline: none;
+}
+.tiptap.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #A1A1AA;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+/* Tiptap toolbar focus-visible */
+.tiptap-toolbar button:focus-visible {
+  outline: 2px solid var(--editor-blue, #2563EB);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===== Inline Editor Accessibility ===== */
+
+/* Focus-visible ring for all editor interactive elements */
+.rich-text-toolbar button:focus-visible,
+[role="toolbar"] button:focus-visible {
+  outline: 2px solid var(--editor-blue, #2563EB);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect reduced motion for editor drag handle */
+@media (prefers-reduced-motion: reduce) {
+  [aria-roledescription="drag handle"] {
+    animation: none !important;
+  }
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* ===== Animation Keyframes ===== */
 
 @keyframes scale-in {
@@ -371,687 +486,4 @@ body {
   animation: fade-in 200ms var(--ease-out) forwards;
 }
 
-/* =====================================================================
-   Puck Editor Overrides — Clean, Modern CMS UI
-   Inspired by Linear, Notion, Webflow
-
-   Color scale reminder: Puck uses 01=darkest → 12=lightest
-   ===================================================================== */
-
-/* ── 1. Color System ── */
-[class*="Puck"] {
-  /* Neutral grey palette — clean cool-warm tones */
-  --puck-color-grey-01: #171717;
-  --puck-color-grey-02: #262626;
-  --puck-color-grey-03: #3F3F46;
-  --puck-color-grey-04: #52525B;
-  --puck-color-grey-05: #71717A;
-  --puck-color-grey-06: #A1A1AA;
-  --puck-color-grey-07: #D4D4D8;
-  --puck-color-grey-08: #E4E4E7;
-  --puck-color-grey-09: #E4E4E7;
-  --puck-color-grey-10: #F4F4F5;
-  --puck-color-grey-11: #FAFAFA;
-  --puck-color-grey-12: #FFFFFF;
-
-  /* Azure → neutral for selections/active — no blue tint */
-  --puck-color-azure-01: #171717;
-  --puck-color-azure-02: #262626;
-  --puck-color-azure-03: #3F3F46;
-  --puck-color-azure-04: #18181B;
-  --puck-color-azure-05: #52525B;
-  --puck-color-azure-06: #71717A;
-  --puck-color-azure-07: #A1A1AA;
-  --puck-color-azure-08: #D4D4D8;
-  --puck-color-azure-09: #E4E4E7;
-  --puck-color-azure-10: #F4F4F5;
-  --puck-color-azure-11: #FAFAFA;
-  --puck-color-azure-12: #FFFFFF;
-
-  /* Green → neutral */
-  --puck-color-green-01: #171717;
-  --puck-color-green-02: #262626;
-  --puck-color-green-03: #3F3F46;
-  --puck-color-green-04: #52525B;
-  --puck-color-green-05: #71717A;
-  --puck-color-green-06: #A1A1AA;
-  --puck-color-green-07: #D4D4D8;
-  --puck-color-green-08: #E4E4E7;
-  --puck-color-green-09: #E4E4E7;
-  --puck-color-green-10: #F4F4F5;
-  --puck-color-green-11: #FAFAFA;
-  --puck-color-green-12: #FFFFFF;
-
-  /* White override — true white panels */
-  --puck-color-white: #FFFFFF;
-  --puck-color-black: #18181B;
-
-  /* Font — system Inter */
-  --puck-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-}
-
-/* ── 2. Layout Shell ── */
-[class*="Puck-root"],
-[class*="PuckLayout_"] {
-  height: 100% !important;
-}
-
-/* Main layout bg — clean white */
-[class*="PuckLayout-inner"] {
-  background-color: #FFFFFF !important;
-}
-
-/* ── 3. Header Bar — single clean border ── */
-
-/* Nuke ALL borders inside the entire header area first */
-[class*="PuckHeader"],
-[class*="PuckHeader"] *,
-[class*="PuckLayout-header"],
-[class*="PuckLayout-header"] *,
-[class*="MenuBar"] {
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-/* Then add back exactly ONE border on the header grid area */
-[class*="PuckLayout-header"] {
-  border-bottom: 1px solid #E4E4E7 !important;
-  background: #FFFFFF !important;
-}
-[class*="PuckHeader"] {
-  background: #FFFFFF !important;
-  padding-left: 0 !important;
-}
-
-/* Header inner — tighter padding, left border to sidenav */
-[class*="PuckHeader-inner"] {
-  padding: 10px 16px !important;
-  border-left: 1px solid #E4E4E7 !important;
-}
-
-/* Header title text */
-[class*="PuckHeader-title"],
-[class*="PuckHeader-path"] {
-  font-family: var(--puck-font-family) !important;
-  font-weight: 500 !important;
-  font-size: 13px !important;
-  color: #18181B !important;
-}
-[class*="PuckHeader-path"] {
-  font-weight: 400 !important;
-  color: #71717A !important;
-}
-
-/* Toggle buttons (sidebar toggles, menu) */
-[class*="PuckHeader-toggle"] {
-  color: #A1A1AA !important;
-}
-[class*="PuckHeader-toggle"]:hover {
-  color: #52525B !important;
-}
-
-/* Sidebar sections: no top borders */
-[class*="SidebarSection-title"] {
-  border-top: none !important;
-}
-
-/* Publish / primary button — solid black, rounded */
-[class*="Button--primary"] {
-  background: #18181B !important;
-  color: #FFFFFF !important;
-  border: none !important;
-  border-radius: 6px !important;
-  font-family: var(--puck-font-family) !important;
-  font-weight: 500 !important;
-  font-size: 13px !important;
-  padding: 6px 16px !important;
-  letter-spacing: -0.01em !important;
-  transition: all 120ms ease !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-  gap: 6px !important;
-}
-[class*="Button--primary"]:hover {
-  background: #27272A !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-}
-[class*="Button--primary"] * {
-  color: #FFFFFF !important;
-}
-/* Hide the green dot icon inside Publish button */
-[class*="Button--primary"] svg {
-  display: none !important;
-}
-
-/* Secondary / ghost buttons */
-[class*="Button--secondary"],
-[class*="Button--default"] {
-  background: transparent !important;
-  border: 1px solid #E4E4E7 !important;
-  border-radius: 6px !important;
-  font-family: var(--puck-font-family) !important;
-  font-weight: 500 !important;
-  font-size: 13px !important;
-  color: #3F3F46 !important;
-  transition: all 120ms ease !important;
-}
-[class*="Button--secondary"]:hover,
-[class*="Button--default"]:hover {
-  background: #FAFAFA !important;
-  border-color: #D4D4D8 !important;
-}
-
-/* ── 4. Header Utility Buttons (undo/redo, viewport) ── */
-[class*="PuckHeader"] button {
-  font-family: var(--puck-font-family) !important;
-  border-radius: 6px !important;
-  transition: all 100ms ease !important;
-}
-/* Hover only for Puck's own icon buttons (toggles), not our custom CTA buttons */
-[class*="PuckHeader-toggle"]:hover,
-[class*="PuckHeader-menuButton"]:hover,
-[class*="PuckHeader"] [class*="IconButton"]:hover {
-  background-color: #F4F4F5 !important;
-}
-[class*="PuckHeader"] button svg {
-  width: 16px !important;
-  height: 16px !important;
-  color: #71717A !important;
-}
-
-/* MenuBar — keep container, hide only undo/redo buttons */
-[class*="MenuBar_"],
-[class*="MenuBar-"] {
-  background-color: transparent !important;
-  border: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-  margin-top: 0 !important;
-}
-[class*="MenuBar-history"] {
-  display: none !important;
-}
-
-/* Remove double border between header and content */
-[class*="PuckHeader_"] + *,
-[class*="PuckLayout-header"] + * {
-  border-top: none !important;
-}
-
-/* Clean up SidebarSection top borders that stack with header */
-[class*="SidebarSection--noBorderTop"] > [class*="SidebarSection-title"] {
-  border-top: none !important;
-}
-
-/* First sidebar section — no top border (avoids double line with header) */
-[class*="SidebarSection"]:first-child > [class*="SidebarSection-title"] {
-  border-top: none !important;
-}
-
-/* ── 5. Side Navigation — invisible, keeps grid slot ── */
-[class*="PuckLayout-nav"] {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Fix canvas collapse when left sidebar is closed — force frame to fill space.
-   Right sidebar is floating, so reclaim its grid space. */
-[class*="PuckLayout-inner"] {
-  --puck-frame-width: minmax(266px, 1fr) !important;
-  --puck-right-side-bar-width: 0px !important;
-}
-
-/* ── 6. Left Sidebar — Component Picker ── */
-[class*="Sidebar--left"] {
-  background: #FAFAFA !important;
-  border-right: 1px solid #E4E4E7 !important;
-}
-
-/* Section titles — clean, subtle uppercase labels */
-[class*="SidebarSection-title"] {
-  background: transparent !important;
-  font-family: var(--puck-font-family) !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  color: #A1A1AA !important;
-  padding: 16px 16px 8px !important;
-  border-bottom: none !important;
-  border-top: none !important;
-}
-
-/* Section heading text */
-[class*="SidebarSection-heading"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  color: #A1A1AA !important;
-}
-
-/* Drawer items (component list) — clean, tappable rows */
-[class*="DrawerItem-draggable"] {
-  background: #FFFFFF !important;
-  border: 1px solid #E4E4E7 !important;
-  border-radius: 8px !important;
-  padding: 10px 12px !important;
-  font-family: var(--puck-font-family) !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #3F3F46 !important;
-  transition: all 100ms ease !important;
-  cursor: grab !important;
-}
-[class*="DrawerItem-draggable"]:hover {
-  background: #F4F4F5 !important;
-  border-color: #D4D4D8 !important;
-}
-
-/* Drawer gap between items */
-[class*="Drawer_"] {
-  gap: 6px !important;
-}
-
-/* Sidebar content padding */
-[class*="SidebarSection-content"] {
-  padding: 4px 12px 12px !important;
-}
-
-/* ── 7. Right Sidebar — Floating Field Editor Panel ── */
-[class*="Sidebar--right"] {
-  position: fixed !important;
-  top: 54px !important;          /* below Puck header bar */
-  right: 0 !important;
-  width: 280px !important;
-  max-height: calc(100vh - 54px) !important;
-  overflow-y: auto !important;
-  background: #FFFFFF !important;
-  border-left: 1px solid #E4E4E7 !important;
-  box-shadow: -4px 0 16px rgba(0,0,0,0.06) !important;
-  z-index: 999999 !important;
-  isolation: isolate !important;
-}
-
-/* Hide resize handle */
-[class*="Sidebar--right"] + [class*="Sidebar-resizeHandle"],
-[class*="Sidebar-resizeHandle"] {
-  display: none !important;
-}
-
-/* Right panel section titles */
-[class*="Sidebar--right"] [class*="SidebarSection-title"] {
-  padding: 14px 16px 10px !important;
-  border-bottom: 1px solid #F4F4F5 !important;
-}
-
-/* ── 8. Breadcrumbs ── */
-[class*="SidebarSection-breadcrumb"],
-[class*="Breadcrumbs_"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 12px !important;
-}
-[class*="SidebarSection-breadcrumbLabel"],
-[class*="Breadcrumbs-breadcrumbLabel"] {
-  color: #71717A !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  transition: color 100ms ease !important;
-}
-[class*="SidebarSection-breadcrumbLabel"]:hover,
-[class*="Breadcrumbs-breadcrumbLabel"]:hover {
-  color: #18181B !important;
-}
-
-/* ── 9. Field Labels — Clear, readable ── */
-[class*="Input-label"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: #52525B !important;
-  padding-bottom: 8px !important;
-}
-
-[class*="Input-labelIcon"] svg,
-[class*="FieldLabel"] svg {
-  width: 14px !important;
-  height: 14px !important;
-  color: #A1A1AA !important;
-}
-
-/* ── 10. Field Inputs — Modern, clean ── */
-[class*="Puck"] [class*="Input-input"] {
-  background: #FFFFFF !important;
-  border: 1px solid #E4E4E7 !important;
-  border-radius: 6px !important;
-  font-family: var(--puck-font-family) !important;
-  font-size: 13px !important;
-  padding: 8px 12px !important;
-  color: #18181B !important;
-  transition: border-color 120ms ease, box-shadow 120ms ease !important;
-  min-height: 36px !important;
-  box-sizing: border-box !important;
-}
-[class*="Puck"] [class*="Input-input"]::placeholder {
-  color: #A1A1AA !important;
-}
-[class*="Puck"] [class*="Input-input"]:hover:not(:focus):not([readonly]) {
-  border-color: #D4D4D8 !important;
-}
-[class*="Puck"] [class*="Input-input"]:focus {
-  border-color: #A1A1AA !important;
-  outline: none !important;
-  box-shadow: 0 0 0 3px rgba(113, 113, 122, 0.08) !important;
-}
-
-/* Select dropdown chevron — crisp */
-[class*="Puck"] select[class*="Input-input"] {
-  cursor: pointer !important;
-  padding-right: 32px !important;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") !important;
-  background-position: calc(100% - 10px) center !important;
-  background-repeat: no-repeat !important;
-  background-size: 12px !important;
-}
-[class*="Puck"] select[class*="Input-input"]:hover:not([disabled]) {
-  background-color: #FAFAFA !important;
-}
-
-/* Textarea — auto-height feel */
-[class*="Puck"] textarea[class*="Input-input"] {
-  min-height: 80px !important;
-  line-height: 1.5 !important;
-  resize: vertical !important;
-}
-
-/* Raw input/select/textarea fallback */
-[class*="Puck"] input[type="text"],
-[class*="Puck"] input[type="number"],
-[class*="Puck"] input[type="url"],
-[class*="Puck"] select:not([class*="Input-input"]),
-[class*="Puck"] textarea:not([class*="Input-input"]) {
-  border-radius: 6px !important;
-  font-family: var(--puck-font-family) !important;
-  font-size: 13px !important;
-  border: 1px solid #E4E4E7 !important;
-  padding: 8px 12px !important;
-}
-[class*="Puck"] input:focus,
-[class*="Puck"] select:focus,
-[class*="Puck"] textarea:focus {
-  border-color: #A1A1AA !important;
-  outline: none !important;
-  box-shadow: 0 0 0 3px rgba(113, 113, 122, 0.08) !important;
-}
-
-/* ── 11. Radio Toggles (Yes/No) — Pill style ── */
-[class*="Input-radioGroupItems"] {
-  border: 1px solid #E4E4E7 !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-  background: #FFFFFF !important;
-}
-[class*="Input-radio"]:not(:last-of-type) {
-  border-right: 1px solid #E4E4E7 !important;
-}
-[class*="Input-radioInner"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  padding: 7px 14px !important;
-  color: #71717A !important;
-  background: #FFFFFF !important;
-  transition: all 100ms ease !important;
-}
-[class*="Input-radioInner"]:hover {
-  background: #FAFAFA !important;
-}
-/* Selected state */
-[class*="Input-radioInput"]:checked ~ [class*="Input-radioInner"] {
-  background: #F4F4F5 !important;
-  color: #18181B !important;
-  font-weight: 600 !important;
-}
-
-/* ── 12. Array Fields — Clean card list ── */
-[class*="ArrayField_"]:not([class*="ArrayFieldItem"]) {
-  border: 1px solid #E4E4E7 !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-  background: #FAFAFA !important;
-}
-
-[class*="ArrayFieldItem-summary"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #3F3F46 !important;
-  padding: 10px 14px !important;
-  background: #FFFFFF !important;
-  transition: background-color 100ms ease !important;
-}
-[class*="ArrayFieldItem-summary"]:hover {
-  background: #FAFAFA !important;
-}
-
-/* Expanded array item */
-[class*="ArrayFieldItem--isExpanded"] {
-  outline: 1px solid #D4D4D8 !important;
-}
-[class*="ArrayFieldItem--isExpanded"] > [class*="ArrayFieldItem-summary"] {
-  background: #F4F4F5 !important;
-  color: #18181B !important;
-  font-weight: 600 !important;
-}
-
-/* Array item fieldset (expanded content) */
-[class*="ArrayFieldItem-fieldset"] {
-  border-top: 1px solid #E4E4E7 !important;
-  padding: 14px !important;
-  background: #FFFFFF !important;
-}
-
-/* Array item action buttons (delete, reorder) */
-[class*="ArrayFieldItem-actions"] {
-  color: #A1A1AA !important;
-}
-
-/* Add button */
-[class*="ArrayField-addButton"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #71717A !important;
-  padding: 10px 14px !important;
-  background: #FFFFFF !important;
-  border-top: 1px solid #E4E4E7 !important;
-  transition: all 100ms ease !important;
-}
-[class*="ArrayField-addButton"]:hover {
-  background: #FAFAFA !important;
-  color: #18181B !important;
-}
-
-/* ── 13. Canvas / Preview Area ── */
-[class*="PuckPreview_"],
-[class*="PuckPreview-frame"] {
-  background: #F4F4F5 !important;
-}
-
-/* Canvas wrapper */
-[class*="PuckCanvas_"] {
-  background: #F4F4F5 !important;
-}
-
-/* Remove the outline border on the canvas iframe root */
-[class*="PuckCanvas-root"] {
-  outline: none !important;
-}
-
-/* Remove top border from canvas controls (viewport bar) */
-[class*="PuckCanvas-controls"] {
-  border-top: none !important;
-}
-
-/* ── 14. Action Bar (floating component toolbar) ── */
-[class*="ActionBar_"]:not([class*="ActionBarAction"]) {
-  border-radius: 8px !important;
-  background: #18181B !important;
-  color: #FFFFFF !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05) !important;
-  padding: 2px 4px !important;
-}
-
-/* Action bar label */
-[class*="ActionBar-label"] {
-  color: #A1A1AA !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-}
-
-/* Action bar buttons */
-[class*="ActionBarAction"]:not([class*="disabled"]) {
-  color: #D4D4D8 !important;
-  border-radius: 4px !important;
-  transition: all 80ms ease !important;
-}
-[class*="ActionBarAction"]:hover:not([class*="disabled"]) {
-  color: #FFFFFF !important;
-  background: rgba(255,255,255,0.1) !important;
-}
-[class*="ActionBar-"] svg {
-  width: 14px !important;
-  height: 14px !important;
-}
-[class*="ActionBar-separator"] {
-  background: #3F3F46 !important;
-}
-
-/* ── 15. Component Overlay (selection/hover) ── */
-[class*="DraggableComponent-overlay"] {
-  outline-color: #D4D4D8 !important;
-}
-[class*="DraggableComponent--hover"] [class*="DraggableComponent-overlay"] {
-  outline-color: #A1A1AA !important;
-  background: rgba(113, 113, 122, 0.04) !important;
-}
-[class*="DraggableComponent--isSelected"] [class*="DraggableComponent-overlay"],
-[class*="DraggableComponent--isSelected"] {
-  outline-color: #18181B !important;
-}
-
-/* ── 16. Drop Zones ── */
-[class*="DropZone--isEmpty"] {
-  border: 2px dashed #D4D4D8 !important;
-  border-radius: 8px !important;
-  background: rgba(250, 250, 250, 0.5) !important;
-}
-[class*="DropZone--isAreaSelected"] {
-  border-color: #A1A1AA !important;
-}
-
-/* Drop zone indicator line */
-[class*="DropZone-indicator"] {
-  background: #18181B !important;
-}
-
-/* ── 17. Layer Tree (Outline View) ── */
-[class*="Layer-inner"] {
-  border-radius: 6px !important;
-}
-[class*="Layer-clickable"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 13px !important;
-}
-[class*="Layer-title"],
-[class*="LayerTree-zoneTitle"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-}
-[class*="Layer-name"] {
-  font-size: 13px !important;
-}
-[class*="Layer--isSelected"] > [class*="Layer-inner"] {
-  background: #F4F4F5 !important;
-}
-
-/* ── 18. Scrollbar — Thin, minimal ── */
-[class*="Sidebar"] ::-webkit-scrollbar,
-[class*="PuckPluginTab-body"] ::-webkit-scrollbar {
-  width: 4px;
-}
-[class*="Sidebar"] ::-webkit-scrollbar-track,
-[class*="PuckPluginTab-body"] ::-webkit-scrollbar-track {
-  background: transparent;
-}
-[class*="Sidebar"] ::-webkit-scrollbar-thumb,
-[class*="PuckPluginTab-body"] ::-webkit-scrollbar-thumb {
-  background: #D4D4D8;
-  border-radius: 4px;
-}
-[class*="Sidebar"] ::-webkit-scrollbar-thumb:hover,
-[class*="PuckPluginTab-body"] ::-webkit-scrollbar-thumb:hover {
-  background: #A1A1AA;
-}
-
-/* ── 19. Drag Handles ── */
-[class*="DragIcon"],
-[class*="DrawerItem"] [class*="grip"],
-[class*="ArrayFieldItem"] [class*="grip"] {
-  color: #D4D4D8 !important;
-  opacity: 0.8 !important;
-}
-
-/* ── 20. Loading States ── */
-[class*="SidebarSection-loadingOverlay"] {
-  background: rgba(255,255,255,0.9) !important;
-}
-[class*="PuckFields--isLoading"] {
-  opacity: 0.6 !important;
-}
-
-/* ── 21. Viewport Controls (responsive) ── */
-[class*="ViewportControls-zoomSelect"] {
-  font-family: var(--puck-font-family) !important;
-  font-size: 12px !important;
-  color: #71717A !important;
-}
-[class*="ViewportControls-toggleButton"] {
-  background-color: #262626 !important;
-  border-color: #3F3F46 !important;
-  color: #D4D4D8 !important;
-}
-[class*="ViewportControls-toggleButton"]:hover {
-  border-color: #71717A !important;
-  color: #FFFFFF !important;
-}
-
-/* ── 22. External / Custom Fields ── */
-[class*="ExternalField"],
-[class*="AutoField"] {
-  font-family: var(--puck-font-family) !important;
-}
-
-/* ── 23. Global Refinements ── */
-
-/* Ensure all text within Puck uses Inter */
-[class*="Puck"] {
-  font-family: var(--puck-font-family) !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-}
-
-/* Smooth transitions on interactive elements globally */
-[class*="Puck"] button {
-  transition: all 100ms ease !important;
-}
-
-/* Icon button base style */
-[class*="IconButton"] {
-  border-radius: 6px !important;
-  color: #71717A !important;
-}
-[class*="IconButton"]:hover {
-  color: #18181B !important;
-  background: #F4F4F5 !important;
-}
 

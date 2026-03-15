@@ -1,4 +1,5 @@
 import { useCallback, useRef, type ReactNode } from 'react'
+import { GripVertical } from 'lucide-react'
 import { useHoverIntent } from '../hooks/useHoverIntent'
 import { useEditor } from '../context'
 
@@ -8,6 +9,8 @@ interface EditableBlockProps {
   blockLabel: string
   blockIndex: number
   children: ReactNode
+  onDragStart?: (blockIndex: number, e: React.PointerEvent) => void
+  isDragSource?: boolean
 }
 
 /**
@@ -16,9 +19,10 @@ interface EditableBlockProps {
  *
  * States:
  * - View:     no styles (page looks like production)
- * - Hover:    dashed outline, block label badge
- * - Selected: solid blue outline, blue label badge
+ * - Hover:    dashed outline, block label badge, drag handle
+ * - Selected: solid blue outline, blue label badge, drag handle
  * - Editing:  selection ring at 50% opacity (text takes focus)
+ * - Dragging: hidden (replaced by ghost + placeholder)
  */
 export function EditableBlock({
   blockId,
@@ -26,6 +30,8 @@ export function EditableBlock({
   blockLabel,
   blockIndex,
   children,
+  onDragStart,
+  isDragSource,
 }: EditableBlockProps) {
   const { state, selectBlock } = useEditor()
   const { onMouseEnter, onMouseLeave, onMouseMove } = useHoverIntent()
@@ -47,13 +53,28 @@ export function EditableBlock({
     [blockId, selectBlock],
   )
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        // Don't intercept if inside an input or contentEditable
+        const target = e.target as HTMLElement
+        if (target !== blockRef.current) return
+        e.preventDefault()
+        selectBlock(blockId)
+      } else if (e.key === 'Escape' && isSelected) {
+        e.stopPropagation()
+        selectBlock(null)
+      }
+    },
+    [blockId, isSelected, selectBlock],
+  )
+
   // Compute outline style based on state
   let outlineStyle: React.CSSProperties = {}
   if (isEditing) {
     outlineStyle = {
       outline: '2px solid var(--editor-blue)',
       outlineOffset: '2px',
-      opacity: undefined, // block content visible
     }
   } else if (isSelected) {
     outlineStyle = {
@@ -62,10 +83,12 @@ export function EditableBlock({
     }
   } else if (isHovered) {
     outlineStyle = {
-      outline: '1px dashed rgba(0, 0, 0, 0.15)',
+      outline: '1px dashed var(--editor-border-strong)',
       outlineOffset: '0px',
     }
   }
+
+  const showHandle = (isHovered || isSelected) && !isEditing && !isDragSource
 
   return (
     <div
@@ -73,19 +96,23 @@ export function EditableBlock({
       className="relative"
       style={{
         ...outlineStyle,
-        transition: 'outline var(--editor-duration-fast, 150ms) var(--editor-ease, ease)',
+        transition: 'outline var(--editor-duration-fast) var(--editor-ease)',
         cursor: isSelected ? 'default' : 'pointer',
       }}
+      tabIndex={0}
+      role="region"
+      aria-label={`${blockLabel} block`}
       onMouseEnter={(e) => onMouseEnter(blockId, e)}
       onMouseLeave={onMouseLeave}
       onMouseMove={onMouseMove}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       data-block-id={blockId}
       data-block-type={blockType}
       data-block-index={blockIndex}
     >
       {/* Block type label — outside the block, top-right */}
-      {(isHovered || isSelected) && !isEditing && (
+      {(isHovered || isSelected) && !isEditing && !isDragSource && (
         <div
           className="absolute -top-6 right-2 px-2 py-0.5 rounded pointer-events-none select-none"
           style={{
@@ -93,10 +120,10 @@ export function EditableBlock({
             fontWeight: 600,
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
-            color: isSelected ? 'var(--editor-blue)' : '#9CA3AF',
-            background: isSelected ? 'var(--editor-blue-lightest)' : '#F9FAFB',
-            border: `1px solid ${isSelected ? 'var(--editor-blue-light)' : '#E5E7EB'}`,
-            zIndex: 'var(--z-editor-block-selected, 20)',
+            color: isSelected ? 'var(--editor-blue)' : 'var(--editor-text-subtle)',
+            background: isSelected ? 'var(--editor-blue-lightest)' : 'var(--editor-surface-muted)',
+            border: `1px solid ${isSelected ? 'var(--editor-blue-light)' : 'var(--editor-border-input)'}`,
+            zIndex: 'var(--z-editor-block-selected)',
             animation: 'scale-in 150ms var(--ease-out, ease) forwards',
           }}
         >
@@ -104,12 +131,33 @@ export function EditableBlock({
         </div>
       )}
 
+      {/* Drag handle — left edge */}
+      {showHandle && onDragStart && (
+        <div
+          className="absolute -left-8 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-8 rounded-md cursor-grab active:cursor-grabbing select-none"
+          style={{
+            color: isSelected ? 'var(--editor-blue)' : 'var(--editor-text-subtle)',
+            background: isSelected ? 'var(--editor-blue-lightest)' : 'var(--editor-surface-muted)',
+            border: `1px solid ${isSelected ? 'var(--editor-blue-light)' : 'var(--editor-border-input)'}`,
+            zIndex: 'var(--z-editor-block-selected)',
+            animation: 'scale-in 100ms var(--ease-out, ease) forwards',
+          }}
+          onPointerDown={(e) => onDragStart(blockIndex, e)}
+          title="Drag to reorder"
+          role="button"
+          aria-roledescription="drag handle"
+          aria-label={`Drag ${blockLabel} to reorder`}
+        >
+          <GripVertical className="h-3.5 w-3.5" />
+        </div>
+      )}
+
       {/* Inner glow on selection */}
-      {isSelected && !isEditing && (
+      {isSelected && !isEditing && !isDragSource && (
         <div
           className="absolute inset-0 pointer-events-none rounded-sm"
           style={{
-            boxShadow: 'inset 0 0 0 1px rgba(37, 99, 235, 0.1)',
+            boxShadow: 'var(--editor-shadow-inset-blue)',
             zIndex: 1,
           }}
         />

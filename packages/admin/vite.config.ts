@@ -22,7 +22,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['@livskompass/shared'],
+    exclude: ['@livskompass/shared'],
   },
   resolve: {
     alias: {
