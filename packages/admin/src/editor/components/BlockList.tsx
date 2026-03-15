@@ -29,13 +29,13 @@ function EmptyStateInsertButton() {
     : allBlocks
 
   const insertBlock = (blockType: string) => {
-    if (!state.puckData) return
+    const puckData = state.puckData || { content: [], root: { props: {} }, zones: {} }
     const comp = components[blockType]
     const defaultProps = comp?.defaultProps ? JSON.parse(JSON.stringify(comp.defaultProps)) : {}
     defaultProps.id = `${blockType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
     const newBlock = { type: blockType, props: defaultProps }
-    const content = [...state.puckData.content, newBlock]
-    updateData({ ...state.puckData, content } as Data)
+    const content = [...puckData.content, newBlock]
+    updateData({ ...puckData, content } as Data)
     setOpen(false)
     setSearch('')
   }
