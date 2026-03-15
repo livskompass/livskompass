@@ -2,11 +2,12 @@ import { Hono } from 'hono'
 import { nanoid } from 'nanoid'
 import Stripe from 'stripe'
 import type { Bindings } from '../index'
+import { rateLimit } from '../middleware/rate-limit'
 
 export const bookingsRoutes = new Hono<{ Bindings: Bindings }>()
 
-// Create a new booking
-bookingsRoutes.post('/', async (c) => {
+// Create a new booking — rate limited to 10 per minute per IP
+bookingsRoutes.post('/', rateLimit(60_000, 10), async (c) => {
   const body = await c.req.json()
   const { courseId, customerName, customerEmail, customerPhone, customerOrganization, participants, notes } = body
 

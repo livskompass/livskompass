@@ -1,7 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
+import DOMPurify from 'dompurify'
 import { Code, Link as LinkIcon, X, Check, ExternalLink } from 'lucide-react'
 import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { cn } from '../ui/utils'
+
+function sanitizeEmbed(html: string): string {
+  if (typeof window === 'undefined') return html
+  return DOMPurify.sanitize(html, {
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'width', 'height', 'loading', 'title', 'style'],
+    ALLOW_UNKNOWN_PROTOCOLS: false,
+  })
+}
 
 export interface EmbedBlockProps {
   url: string
@@ -72,7 +82,7 @@ export function EmbedBlock({
     html ? (
       <div
         className={cn('w-full overflow-hidden rounded-xl', ratio)}
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: sanitizeEmbed(html) }}
       />
     ) : url ? (
       <div className={cn('w-full overflow-hidden rounded-xl', ratio || 'aspect-video')}>

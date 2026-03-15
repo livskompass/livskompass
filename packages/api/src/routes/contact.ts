@@ -1,11 +1,12 @@
 import { Hono } from 'hono'
 import { nanoid } from 'nanoid'
 import type { Bindings } from '../index'
+import { rateLimit } from '../middleware/rate-limit'
 
 export const contactRoutes = new Hono<{ Bindings: Bindings }>()
 
-// Submit contact form
-contactRoutes.post('/', async (c) => {
+// Submit contact form — rate limited to 5 per minute per IP
+contactRoutes.post('/', rateLimit(60_000, 5), async (c) => {
   const body = await c.req.json()
   const { name, email, phone, subject, message } = body
 

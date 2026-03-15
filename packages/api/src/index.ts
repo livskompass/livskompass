@@ -35,6 +35,16 @@ app.route('/api/webhooks/stripe', webhookRoutes)
 
 // Middleware
 app.use('*', logger())
+
+// Security headers
+app.use('*', async (c, next) => {
+  await next()
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('X-Frame-Options', 'DENY')
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
+  c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+})
+
 app.use('*', cors({
   origin: (origin, c) => {
     const allowed = c.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:3001'
