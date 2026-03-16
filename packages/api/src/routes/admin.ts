@@ -114,26 +114,35 @@ adminRoutes.post('/pages', async (c) => {
 
 // Update page
 adminRoutes.put('/pages/:id', async (c) => {
-  const id = c.req.param('id')
-  const body = await c.req.json()
-  const { slug, title, content, status } = body
-  const contentBlocks = body.contentBlocks ?? body.content_blocks
-  const editorVersion = body.editorVersion ?? body.editor_version
-  const metaDescription = body.metaDescription ?? body.meta_description
-  const parentSlug = body.parentSlug ?? body.parent_slug
-  const sortOrder = body.sortOrder ?? body.sort_order
+  try {
+    const id = c.req.param('id')
+    const body = await c.req.json()
+    const { slug, title, content, status } = body
+    const contentBlocks = body.contentBlocks ?? body.content_blocks
+    const editorVersion = body.editorVersion ?? body.editor_version
+    const metaDescription = body.metaDescription ?? body.meta_description
+    const parentSlug = body.parentSlug ?? body.parent_slug
+    const sortOrder = body.sortOrder ?? body.sort_order
 
-  // Auto-snapshot before publish
-  await snapshotBeforePublish(c.env.DB, 'pages', 'page', id, c.get('userId'))
+    if (!slug || !title) {
+      return c.json({ error: 'Missing required fields: slug and title' }, 400)
+    }
 
-  await c.env.DB.prepare(`
-    UPDATE pages
-    SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
-        meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, draft = NULL, updated_at = datetime('now')
-    WHERE id = ?
-  `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', metaDescription || null, parentSlug || null, sortOrder || 0, status, id).run()
+    // Auto-snapshot before publish
+    await snapshotBeforePublish(c.env.DB, 'pages', 'page', id, c.get('userId'))
 
-  return c.json({ success: true })
+    await c.env.DB.prepare(`
+      UPDATE pages
+      SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
+          meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, draft = NULL, updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(slug || '', title || '', content || null, contentBlocks || null, editorVersion || 'legacy', metaDescription || null, parentSlug || null, sortOrder || 0, status || 'published', id).run()
+
+    return c.json({ success: true })
+  } catch (err: any) {
+    console.error('Page publish error:', err?.message || err)
+    return c.json({ error: err?.message || 'Internal server error' }, 500)
+  }
 })
 
 // Partial update page (for inline editing)
