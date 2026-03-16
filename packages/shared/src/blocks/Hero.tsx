@@ -128,7 +128,7 @@ export function Hero({
     }
 
     return (
-      <section className={cn('relative overflow-hidden group/hero-bg', bgStyles[bgStyle])} style={{ height: '100svh', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
+      <section className={cn('relative overflow-hidden group/hero-bg', bgStyles[bgStyle])} style={{ height: 'calc(100svh - 80px)', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
         {/* Background video */}
         {backgroundVideo && (
           <video
