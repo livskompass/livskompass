@@ -25,7 +25,7 @@ productsRoutes.get('/', async (c) => {
 
   const result = await stmt.all()
 
-  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
+  c.header('Cache-Control', 'public, max-age=5, stale-while-revalidate=10')
   return c.json({ products: result.results })
 })
 
@@ -42,6 +42,6 @@ productsRoutes.get('/:slug', async (c) => {
     return c.json({ error: 'Product not found' }, 404)
   }
 
-  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
+  c.header('Cache-Control', 'public, max-age=5, stale-while-revalidate=10')
   return c.json({ product: result })
 })

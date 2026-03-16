@@ -13,7 +13,7 @@ coursesRoutes.get('/', async (c) => {
     ORDER BY start_date ASC
   `).all()
 
-  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
+  c.header('Cache-Control', 'public, max-age=5, stale-while-revalidate=10')
   return c.json({ courses: result.results })
 })
 
@@ -30,6 +30,6 @@ coursesRoutes.get('/:slug', async (c) => {
     return c.json({ error: 'Course not found' }, 404)
   }
 
-  c.header('Cache-Control', 'public, max-age=30, stale-while-revalidate=120')
+  c.header('Cache-Control', 'public, max-age=5, stale-while-revalidate=10')
   return c.json({ course: result })
 })

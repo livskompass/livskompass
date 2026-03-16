@@ -303,7 +303,11 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         }),
       })
 
-      if (!res.ok) throw new Error('Publish failed')
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Publish response:', res.status, errBody)
+        throw new Error(errBody.error || `Publish failed (${res.status})`)
+      }
 
       // Refresh entity
       const updated = await fetch(`${API_BASE}/admin/${route}/${id}`, {
