@@ -184,16 +184,25 @@ export function Hero({
     )
   }
 
+  // ── Shared style helpers ──
+  const isDark = bgStyle !== 'stone'
+  const textPrimary = isDark ? 'text-white' : 'text-forest-950'
+  const textSecondary = isDark ? 'text-white/80' : 'text-stone-600'
+  const btnPrimary = isDark ? 'bg-white text-forest-700 hover:bg-forest-50' : 'bg-forest-600 text-white hover:bg-forest-500'
+  const btnSecondary = isDark ? 'border-white/40 text-white hover:bg-white/10' : 'border-stone-300 text-stone-700 hover:bg-stone-100'
+  const headingStyle = { fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400 as const }
+
   // ── Minimal preset ──
   if (preset === 'minimal') {
     return (
-      <section style={{ paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-md)' }}>
-        <div style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
-          <h1 {...hEdit} className={cn('text-display text-forest-950 max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+      <section className={cn('relative overflow-hidden', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-md)' }}>
+        {bgStyle === 'gradient' && <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />}
+        <div className="relative" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
+          <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both' }}>
             {heading}
           </h1>
           {(subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg text-stone-600 mt-6 max-w-[540px] leading-relaxed animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
               {subheading}
             </p>
           )}
@@ -205,7 +214,7 @@ export function Hero({
   // ── Full-image preset ──
   if (preset === 'full-image') {
     return (
-      <section className={cn('relative overflow-hidden min-h-[70vh] flex items-center group/hero-bg', !backgroundImage && 'bg-stone-200')} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)' }}>
+      <section className={cn('relative overflow-hidden min-h-[70vh] flex items-center group/hero-bg', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)' }}>
         {backgroundImage && (
           <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         )}
@@ -220,22 +229,22 @@ export function Hero({
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
         {backgroundImage && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />}
         <div className="relative flex flex-col items-center text-center" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
-          <h1 {...hEdit} className={cn('text-display max-w-[24ch] mx-auto animate-hero-enter', backgroundImage ? 'text-white' : 'text-forest-950', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+          <h1 {...hEdit} className={cn('text-display max-w-[24ch] mx-auto animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both' }}>
             {heading}
           </h1>
           {(subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed animate-hero-enter', backgroundImage ? 'text-white/80' : 'text-stone-600', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
               {subheading}
             </p>
           )}
           {ctaPrimaryText && ctaPrimaryLink && (
             <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-              <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', backgroundImage ? 'bg-white text-forest-700' : 'bg-forest-600 text-white')}>
+              <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
                 <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
               {ctaSecondaryText && ctaSecondaryLink && (
-                <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] transition-all', backgroundImage ? 'border-white/40 text-white hover:bg-white/10' : 'border-stone-300 text-stone-700 hover:bg-stone-100')}>
+                <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] transition-all', btnSecondary)}>
                   <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                 </a>
               )}
@@ -256,22 +265,22 @@ export function Hero({
         )}
         <div className="relative grid grid-cols-1 lg:grid-cols-[2fr_3fr] items-center gap-6 lg:gap-10" style={{ maxWidth: 'var(--width-wide)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('flex flex-col justify-center', imageFirst ? 'lg:order-2' : 'lg:order-1', textAlignment === 'center' ? 'items-center text-center' : 'items-start text-left')}>
-            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', bgStyle === 'stone' ? 'text-forest-950' : 'text-white', hCls)} style={{ fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400, animationDelay: '100ms', animationFillMode: 'both' }}>
+            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed animate-hero-enter', bgStyle === 'stone' ? 'text-stone-600' : 'text-white/80', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+              <p {...sEdit} className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
                 {subheading}
               </p>
             )}
             {ctaPrimaryText && ctaPrimaryLink && (
               <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', bgStyle === 'stone' ? 'bg-forest-600 text-white hover:bg-forest-500' : 'bg-white text-forest-700 hover:bg-forest-50')}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
                 {ctaSecondaryText && ctaSecondaryLink && (
-                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] transition-all', bgStyle === 'stone' ? 'border-stone-300 text-stone-700 hover:bg-stone-100' : 'border-white/40 text-white hover:bg-white/10')}>
+                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] transition-all', btnSecondary)}>
                     <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                   </a>
                 )}
