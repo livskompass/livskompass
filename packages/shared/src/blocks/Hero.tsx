@@ -110,6 +110,14 @@ export function Hero({
   const ctaPEdit = editHandlers(ctaPrimaryTextEdit)
   const ctaSEdit = editHandlers(ctaSecondaryTextEdit)
 
+  // ── Shared style helpers (used by ALL presets) ──
+  const isDark = bgStyle !== 'stone'
+  const textPrimary = isDark ? 'text-white' : 'text-forest-950'
+  const textSecondary = isDark ? 'text-white/80' : 'text-stone-600'
+  const btnPrimary = isDark ? 'bg-white text-forest-700 hover:bg-forest-50' : 'bg-forest-600 text-white hover:bg-forest-500'
+  const btnSecondary = isDark ? 'border-white/40 text-white hover:bg-white/10' : 'border-stone-300 text-stone-700 hover:bg-stone-100'
+  const headingStyle = { fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400 as const }
+
   // ── Fullscreen preset ──
   if (preset === 'fullscreen') {
     const positionClasses: Record<HeroContentPosition, string> = {
@@ -151,22 +159,22 @@ export function Hero({
         {/* Content */}
         <div className={cn('relative flex flex-col h-full px-6 md:px-12 lg:px-20', positionClasses[contentPosition || 'center'])}>
           <div className={cn('max-w-3xl', contentPosition === 'center' && 'mx-auto')}>
-            <h1 {...hEdit} className={cn('text-display text-white max-w-[20ch] animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both' }}>
               {heading}
             </h1>
             {(subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg text-white/80 mt-6 max-w-[540px] leading-relaxed animate-hero-enter', contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+              <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
                 {subheading}
               </p>
             )}
             {ctaPrimaryText && ctaPrimaryLink && (
               <div className={cn('flex flex-col sm:flex-row gap-4 mt-8 md:mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 bg-white text-forest-700 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all">
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
                 {ctaSecondaryText && ctaSecondaryLink && (
-                  <a href={ctaSecondaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] border-white/40 text-white hover:bg-white/10 transition-all">
+                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium h-12 px-7 border-[1.5px] transition-all', btnSecondary)}>
                     <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                   </a>
                 )}
@@ -183,14 +191,6 @@ export function Hero({
       </section>
     )
   }
-
-  // ── Shared style helpers ──
-  const isDark = bgStyle !== 'stone'
-  const textPrimary = isDark ? 'text-white' : 'text-forest-950'
-  const textSecondary = isDark ? 'text-white/80' : 'text-stone-600'
-  const btnPrimary = isDark ? 'bg-white text-forest-700 hover:bg-forest-50' : 'bg-forest-600 text-white hover:bg-forest-500'
-  const btnSecondary = isDark ? 'border-white/40 text-white hover:bg-white/10' : 'border-stone-300 text-stone-700 hover:bg-stone-100'
-  const headingStyle = { fontFamily: "var(--font-display, 'Instrument Serif', Georgia, serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 400 as const }
 
   // ── Minimal preset ──
   if (preset === 'minimal') {
