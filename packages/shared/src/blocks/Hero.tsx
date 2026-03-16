@@ -285,7 +285,7 @@ export function Hero({
               loading="eager"
               allowRemove
               className="w-full rounded-xl object-cover shadow-lg animate-hero-enter"
-              style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both', maxHeight: '500px' }}
+              style={{ aspectRatio: '3 / 4', animationDelay: '400ms', animationFillMode: 'both', minHeight: '400px' }}
               fallback={
                 <div className="w-full rounded-xl bg-stone-100 border-2 border-dashed border-stone-300 animate-hero-enter flex items-center justify-center" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}>
                   <div className="text-center text-stone-400">
