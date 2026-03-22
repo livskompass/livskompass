@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getSiteSettings } from '../lib/api'
 import { defaultHeader, defaultFooter, type SiteHeaderConfig } from '@livskompass/shared'
+import { SiteSearch, SearchButton } from './SiteSearch'
 
 interface NavItem {
   name: string
@@ -171,6 +172,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [dynamicColor, setDynamicColor] = useState<string | null>(null)
+  const [searchOpen, setSearchOpen] = useState(false)
   const location = useLocation()
 
   const { data: siteData } = useQuery({
@@ -263,9 +265,15 @@ export default function Layout() {
               {navigation.map((item) => (
                 <DesktopDropdown key={item.name} item={item} isActive={isActive} />
               ))}
+              {headerConfig.showSearch && (
+                <SearchButton onClick={() => setSearchOpen(true)} />
+              )}
             </div>
 
-            <div className="lg:hidden flex items-center">
+            <div className="lg:hidden flex items-center gap-2">
+              {headerConfig.showSearch && (
+                <SearchButton onClick={() => setSearchOpen(true)} />
+              )}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -356,6 +364,10 @@ export default function Layout() {
           </div>
         </div>
       </footer>
+
+      {headerConfig.showSearch && (
+        <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+      )}
     </div>
   )
 }

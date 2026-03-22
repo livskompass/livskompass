@@ -175,6 +175,47 @@ app.get('/api/sitemap.xml', async (c) => {
   return c.body(xml)
 })
 
+// Public search endpoint
+app.get('/api/search', async (c) => {
+  const q = c.req.query('q')?.trim() || ''
+  if (q.length < 2) {
+    return c.json({ results: [] })
+  }
+
+  const pattern = `%${q}%`
+
+  const [pagesResult, postsResult] = await c.env.DB.batch([
+    c.env.DB.prepare(`
+      SELECT id, slug, title, meta_description as excerpt
+      FROM pages
+      WHERE status = 'published'
+        AND (title LIKE ? OR slug LIKE ? OR meta_description LIKE ?)
+      LIMIT 10
+    `).bind(pattern, pattern, pattern),
+    c.env.DB.prepare(`
+      SELECT id, slug, title, excerpt
+      FROM posts
+      WHERE status = 'published'
+        AND (title LIKE ? OR slug LIKE ? OR excerpt LIKE ?)
+      LIMIT 10
+    `).bind(pattern, pattern, pattern),
+  ])
+
+  const results = [
+    ...(pagesResult.results || []).map((p: any) => ({
+      type: 'page', id: p.id, slug: p.slug, title: p.title,
+      excerpt: p.excerpt || '', url: `/${p.slug}`,
+    })),
+    ...(postsResult.results || []).map((p: any) => ({
+      type: 'post', id: p.id, slug: p.slug, title: p.title,
+      excerpt: p.excerpt || '', url: `/nyhet/${p.slug}`,
+    })),
+  ]
+
+  c.header('Cache-Control', 'public, max-age=10')
+  return c.json({ results })
+})
+
 // Public routes
 app.route('/api/pages', pagesRoutes)
 app.route('/api/posts', postsRoutes)

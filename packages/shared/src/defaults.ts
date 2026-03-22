@@ -6,10 +6,12 @@
 
 export interface SiteHeaderConfig {
   logoText: string
+  logoUrl?: string        // URL to logo image/SVG — if set, renders image instead of text
   navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
   ctaButton?: { text: string; href: string }
   navColor?: string       // Tailwind text color class (e.g., 'text-forest-800', 'text-white')
   dynamicNavColor?: boolean // Auto-switch nav color based on content below
+  showSearch?: boolean    // Show search icon in header
 }
 
 export interface SiteFooterConfig {
