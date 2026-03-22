@@ -302,7 +302,7 @@ export function Hero({
                 {subheading}
               </p>
             )}
-            {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
@@ -410,7 +410,7 @@ export function Hero({
           className="relative w-full mx-auto"
           style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
         >
-          <div className={cn('max-w-3xl', (contentPosition === 'center' || contentPosition === 'bottom-center') && 'mx-auto')}>
+          <div className={cn('max-w-3xl', contentPosition === 'center' || contentPosition === 'bottom-center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
               <h1 {...hEdit} className={cn('text-display max-w-[24ch] animate-hero-enter', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
                 {heading}
@@ -421,7 +421,7 @@ export function Hero({
                 {subheading}
               </p>
             )}
-            {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
@@ -472,7 +472,7 @@ export function Hero({
                 {subheading}
               </p>
             )}
-            {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
