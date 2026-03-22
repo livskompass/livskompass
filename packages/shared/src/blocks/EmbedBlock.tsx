@@ -103,8 +103,8 @@ export function EmbedBlock({
       <figure>
         <div className={cn('relative', editCtx && 'group/embed')}>
           {embedContent || (
-            <div className="w-full flex flex-col items-center justify-center text-stone-400 gap-2 py-12 border-2 border-dashed border-stone-200 rounded-xl">
-              <Code className="h-10 w-10 text-stone-300" />
+            <div className="w-full flex flex-col items-center justify-center text-faint gap-2 py-12 border-2 border-dashed border-default rounded-xl">
+              <Code className="h-10 w-10 text-faint" />
               <span className="text-body-sm">Paste a URL or embed code</span>
             </div>
           )}
@@ -167,7 +167,7 @@ export function EmbedBlock({
         {(caption || captionEdit) && (
           <figcaption
             {...editHandlers(captionEdit)}
-            className={cn('text-body-sm text-stone-500 mt-2 text-center', captionEdit?.className)}
+            className={cn('text-body-sm text-muted mt-2 text-center', captionEdit?.className)}
           >
             {caption}
           </figcaption>
@@ -250,7 +250,7 @@ function EmbedInput({
                 if (e.key === 'Escape') onCancel()
               }}
             />
-            <button onClick={onSave} className="px-3 py-2 rounded-lg bg-white text-stone-800 text-body-sm font-medium hover:bg-stone-100 transition-colors">
+            <button onClick={onSave} className="px-3 py-2 rounded-lg bg-surface-elevated text-foreground text-body-sm font-medium hover:bg-surface-alt transition-colors">
               <Check className="h-3.5 w-3.5" />
             </button>
             <button onClick={onCancel} className="px-2 py-2 rounded-lg bg-white/10 text-white/70 text-body-sm hover:bg-white/20 transition-colors">
@@ -274,7 +274,7 @@ function EmbedInput({
               <button onClick={onCancel} className="px-3 py-1.5 rounded-lg bg-white/10 text-white/70 text-caption hover:bg-white/20 transition-colors">
                 Cancel
               </button>
-              <button onClick={onSave} className="px-3 py-1.5 rounded-lg bg-white text-stone-800 text-caption font-medium hover:bg-stone-100 transition-colors">
+              <button onClick={onSave} className="px-3 py-1.5 rounded-lg bg-surface-elevated text-foreground text-caption font-medium hover:bg-surface-alt transition-colors">
                 Save
               </button>
             </div>

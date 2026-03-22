@@ -41,7 +41,7 @@ const shadowMap = {
 
 const borderMap = {
   none: '',
-  thin: 'border border-stone-200',
+  thin: 'border border-default',
 } as const
 
 /** Extract event handlers from editable props (everything except className) */
@@ -75,8 +75,8 @@ export function ImageBlock({
   if (!src && !editCtx) {
     return (
       <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
-        <div className="py-12 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
-          <ImageIcon className="h-12 w-12 mx-auto mb-2 text-stone-300" />
+        <div className="py-12 text-center text-faint border-2 border-dashed border-default rounded-lg">
+          <ImageIcon className="h-12 w-12 mx-auto mb-2 text-faint" />
           <p>Choose an image...</p>
         </div>
       </div>
@@ -105,7 +105,7 @@ export function ImageBlock({
       <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
         {wrappedImg}
         {(caption || captionEdit) && (
-          <figcaption {...editHandlers(captionEdit)} className={cn('mt-2 text-body-sm text-stone-500 text-center', captionEdit?.className)}>
+          <figcaption {...editHandlers(captionEdit)} className={cn('mt-2 text-body-sm text-muted text-center', captionEdit?.className)}>
             {caption}
           </figcaption>
         )}

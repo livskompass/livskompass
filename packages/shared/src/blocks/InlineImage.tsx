@@ -69,9 +69,9 @@ export function InlineImage({
       {resolvedSrc ? (
         <img src={resolvedSrc} alt={alt} loading={loading} className={className} />
       ) : (
-        <div className={cn('flex flex-col items-center justify-center bg-stone-100 border-2 border-dashed border-stone-300 rounded-xl', className)} style={{ minHeight: 200, aspectRatio: style?.aspectRatio || '4 / 3' }}>
-          <Camera className="h-10 w-10 text-stone-400 mb-2" />
-          <span className="text-body-sm font-medium text-stone-400">Click to add image</span>
+        <div className={cn('flex flex-col items-center justify-center bg-surface-alt border-2 border-dashed border-strong rounded-xl', className)} style={{ minHeight: 200, aspectRatio: style?.aspectRatio || '4 / 3' }}>
+          <Camera className="h-10 w-10 text-faint mb-2" />
+          <span className="text-body-sm font-medium text-faint">Click to add image</span>
         </div>
       )}
 
@@ -81,8 +81,8 @@ export function InlineImage({
         onClick={handlePick}
         className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover/inline-img:bg-black/30 transition-colors cursor-pointer rounded-[inherit]"
       >
-        <div className="opacity-0 group-hover/inline-img:opacity-100 transition-opacity bg-white rounded-full p-3 shadow-lg">
-          <Camera className="h-5 w-5 text-stone-700" />
+        <div className="opacity-0 group-hover/inline-img:opacity-100 transition-opacity bg-surface-elevated rounded-full p-3 shadow-lg">
+          <Camera className="h-5 w-5 text-foreground" />
         </div>
       </button>
 
@@ -91,7 +91,7 @@ export function InlineImage({
         <button
           type="button"
           onClick={handleRemove}
-          className="absolute top-2 right-2 opacity-0 group-hover/inline-img:opacity-100 transition-opacity bg-white/90 hover:bg-red-50 text-stone-500 hover:text-red-500 rounded-full p-1.5 shadow-md"
+          className="absolute top-2 right-2 opacity-0 group-hover/inline-img:opacity-100 transition-opacity bg-surface-elevated/90 hover:bg-red-50 text-muted hover:text-red-500 rounded-full p-1.5 shadow-md"
           aria-label="Remove image"
         >
           <X className="h-3.5 w-3.5" />

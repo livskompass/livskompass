@@ -9,11 +9,11 @@ export default function NotFound() {
   useDocumentTitle(strings.notFound.pageTitle)
   return (
     <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-      <p className="font-display text-display sm:text-[8rem] leading-none text-stone-300 mb-4 select-none">404</p>
-      <h1 className="text-h2 text-stone-900 mb-4">
+      <p className="font-display text-display sm:text-[8rem] leading-none text-faint mb-4 select-none">404</p>
+      <h1 className="text-h2 text-foreground-strong mb-4">
         {strings.notFound.heading}
       </h1>
-      <p className="text-stone-500 mb-10 text-body-lg">
+      <p className="text-muted mb-10 text-body-lg">
         {strings.notFound.message}
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">

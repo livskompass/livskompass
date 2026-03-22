@@ -30,11 +30,11 @@ function BreadcrumbItemEl({ crumb, index, isLast }: { crumb: BreadcrumbItem; ind
 
   return (
     <li className="flex items-center gap-1.5">
-      <ChevronRight className="h-3.5 w-3.5 text-stone-400" />
+      <ChevronRight className="h-3.5 w-3.5 text-faint" />
       {isLast ? (
-        <span {...editHandlers(labelEdit)} className={cn('text-stone-700 font-medium', labelEdit?.className)}>{crumb.label}</span>
+        <span {...editHandlers(labelEdit)} className={cn('text-foreground font-medium', labelEdit?.className)}>{crumb.label}</span>
       ) : (
-        <a href={crumb.href} className="hover:text-forest-600 transition-colors">
+        <a href={crumb.href} className="hover:text-accent transition-colors">
           <span {...editHandlers(labelEdit)} className={labelEdit?.className}>{crumb.label}</span>
         </a>
       )}
@@ -44,8 +44,8 @@ function BreadcrumbItemEl({ crumb, index, isLast }: { crumb: BreadcrumbItem; ind
 
 const bgColorMap = {
   transparent: '',
-  light: 'bg-stone-100',
-  primary: 'bg-forest-50',
+  light: 'bg-surface-alt',
+  primary: 'bg-accent-soft',
 } as const
 
 export function PageHeader({
@@ -90,9 +90,9 @@ export function PageHeader({
     >
       {hasBreadcrumbs && (
         <nav aria-label="Breadcrumb" className="mb-5 reveal">
-          <ol className="flex items-center gap-1.5 text-body-sm text-stone-500">
+          <ol className="flex items-center gap-1.5 text-body-sm text-muted">
             <li>
-              <a href="/" className="hover:text-forest-600 transition-colors">
+              <a href="/" className="hover:text-accent transition-colors">
                 <span {...editHandlers(homeTextEdit)} className={homeTextEdit?.className}>{breadcrumbHomeText}</span>
               </a>
             </li>
@@ -107,7 +107,7 @@ export function PageHeader({
         <h1
           {...headingProps}
           className={cn(
-            'font-display tracking-tight text-forest-950 reveal',
+            'font-display tracking-tight text-heading reveal',
             hasBreadcrumbs ? 'reveal-stagger-1' : '',
             size === 'large' ? 'text-h1' : 'text-h2',
             headingEdit?.className,
@@ -119,7 +119,7 @@ export function PageHeader({
           <p
             {...subheadingProps}
             className={cn(
-              'mt-4 text-body-lg text-stone-600 leading-relaxed reveal',
+              'mt-4 text-body-lg text-secondary leading-relaxed reveal',
               hasBreadcrumbs ? 'reveal-stagger-2' : 'reveal-stagger-1',
               size === 'large' ? 'max-w-3xl' : 'max-w-2xl',
               alignment === 'center' && 'mx-auto',

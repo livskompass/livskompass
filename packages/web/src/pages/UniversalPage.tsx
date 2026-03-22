@@ -92,11 +92,11 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
   // Legacy fallback: old HTML content with child page cards
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h1 className="text-h1 text-forest-950 mb-8">{page.title}</h1>
+      <h1 className="text-h1 text-heading mb-8">{page.title}</h1>
 
       {page.content && (
         <div
-          className="prose prose-lg max-w-none mb-10 prose-headings:tracking-tight prose-a:text-forest-600"
+          className="prose prose-lg max-w-none mb-10 prose-headings:tracking-tight prose-a:text-accent"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(rewriteMediaUrls(page.content)) }}
         />
       )}
@@ -107,9 +107,9 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
             <Link key={child.id} to={`/${child.slug}`}>
               <Card className="h-full hover:shadow-md transition-shadow group cursor-pointer">
                 <CardHeader>
-                  <CardTitle className="text-body-lg flex items-center justify-between group-hover:text-forest-600 transition-colors">
+                  <CardTitle className="text-body-lg flex items-center justify-between group-hover:text-accent transition-colors">
                     {child.title}
-                    <ChevronRight className="h-5 w-5 text-stone-400 group-hover:text-forest-600 transition-colors" />
+                    <ChevronRight className="h-5 w-5 text-faint group-hover:text-accent transition-colors" />
                   </CardTitle>
                   {child.meta_description && (
                     <CardDescription>{child.meta_description}</CardDescription>

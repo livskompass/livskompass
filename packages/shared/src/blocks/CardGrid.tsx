@@ -55,10 +55,10 @@ function ManualCardItem({ card, index, totalItems, cardColor }: { card: ManualCa
 
   return (
     <ArrayItemControls fieldName="manualCards" itemIndex={index} totalItems={totalItems}>
-    <a href={card.link || '#'} className="block group rounded-[16px] outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2" onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}>
-      <div className={cn('rounded-[16px] overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
+    <a href={card.link || '#'} className="block group rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2" onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}>
+      <div className={cn('rounded-lg overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
         {(card.image || editCtx) && (
-          <div className="aspect-video overflow-hidden rounded-t-[16px]">
+          <div className="aspect-video overflow-hidden rounded-t-lg">
             <InlineImage
               src={card.image}
               propName={`manualCards[${index}].image`}
@@ -174,10 +174,10 @@ export function CardGrid({
             : '/produkter/'
 
       return (
-        <a key={item.id} href={`${linkBase}${item.slug}`} className="block group rounded-[16px] outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
-          <div className={cn('rounded-[16px] overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
+        <a key={item.id} href={`${linkBase}${item.slug}`} className="block group rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+          <div className={cn('rounded-lg overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
             {image && (
-              <div className="aspect-video overflow-hidden rounded-t-[16px]">
+              <div className="aspect-video overflow-hidden rounded-t-lg">
                 <img
                   src={image}
                   alt={item.title}
@@ -242,27 +242,27 @@ export function CardGrid({
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="text-center mb-10 reveal">
           {(heading || headingEdit) && (
-            <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-3', headingEdit?.className)}>{heading}</h2>
+            <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-3', headingEdit?.className)}>{heading}</h2>
           )}
           {(subheading || subheadingEdit) && (
-            <p {...editHandlers(subheadingEdit)} className={cn('text-stone-600 text-body-lg', subheadingEdit?.className)}>{subheading}</p>
+            <p {...editHandlers(subheadingEdit)} className={cn('text-secondary text-body-lg', subheadingEdit?.className)}>{subheading}</p>
           )}
         </div>
       )}
       {dynamicLoading && source !== 'manual' ? (
         <div className={cn('grid grid-cols-1 gap-6', columnsMap[columns])}>
           {Array.from({ length: Math.min(maxItems, 3) }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
-              <div className="aspect-video bg-stone-100" />
+            <div key={i} className="rounded-xl border border-default bg-surface-elevated overflow-hidden animate-pulse">
+              <div className="aspect-video bg-surface-alt" />
               <div className="p-5 space-y-3">
-                <div className="h-5 bg-stone-100 rounded w-3/4" />
-                <div className="h-4 bg-stone-100 rounded w-1/2" />
+                <div className="h-5 bg-surface-alt rounded w-3/4" />
+                <div className="h-4 bg-surface-alt rounded w-1/2" />
               </div>
             </div>
           ))}
         </div>
       ) : isEmpty ? (
-        <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <div className="py-8 text-center text-faint border-2 border-dashed border-default rounded-lg">
           {source === 'manual' ? emptyManualText : emptyDynamicText}
         </div>
       ) : (

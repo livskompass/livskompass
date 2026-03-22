@@ -25,7 +25,7 @@ export interface CTABannerProps {
 const bgMap: Record<string, string> = {
   primary: 'bg-forest-600 text-white',
   dark: 'bg-stone-900 text-white',
-  light: 'bg-stone-100 text-stone-900 border border-stone-200',
+  light: 'bg-surface-alt text-foreground-strong border border-default',
   gradient: 'text-white',
 }
 
@@ -40,20 +40,20 @@ const widthMap: Record<string, string> = {
 function getButtonClass(bgColor: string, variant: string): string {
   if (variant === 'outline') {
     return bgColor === 'light'
-      ? 'border-2 border-stone-400 text-stone-800 hover:bg-stone-200'
+      ? 'border-2 border-stone-400 text-foreground hover:bg-surface-alt'
       : 'border-2 border-white/40 text-white hover:bg-white/10'
   }
   if (variant === 'secondary') {
     return bgColor === 'light'
-      ? 'bg-stone-200 text-stone-800 hover:bg-stone-300'
+      ? 'bg-surface-alt text-foreground hover:bg-stone-300'
       : 'bg-white/20 text-white hover:bg-white/30'
   }
   // primary
   const btnStyleMap: Record<string, string> = {
-    primary: 'bg-white text-forest-700 hover:bg-forest-50 shadow-lg hover:shadow-xl',
-    dark: 'bg-white text-stone-900 hover:bg-stone-100 shadow-lg hover:shadow-xl',
+    primary: 'bg-white text-accent-hover hover:bg-accent-soft shadow-lg hover:shadow-xl',
+    dark: 'bg-white text-foreground-strong hover:bg-surface-alt shadow-lg hover:shadow-xl',
     light: 'bg-forest-500 text-white hover:bg-forest-600 shadow-md hover:shadow-lg',
-    gradient: 'bg-white text-forest-700 hover:bg-forest-50 shadow-lg hover:shadow-xl',
+    gradient: 'bg-white text-accent-hover hover:bg-accent-soft shadow-lg hover:shadow-xl',
   }
   return btnStyleMap[bgColor] || btnStyleMap.primary
 }
@@ -133,7 +133,7 @@ export function CTABanner({
               <a
                 href={btn.link || '#'}
                 className={cn(
-                  'inline-flex items-center justify-center h-12 px-8 font-semibold rounded-[16px] transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
+                  'inline-flex items-center justify-center h-12 px-8 font-semibold rounded-lg transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
                   btnStyles ? btnPrimaryClass : getButtonClass(backgroundColor, btn.variant || 'primary')
                 )}
               >

@@ -80,24 +80,24 @@ export function PersonCard({
             alt={name}
             className={cn(imageSizeMap.horizontal[imageSize || 'medium'], 'rounded-xl object-cover flex-shrink-0')}
             fallback={
-              <div className={cn(fallbackSizeMap.horizontal[imageSize || 'medium'], 'rounded-xl bg-forest-100 flex items-center justify-center flex-shrink-0')}>
-                <span className={cn('font-display text-forest-600', fallbackTextMap.horizontal[imageSize || 'medium'])}>{name.charAt(0)}</span>
+              <div className={cn(fallbackSizeMap.horizontal[imageSize || 'medium'], 'rounded-xl bg-accent-soft flex items-center justify-center flex-shrink-0')}>
+                <span className={cn('font-display text-accent', fallbackTextMap.horizontal[imageSize || 'medium'])}>{name.charAt(0)}</span>
               </div>
             }
           />
           <div>
-            <h3 {...nHandlers} className={cn('text-h3 text-stone-800', nameEdit?.className)}>{name}</h3>
-            {(title || titleEdit) && <p {...tHandlers} className={cn('text-amber-600 font-medium mt-1', titleEdit?.className)}>{title}</p>}
-            {(bio || bioEdit) && <p {...bHandlers} className={cn('text-stone-600 mt-4 leading-relaxed max-w-prose', bioEdit?.className)}>{bio}</p>}
+            <h3 {...nHandlers} className={cn('text-h3 text-foreground', nameEdit?.className)}>{name}</h3>
+            {(title || titleEdit) && <p {...tHandlers} className={cn('text-highlight font-medium mt-1', titleEdit?.className)}>{title}</p>}
+            {(bio || bioEdit) && <p {...bHandlers} className={cn('text-secondary mt-4 leading-relaxed max-w-prose', bioEdit?.className)}>{bio}</p>}
             {(email || phone || emailEdit || phoneEdit) && (
               <div className="flex flex-wrap gap-4 mt-4">
                 {(email || emailEdit) && (
-                  <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
+                  <span className="inline-flex items-center gap-2 text-body-sm text-accent">
                     <Mail className="h-4 w-4" /><span {...eHandlers} className={emailEdit?.className}>{email}</span>
                   </span>
                 )}
                 {(phone || phoneEdit) && (
-                  <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
+                  <span className="inline-flex items-center gap-2 text-body-sm text-accent">
                     <Phone className="h-4 w-4" /><span {...pHandlers} className={phoneEdit?.className}>{phone}</span>
                   </span>
                 )}
@@ -111,30 +111,30 @@ export function PersonCard({
 
   return (
     <div className="max-w-sm mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden text-center p-8">
+      <div className="bg-surface-elevated rounded-xl border border-default shadow-sm overflow-hidden text-center p-8">
         <InlineImage
           src={image}
           propName="image"
           alt={name}
           className={cn(imageSizeMap.card[imageSize || 'medium'], 'rounded-full object-cover mx-auto mb-4')}
           fallback={
-            <div className={cn(fallbackSizeMap.card[imageSize || 'medium'], 'rounded-full bg-forest-100 flex items-center justify-center mx-auto mb-4')}>
-              <span className={cn('font-display text-forest-600', fallbackTextMap.card[imageSize || 'medium'])}>{name.charAt(0)}</span>
+            <div className={cn(fallbackSizeMap.card[imageSize || 'medium'], 'rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-4')}>
+              <span className={cn('font-display text-accent', fallbackTextMap.card[imageSize || 'medium'])}>{name.charAt(0)}</span>
             </div>
           }
         />
-        <h3 {...nHandlers} className={cn('text-h4 text-stone-800', nameEdit?.className)}>{name}</h3>
-        {(title || titleEdit) && <p {...tHandlers} className={cn('text-amber-600 font-medium mt-1 text-body-sm', titleEdit?.className)}>{title}</p>}
-        {(bio || bioEdit) && <p {...bHandlers} className={cn('text-stone-600 mt-3 text-body-sm leading-relaxed', bioEdit?.className)}>{bio}</p>}
+        <h3 {...nHandlers} className={cn('text-h4 text-foreground', nameEdit?.className)}>{name}</h3>
+        {(title || titleEdit) && <p {...tHandlers} className={cn('text-highlight font-medium mt-1 text-body-sm', titleEdit?.className)}>{title}</p>}
+        {(bio || bioEdit) && <p {...bHandlers} className={cn('text-secondary mt-3 text-body-sm leading-relaxed', bioEdit?.className)}>{bio}</p>}
         {(email || phone || emailEdit || phoneEdit) && (
           <div className="flex flex-col items-center gap-2 mt-4">
             {(email || emailEdit) && (
-              <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
+              <span className="inline-flex items-center gap-2 text-body-sm text-accent">
                 <Mail className="h-4 w-4" /><span {...eHandlers} className={emailEdit?.className}>{email}</span>
               </span>
             )}
             {(phone || phoneEdit) && (
-              <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
+              <span className="inline-flex items-center gap-2 text-body-sm text-accent">
                 <Phone className="h-4 w-4" /><span {...pHandlers} className={phoneEdit?.className}>{phone}</span>
               </span>
             )}

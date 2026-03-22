@@ -49,7 +49,7 @@ export function RichText({
   useEffect(() => { setLocalContent(content) }, [content])
 
   const baseClass = cn(
-    'prose prose-headings:font-display prose-headings:tracking-tight prose-a:text-forest-600 prose-neutral',
+    'prose prose-headings:font-display prose-headings:tracking-tight prose-a:text-accent prose-neutral',
     fontSizeMap[fontSize] || fontSizeMap.normal,
     maxWidthMap[maxWidth],
     alignment === 'center' && 'text-center',

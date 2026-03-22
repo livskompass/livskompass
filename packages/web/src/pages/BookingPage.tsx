@@ -102,15 +102,15 @@ export default function BookingPage() {
             <Badge variant={course.status === 'completed' ? 'secondary' : 'destructive'} className="mb-4">
               {course.status === 'completed' ? s.completedBadge : s.fullBadge}
             </Badge>
-            <h1 className="text-h2 text-stone-900 mb-3">
+            <h1 className="text-h2 text-foreground-strong mb-3">
               {s.cannotBook}
             </h1>
-            <p className="text-stone-500 mb-6">
+            <p className="text-muted mb-6">
               {course.status === 'completed'
                 ? s.completedMessage
                 : s.fullMessage}
             </p>
-            <Button variant="ghost" className="text-forest-600" asChild>
+            <Button variant="ghost" className="text-accent" asChild>
               <Link to="/utbildningar">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {s.seeOtherCourses}
@@ -136,34 +136,34 @@ export default function BookingPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <Button variant="ghost" className="mb-6 -ml-2 text-stone-600 hover:text-forest-600" asChild>
+      <Button variant="ghost" className="mb-6 -ml-2 text-secondary hover:text-accent" asChild>
         <Link to={`/utbildningar/${slug}`}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           {s.back}
         </Link>
       </Button>
 
-      <h1 className="text-h2 text-stone-900 mb-2">{s.heading}</h1>
-      <p className="text-h4 text-stone-500 mb-8">{course.title}</p>
+      <h1 className="text-h2 text-foreground-strong mb-2">{s.heading}</h1>
+      <p className="text-h4 text-muted mb-8">{course.title}</p>
 
       <Card className="mb-8">
         <CardContent className="p-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-body-sm">
             {course.start_date && (
-              <div className="flex items-center gap-2 text-stone-600">
-                <Calendar className="h-4 w-4 text-stone-400" />
+              <div className="flex items-center gap-2 text-secondary">
+                <Calendar className="h-4 w-4 text-faint" />
                 <span>{new Date(course.start_date).toLocaleDateString('sv-SE')}</span>
               </div>
             )}
             {course.location && (
-              <div className="flex items-center gap-2 text-stone-600">
-                <MapPin className="h-4 w-4 text-stone-400" />
+              <div className="flex items-center gap-2 text-secondary">
+                <MapPin className="h-4 w-4 text-faint" />
                 <span>{course.location}</span>
               </div>
             )}
             {priceSek > 0 && (
-            <div className="flex items-center gap-2 text-stone-600">
-              <CreditCard className="h-4 w-4 text-stone-400" />
+            <div className="flex items-center gap-2 text-secondary">
+              <CreditCard className="h-4 w-4 text-faint" />
               <span>{priceSek.toLocaleString('sv-SE')} {s.perPerson}</span>
             </div>
             )}
@@ -232,7 +232,7 @@ export default function BookingPage() {
                   id="participants"
                   value={formData.participants}
                   onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
-                  className="flex h-12 w-full px-4 pr-10 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors appearance-none"
+                  className="flex h-12 w-full px-4 pr-10 rounded-md border-[1.5px] border-strong bg-surface-elevated text-foreground focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors appearance-none"
                 >
                   {Array.from(
                     { length: Math.min(10, available ?? 10) },
@@ -243,7 +243,7 @@ export default function BookingPage() {
                     </option>
                   ))}
                 </select>
-                <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-faint" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
               </div>
@@ -276,7 +276,7 @@ export default function BookingPage() {
               {bookingMutation.isPending ? s.processingButton : s.submitButton}
             </Button>
 
-            <p className="text-caption text-stone-400 text-center flex items-center justify-center gap-1.5">
+            <p className="text-caption text-faint text-center flex items-center justify-center gap-1.5">
               <Lock className="h-3.5 w-3.5" />
               {s.stripeRedirectNote}
             </p>

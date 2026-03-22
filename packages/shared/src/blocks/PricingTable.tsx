@@ -48,31 +48,31 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
       className={cn(
         'rounded-xl p-8 flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-1',
         item.highlighted
-          ? 'bg-white border-2 border-amber-400 shadow-lg hover:shadow-xl'
-          : 'bg-white border border-stone-200 shadow-sm hover:shadow-md'
+          ? 'bg-surface-elevated border-2 border-amber-400 shadow-lg hover:shadow-xl'
+          : 'bg-surface-elevated border border-default shadow-sm hover:shadow-md'
       )}
     >
       {item.highlighted && (
         <>
           <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: 'var(--gradient-pricing-glow)' }} />
-          <span className="text-caption font-semibold text-amber-600 uppercase tracking-wider mb-2">{highlightLabel}</span>
+          <span className="text-caption font-semibold text-highlight uppercase tracking-wider mb-2">{highlightLabel}</span>
         </>
       )}
-      <h3 {...editHandlers(nameEdit)} className={cn('text-h4 text-stone-800', nameEdit?.className)}>{item.name}</h3>
+      <h3 {...editHandlers(nameEdit)} className={cn('text-h4 text-foreground', nameEdit?.className)}>{item.name}</h3>
       <div className="mt-4 mb-2">
-        <span {...editHandlers(priceEdit)} className={cn('font-display text-h2 text-stone-900', priceEdit?.className)}>{item.price}</span>
+        <span {...editHandlers(priceEdit)} className={cn('font-display text-h2 text-foreground-strong', priceEdit?.className)}>{item.price}</span>
         {showCurrency !== false && item.price && !item.price.toLowerCase().includes('gratis') && (
-          <span className="text-stone-500 ml-1">kr</span>
+          <span className="text-muted ml-1">kr</span>
         )}
       </div>
       {(item.description || descEdit) && (
-        <p {...editHandlers(descEdit)} className={cn('text-stone-600 text-body-sm mb-6', descEdit?.className)}>{item.description}</p>
+        <p {...editHandlers(descEdit)} className={cn('text-secondary text-body-sm mb-6', descEdit?.className)}>{item.description}</p>
       )}
       {item.features && (typeof item.features === 'string' ? item.features.split('\n').filter(Boolean) : item.features).length > 0 && (
         <ul className="space-y-3 mb-8 flex-1">
           {(typeof item.features === 'string' ? item.features.split('\n').filter(Boolean) : item.features).map((feature, j) => (
-            <li key={j} className="flex items-start gap-3 text-body-sm text-stone-600">
-              <Check className="h-5 w-5 text-forest-500 flex-shrink-0 mt-0.5" />
+            <li key={j} className="flex items-start gap-3 text-body-sm text-secondary">
+              <Check className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
               {feature}
             </li>
           ))}
@@ -82,12 +82,12 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
         <a
           href={item.ctaLink || '#'}
           className={cn(
-            'mt-auto inline-flex items-center justify-center h-12 px-7 rounded-[16px] font-semibold text-body-sm transition-all w-full active:scale-[0.98]',
+            'mt-auto inline-flex items-center justify-center h-12 px-7 rounded-lg font-semibold text-body-sm transition-all w-full active:scale-[0.98]',
             btnStyles
               ? ctaBtnClass
               : item.highlighted
                 ? 'bg-amber-500 text-white hover:bg-amber-600'
-                : 'bg-forest-500 text-white hover:bg-forest-600'
+                : 'bg-accent text-white hover:bg-accent'
           )}
         >
           <span {...editHandlers(ctaTextEdit)} className={ctaTextEdit?.className}>{item.ctaText}</span>
@@ -118,7 +118,7 @@ export function PricingTable({
   if (items.length === 0) {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <div className="text-center py-12 text-faint border-2 border-dashed border-default rounded-lg">
           {emptyText}
         </div>
       </div>
@@ -130,7 +130,7 @@ export function PricingTable({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 text-center mb-10 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground text-center mb-10 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       <ArrayDragProvider fieldName="items">
       <div className={cn('grid grid-cols-1 gap-6 items-start reveal', colMap[columns] || colMap[2])}>

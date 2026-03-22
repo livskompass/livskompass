@@ -104,16 +104,16 @@ export function CourseList({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[2])}>
           {[1, 2].map((i) => (
-            <div key={i} className="rounded-xl border border-stone-200 bg-white p-6 animate-pulse">
-              <div className="h-5 bg-stone-100 rounded w-1/4 mb-3" />
-              <div className="h-6 bg-stone-100 rounded w-3/4 mb-4" />
-              <div className="h-4 bg-stone-100 rounded w-full mb-2" />
-              <div className="h-4 bg-stone-100 rounded w-2/3" />
+            <div key={i} className="rounded-xl border border-default bg-surface-elevated p-6 animate-pulse">
+              <div className="h-5 bg-surface-alt rounded w-1/4 mb-3" />
+              <div className="h-6 bg-surface-alt rounded w-3/4 mb-4" />
+              <div className="h-4 bg-surface-alt rounded w-full mb-2" />
+              <div className="h-4 bg-surface-alt rounded w-2/3" />
             </div>
           ))}
         </div>
@@ -124,7 +124,7 @@ export function CourseList({
             const hasCapacity = course.max_participants != null
             const spotsLeft = hasCapacity ? course.max_participants - course.current_participants : null
             return (
-              <div key={course.slug} className={cn('relative group rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
+              <div key={course.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
                 <EditItemBadge cmsRoute="courses" entityId={course.id} label="Edit course" />
                 <div className="p-6">
                   {(isFull || hasCapacity) && (
@@ -132,7 +132,7 @@ export function CourseList({
                     <span className={cn(
                       'text-caption font-semibold px-2.5 py-1 rounded-full',
                       isFull
-                        ? 'bg-amber-50 text-amber-700'
+                        ? 'bg-amber-50 text-highlight'
                         : colors.badge
                     )}>
                       {isFull ? <span {...editHandlers(fullLabelEdit)} className={fullLabelEdit?.className}>{fullLabel}</span> : `${spotsLeft} ${spotsText}`}
@@ -165,7 +165,7 @@ export function CourseList({
                     <div className="flex gap-2 flex-shrink-0">
                       <a
                         href={`/utbildningar/${course.slug}`}
-                        className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-[16px] transition-colors', btnStyles ? readMoreClass : (cardColor === 'dark' ? 'text-amber-300 hover:text-amber-200 hover:bg-amber-300/10' : 'text-forest-600 hover:text-forest-700 hover:bg-forest-50'))}
+                        className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-lg transition-colors', btnStyles ? readMoreClass : (cardColor === 'dark' ? 'text-highlight-soft hover:text-amber-200 hover:bg-amber-300/10' : 'text-accent hover:text-accent-hover hover:bg-accent-soft'))}
                       >
                         <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText}</span>
                         {ReadMoreIcon && <ReadMoreIcon className="ml-1.5 h-3.5 w-3.5" />}
@@ -173,7 +173,7 @@ export function CourseList({
                       {showBookButton && !isFull && (
                         <a
                           href={`/utbildningar/${course.slug}/boka`}
-                          className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-[16px] transition-all active:scale-[0.97]', btnStyles ? bookBtnClass : (cardColor === 'dark' ? 'bg-amber-300 text-forest-800 hover:bg-amber-200' : 'bg-forest-500 text-white hover:bg-forest-600'))}
+                          className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-lg transition-all active:scale-[0.97]', btnStyles ? bookBtnClass : (cardColor === 'dark' ? 'bg-highlight-soft text-brand hover:bg-amber-200' : 'bg-forest-500 text-white hover:bg-forest-600'))}
                         >
                           <span {...editHandlers(bookBtnEdit)} className={bookBtnEdit?.className}>{bookButtonText}</span>
                           {BookBtnIcon ? <BookBtnIcon className="ml-1.5 h-3.5 w-3.5" /> : (!btnStyles && <ArrowRight className="ml-1.5 h-3.5 w-3.5" />)}
@@ -187,7 +187,7 @@ export function CourseList({
           })}
         </div>
       ) : (
-        <div className="text-center py-16 text-stone-400 border-2 border-dashed border-stone-200 rounded-xl">
+        <div className="text-center py-16 text-faint border-2 border-dashed border-default rounded-xl">
           <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
         </div>
       )}

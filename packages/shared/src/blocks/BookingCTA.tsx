@@ -16,8 +16,8 @@ export interface BookingCTAProps {
 function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-      <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-body-sm">Booking CTA is shown when a course is selected.</p>
+      <div className="bg-surface rounded-xl border border-dashed border-strong p-8 text-center">
+        <p className="text-faint text-body-sm">Booking CTA is shown when a course is selected.</p>
       </div>
     </div>
   )
@@ -71,9 +71,9 @@ export function BookingCTA({
   if (course.status === 'completed') {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-        <div className="bg-stone-100 rounded-xl p-6 flex items-center gap-4">
-          <CheckCircle className="h-6 w-6 text-stone-400 flex-shrink-0" />
-          <p className="text-stone-500">{completedMessage}</p>
+        <div className="bg-surface-alt rounded-xl p-6 flex items-center gap-4">
+          <CheckCircle className="h-6 w-6 text-faint flex-shrink-0" />
+          <p className="text-muted">{completedMessage}</p>
         </div>
       </div>
     )
@@ -83,10 +83,10 @@ export function BookingCTA({
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-center gap-4">
-          <AlertCircle className="h-6 w-6 text-amber-500 flex-shrink-0" />
+          <AlertCircle className="h-6 w-6 text-highlight flex-shrink-0" />
           <div>
-            <p className="text-amber-800 font-medium">{fullMessage}</p>
-            <p className="text-amber-600 text-body-sm mt-1">{fullSubMessage}</p>
+            <p className="text-highlight font-medium">{fullMessage}</p>
+            <p className="text-highlight text-body-sm mt-1">{fullSubMessage}</p>
           </div>
         </div>
       </div>
@@ -98,7 +98,7 @@ export function BookingCTA({
       <div className="mx-auto text-center" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
         <a
           href={`/utbildningar/${course.slug}/boka`}
-          className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-[16px] transition-colors', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
+          className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-lg transition-colors', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
         >
           <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
           {BtnIcon ? <BtnIcon className="ml-2 h-4 w-4" /> : (!btnStyles && <ArrowRight className="ml-2 h-4 w-4" />)}
@@ -109,12 +109,12 @@ export function BookingCTA({
 
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-      <div className="bg-forest-50 border border-forest-200 rounded-xl p-8 text-center">
-        <h3 {...hHandlers} className={cn('text-h3 text-forest-800 mb-2', headingEdit?.className)}>{heading}</h3>
-        <p {...dHandlers} className={cn('text-forest-600 mb-6', descriptionEdit?.className)}>{description}</p>
+      <div className="bg-accent-soft border border-forest-200 rounded-xl p-8 text-center">
+        <h3 {...hHandlers} className={cn('text-h3 text-brand mb-2', headingEdit?.className)}>{heading}</h3>
+        <p {...dHandlers} className={cn('text-accent mb-6', descriptionEdit?.className)}>{description}</p>
         <a
           href={`/utbildningar/${course.slug}/boka`}
-          className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-[16px] transition-colors', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
+          className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-lg transition-colors', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
         >
           <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
           {BtnIcon ? <BtnIcon className="ml-2 h-4 w-4" /> : (!btnStyles && <ArrowRight className="ml-2 h-4 w-4" />)}

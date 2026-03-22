@@ -73,7 +73,7 @@ export function ButtonGroup({
   if (buttons.length === 0) {
     return (
       <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
-        <div className="py-4 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <div className="py-4 text-center text-faint border-2 border-dashed border-default rounded-lg">
           Add buttons in settings...
         </div>
       </div>

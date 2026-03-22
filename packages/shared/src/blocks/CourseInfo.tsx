@@ -23,13 +23,13 @@ function formatDate(date: string): string {
 function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-      <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-body-sm">Course details are shown when a course is selected.</p>
+      <div className="bg-surface rounded-xl border border-dashed border-strong p-8 text-center">
+        <p className="text-faint text-body-sm">Course details are shown when a course is selected.</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           {['Location', 'Date', 'Price', 'Spots'].map((label) => (
-            <div key={label} className="bg-white rounded-lg border border-stone-200 p-3">
-              <div className="h-4 bg-stone-100 rounded w-1/2 mx-auto mb-2" />
-              <div className="text-caption text-stone-400">{label}</div>
+            <div key={label} className="bg-surface-elevated rounded-lg border border-default p-3">
+              <div className="h-4 bg-surface-alt rounded w-1/2 mx-auto mb-2" />
+              <div className="text-caption text-faint">{label}</div>
             </div>
           ))}
         </div>
@@ -101,15 +101,15 @@ export function CourseInfo({
   if (layout === 'stacked') {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-        <div className="bg-white rounded-xl border border-stone-200 shadow-sm divide-y divide-stone-100">
+        <div className="bg-surface-elevated rounded-xl border border-default shadow-sm divide-y divide-stone-100">
           {visibleItems.map((item, idx) => (
             <div key={idx} className="flex items-center gap-4 px-6 py-4">
-              <item.icon className="h-5 w-5 text-forest-500 flex-shrink-0" />
+              <item.icon className="h-5 w-5 text-accent flex-shrink-0" />
               <div>
-                <div className="text-caption text-stone-400 uppercase tracking-wide">
+                <div className="text-caption text-faint uppercase tracking-wide">
                   <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
                 </div>
-                <div className="text-stone-800 font-medium">{item.value || <span className="text-stone-300">—</span>}</div>
+                <div className="text-foreground font-medium">{item.value || <span className="text-faint">—</span>}</div>
               </div>
             </div>
           ))}
@@ -120,21 +120,21 @@ export function CourseInfo({
 
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+      <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
         <div className={cn(
           'grid gap-6',
           visibleItems.length <= 2 ? 'grid-cols-2' : visibleItems.length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
         )}>
           {visibleItems.map((item, idx) => (
             <div key={idx} className="text-center">
-              <item.icon className="h-5 w-5 text-forest-500 mx-auto mb-2" />
-              <div className="text-caption text-stone-400 uppercase tracking-wide mb-1">
+              <item.icon className="h-5 w-5 text-accent mx-auto mb-2" />
+              <div className="text-caption text-faint uppercase tracking-wide mb-1">
                 <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
               </div>
               <div className={cn(
                 'font-medium',
-                item.label === spotsLabel && isFull ? 'text-amber-600' : 'text-stone-800'
-              )}>{item.value || <span className="text-stone-300">—</span>}</div>
+                item.label === spotsLabel && isFull ? 'text-highlight' : 'text-foreground'
+              )}>{item.value || <span className="text-faint">—</span>}</div>
             </div>
           ))}
         </div>

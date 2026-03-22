@@ -120,7 +120,7 @@ export function ContactForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-foreground mb-1.5">
             <span {...editHandlers(nameLabelEdit)} className={nameLabelEdit?.className}>{nameLabel}</span>
           </label>
           <input
@@ -128,12 +128,12 @@ export function ContactForm({
             required
             value={formData.name}
             onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
-            className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+            className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
             disabled={isEditor}
           />
         </div>
         <div>
-          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-foreground mb-1.5">
             <span {...editHandlers(emailLabelEdit)} className={emailLabelEdit?.className}>{emailLabel}</span>
           </label>
           <input
@@ -141,41 +141,41 @@ export function ContactForm({
             required
             value={formData.email}
             onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
-            className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+            className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
             disabled={isEditor}
           />
         </div>
       </div>
       {showPhone && (
         <div>
-          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-foreground mb-1.5">
             <span {...editHandlers(phoneLabelEdit)} className={phoneLabelEdit?.className}>{phoneLabel}</span>
           </label>
           <input
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData((f) => ({ ...f, phone: e.target.value }))}
-            className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+            className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
             disabled={isEditor}
           />
         </div>
       )}
       {showSubject && (
         <div>
-          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-foreground mb-1.5">
             <span {...editHandlers(subjectLabelEdit)} className={subjectLabelEdit?.className}>{subjectLabel}</span>
           </label>
           <input
             type="text"
             value={formData.subject}
             onChange={(e) => setFormData((f) => ({ ...f, subject: e.target.value }))}
-            className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+            className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
             disabled={isEditor}
           />
         </div>
       )}
       <div>
-        <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+        <label className="block text-body-sm font-medium text-foreground mb-1.5">
           <span {...editHandlers(messageLabelEdit)} className={messageLabelEdit?.className}>{messageLabel}</span>
         </label>
         <textarea
@@ -183,14 +183,14 @@ export function ContactForm({
           rows={5}
           value={formData.message}
           onChange={(e) => setFormData((f) => ({ ...f, message: e.target.value }))}
-          className="w-full px-4 py-3 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors resize-none"
+          className="w-full px-4 py-3 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors resize-none"
           disabled={isEditor}
         />
       </div>
       <button
         type="submit"
         disabled={status === 'submitting' || isEditor}
-        className={cn('w-full inline-flex items-center justify-center h-12 px-7 font-semibold rounded-[16px] transition-colors disabled:opacity-50', btnStyles ? submitBtnClass : 'bg-forest-500 text-white hover:bg-forest-600')}
+        className={cn('w-full inline-flex items-center justify-center h-12 px-7 font-semibold rounded-lg transition-colors disabled:opacity-50', btnStyles ? submitBtnClass : 'bg-forest-500 text-white hover:bg-forest-600')}
       >
         <span {...editHandlers(submitBtnEdit)} className={submitBtnEdit?.className}>
           {status === 'submitting' ? submittingText : submitButtonText}
@@ -203,10 +203,10 @@ export function ContactForm({
   if (status === 'success') {
     return (
       <div className="mx-auto" style={{ maxWidth: '42rem', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        <div className="bg-forest-50 border border-forest-200 rounded-xl p-8 text-center">
-          <CheckCircle className="h-12 w-12 text-forest-500 mx-auto mb-4" />
-          <h3 className="text-h3 text-forest-800 mb-2">{successHeading}</h3>
-          <p className="text-forest-600">{successMessage}</p>
+        <div className="bg-accent-soft border border-forest-200 rounded-xl p-8 text-center">
+          <CheckCircle className="h-12 w-12 text-accent mx-auto mb-4" />
+          <h3 className="text-h3 text-brand mb-2">{successHeading}</h3>
+          <p className="text-accent">{successMessage}</p>
         </div>
       </div>
     )
@@ -215,30 +215,30 @@ export function ContactForm({
   if (layout === 'split') {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {heading && <h2 {...hHandlers} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
-        {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-stone-600 mb-8', descriptionEdit?.className)}>{description}</p>}
+        {heading && <h2 {...hHandlers} className={cn('text-h2 text-foreground mb-2', headingEdit?.className)}>{heading}</h2>}
+        {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-secondary mb-8', descriptionEdit?.className)}>{description}</p>}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-12">
           <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
-              <h3 {...editHandlers(contactNameEdit)} className={cn('font-semibold text-stone-800 mb-1', contactNameEdit?.className)}>{contactName}</h3>
-              <p {...editHandlers(contactTitleEdit)} className={cn('text-body-sm text-stone-500 mb-4', contactTitleEdit?.className)}>{contactTitle}</p>
+            <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
+              <h3 {...editHandlers(contactNameEdit)} className={cn('font-semibold text-foreground mb-1', contactNameEdit?.className)}>{contactName}</h3>
+              <p {...editHandlers(contactTitleEdit)} className={cn('text-body-sm text-muted mb-4', contactTitleEdit?.className)}>{contactTitle}</p>
               <div className="space-y-3">
                 {(contactEmail || contactEmailEdit) && (
-                  <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-body-sm text-stone-600 hover:text-forest-600 transition-colors">
-                    <Mail className="h-4 w-4 text-forest-500" />
+                  <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-body-sm text-secondary hover:text-accent transition-colors">
+                    <Mail className="h-4 w-4 text-accent" />
                     <span {...editHandlers(contactEmailEdit)} className={contactEmailEdit?.className}>{contactEmail}</span>
                   </a>
                 )}
                 {(contactPhone || contactPhoneEdit) && (
-                  <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-body-sm text-stone-600 hover:text-forest-600 transition-colors">
-                    <Phone className="h-4 w-4 text-forest-500" />
+                  <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-body-sm text-secondary hover:text-accent transition-colors">
+                    <Phone className="h-4 w-4 text-accent" />
                     <span {...editHandlers(contactPhoneEdit)} className={contactPhoneEdit?.className}>{contactPhone}</span>
                   </a>
                 )}
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+          <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
             {status === 'error' && (
               <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-body-sm text-red-700">
                 <AlertCircle className="h-4 w-4" />{errorMsg}
@@ -253,9 +253,9 @@ export function ContactForm({
 
   return (
     <div className="mx-auto" style={{ maxWidth: '42rem', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {heading && <h2 {...hHandlers} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
-      {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-stone-600 mb-6', descriptionEdit?.className)}>{description}</p>}
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+      {heading && <h2 {...hHandlers} className={cn('text-h2 text-foreground mb-2', headingEdit?.className)}>{heading}</h2>}
+      {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-secondary mb-6', descriptionEdit?.className)}>{description}</p>}
+      <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
         {status === 'error' && (
           <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-body-sm text-red-700">
             <AlertCircle className="h-4 w-4" />{errorMsg}

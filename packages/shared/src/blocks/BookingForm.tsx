@@ -33,8 +33,8 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
 function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-body-sm">The booking form is shown when a course is selected.</p>
+      <div className="bg-surface rounded-xl border border-dashed border-strong p-8 text-center">
+        <p className="text-faint text-body-sm">The booking form is shown when a course is selected.</p>
       </div>
     </div>
   )
@@ -100,8 +100,8 @@ export function BookingForm({
   if (isFull || isCompleted) {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        <div className="bg-stone-100 rounded-xl p-8 text-center">
-          <p className="text-stone-500">
+        <div className="bg-surface-alt rounded-xl p-8 text-center">
+          <p className="text-muted">
             {isFull ? fullMessage : completedMessage}
           </p>
         </div>
@@ -149,23 +149,23 @@ export function BookingForm({
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {/* Course summary */}
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-5 mb-6">
-        <h3 className="text-h4 text-stone-800 mb-3">{course.title}</h3>
-        <div className="flex flex-wrap gap-4 text-body-sm text-stone-500">
+      <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-5 mb-6">
+        <h3 className="text-h4 text-foreground mb-3">{course.title}</h3>
+        <div className="flex flex-wrap gap-4 text-body-sm text-muted">
           {course.start_date && (
             <span className="inline-flex items-center gap-1.5">
-              <Calendar className="h-4 w-4 text-stone-400" />
+              <Calendar className="h-4 w-4 text-faint" />
               {formatDate(course.start_date)}{course.end_date && course.end_date !== course.start_date ? ` – ${formatDate(course.end_date)}` : ''}
             </span>
           )}
           {course.location && (
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-stone-400" />{course.location}
+              <MapPin className="h-4 w-4 text-faint" />{course.location}
             </span>
           )}
           {course.price_sek != null && (
           <span className="inline-flex items-center gap-1.5">
-            <CreditCard className="h-4 w-4 text-stone-400" />
+            <CreditCard className="h-4 w-4 text-faint" />
             {course.price_sek.toLocaleString('sv-SE')} {priceSuffix}
           </span>
           )}
@@ -173,7 +173,7 @@ export function BookingForm({
       </div>
 
       {/* Booking form */}
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+      <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
         {status === 'error' && (
           <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-body-sm text-red-700">
             <AlertCircle className="h-4 w-4" />{errorMsg}
@@ -182,7 +182,7 @@ export function BookingForm({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-foreground mb-1.5">
                 <span {...editHandlers(nameLabelEdit)} className={nameLabelEdit?.className}>{nameLabel}</span>
               </label>
               <input
@@ -190,12 +190,12 @@ export function BookingForm({
                 required
                 value={formData.customerName}
                 onChange={(e) => setFormData((f) => ({ ...f, customerName: e.target.value }))}
-                className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+                className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
                 disabled={isEditor}
               />
             </div>
             <div>
-              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-foreground mb-1.5">
                 <span {...editHandlers(emailLabelEdit)} className={emailLabelEdit?.className}>{emailLabel}</span>
               </label>
               <input
@@ -203,78 +203,78 @@ export function BookingForm({
                 required
                 value={formData.customerEmail}
                 onChange={(e) => setFormData((f) => ({ ...f, customerEmail: e.target.value }))}
-                className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+                className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
                 disabled={isEditor}
               />
             </div>
           </div>
           <div>
-            <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+            <label className="block text-body-sm font-medium text-foreground mb-1.5">
               <span {...editHandlers(phoneLabelEdit)} className={phoneLabelEdit?.className}>{phoneLabel}</span>
             </label>
             <input
               type="tel"
               value={formData.customerPhone}
               onChange={(e) => setFormData((f) => ({ ...f, customerPhone: e.target.value }))}
-              className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+              className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
               disabled={isEditor}
             />
           </div>
           {showOrganization && (
             <div>
-              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-foreground mb-1.5">
                 <span {...editHandlers(orgLabelEdit)} className={orgLabelEdit?.className}>{organizationLabel}</span>
               </label>
               <input
                 type="text"
                 value={formData.organization}
                 onChange={(e) => setFormData((f) => ({ ...f, organization: e.target.value }))}
-                className="w-full h-12 px-4 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors"
+                className="w-full h-12 px-4 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors"
                 disabled={isEditor}
               />
             </div>
           )}
           <div>
-            <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+            <label className="block text-body-sm font-medium text-foreground mb-1.5">
               <span {...editHandlers(participantsLabelEdit)} className={participantsLabelEdit?.className}>{participantsLabel}</span>
             </label>
             <div className="relative">
               <select
                 value={formData.participants}
                 onChange={(e) => setFormData((f) => ({ ...f, participants: Number(e.target.value) }))}
-                className="w-full h-12 px-4 pr-10 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors appearance-none"
+                className="w-full h-12 px-4 pr-10 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors appearance-none"
                 disabled={isEditor}
               >
                 {Array.from({ length: Math.min(spotsLeft, 10) }, (_, i) => i + 1).map((n) => (
                   <option key={n} value={n}>{n}</option>
                 ))}
               </select>
-              <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-faint" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
               </svg>
             </div>
           </div>
           {showNotes && (
             <div>
-              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-foreground mb-1.5">
                 <span {...editHandlers(notesLabelEdit)} className={notesLabelEdit?.className}>{notesLabel}</span>
               </label>
               <textarea
                 rows={3}
                 value={formData.notes}
                 onChange={(e) => setFormData((f) => ({ ...f, notes: e.target.value }))}
-                className="w-full px-4 py-3 rounded-md border-[1.5px] border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-forest-400 focus:ring-[3px] focus:ring-forest-500/10 transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-md border-[1.5px] border-strong bg-white text-foreground focus:outline-none focus:border-focus focus:ring-[3px] focus:ring-accent/10 transition-colors resize-none"
                 disabled={isEditor}
               />
             </div>
           )}
 
           {/* Price summary */}
-          <div className="bg-stone-50 rounded-lg p-4 flex items-center justify-between">
-            <span className="text-stone-600 font-medium">
+          <div className="bg-surface rounded-lg p-4 flex items-center justify-between">
+            <span className="text-secondary font-medium">
               <span {...editHandlers(totalLabelEdit)} className={totalLabelEdit?.className}>{totalLabel}</span>
             </span>
-            <span className="font-display text-h3 text-stone-800">
+            <span className="font-display text-h3 text-foreground">
               {totalPrice.toLocaleString('sv-SE')} kr
             </span>
           </div>
@@ -282,7 +282,7 @@ export function BookingForm({
           <button
             type="submit"
             disabled={status === 'submitting' || isEditor}
-            className={cn('w-full inline-flex items-center justify-center h-12 font-semibold rounded-[16px] transition-colors disabled:opacity-50', btnStyles ? submitBtnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
+            className={cn('w-full inline-flex items-center justify-center h-12 font-semibold rounded-lg transition-colors disabled:opacity-50', btnStyles ? submitBtnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
           >
             <span {...editHandlers(submitBtnEdit)} className={submitBtnEdit?.className}>
               {status === 'submitting' ? processingText : submitButtonText}

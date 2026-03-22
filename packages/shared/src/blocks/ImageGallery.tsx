@@ -37,7 +37,7 @@ function GalleryImage({ img, index, aspectRatio, rounded = 'medium', totalItems 
         className={`w-full object-cover ${ratioMap[aspectRatio as keyof typeof ratioMap] || ''}`}
       />
       {(img.caption || captionEdit) && (
-        <figcaption {...editHandlers(captionEdit)} className={cn('text-caption text-stone-500 mt-1', captionEdit?.className)}>
+        <figcaption {...editHandlers(captionEdit)} className={cn('text-caption text-muted mt-1', captionEdit?.className)}>
           {img.caption}
         </figcaption>
       )}
@@ -65,7 +65,7 @@ export function ImageGallery({
         </div>
         </ArrayDragProvider>
       ) : (
-        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <div className="text-center py-12 text-faint border-2 border-dashed border-default rounded-lg">
           Add images in settings
         </div>
       )}

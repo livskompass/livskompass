@@ -47,7 +47,7 @@ function AccordionItemComponent({
   const chevron = (
     <ChevronDown
       className={cn(
-        'h-5 w-5 text-stone-400 shrink-0 transition-transform duration-300',
+        'h-5 w-5 text-faint shrink-0 transition-transform duration-300',
         isOpen && 'rotate-180',
         iconPosition === 'right' ? 'ml-4' : 'mr-4'
       )}
@@ -60,7 +60,7 @@ function AccordionItemComponent({
       <button
         onClick={onToggle}
         className={cn(
-          'flex w-full items-center py-4 px-5 text-left font-medium text-stone-800 hover:bg-stone-50 transition-colors',
+          'flex w-full items-center py-4 px-5 text-left font-medium text-foreground hover:bg-surface transition-colors',
           iconPosition === 'right' ? 'justify-between' : 'flex-row',
           style === 'minimal' && 'px-0'
         )}
@@ -80,7 +80,7 @@ function AccordionItemComponent({
           <div
             {...editHandlers(answerEdit)}
             className={cn(
-              'pb-4 text-stone-600 leading-relaxed',
+              'pb-4 text-secondary leading-relaxed',
               style === 'minimal' ? 'px-0' : 'px-5',
               answerEdit?.className
             )}
@@ -127,7 +127,7 @@ export function Accordion({
   if (items.length === 0) {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
-        <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <div className="py-8 text-center text-faint border-2 border-dashed border-default rounded-lg">
           Add questions in settings...
         </div>
       </div>
@@ -137,14 +137,14 @@ export function Accordion({
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-6', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-6', headingEdit?.className)}>{heading}</h2>
       )}
       <div
         className={cn(
-          style !== 'minimal' && 'divide-y divide-stone-200',
-          style === 'default' && 'border border-stone-200 rounded-xl overflow-hidden bg-white',
-          style === 'bordered' && 'border-2 border-stone-300 rounded-xl overflow-hidden bg-white',
-          style === 'minimal' && 'divide-y divide-stone-200'
+          style !== 'minimal' && 'divide-y divide-default',
+          style === 'default' && 'border border-default rounded-xl overflow-hidden bg-surface-elevated',
+          style === 'bordered' && 'border-2 border-strong rounded-xl overflow-hidden bg-surface-elevated',
+          style === 'minimal' && 'divide-y divide-default'
         )}
       >
         <ArrayDragProvider fieldName="items">

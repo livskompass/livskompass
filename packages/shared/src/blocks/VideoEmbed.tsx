@@ -104,10 +104,10 @@ export function VideoEmbed({
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <figure>
-        <div className={cn(ratio, 'w-full rounded-xl overflow-hidden bg-stone-100 relative', editCtx && 'group/video')}>
+        <div className={cn(ratio, 'w-full rounded-xl overflow-hidden bg-surface-alt relative', editCtx && 'group/video')}>
           {videoContent || (
-            <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 gap-2">
-              <Film className="h-10 w-10 text-stone-300" />
+            <div className="w-full h-full flex flex-col items-center justify-center text-faint gap-2">
+              <Film className="h-10 w-10 text-faint" />
               <span className="text-body-sm">Paste a video URL</span>
             </div>
           )}
@@ -157,7 +157,7 @@ export function VideoEmbed({
         {(caption || captionEdit) && (
           <figcaption
             {...editHandlers(captionEdit)}
-            className={cn('text-body-sm text-stone-500 mt-2 text-center', captionEdit?.className)}
+            className={cn('text-body-sm text-muted mt-2 text-center', captionEdit?.className)}
           >
             {caption}
           </figcaption>
@@ -225,7 +225,7 @@ function VideoUrlInput({
           />
           <button
             onClick={() => onSave(value)}
-            className="px-3 py-2 rounded-lg bg-white text-stone-800 text-body-sm font-medium hover:bg-stone-100 transition-colors flex items-center gap-1"
+            className="px-3 py-2 rounded-lg bg-surface-elevated text-foreground text-body-sm font-medium hover:bg-surface-alt transition-colors flex items-center gap-1"
           >
             <Check className="h-3.5 w-3.5" />
           </button>

@@ -86,10 +86,10 @@ export function PageCards({
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4`}>
           {Array.from({ length: Math.min(columns, 3) }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
+            <div key={i} className="rounded-xl border border-default bg-surface-elevated overflow-hidden animate-pulse">
               <div className="p-5 space-y-3">
-                <div className="h-5 bg-stone-100 rounded w-3/4" />
-                <div className="h-4 bg-stone-100 rounded w-1/2" />
+                <div className="h-5 bg-surface-alt rounded w-3/4" />
+                <div className="h-4 bg-surface-alt rounded w-1/2" />
               </div>
             </div>
           ))}
@@ -101,17 +101,17 @@ export function PageCards({
   if (style === 'list') {
     return (
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
-        <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl overflow-hidden">
+        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
+        <div className="divide-y divide-stone-100 border border-default rounded-xl overflow-hidden">
           {pages.map((page, i) => (
-            <div key={i} className="relative group flex items-center justify-between p-4 bg-white hover:bg-stone-50 transition-colors">
+            <div key={i} className="relative group flex items-center justify-between p-4 bg-surface-elevated hover:bg-surface transition-colors">
               <EditItemBadge cmsRoute="pages" entityId={page.id} slug={page.slug} label="Edit page" />
               <a href={`/${page.slug}`} className="flex items-center justify-between flex-1">
                 <div>
-                  <h3 className="font-medium text-stone-800 group-hover:text-forest-600 transition-colors">{page.title}</h3>
-                  {showDescription && page.description && <p className="text-body-sm text-stone-500 mt-0.5">{page.description}</p>}
+                  <h3 className="font-medium text-foreground group-hover:text-accent transition-colors">{page.title}</h3>
+                  {showDescription && page.description && <p className="text-body-sm text-muted mt-0.5">{page.description}</p>}
                 </div>
-                <svg className="w-5 h-5 text-stone-400 group-hover:text-forest-600 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                <svg className="w-5 h-5 text-faint group-hover:text-accent transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </a>
             </div>
           ))}
@@ -123,10 +123,10 @@ export function PageCards({
   if (style === 'minimal') {
     return (
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
+        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="flex flex-wrap gap-3">
           {pages.map((page, i) => (
-            <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-[16px] border border-stone-200 bg-white text-body-sm font-medium text-stone-700 hover:border-forest-300 hover:text-forest-600 transition-colors">
+            <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-default bg-surface-elevated text-body-sm font-medium text-foreground hover:border-accent hover:text-accent transition-colors">
               {page.title}
             </a>
           ))}
@@ -137,12 +137,12 @@ export function PageCards({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
+      {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
       <ArrayDragProvider fieldName="manualPages">
       <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4 reveal`}>
         {pages.map((page, i) => (
           <ArrayItemControls key={i} fieldName="manualPages" itemIndex={i} totalItems={pages.length}>
-          <div className={cn('relative group rounded-[16px] p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
+          <div className={cn('relative group rounded-lg p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
             <EditItemBadge cmsRoute="pages" entityId={page.id} label="Edit page" slug={page.slug} />
             <a href={`/${page.slug}`} className="block">
               <h3 className={cn('font-semibold transition-colors mb-1', colors.text)}>{page.title}</h3>
@@ -152,7 +152,7 @@ export function PageCards({
           </ArrayItemControls>
         ))}
         {pages.length === 0 && (
-          <div className="col-span-full text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+          <div className="col-span-full text-center py-12 text-faint border-2 border-dashed border-default rounded-lg">
             {parentSlug
               ? <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
               : <span {...editHandlers(emptyManualTextEdit)} className={emptyManualTextEdit?.className}>{emptyManualText}</span>

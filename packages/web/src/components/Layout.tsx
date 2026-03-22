@@ -73,7 +73,7 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
 
       {open && (
         <div
-          className="absolute left-0 top-full mt-2 w-64 bg-white rounded-[14px] shadow-lg border border-stone-200 p-2 z-50 animate-scale-in origin-top"
+          className="absolute left-0 top-full mt-2 w-64 bg-surface-elevated rounded-[14px] shadow-lg border border-default p-2 z-50 animate-scale-in origin-top"
           role="menu"
         >
           {item.children.map((child) => (
@@ -83,8 +83,8 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
               role="menuitem"
               className={`block px-3 py-2 text-body-sm rounded-[10px] transition-colors duration-150 ${
                 isActive(child.href)
-                  ? 'text-forest-600 bg-forest-50 font-medium'
-                  : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
+                  ? 'text-accent bg-accent-soft font-medium'
+                  : 'text-brand hover:text-accent hover:bg-surface'
               }`}
               onClick={() => setOpen(false)}
             >
@@ -110,7 +110,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
         to={item.href}
         onClick={onNavigate}
         className={`block px-3 py-2.5 rounded-[10px] transition-colors ${
-          isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
+          isActive(item.href) ? 'text-accent bg-accent-soft font-medium' : 'text-brand hover:text-accent hover:bg-surface'
         }`}
       >
         {item.name}
@@ -125,7 +125,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
           to={item.href}
           onClick={onNavigate}
           className={`flex-1 px-3 py-2.5 rounded-l-[10px] transition-colors ${
-            isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
+            isActive(item.href) ? 'text-accent bg-accent-soft font-medium' : 'text-brand hover:text-accent hover:bg-surface'
           }`}
         >
           {item.name}
@@ -134,7 +134,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
           type="button"
           onClick={() => setExpanded(!expanded)}
           className={`px-3 py-2.5 rounded-r-[10px] transition-colors ${
-            expanded ? 'text-forest-600 bg-forest-50' : 'text-stone-400 hover:text-forest-600 hover:bg-stone-50'
+            expanded ? 'text-accent bg-accent-soft' : 'text-faint hover:text-accent hover:bg-surface'
           }`}
           aria-expanded={expanded}
           aria-label={`Visa undersidor för ${item.name}`}
@@ -152,7 +152,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
               to={child.href}
               onClick={onNavigate}
               className={`block px-3 py-1.5 text-body-sm rounded-[10px] transition-colors ${
-                isActive(child.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-stone-500 hover:text-forest-600 hover:bg-stone-50'
+                isActive(child.href) ? 'text-accent bg-accent-soft font-medium' : 'text-muted hover:text-accent hover:bg-surface'
               }`}
             >
               {child.name}
@@ -269,7 +269,7 @@ export default function Layout() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center w-11 h-11 rounded-[10px] text-forest-800 hover:text-forest-600 hover:bg-stone-100 transition-colors"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-[10px] text-brand hover:text-accent hover:bg-surface-alt transition-colors"
                 aria-expanded={mobileMenuOpen}
                 aria-label="Visa navigeringsmeny"
               >
@@ -322,13 +322,13 @@ export default function Layout() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
             <div>
               <span className="font-display text-h4 text-white block mb-4">{footerConfig.companyName}</span>
-              <p className="text-stone-400 leading-relaxed font-normal">
+              <p className="text-faint leading-relaxed font-normal">
                 {footerConfig.tagline}
               </p>
             </div>
             <div>
               <h3 className="text-h4 mb-4">{footerConfig.contactHeading || 'Kontakt'}</h3>
-              <p className="text-stone-400 leading-relaxed font-normal">
+              <p className="text-faint leading-relaxed font-normal">
                 {footerConfig.contact.email}<br />
                 {footerConfig.contact.phone}
               </p>
@@ -341,7 +341,7 @@ export default function Layout() {
                     <li key={link.href}>
                       <Link
                         to={link.href}
-                        className="text-stone-400 hover:text-white transition-colors duration-200 font-normal"
+                        className="text-faint hover:text-white transition-colors duration-200 font-normal"
                       >
                         {link.label}
                       </Link>
@@ -351,7 +351,7 @@ export default function Layout() {
               </div>
             ))}
           </div>
-          <div className="mt-12 pt-8 border-t border-stone-800 text-center text-stone-500 text-caption">
+          <div className="mt-12 pt-8 border-t border-stone-800 text-center text-muted text-caption">
             <p>{footerConfig.copyright.replace('{year}', String(new Date().getFullYear()))}</p>
           </div>
         </div>

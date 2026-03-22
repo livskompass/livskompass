@@ -99,17 +99,17 @@ export function ProductList({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
           {Array.from({ length: Math.min(columns, 3) }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
-              <div className="aspect-[4/3] bg-stone-100" />
+            <div key={i} className="rounded-xl border border-default bg-surface-elevated overflow-hidden animate-pulse">
+              <div className="aspect-[4/3] bg-surface-alt" />
               <div className="p-5 space-y-3">
-                <div className="h-4 bg-stone-100 rounded w-1/4" />
-                <div className="h-5 bg-stone-100 rounded w-3/4" />
-                <div className="h-4 bg-stone-100 rounded w-full" />
+                <div className="h-4 bg-surface-alt rounded w-1/4" />
+                <div className="h-5 bg-surface-alt rounded w-3/4" />
+                <div className="h-4 bg-surface-alt rounded w-full" />
               </div>
             </div>
           ))}
@@ -119,13 +119,13 @@ export function ProductList({
           {Array.from(grouped.entries()).map(([type, typeProducts]) => (
             <div key={type}>
               {!filterType && grouped.size > 1 && (
-                <h3 className="text-h4 text-stone-800 mb-4">
+                <h3 className="text-h4 text-foreground mb-4">
                   {typeLabels[type] || type}
                 </h3>
               )}
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
                 {typeProducts.map((product) => (
-                  <div key={product.slug} className={cn('relative group rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col', colors.bg)}>
+                  <div key={product.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col', colors.bg)}>
                     <EditItemBadge cmsRoute="products" entityId={product.id} label="Edit product" />
                     {showImage !== false && product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
@@ -138,7 +138,7 @@ export function ProductList({
                       </div>
                     )}
                     <div className="p-5 flex flex-col flex-1">
-                      <span className={cn('text-caption font-medium uppercase tracking-wide', cardColor === 'dark' ? 'text-amber-300/80' : 'text-amber-600')}>
+                      <span className={cn('text-caption font-medium uppercase tracking-wide', cardColor === 'dark' ? 'text-amber-300/80' : 'text-highlight')}>
                         {typeLabels[product.type] || product.type}
                       </span>
                       <h4 className={cn('font-semibold mt-1 mb-2', colors.text)}>{product.title}</h4>
@@ -166,7 +166,7 @@ export function ProductList({
                             href={product.external_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-[16px] transition-colors', btnStyles ? buyBtnClass : (cardColor === 'dark' ? 'bg-amber-300 text-forest-800 hover:bg-amber-200' : 'bg-amber-500 text-white hover:bg-amber-600'))}
+                            className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-lg transition-colors', btnStyles ? buyBtnClass : (cardColor === 'dark' ? 'bg-highlight-soft text-brand hover:bg-amber-200' : 'bg-amber-500 text-white hover:bg-amber-600'))}
                           >
                             <span {...editHandlers(buyBtnEdit)} className={buyBtnEdit?.className}>{buyButtonText}</span>
                             {BuyBtnIcon ? <BuyBtnIcon className="ml-1.5 h-3.5 w-3.5" /> : (!btnStyles && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />)}
@@ -181,7 +181,7 @@ export function ProductList({
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 text-stone-400 border-2 border-dashed border-stone-200 rounded-xl">
+        <div className="text-center py-16 text-faint border-2 border-dashed border-default rounded-xl">
           <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
         </div>
       )}

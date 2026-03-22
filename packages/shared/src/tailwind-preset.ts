@@ -12,8 +12,7 @@ const preset: Partial<Config> = {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
-        // CSS variable-backed colors — values defined in index.css as space-separated RGB channels
-        // Supports Tailwind opacity modifiers: bg-forest-600/50, text-stone-800/75, etc.
+        // ── Palette (raw channels, defined in index.css) ──
         forest: {
           50: 'rgb(var(--forest-50) / <alpha-value>)',
           100: 'rgb(var(--forest-100) / <alpha-value>)',
@@ -49,14 +48,49 @@ const preset: Partial<Config> = {
           500: 'rgb(var(--amber-500) / <alpha-value>)',
           600: 'rgb(var(--amber-600) / <alpha-value>)',
         },
+
+        // ── Semantic role-based colors (reference CSS vars → palette) ──
+        foreground: {
+          DEFAULT: 'rgb(var(--foreground) / <alpha-value>)',
+          strong: 'rgb(var(--foreground-strong) / <alpha-value>)',
+        },
+        secondary: 'rgb(var(--secondary) / <alpha-value>)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
+        faint: 'rgb(var(--faint) / <alpha-value>)',
+        heading: 'rgb(var(--heading) / <alpha-value>)',
+        accent: {
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          hover: 'rgb(var(--accent-hover) / <alpha-value>)',
+          soft: 'rgb(var(--forest-50) / <alpha-value>)',
+        },
+        brand: {
+          DEFAULT: 'rgb(var(--brand) / <alpha-value>)',
+          hover: 'rgb(var(--brand-hover) / <alpha-value>)',
+        },
+        highlight: {
+          DEFAULT: 'rgb(var(--highlight) / <alpha-value>)',
+          soft: 'rgb(var(--highlight-soft) / <alpha-value>)',
+        },
+        mist: 'rgb(var(--mist) / <alpha-value>)',
+        surface: {
+          DEFAULT: 'rgb(var(--surface) / <alpha-value>)',
+          alt: 'rgb(var(--surface-alt) / <alpha-value>)',
+          elevated: '#ffffff',
+        },
       },
       borderRadius: {
         xs: '4px',
         sm: '6px',
-        md: '10px',
-        lg: '14px',
+        md: '12px',
+        lg: '16px',
         xl: '20px',
         '2xl': '24px',
+      },
+      borderColor: {
+        DEFAULT: 'rgb(var(--border-default) / <alpha-value>)',
+        strong: 'rgb(var(--border-strong) / <alpha-value>)',
+        accent: 'rgb(var(--forest-300) / <alpha-value>)',
+        focus: 'rgb(var(--accent) / <alpha-value>)',
       },
       boxShadow: {
         xs: '0 1px 2px rgb(var(--forest-950) / 0.05)',

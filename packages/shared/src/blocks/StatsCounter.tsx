@@ -31,15 +31,15 @@ function StatItem({ item, index, style, totalItems }: { item: { value: string; l
       className={cn(
         'text-center reveal',
         `reveal-stagger-${Math.min(index + 1, 5)}`,
-        style === 'bordered' && 'bg-white rounded-xl border border-stone-200 shadow-sm p-6'
+        style === 'bordered' && 'bg-surface-elevated rounded-xl border border-default shadow-sm p-6'
       )}
     >
-      <div className="text-h1 text-forest-600 mb-2">
+      <div className="text-h1 text-accent mb-2">
         <span {...editHandlers(prefixEdit)} className={prefixEdit?.className}>{item.prefix}</span>
         <span {...editHandlers(valueEdit)} className={valueEdit?.className}>{item.value}</span>
         <span {...editHandlers(suffixEdit)} className={suffixEdit?.className}>{item.suffix}</span>
       </div>
-      <div {...editHandlers(labelEdit)} className={cn('text-body-sm text-stone-500 font-medium uppercase tracking-wide', labelEdit?.className)}>
+      <div {...editHandlers(labelEdit)} className={cn('text-body-sm text-muted font-medium uppercase tracking-wide', labelEdit?.className)}>
         {item.label}
       </div>
     </div>
@@ -58,7 +58,7 @@ export function StatsCounter({
   if (items.length === 0) {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <div className="text-center py-12 text-faint border-2 border-dashed border-default rounded-lg">
           Add stats in settings...
         </div>
       </div>

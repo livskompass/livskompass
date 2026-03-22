@@ -17,12 +17,12 @@ export function resolveButtonIcon(iconName?: string): React.FC<{ className?: str
 }
 
 export const buttonVariantClasses: Record<string, string> = {
-  primary: 'bg-forest-800 text-white hover:bg-forest-900',
-  secondary: 'bg-amber-300 text-forest-800 hover:bg-amber-200',
-  outline: 'border-2 border-forest-800 text-forest-800 bg-transparent hover:bg-forest-800 hover:text-white',
-  ghost: 'text-forest-800 hover:bg-forest-800/10',
-  'primary-inv': 'bg-white text-forest-800 hover:bg-stone-100',
-  'outline-inv': 'border-2 border-white text-white bg-transparent hover:bg-white hover:text-forest-800',
+  primary: 'bg-brand text-white hover:bg-brand-hover',
+  secondary: 'bg-highlight-soft text-brand hover:bg-amber-200',
+  outline: 'border-2 border-brand text-brand bg-transparent hover:bg-brand hover:text-white',
+  ghost: 'text-brand hover:bg-brand/10',
+  'primary-inv': 'bg-white text-brand hover:bg-surface-alt',
+  'outline-inv': 'border-2 border-white text-white bg-transparent hover:bg-white hover:text-brand',
 }
 
 export function getButtonStyle(

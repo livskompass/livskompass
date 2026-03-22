@@ -80,7 +80,7 @@ function BgImageButton({ propName, src }: { propName: string; src: string }) {
       className="absolute top-4 right-4 z-20 opacity-0 group-hover/hero-bg:opacity-100 transition-opacity bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg"
       aria-label="Change background image"
     >
-      <Camera className="h-4 w-4 text-stone-700" />
+      <Camera className="h-4 w-4 text-foreground" />
     </button>
   )
 }
@@ -97,7 +97,7 @@ function HeroButtonItem({ btn, index, variantClasses }: { btn: { text: string; l
     <a
       href={href}
       {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 transition-all', variantClasses[btn.variant || 'primary'])}
+      className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', variantClasses[btn.variant || 'primary'])}
     >
       <span {...editHandlers} className={textEdit?.className}>{btn.text}</span>
       {Icon && <Icon className="ml-2 h-4 w-4" />}
@@ -139,9 +139,9 @@ function HeroSubheadings({ items, textClass }: { items: Array<{ text: string }>;
 
 function HeroInput({ placeholder, buttonText }: { placeholder: string; buttonText: string }) {
   return (
-    <div className="flex items-center bg-white rounded-[16px] p-1.5 mt-8 max-w-md animate-hero-enter shadow-lg" style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
-      <input type="email" placeholder={placeholder} className="flex-1 px-4 py-2 bg-transparent text-forest-800 placeholder:text-stone-400 outline-none text-body-sm" />
-      <button className="bg-amber-300 text-forest-800 font-medium px-5 py-2 rounded-[12px] hover:bg-amber-200 transition-colors text-body-sm whitespace-nowrap">{buttonText}</button>
+    <div className="flex items-center bg-white rounded-lg p-1.5 mt-8 max-w-md animate-hero-enter shadow-lg" style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
+      <input type="email" placeholder={placeholder} className="flex-1 px-4 py-2 bg-transparent text-brand placeholder:text-faint outline-none text-body-sm" />
+      <button className="bg-highlight-soft text-brand font-medium px-5 py-2 rounded-md hover:bg-amber-200 transition-colors text-body-sm whitespace-nowrap">{buttonText}</button>
     </div>
   )
 }
@@ -206,8 +206,8 @@ export function Hero({
   const ctaSEdit = editHandlers(ctaSecondaryTextEdit)
 
   // ── Shared style helpers (used by ALL presets) ──
-  const textPrimary = 'text-forest-800'
-  const textSecondary = 'text-forest-600'
+  const textPrimary = 'text-brand'
+  const textSecondary = 'text-accent'
 
   // Read button styles from block data (set by ButtonStylePicker)
   const editBlockCtx = useInlineEditBlock()
@@ -257,7 +257,7 @@ export function Hero({
         {/* Placeholder when no background media */}
         {!backgroundVideo && !backgroundImage && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center text-forest-400">
+            <div className="text-center text-faint">
               <Camera className="h-14 w-14 mx-auto mb-3 opacity-50" />
               <span className="text-body-sm font-medium">Click to add background image</span>
             </div>
@@ -288,12 +288,12 @@ export function Hero({
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
             ) : ctaPrimaryText && ctaPrimaryLink ? (
               <div className={cn('flex flex-col sm:flex-row gap-4 mt-8 md:mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
                 </a>
                 {ctaSecondaryText && ctaSecondaryLink && (
-                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 transition-all', btnSecondary)}>
+                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnSecondary)}>
                     <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                     {SecondaryIcon && <SecondaryIcon className="ml-2 h-4 w-4" />}
                   </a>
@@ -307,7 +307,7 @@ export function Hero({
         {/* Scroll indicator */}
         {showScrollIndicator !== false && (
           <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-hero-enter" style={{ animationDelay: '800ms', animationFillMode: 'both' }}>
-            <ChevronDown className="h-6 w-6 text-forest-500 animate-bounce" />
+            <ChevronDown className="h-6 w-6 text-accent animate-bounce" />
           </div>
         )}
       </section>
@@ -351,7 +351,7 @@ export function Hero({
         )}
         {!backgroundImage && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center text-stone-400">
+            <div className="text-center text-faint">
               <Camera className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <span className="text-body-sm font-medium">Click to add background image</span>
             </div>
@@ -376,12 +376,12 @@ export function Hero({
             <HeroButtons buttons={buttons} variantClasses={variantClasses} />
           ) : ctaPrimaryText && ctaPrimaryLink ? (
             <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-              <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
+              <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
                 <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                 {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
               </a>
               {ctaSecondaryText && ctaSecondaryLink && (
-                <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 transition-all', btnSecondary)}>
+                <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnSecondary)}>
                   <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                 </a>
               )}
@@ -420,12 +420,12 @@ export function Hero({
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
             ) : ctaPrimaryText && ctaPrimaryLink ? (
               <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
                 </a>
                 {ctaSecondaryText && ctaSecondaryLink && (
-                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 transition-all', btnSecondary)}>
+                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnSecondary)}>
                     <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                     {SecondaryIcon && <SecondaryIcon className="ml-2 h-4 w-4" />}
                   </a>
@@ -444,8 +444,8 @@ export function Hero({
               className="w-full rounded-xl object-cover shadow-lg animate-hero-enter"
               style={{ aspectRatio: '3 / 4', animationDelay: '400ms', animationFillMode: 'both', minHeight: '400px' }}
               fallback={
-                <div className="w-full rounded-xl bg-stone-100 border-2 border-dashed border-stone-300 animate-hero-enter flex items-center justify-center" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}>
-                  <div className="text-center text-stone-400">
+                <div className="w-full rounded-xl bg-surface-alt border-2 border-dashed border-strong animate-hero-enter flex items-center justify-center" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}>
+                  <div className="text-center text-faint">
                     <Camera className="h-8 w-8 mx-auto mb-2 opacity-60" />
                     <span className="text-body-sm font-medium">Click to add image</span>
                     <span className="text-caption block mt-1 opacity-60">4:3 aspect ratio</span>
@@ -463,7 +463,7 @@ export function Hero({
   const hasLegacyButtons = ctaPrimaryText || ctaSecondaryText
 
   return (
-    <section data-nav-theme={navTheme} className={cn('relative overflow-hidden text-forest-800', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
+    <section data-nav-theme={navTheme} className={cn('relative overflow-hidden text-brand', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
       {bgStyle === 'gradient' && (
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />
       )}
@@ -477,7 +477,7 @@ export function Hero({
           </h1>
         )}
         {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-          <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed text-forest-600 animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+          <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed text-accent animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
             {subheading}
           </p>
         )}
@@ -488,13 +488,13 @@ export function Hero({
         ) : hasLegacyButtons ? (
           <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
             {ctaPrimaryText && ctaPrimaryLink && (
-              <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 bg-forest-800 text-white shadow-lg hover:shadow-xl hover:-translate-y-px transition-all">
+              <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 bg-brand text-white shadow-lg hover:shadow-xl hover:-translate-y-px transition-all">
                 <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                 {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
               </a>
             )}
             {ctaSecondaryText && ctaSecondaryLink && (
-              <a href={ctaSecondaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-[16px] font-medium h-12 px-7 bg-amber-300 text-forest-800 hover:bg-amber-200 transition-all">
+              <a href={ctaSecondaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 bg-highlight-soft text-brand hover:bg-amber-200 transition-all">
                 <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
               </a>
             )}

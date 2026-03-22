@@ -64,12 +64,12 @@ function TestimonialCard({
         <blockquote className="border-l-[3px] border-forest-400 pl-6 py-2">
           <p
             {...qHandlers}
-            className={cn('text-body-lg italic text-stone-700 leading-relaxed', quoteEdit?.className)}
+            className={cn('text-body-lg italic text-foreground leading-relaxed', quoteEdit?.className)}
           >
             {item.quote}
           </p>
           {(item.author || authorEdit) && (
-            <footer className="mt-3 text-body-sm text-stone-500">
+            <footer className="mt-3 text-body-sm text-muted">
               &mdash;{' '}
               <span {...aHandlers} className={authorEdit?.className}>
                 {item.author}
@@ -86,7 +86,7 @@ function TestimonialCard({
           )}
         </blockquote>
       ) : style === 'featured' ? (
-        <div className="bg-forest-50 rounded-2xl p-8 md:p-12 border border-forest-100 relative overflow-hidden h-full">
+        <div className="bg-accent-soft rounded-2xl p-8 md:p-12 border border-forest-100 relative overflow-hidden h-full">
           <div
             className="absolute top-0 right-0 w-48 h-48 pointer-events-none"
             style={{ background: 'var(--gradient-testimonial-glow)' }}
@@ -95,7 +95,7 @@ function TestimonialCard({
             <p
               {...qHandlers}
               className={cn(
-                'font-display text-h3 text-stone-800 italic leading-relaxed mb-6',
+                'font-display text-h3 text-foreground italic leading-relaxed mb-6',
                 quoteEdit?.className,
               )}
             >
@@ -111,21 +111,21 @@ function TestimonialCard({
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-forest-700 font-semibold text-body-sm">
+                  <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-accent-hover font-semibold text-body-sm">
                     {item.author.charAt(0)}
                   </div>
                 )}
                 <div>
                   <div
                     {...aHandlers}
-                    className={cn('font-medium text-stone-800', authorEdit?.className)}
+                    className={cn('font-medium text-foreground', authorEdit?.className)}
                   >
                     {item.author}
                   </div>
                   {(item.role || roleEdit) && (
                     <div
                       {...rHandlers}
-                      className={cn('text-body-sm text-stone-500', roleEdit?.className)}
+                      className={cn('text-body-sm text-muted', roleEdit?.className)}
                     >
                       {item.role}
                     </div>
@@ -137,18 +137,18 @@ function TestimonialCard({
         </div>
       ) : (
         /* card style (default) */
-        <div className="bg-white rounded-xl p-8 border border-stone-200 shadow-sm border-l-[3px] border-l-amber-400 h-full flex flex-col">
+        <div className="bg-surface-elevated rounded-xl p-8 border border-default shadow-sm border-l-[3px] border-l-amber-400 h-full flex flex-col">
           <p
             {...qHandlers}
             className={cn(
-              'text-body-lg text-stone-700 italic mb-4 leading-relaxed flex-1',
+              'text-body-lg text-foreground italic mb-4 leading-relaxed flex-1',
               quoteEdit?.className,
             )}
           >
             {item.quote}
           </p>
           {(item.author || authorEdit) && (
-            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-stone-100">
+            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-default">
               {item.avatar ? (
                 <InlineImage
                   src={item.avatar}
@@ -157,21 +157,21 @@ function TestimonialCard({
                   className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-medium text-caption">
+                <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center text-secondary font-medium text-caption">
                   {item.author.charAt(0)}
                 </div>
               )}
               <div>
                 <div
                   {...aHandlers}
-                  className={cn('font-medium text-stone-800', authorEdit?.className)}
+                  className={cn('font-medium text-foreground', authorEdit?.className)}
                 >
                   {item.author}
                 </div>
                 {(item.role || roleEdit) && (
                   <div
                     {...rHandlers}
-                    className={cn('text-body-sm text-stone-500', roleEdit?.className)}
+                    className={cn('text-body-sm text-muted', roleEdit?.className)}
                   >
                     {item.role}
                   </div>
@@ -231,7 +231,7 @@ export function Testimonial({
             paddingBlock: 'var(--section-md)',
           }}
         >
-          <div className="py-8 text-center text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+          <div className="py-8 text-center text-faint border-2 border-dashed border-default rounded-lg">
             Add testimonials in settings...
           </div>
           <AddItemButton fieldName="items" label="Add testimonial" />
@@ -289,23 +289,22 @@ export function Testimonial({
           {marqueeItems.map((item, i) => (
             <div
               key={i}
-              className="w-[400px] flex-shrink-0 rounded-[16px] p-8 flex flex-col"
-              style={{ background: '#C7DDDC' }}
+              className="w-[400px] flex-shrink-0 rounded-lg p-8 flex flex-col bg-mist"
             >
-              <p className="text-body-lg text-forest-800 italic leading-relaxed mb-6 flex-1">
+              <p className="text-body-lg text-brand italic leading-relaxed mb-6 flex-1">
                 {item.quote}
               </p>
               <div className="flex items-center gap-3">
                 {item.avatar ? (
                   <img src={item.avatar} alt={item.author} className="w-10 h-10 rounded-full object-cover" />
                 ) : item.author ? (
-                  <div className="w-10 h-10 rounded-full bg-forest-300 flex items-center justify-center text-forest-800 font-semibold text-body-sm">
+                  <div className="w-10 h-10 rounded-full bg-forest-300 flex items-center justify-center text-brand font-semibold text-body-sm">
                     {item.author.charAt(0)}
                   </div>
                 ) : null}
                 <div>
-                  {item.author && <div className="font-medium text-forest-800">{item.author}</div>}
-                  {item.role && <div className="text-body-sm text-forest-600">{item.role}</div>}
+                  {item.author && <div className="font-medium text-brand">{item.author}</div>}
+                  {item.role && <div className="text-body-sm text-accent">{item.role}</div>}
                 </div>
               </div>
             </div>
@@ -381,8 +380,8 @@ function EditableItemsList({
   if (!editCtx) return null
 
   return (
-    <div className="space-y-3 border-2 border-dashed border-stone-200 rounded-lg p-4 bg-stone-50/50">
-      <div className="text-caption font-medium text-stone-400 uppercase tracking-wider mb-2">
+    <div className="space-y-3 border-2 border-dashed border-default rounded-lg p-4 bg-surface/50">
+      <div className="text-caption font-medium text-faint uppercase tracking-wider mb-2">
         All testimonials (edit here)
       </div>
       {items.map((item, i) => (

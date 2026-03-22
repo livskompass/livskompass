@@ -11,8 +11,8 @@ export interface PostHeaderProps {
 function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-      <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-body-sm">Post header is shown here (data-bound)</p>
+      <div className="bg-surface rounded-xl border border-dashed border-strong p-8 text-center">
+        <p className="text-faint text-body-sm">Post header is shown here (data-bound)</p>
       </div>
     </div>
   )
@@ -40,14 +40,14 @@ export function PostHeader({
       {showBackLink && (
         <a
           href={backLinkUrl}
-          className="inline-flex items-center gap-2 text-body-sm text-forest-600 hover:text-forest-700 transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-body-sm text-accent hover:text-accent-hover transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
           <span {...editHandlers(backLinkTextEdit)} className={backLinkTextEdit?.className}>{backLinkText}</span>
         </a>
       )}
       {post.published_at && (
-        <span className="block text-body-sm text-stone-400 mb-2">
+        <span className="block text-body-sm text-faint mb-2">
           {new Date(post.published_at).toLocaleDateString('sv-SE', {
             year: 'numeric',
             month: 'long',
@@ -55,7 +55,7 @@ export function PostHeader({
           })}
         </span>
       )}
-      <h1 className="text-h1 text-forest-950 mb-6">
+      <h1 className="text-h1 text-heading mb-6">
         {post.title}
       </h1>
       {post.featured_image && (

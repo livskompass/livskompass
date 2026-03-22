@@ -68,19 +68,19 @@ export function PostGrid({
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="mb-8 reveal">
-          {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
-          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-stone-600', subheadingEdit?.className)}>{subheading}</p>}
+          {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-2', headingEdit?.className)}>{heading}</h2>}
+          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-secondary', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
       {loading ? (
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
           {Array.from({ length: Math.min(limit, 3) }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-stone-200 bg-white overflow-hidden animate-pulse">
-              {showImage && <div className="aspect-video bg-stone-100" />}
+            <div key={i} className="rounded-xl border border-default bg-surface-elevated overflow-hidden animate-pulse">
+              {showImage && <div className="aspect-video bg-surface-alt" />}
               <div className="p-5 space-y-3">
-                <div className="h-4 bg-stone-100 rounded w-1/3" />
-                <div className="h-5 bg-stone-100 rounded w-3/4" />
-                <div className="h-4 bg-stone-100 rounded w-full" />
+                <div className="h-4 bg-surface-alt rounded w-1/3" />
+                <div className="h-5 bg-surface-alt rounded w-3/4" />
+                <div className="h-4 bg-surface-alt rounded w-full" />
               </div>
             </div>
           ))}
@@ -88,7 +88,7 @@ export function PostGrid({
       ) : posts.length > 0 ? (
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
           {posts.map((post) => (
-            <div key={post.slug} className={cn('relative group rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
+            <div key={post.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
               <EditItemBadge cmsRoute="posts" entityId={post.id} label="Edit post" />
               <a href={`/nyhet/${post.slug}`} className="block">
               {showImage && post.featured_image && (
@@ -112,7 +112,7 @@ export function PostGrid({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-stone-400 border-2 border-dashed border-stone-200 rounded-lg">
+        <div className="text-center py-12 text-faint border-2 border-dashed border-default rounded-lg">
           <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>
         </div>
       )}

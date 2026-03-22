@@ -21,8 +21,8 @@ const maxWidthMap = {
 } as const
 
 const colorMap = {
-  light: 'border-stone-200',
-  medium: 'border-stone-300',
+  light: 'border-default',
+  medium: 'border-strong',
   dark: 'border-stone-500',
 } as const
 
