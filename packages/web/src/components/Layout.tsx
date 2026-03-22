@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getSiteSettings } from '../lib/api'
 import { defaultHeader, defaultFooter, type SiteHeaderConfig } from '@livskompass/shared'
 import { SiteSearch, SearchButton } from './SiteSearch'
+import { Search } from 'lucide-react'
 
 interface NavItem {
   name: string
@@ -23,7 +24,7 @@ function configToNavItems(config: SiteHeaderConfig): NavItem[] {
 // Desktop dropdown
 // ---------------------------------------------------------------------------
 
-function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: string) => boolean }) {
+function DesktopDropdown({ item, isActive, onSearchClick }: { item: NavItem; isActive: (href: string) => boolean; onSearchClick?: () => void }) {
   const [open, setOpen] = useState(false)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -46,6 +47,11 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
   const linkActiveClass = isActive(item.href)
     ? 'font-medium opacity-100'
     : 'opacity-75 hover:opacity-100'
+
+  // Special #search nav item → render search button
+  if (item.href === '#search' && onSearchClick) {
+    return <SearchButton onClick={onSearchClick} />
+  }
 
   if (!item.children || item.children.length === 0) {
     return (
@@ -102,8 +108,22 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
 // Mobile dropdown
 // ---------------------------------------------------------------------------
 
-function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActive: (href: string) => boolean; onNavigate: () => void }) {
+function MobileDropdown({ item, isActive, onNavigate, onSearchClick }: { item: NavItem; isActive: (href: string) => boolean; onNavigate: () => void; onSearchClick?: () => void }) {
   const [expanded, setExpanded] = useState(false)
+
+  // Special #search nav item
+  if (item.href === '#search' && onSearchClick) {
+    return (
+      <button
+        type="button"
+        onClick={() => { onNavigate(); onSearchClick() }}
+        className="flex items-center gap-2 px-3 py-2.5 rounded-[10px] text-brand hover:text-accent hover:bg-surface transition-colors w-full text-left"
+      >
+        <Search className="w-4 h-4" />
+        {item.name}
+      </button>
+    )
+  }
 
   if (!item.children || item.children.length === 0) {
     return (
@@ -271,17 +291,11 @@ export default function Layout() {
 
             <div className="hidden lg:flex items-center space-x-5 xl:space-x-7">
               {navigation.map((item) => (
-                <DesktopDropdown key={item.name} item={item} isActive={isActive} />
+                <DesktopDropdown key={item.name} item={item} isActive={isActive} onSearchClick={() => setSearchOpen(true)} />
               ))}
-              {headerConfig.showSearch && (
-                <SearchButton onClick={() => setSearchOpen(true)} />
-              )}
             </div>
 
             <div className="lg:hidden flex items-center gap-2">
-              {headerConfig.showSearch && (
-                <SearchButton onClick={() => setSearchOpen(true)} />
-              )}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -313,6 +327,7 @@ export default function Layout() {
                   item={item}
                   isActive={isActive}
                   onNavigate={() => setMobileMenuOpen(false)}
+                  onSearchClick={() => setSearchOpen(true)}
                 />
               ))}
             </div>
@@ -363,12 +378,23 @@ export default function Layout() {
                 <ul className="space-y-2" aria-label={col.heading}>
                   {col.links.map((link) => (
                     <li key={link.href}>
+                      {link.href === '#search' ? (
+                        <button
+                          type="button"
+                          onClick={() => setSearchOpen(true)}
+                          className="text-faint hover:text-white transition-colors duration-200 font-normal flex items-center gap-1.5"
+                        >
+                          <Search className="w-3.5 h-3.5" />
+                          {link.label}
+                        </button>
+                      ) : (
                       <Link
                         to={link.href}
                         className="text-faint hover:text-white transition-colors duration-200 font-normal"
                       >
                         {link.label}
                       </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -381,9 +407,7 @@ export default function Layout() {
         </div>
       </footer>
 
-      {headerConfig.showSearch && (
-        <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
-      )}
+      <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   )
 }

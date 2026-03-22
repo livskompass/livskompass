@@ -1,35 +1,83 @@
 /** Shared section background system — used across all section-level blocks */
 
-export type SectionBg =
-  | 'transparent'
-  | 'white'
-  | 'surface'
-  | 'surface-alt'
-  | 'mist'
-  | 'accent-soft'
-  | 'brand'
-  | 'highlight-soft'
-  | 'gradient-down'
-  | 'gradient-up'
-  | 'gradient-mist-down'
-  | 'gradient-forest-down'
+export type SectionBg = string
 
 export const sectionBgOptions = [
+  // ── Solids ──
   { label: 'Transparent', value: 'transparent' },
   { label: 'White', value: 'white' },
   { label: 'Light (stone-50)', value: 'surface' },
   { label: 'Subtle (stone-100)', value: 'surface-alt' },
   { label: 'Mist (teal)', value: 'mist' },
-  { label: 'Accent soft (green-50)', value: 'accent-soft' },
-  { label: 'Dark green', value: 'brand' },
-  { label: 'Yellow', value: 'highlight-soft' },
-  { label: 'Gradient ↓ (white → light)', value: 'gradient-down' },
-  { label: 'Gradient ↑ (light → white)', value: 'gradient-up' },
-  { label: 'Gradient ↓ mist (mist → white)', value: 'gradient-mist-down' },
-  { label: 'Gradient ↓ green (green → white)', value: 'gradient-forest-down' },
+  { label: 'Light green (forest-50)', value: 'accent-soft' },
+  { label: 'Dark green (forest-800)', value: 'brand' },
+  { label: 'Yellow (amber-300)', value: 'highlight-soft' },
+  // ── Neutral gradients ──
+  { label: '↓ White → Light', value: 'grad-white-light' },
+  { label: '↑ Light → White', value: 'grad-light-white' },
+  // ── Dark green gradients ──
+  { label: '↓ Dark green → Transparent', value: 'grad-brand-transparent' },
+  { label: '↑ Transparent → Dark green', value: 'grad-transparent-brand' },
+  { label: '↓ Dark green → White', value: 'grad-brand-white' },
+  { label: '↑ White → Dark green', value: 'grad-white-brand' },
+  { label: '↓ Dark green → Mist', value: 'grad-brand-mist' },
+  { label: '↑ Mist → Dark green', value: 'grad-mist-brand' },
+  { label: '↓ Dark green → Light green', value: 'grad-brand-accent' },
+  // ── Mist (teal) gradients ──
+  { label: '↓ Mist → Transparent', value: 'grad-mist-transparent' },
+  { label: '↑ Transparent → Mist', value: 'grad-transparent-mist' },
+  { label: '↓ Mist → White', value: 'grad-mist-white' },
+  { label: '↑ White → Mist', value: 'grad-white-mist' },
+  // ── Light green gradients ──
+  { label: '↓ Light green → Transparent', value: 'grad-accent-transparent' },
+  { label: '↑ Transparent → Light green', value: 'grad-transparent-accent' },
+  { label: '↓ Light green → White', value: 'grad-accent-white' },
+  // ── Yellow gradients ──
+  { label: '↓ Yellow → Transparent', value: 'grad-amber-transparent' },
+  { label: '↑ Transparent → Yellow', value: 'grad-transparent-amber' },
+  { label: '↓ Yellow → White', value: 'grad-amber-white' },
+  // ── Cross-color combos ──
+  { label: '↓ Mist → Light green', value: 'grad-mist-accent' },
+  { label: '↓ Yellow → Mist', value: 'grad-amber-mist' },
+  { label: '↓ Dark green → Yellow', value: 'grad-brand-amber' },
 ]
 
-/** Returns Tailwind className for section background */
+// Gradient CSS definitions — uses CSS custom properties
+const gradients: Record<string, string> = {
+  // Neutral
+  'grad-white-light':           'linear-gradient(180deg, #ffffff 0%, rgb(var(--stone-50)) 100%)',
+  'grad-light-white':           'linear-gradient(180deg, rgb(var(--stone-50)) 0%, #ffffff 100%)',
+  // Dark green
+  'grad-brand-transparent':     'linear-gradient(180deg, rgb(var(--forest-800)) 0%, transparent 100%)',
+  'grad-transparent-brand':     'linear-gradient(180deg, transparent 0%, rgb(var(--forest-800)) 100%)',
+  'grad-brand-white':           'linear-gradient(180deg, rgb(var(--forest-800)) 0%, #ffffff 100%)',
+  'grad-white-brand':           'linear-gradient(180deg, #ffffff 0%, rgb(var(--forest-800)) 100%)',
+  'grad-brand-mist':            'linear-gradient(180deg, rgb(var(--forest-800)) 0%, rgb(var(--mist)) 100%)',
+  'grad-mist-brand':            'linear-gradient(180deg, rgb(var(--mist)) 0%, rgb(var(--forest-800)) 100%)',
+  'grad-brand-accent':          'linear-gradient(180deg, rgb(var(--forest-800)) 0%, rgb(var(--forest-50)) 100%)',
+  // Mist
+  'grad-mist-transparent':      'linear-gradient(180deg, rgb(var(--mist)) 0%, transparent 100%)',
+  'grad-transparent-mist':      'linear-gradient(180deg, transparent 0%, rgb(var(--mist)) 100%)',
+  'grad-mist-white':            'linear-gradient(180deg, rgb(var(--mist)) 0%, #ffffff 100%)',
+  'grad-white-mist':            'linear-gradient(180deg, #ffffff 0%, rgb(var(--mist)) 100%)',
+  // Light green
+  'grad-accent-transparent':    'linear-gradient(180deg, rgb(var(--forest-50)) 0%, transparent 100%)',
+  'grad-transparent-accent':    'linear-gradient(180deg, transparent 0%, rgb(var(--forest-50)) 100%)',
+  'grad-accent-white':          'linear-gradient(180deg, rgb(var(--forest-50)) 0%, #ffffff 100%)',
+  // Yellow
+  'grad-amber-transparent':     'linear-gradient(180deg, rgb(var(--amber-300)) 0%, transparent 100%)',
+  'grad-transparent-amber':     'linear-gradient(180deg, transparent 0%, rgb(var(--amber-300)) 100%)',
+  'grad-amber-white':           'linear-gradient(180deg, rgb(var(--amber-300)) 0%, #ffffff 100%)',
+  // Cross-color
+  'grad-mist-accent':           'linear-gradient(180deg, rgb(var(--mist)) 0%, rgb(var(--forest-50)) 100%)',
+  'grad-amber-mist':            'linear-gradient(180deg, rgb(var(--amber-300)) 0%, rgb(var(--mist)) 100%)',
+  'grad-brand-amber':           'linear-gradient(180deg, rgb(var(--forest-800)) 0%, rgb(var(--amber-300)) 100%)',
+}
+
+/** Dark backgrounds that need white text */
+const darkBgs = new Set(['brand', 'grad-brand-transparent', 'grad-brand-white', 'grad-brand-mist', 'grad-brand-accent', 'grad-brand-amber', 'grad-transparent-brand', 'grad-white-brand', 'grad-mist-brand'])
+
+/** Returns Tailwind className for solid section backgrounds */
 export function sectionBgClass(bg: string = 'transparent'): string {
   const map: Record<string, string> = {
     transparent: '',
@@ -44,21 +92,15 @@ export function sectionBgClass(bg: string = 'transparent'): string {
   return map[bg] || ''
 }
 
-/** Returns inline style for gradient backgrounds (Tailwind can't do arbitrary gradients) */
+/** Returns inline style for gradient backgrounds */
 export function sectionBgStyle(bg: string = 'transparent'): React.CSSProperties | undefined {
-  const gradients: Record<string, string> = {
-    'gradient-down': 'linear-gradient(180deg, #ffffff 0%, rgb(var(--stone-50)) 100%)',
-    'gradient-up': 'linear-gradient(180deg, rgb(var(--stone-50)) 0%, #ffffff 100%)',
-    'gradient-mist-down': 'linear-gradient(180deg, rgb(var(--mist)) 0%, #ffffff 100%)',
-    'gradient-forest-down': 'linear-gradient(180deg, rgb(var(--forest-50)) 0%, #ffffff 100%)',
-  }
   if (gradients[bg]) return { background: gradients[bg] }
   return undefined
 }
 
 /** Returns text color class for dark backgrounds */
 export function sectionTextClass(bg: string = 'transparent'): string {
-  if (bg === 'brand') return 'text-white'
+  if (darkBgs.has(bg)) return 'text-white'
   return ''
 }
 

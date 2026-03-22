@@ -5,7 +5,7 @@ export interface SeparatorBlockProps {
   spacing: 'small' | 'medium' | 'large' | 'extra-large'
   lineColor: 'light' | 'medium' | 'dark'
   maxWidth: 'narrow' | 'medium' | 'full'
-  gradientType?: 'fade-down' | 'fade-up' | 'mist-down' | 'mist-up' | 'forest-down' | 'forest-up' | 'amber-down' | 'amber-up'
+  gradientType?: string
 }
 
 const spacingMap = {
@@ -35,14 +35,34 @@ const gradientHeightMap = {
 } as const
 
 const gradientStyles: Record<string, string> = {
-  'fade-down': 'linear-gradient(180deg, #ffffff 0%, rgb(var(--stone-50)) 100%)',
-  'fade-up': 'linear-gradient(180deg, rgb(var(--stone-50)) 0%, #ffffff 100%)',
-  'mist-down': 'linear-gradient(180deg, rgb(var(--mist)) 0%, transparent 100%)',
-  'mist-up': 'linear-gradient(180deg, transparent 0%, rgb(var(--mist)) 100%)',
-  'forest-down': 'linear-gradient(180deg, rgb(var(--forest-50)) 0%, transparent 100%)',
-  'forest-up': 'linear-gradient(180deg, transparent 0%, rgb(var(--forest-50)) 100%)',
-  'amber-down': 'linear-gradient(180deg, rgb(var(--amber-50)) 0%, transparent 100%)',
-  'amber-up': 'linear-gradient(180deg, transparent 0%, rgb(var(--amber-50)) 100%)',
+  // Neutral
+  'white-light':           'linear-gradient(180deg, #ffffff 0%, rgb(var(--stone-50)) 100%)',
+  'light-white':           'linear-gradient(180deg, rgb(var(--stone-50)) 0%, #ffffff 100%)',
+  // Dark green
+  'brand-transparent':     'linear-gradient(180deg, rgb(var(--forest-800)) 0%, transparent 100%)',
+  'transparent-brand':     'linear-gradient(180deg, transparent 0%, rgb(var(--forest-800)) 100%)',
+  'brand-white':           'linear-gradient(180deg, rgb(var(--forest-800)) 0%, #ffffff 100%)',
+  'white-brand':           'linear-gradient(180deg, #ffffff 0%, rgb(var(--forest-800)) 100%)',
+  'brand-mist':            'linear-gradient(180deg, rgb(var(--forest-800)) 0%, rgb(var(--mist)) 100%)',
+  'mist-brand':            'linear-gradient(180deg, rgb(var(--mist)) 0%, rgb(var(--forest-800)) 100%)',
+  'brand-accent':          'linear-gradient(180deg, rgb(var(--forest-800)) 0%, rgb(var(--forest-50)) 100%)',
+  // Mist
+  'mist-transparent':      'linear-gradient(180deg, rgb(var(--mist)) 0%, transparent 100%)',
+  'transparent-mist':      'linear-gradient(180deg, transparent 0%, rgb(var(--mist)) 100%)',
+  'mist-white':            'linear-gradient(180deg, rgb(var(--mist)) 0%, #ffffff 100%)',
+  'white-mist':            'linear-gradient(180deg, #ffffff 0%, rgb(var(--mist)) 100%)',
+  // Light green
+  'accent-transparent':    'linear-gradient(180deg, rgb(var(--forest-50)) 0%, transparent 100%)',
+  'transparent-accent':    'linear-gradient(180deg, transparent 0%, rgb(var(--forest-50)) 100%)',
+  'accent-white':          'linear-gradient(180deg, rgb(var(--forest-50)) 0%, #ffffff 100%)',
+  // Yellow
+  'amber-transparent':     'linear-gradient(180deg, rgb(var(--amber-300)) 0%, transparent 100%)',
+  'transparent-amber':     'linear-gradient(180deg, transparent 0%, rgb(var(--amber-300)) 100%)',
+  'amber-white':           'linear-gradient(180deg, rgb(var(--amber-300)) 0%, #ffffff 100%)',
+  // Cross-color
+  'mist-accent':           'linear-gradient(180deg, rgb(var(--mist)) 0%, rgb(var(--forest-50)) 100%)',
+  'amber-mist':            'linear-gradient(180deg, rgb(var(--amber-300)) 0%, rgb(var(--mist)) 100%)',
+  'brand-amber':           'linear-gradient(180deg, rgb(var(--forest-800)) 0%, rgb(var(--amber-300)) 100%)',
 }
 
 export function SeparatorBlock({
@@ -50,14 +70,14 @@ export function SeparatorBlock({
   spacing = 'medium',
   lineColor = 'light',
   maxWidth = 'full',
-  gradientType = 'fade-down',
+  gradientType = 'white-light',
 }: SeparatorBlockProps) {
   // Gradient variant — full-width color transition
   if (variant === 'gradient') {
     return (
       <div
         className={cn('w-full', gradientHeightMap[spacing])}
-        style={{ background: gradientStyles[gradientType] || gradientStyles['fade-down'] }}
+        style={{ background: gradientStyles[gradientType] || gradientStyles['white-light'] }}
       />
     )
   }

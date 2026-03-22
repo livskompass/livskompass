@@ -5,6 +5,7 @@ import {
   updateSettings,
   getSiteSettings,
   updateSiteSettings,
+  uploadMedia,
 } from '../lib/api'
 import { defaultHeader, defaultFooter, type SiteHeaderConfig, type SiteFooterConfig } from '@livskompass/shared'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
@@ -29,6 +30,7 @@ import {
   ChevronRight,
   PanelTop,
   PanelBottom,
+  Upload,
 } from 'lucide-react'
 
 // ── Nav item editor sub-component ──
@@ -414,16 +416,37 @@ export default function Settings() {
           </div>
 
           <div className="space-y-2">
-            <Label>Logo image URL <span className="text-zinc-400 font-normal">(optional — overrides text)</span></Label>
-            <Input
-              value={header.logoUrl || ''}
-              onChange={(e) => setHeader({ ...header, logoUrl: e.target.value || undefined })}
-              placeholder="/media/logo.svg or https://..."
-            />
+            <Label>Logo image <span className="text-zinc-400 font-normal">(optional — overrides text)</span></Label>
+            <div className="flex items-center gap-2">
+              <Input
+                value={header.logoUrl || ''}
+                onChange={(e) => setHeader({ ...header, logoUrl: e.target.value || undefined })}
+                placeholder="Upload or paste URL..."
+                className="flex-1"
+              />
+              <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md border border-zinc-200 bg-white text-zinc-700 text-sm font-medium hover:bg-zinc-50 cursor-pointer transition-colors whitespace-nowrap">
+                <Upload className="h-4 w-4" />
+                Upload
+                <input
+                  type="file"
+                  accept="image/svg+xml,image/png,image/jpeg,image/webp"
+                  className="sr-only"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    try {
+                      const result = await uploadMedia(file)
+                      setHeader({ ...header, logoUrl: result.media.url })
+                    } catch { /* upload error — silent */ }
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+            </div>
             {header.logoUrl && (
               <div className="mt-2 p-3 bg-zinc-50 rounded-md border border-zinc-200 flex items-center gap-3">
                 <img
-                  src={header.logoUrl.startsWith('/') ? header.logoUrl : header.logoUrl}
+                  src={header.logoUrl}
                   alt="Logo preview"
                   className="h-8 max-w-[200px] object-contain"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
@@ -439,16 +462,7 @@ export default function Settings() {
             )}
           </div>
 
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="showSearch"
-              checked={!!header.showSearch}
-              onChange={(e) => setHeader({ ...header, showSearch: e.target.checked })}
-              className="rounded border-zinc-300"
-            />
-            <Label htmlFor="showSearch" className="cursor-pointer">Show search icon in header</Label>
-          </div>
+          <p className="text-xs text-zinc-400">To add search, add a nav item with href <code className="bg-zinc-100 px-1 rounded">#search</code> — it renders as a search icon. Works in both header nav and footer links.</p>
 
           <Separator />
 
@@ -525,12 +539,33 @@ export default function Settings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Footer logo URL <span className="text-zinc-400 font-normal">(optional — overrides company name text)</span></Label>
-            <Input
-              value={footer.logoUrl || ''}
-              onChange={(e) => setFooter({ ...footer, logoUrl: e.target.value || undefined })}
-              placeholder="/media/logo.svg or https://..."
-            />
+            <Label>Footer logo <span className="text-zinc-400 font-normal">(optional — overrides company name text)</span></Label>
+            <div className="flex items-center gap-2">
+              <Input
+                value={footer.logoUrl || ''}
+                onChange={(e) => setFooter({ ...footer, logoUrl: e.target.value || undefined })}
+                placeholder="Upload or paste URL..."
+                className="flex-1"
+              />
+              <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md border border-zinc-200 bg-white text-zinc-700 text-sm font-medium hover:bg-zinc-50 cursor-pointer transition-colors whitespace-nowrap">
+                <Upload className="h-4 w-4" />
+                Upload
+                <input
+                  type="file"
+                  accept="image/svg+xml,image/png,image/jpeg,image/webp"
+                  className="sr-only"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    try {
+                      const result = await uploadMedia(file)
+                      setFooter({ ...footer, logoUrl: result.media.url })
+                    } catch { /* upload error — silent */ }
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+            </div>
             {footer.logoUrl && (
               <div className="mt-2 p-3 bg-zinc-800 rounded-md border border-zinc-700 flex items-center gap-3">
                 <img
