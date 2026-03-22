@@ -2,6 +2,7 @@ import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
 import { EditItemBadge } from './EditItemBadge'
 import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
+import { getCardColors } from './cardColors'
 
 export interface PostGridProps {
   heading: string
@@ -12,6 +13,7 @@ export interface PostGridProps {
   showExcerpt: boolean
   showDate: boolean
   emptyText: string
+  cardColor?: string
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
@@ -41,8 +43,10 @@ export function PostGrid({
   showExcerpt = true,
   showDate = true,
   emptyText = 'No posts found',
+  cardColor = 'mist',
   id,
 }: PostGridProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const colors = getCardColors(cardColor)
   const limit = count || 3
   const { data, loading } = useFetchJson<{ posts: Post[] }>(`/posts?limit=${limit}`)
   const posts = data?.posts || []
@@ -84,7 +88,7 @@ export function PostGrid({
       ) : posts.length > 0 ? (
         <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
           {posts.map((post) => (
-            <div key={post.slug} className="relative group rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+            <div key={post.slug} className={cn('relative group rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
               <EditItemBadge cmsRoute="posts" entityId={post.id} label="Edit post" />
               <a href={`/nyhet/${post.slug}`} className="block">
               {showImage && post.featured_image && (
@@ -94,13 +98,13 @@ export function PostGrid({
               )}
               <div className="p-5">
                 {showDate && post.published_at && (
-                  <span className="text-xs font-medium text-stone-400 mb-1 block">
+                  <span className={cn('text-xs font-medium mb-1 block', colors.textMuted)}>
                     {new Date(post.published_at).toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
                 )}
-                <h3 className="text-h4 text-stone-800 group-hover:text-forest-600 transition-colors mb-1">{post.title}</h3>
+                <h3 className={cn('text-h4 transition-colors mb-1', colors.text)}>{post.title}</h3>
                 {showExcerpt && post.excerpt && (
-                  <p className="text-sm text-stone-500 line-clamp-2">{post.excerpt}</p>
+                  <p className={cn('text-sm line-clamp-2', colors.textMuted)}>{post.excerpt}</p>
                 )}
               </div>
             </a>

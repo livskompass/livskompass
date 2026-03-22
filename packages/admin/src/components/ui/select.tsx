@@ -9,9 +9,14 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <select
         className={cn(
-          "flex h-10 w-full rounded-md border-[1.5px] border-zinc-300 bg-white px-3 py-2 pr-9 text-sm text-zinc-900 appearance-none bg-no-repeat bg-[length:16px] bg-[right_10px_center] bg-[url(\"data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='16'%20height='16'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%2371717A'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='m6%209%206%206%206-6'/%3E%3C/svg%3E\")] focus:outline-none focus:border-zinc-500 focus:ring-[3px] focus:ring-zinc-500/10 disabled:cursor-not-allowed disabled:opacity-50 transition-colors duration-fast",
+          "flex h-10 w-full rounded-md border-[1.5px] border-zinc-300 bg-white px-3 py-2 pr-9 text-sm text-zinc-900 appearance-none bg-no-repeat focus:outline-none focus:border-zinc-500 focus:ring-[3px] focus:ring-zinc-500/10 disabled:cursor-not-allowed disabled:opacity-50 transition-colors duration-fast",
           className
         )}
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+          backgroundSize: '16px',
+          backgroundPosition: 'right 10px center',
+        }}
         ref={ref}
         {...props}
       >

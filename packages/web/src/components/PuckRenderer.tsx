@@ -28,12 +28,23 @@ const components = puckConfig.components as Record<
   { render: React.FC<any> }
 >
 
+/** No-op save for public site — text sizes are read-only */
+const noopSave = () => {}
+
 function renderItems(items: PuckItem[]) {
   return items.map((item, i) => {
     const comp = components[item.type]
     if (!comp?.render) return null
     const Fn = comp.render
-    return <Fn key={item.props?.id || `${item.type}-${i}`} {...item.props} />
+    // Provide minimal context so useEditableText can read _textSizes
+    return (
+      <InlineEditBlockContext.Provider
+        key={item.props?.id || `${item.type}-${i}`}
+        value={{ isAdmin: false, blockIndex: i, saveBlockProp: noopSave, blockProps: item.props }}
+      >
+        <Fn {...item.props} />
+      </InlineEditBlockContext.Provider>
+    )
   })
 }
 
@@ -52,7 +63,7 @@ function RenderItemWithContext({
   return (
     <EditableBlock blockType={item.type} blockIndex={index}>
       <InlineEditBlockContext.Provider
-        value={{ isAdmin: true, blockIndex: index, saveBlockProp }}
+        value={{ isAdmin: true, blockIndex: index, saveBlockProp, blockProps: item.props }}
       >
         <Fn {...item.props} />
       </InlineEditBlockContext.Provider>

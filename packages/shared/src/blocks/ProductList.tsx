@@ -2,7 +2,9 @@ import { cn } from '../ui/utils'
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
 import { EditItemBadge } from './EditItemBadge'
 import { ExternalLink } from 'lucide-react'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { getCardColors } from './cardColors'
+import { getButtonStyle } from './buttonUtils'
 
 export interface ProductListProps {
   heading: string
@@ -15,6 +17,7 @@ export interface ProductListProps {
   outOfStockLabel: string
   emptyText: string
   typeLabels: Record<string, string>
+  cardColor?: string
 }
 
 interface Product {
@@ -57,8 +60,10 @@ export function ProductList({
   outOfStockLabel = 'Out of stock',
   emptyText = 'No products found.',
   typeLabels = defaultTypeLabels,
+  cardColor = 'mist',
   id,
 }: ProductListProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const colors = getCardColors(cardColor)
   // Puck editor inline editing (via postMessage)
   const headingPuck = useInlineEdit('heading', heading, id || '')
   // Public site admin editing (via InlineEditBlockContext)
@@ -71,6 +76,11 @@ export function ProductList({
   const freeLabelEdit = useEditableText('freeLabel', freeLabel)
   const outOfStockEdit = useEditableText('outOfStockLabel', outOfStockLabel)
   const emptyTextEdit = useEditableText('emptyText', emptyText)
+
+  // Read button styles from block data (set by ButtonStylePicker)
+  const editBlockCtx = useInlineEditBlock()
+  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const { variantClass: buyBtnClass, Icon: BuyBtnIcon } = getButtonStyle(btnStyles, 'buyButtonText', 'primary', 'external-link')
 
   const { data, loading } = useFetchJson<{ products: Product[] }>('/products')
   const allProducts = data?.products || []
@@ -115,7 +125,7 @@ export function ProductList({
               )}
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
                 {typeProducts.map((product) => (
-                  <div key={product.slug} className="relative group bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                  <div key={product.slug} className={cn('relative group rounded-[16px] overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col', colors.bg)}>
                     <EditItemBadge cmsRoute="products" entityId={product.id} label="Edit product" />
                     {showImage !== false && product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
@@ -128,27 +138,27 @@ export function ProductList({
                       </div>
                     )}
                     <div className="p-5 flex flex-col flex-1">
-                      <span className="text-xs font-medium text-amber-600 uppercase tracking-wide">
+                      <span className={cn('text-xs font-medium uppercase tracking-wide', cardColor === 'dark' ? 'text-amber-300/80' : 'text-amber-600')}>
                         {typeLabels[product.type] || product.type}
                       </span>
-                      <h4 className="font-semibold text-stone-800 mt-1 mb-2">{product.title}</h4>
+                      <h4 className={cn('font-semibold mt-1 mb-2', colors.text)}>{product.title}</h4>
                       {product.description && (
-                        <p className="text-sm text-stone-500 line-clamp-3 mb-4">{product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
+                        <p className={cn('text-sm line-clamp-3 mb-4', colors.textMuted)}>{product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                       )}
                       <div className="flex items-center justify-between mt-auto pt-2">
                         {showPrice !== false ? (
                           product.price_sek ? (
-                            <span className="font-display text-h4 text-stone-800">
-                              {product.price_sek.toLocaleString('sv-SE')} kr
+                            <span className={cn('font-display text-h4', colors.text)}>
+                              {product.price_sek.toLocaleString('sv-SE')} <span className={cn('text-sm font-normal', colors.textMuted)}>kr</span>
                             </span>
                           ) : (
-                            <span className="text-sm font-medium text-forest-600 bg-forest-50 px-2 py-1 rounded">
+                            <span className={cn('text-sm font-medium px-2 py-1 rounded', colors.badge)}>
                               <span {...editHandlers(freeLabelEdit)} className={freeLabelEdit?.className}>{freeLabel}</span>
                             </span>
                           )
                         ) : <span />}
                         {!product.in_stock ? (
-                          <span className="text-xs text-stone-400 font-medium">
+                          <span className={cn('text-xs font-medium', colors.textMuted)}>
                             <span {...editHandlers(outOfStockEdit)} className={outOfStockEdit?.className}>{outOfStockLabel}</span>
                           </span>
                         ) : product.external_url ? (
@@ -156,10 +166,10 @@ export function ProductList({
                             href={product.external_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center h-9 px-4 text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 rounded-full transition-colors"
+                            className={cn('inline-flex items-center h-9 px-4 text-sm font-medium rounded-[16px] transition-colors', btnStyles ? buyBtnClass : (cardColor === 'dark' ? 'bg-amber-300 text-forest-800 hover:bg-amber-200' : 'bg-amber-500 text-white hover:bg-amber-600'))}
                           >
                             <span {...editHandlers(buyBtnEdit)} className={buyBtnEdit?.className}>{buyButtonText}</span>
-                            <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                            {BuyBtnIcon ? <BuyBtnIcon className="ml-1.5 h-3.5 w-3.5" /> : (!btnStyles && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />)}
                           </a>
                         ) : null}
                       </div>

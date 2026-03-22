@@ -32,11 +32,9 @@ export function useToolbarPosition(blockId: string | null) {
     }
 
     const rect = el.getBoundingClientRect()
-    const x = rect.left + rect.width / 2
+    const x = rect.left + rect.width * 0.6
     const placement = rect.top < FLIP_THRESHOLD ? 'below' : 'above'
-    const y = placement === 'above'
-      ? rect.top - TOOLBAR_GAP
-      : rect.bottom + TOOLBAR_GAP
+    const y = rect.top + TOOLBAR_GAP + 4
 
     setPosition({ x, y, placement })
   }, [blockId])

@@ -8,6 +8,8 @@ export interface SiteHeaderConfig {
   logoText: string
   navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
   ctaButton?: { text: string; href: string }
+  navColor?: string       // Tailwind text color class (e.g., 'text-forest-800', 'text-white')
+  dynamicNavColor?: boolean // Auto-switch nav color based on content below
 }
 
 export interface SiteFooterConfig {

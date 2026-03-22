@@ -8,7 +8,7 @@ const preset: Partial<Config> = {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Instrument Serif', 'Georgia', 'Times New Roman', 'serif'],
+        display: ['Outfit', 'system-ui', '-apple-system', 'sans-serif'],
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {

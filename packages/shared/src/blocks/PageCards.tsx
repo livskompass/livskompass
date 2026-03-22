@@ -5,6 +5,7 @@ import { useInlineEdit, useEditableText, useInlineEditBlock, InlineArrayOpsConte
 import { cn } from '../ui/utils'
 import { EditItemBadge } from './EditItemBadge'
 import { ArrayItemControls, ArrayDragProvider } from './ArrayItemControls'
+import { getCardColors } from './cardColors'
 
 export interface PageCardsProps {
   heading: string
@@ -15,6 +16,7 @@ export interface PageCardsProps {
   style: 'card' | 'list' | 'minimal'
   emptyText: string
   emptyManualText: string
+  cardColor?: string
 }
 
 const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
@@ -40,8 +42,10 @@ export function PageCards({
   style = 'card',
   emptyText = 'No subpages found',
   emptyManualText = 'Add pages manually or specify a parent page',
+  cardColor = 'mist',
   id,
 }: PageCardsProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const colors = getCardColors(cardColor)
   // Puck editor inline editing (via postMessage)
   const headingPuck = useInlineEdit('heading', heading, id || '')
   // Public site admin editing (via InlineEditBlockContext)
@@ -122,7 +126,7 @@ export function PageCards({
         {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="flex flex-wrap gap-3">
           {pages.map((page, i) => (
-            <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-stone-200 bg-white text-sm font-medium text-stone-700 hover:border-forest-300 hover:text-forest-600 transition-colors">
+            <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-[16px] border border-stone-200 bg-white text-sm font-medium text-stone-700 hover:border-forest-300 hover:text-forest-600 transition-colors">
               {page.title}
             </a>
           ))}
@@ -138,11 +142,11 @@ export function PageCards({
       <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4 reveal`}>
         {pages.map((page, i) => (
           <ArrayItemControls key={i} fieldName="manualPages" itemIndex={i} totalItems={pages.length}>
-          <div className="relative group rounded-xl border border-stone-200 bg-white p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+          <div className={cn('relative group rounded-[16px] p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
             <EditItemBadge cmsRoute="pages" entityId={page.id} label="Edit page" slug={page.slug} />
             <a href={`/${page.slug}`} className="block">
-              <h3 className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors mb-1">{page.title}</h3>
-              {showDescription && page.description && <p className="text-sm text-stone-500 line-clamp-2">{page.description}</p>}
+              <h3 className={cn('font-semibold transition-colors mb-1', colors.text)}>{page.title}</h3>
+              {showDescription && page.description && <p className={cn('text-sm line-clamp-2', colors.textMuted)}>{page.description}</p>}
             </a>
           </div>
           </ArrayItemControls>

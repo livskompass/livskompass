@@ -378,7 +378,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         aria-label="Page content"
       >
         <div
-          className="max-w-[1440px] mx-auto"
+          className="max-w-[1280px] mx-auto"
           style={{
             fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
             backgroundColor: 'var(--surface-primary, #F8F6F2)',

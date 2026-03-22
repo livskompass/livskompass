@@ -205,7 +205,7 @@ export function EntitySettingsDrawer({ open, onClose, contentType }: EntitySetti
       {/* Backdrop */}
       <div
         className="absolute inset-0"
-        style={{ background: 'rgba(0,0,0,0.15)' }}
+        style={{ background: 'var(--editor-overlay, rgba(0,0,0,0.15))' }}
       />
 
       {/* Drawer */}
@@ -215,7 +215,7 @@ export function EntitySettingsDrawer({ open, onClose, contentType }: EntitySetti
         style={{
           background: 'var(--editor-surface, #fff)',
           borderLeft: '1px solid var(--editor-border)',
-          boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+          boxShadow: 'var(--editor-shadow-drawer, -4px 0 24px rgba(0,0,0,0.08))',
           animation: 'editor-slide-in-right 200ms ease forwards',
         }}
       >
@@ -301,13 +301,13 @@ function FieldLabel({ label }: { label: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const colorMap: Record<string, { bg: string; text: string }> = {
-    draft: { bg: '#fef3c7', text: '#92400e' },
-    published: { bg: '#d1fae5', text: '#065f46' },
-    active: { bg: '#d1fae5', text: '#065f46' },
-    full: { bg: '#dbeafe', text: '#1e40af' },
-    completed: { bg: '#e5e7eb', text: '#374151' },
-    cancelled: { bg: '#fee2e2', text: '#991b1b' },
-    inactive: { bg: '#e5e7eb', text: '#374151' },
+    draft: { bg: 'var(--editor-status-draft-bg, #fef3c7)', text: 'var(--editor-status-draft-text, #92400e)' },
+    published: { bg: 'var(--editor-status-published-bg, #d1fae5)', text: 'var(--editor-status-published-text, #065f46)' },
+    active: { bg: 'var(--editor-status-published-bg, #d1fae5)', text: 'var(--editor-status-published-text, #065f46)' },
+    full: { bg: 'var(--editor-status-info-bg, #dbeafe)', text: 'var(--editor-status-info-text, #1e40af)' },
+    completed: { bg: 'var(--editor-status-neutral-bg, #e5e7eb)', text: 'var(--editor-status-neutral-text, #374151)' },
+    cancelled: { bg: 'var(--editor-status-error-bg, #fee2e2)', text: 'var(--editor-status-error-text, #991b1b)' },
+    inactive: { bg: 'var(--editor-status-neutral-bg, #e5e7eb)', text: 'var(--editor-status-neutral-text, #374151)' },
   }
   const colors = colorMap[status] || colorMap.draft
   return (

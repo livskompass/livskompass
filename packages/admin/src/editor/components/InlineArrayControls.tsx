@@ -106,21 +106,21 @@ export function InlineArrayControls({ blockType, blockIndex }: InlineArrayContro
   const items = block?.props?.[config.field] || []
 
   return (
-    <div className="mt-2 flex justify-center">
+    <div className="mt-1 flex justify-end pr-3">
       <button
         onClick={(e) => {
           e.stopPropagation()
           addItem()
         }}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+        className="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium transition-colors hover:opacity-90"
         style={{
-          color: 'var(--editor-blue, #2563EB)',
-          background: 'var(--editor-blue-lightest, #EFF6FF)',
-          border: '1px dashed var(--editor-blue-light, #93C5FD)',
+          color: 'var(--editor-surface, #fff)',
+          background: 'var(--editor-blue)',
         }}
+        title={`${config.addLabel} to this block (currently ${items.length})`}
       >
         <Plus className="h-3 w-3" />
-        {config.addLabel} ({items.length})
+        {config.addLabel}
       </button>
     </div>
   )

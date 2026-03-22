@@ -89,7 +89,10 @@ export function EditableBlock({
     }
   }
 
-  const showHandle = (isHovered || isSelected) && !isEditing && !isDragSource
+  // When another block is selected, suppress badge + handle on hover — only show dashed outline
+  const anotherBlockSelected = !!state.selectedBlockId && !isSelected
+  const showChrome = ((isHovered && !anotherBlockSelected) || isSelected) && !isEditing && !isDragSource
+  const showHandle = showChrome
 
   return (
     <div
@@ -113,12 +116,12 @@ export function EditableBlock({
       data-block-index={blockIndex}
     >
       {/* Block type label + editing surface badge — outside the block, top-right */}
-      {(isHovered || isSelected) && !isEditing && !isDragSource && (() => {
+      {showChrome && (() => {
         const surface = getEditingSurface(blockType)
         const isLinked = surface === 'linked'
         return (
           <div
-            className="absolute -top-6 right-2 flex items-center gap-1.5 px-2 py-0.5 rounded pointer-events-none select-none"
+            className="absolute top-2 right-2 flex items-center gap-1.5 px-2 py-0.5 rounded pointer-events-none select-none"
             style={{
               fontSize: '10px',
               fontWeight: 600,

@@ -1,6 +1,7 @@
-import { useCourseData, useInlineEdit, useEditableText } from '../context'
+import { useCourseData, useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { ArrowRight, AlertCircle, CheckCircle } from 'lucide-react'
 import { cn } from '../ui/utils'
+import { getButtonStyle } from './buttonUtils'
 
 export interface BookingCTAProps {
   style: 'card' | 'inline'
@@ -60,6 +61,11 @@ export function BookingCTA({
   const dHandlers = editHandlers(descriptionEdit)
   const bHandlers = editHandlers(buttonTextEdit)
 
+  // Read button styles from block data (set by ButtonStylePicker)
+  const editBlockCtx = useInlineEditBlock()
+  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const { variantClass: btnClass, Icon: BtnIcon } = getButtonStyle(btnStyles, 'buttonText', 'primary', 'arrow-right')
+
   if (!course) return <Placeholder />
 
   if (course.status === 'completed') {
@@ -92,10 +98,10 @@ export function BookingCTA({
       <div className="mx-auto text-center" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
         <a
           href={`/utbildningar/${course.slug}/boka`}
-          className="inline-flex items-center h-12 px-8 bg-amber-500 text-white hover:bg-amber-600 font-semibold rounded-full transition-colors text-base"
+          className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-[16px] transition-colors text-base', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
         >
           <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
-          <ArrowRight className="ml-2 h-4 w-4" />
+          {BtnIcon ? <BtnIcon className="ml-2 h-4 w-4" /> : (!btnStyles && <ArrowRight className="ml-2 h-4 w-4" />)}
         </a>
       </div>
     )
@@ -108,10 +114,10 @@ export function BookingCTA({
         <p {...dHandlers} className={cn('text-forest-600 mb-6', descriptionEdit?.className)}>{description}</p>
         <a
           href={`/utbildningar/${course.slug}/boka`}
-          className="inline-flex items-center h-12 px-8 bg-amber-500 text-white hover:bg-amber-600 font-semibold rounded-full transition-colors text-base"
+          className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-[16px] transition-colors text-base', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
         >
           <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
-          <ArrowRight className="ml-2 h-4 w-4" />
+          {BtnIcon ? <BtnIcon className="ml-2 h-4 w-4" /> : (!btnStyles && <ArrowRight className="ml-2 h-4 w-4" />)}
         </a>
       </div>
     </div>

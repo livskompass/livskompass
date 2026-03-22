@@ -1,8 +1,9 @@
 import { cn } from '../ui/utils'
 import { Check } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
+import { getButtonStyle } from './buttonUtils'
 
 export interface PricingTableProps {
   heading: string
@@ -35,6 +36,11 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
   const descEdit = useEditableText(`items[${index}].description`, item.description)
   const priceEdit = useEditableText(`items[${index}].price`, item.price)
   const ctaTextEdit = useEditableText(`items[${index}].ctaText`, item.ctaText)
+
+  // Read button styles from block data (set by ButtonStylePicker)
+  const editBlockCtx = useInlineEditBlock()
+  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const { variantClass: ctaBtnClass, Icon: CtaBtnIcon } = getButtonStyle(btnStyles, 'ctaText', 'primary', '')
 
   return (
     <ArrayItemControls fieldName="items" itemIndex={index} totalItems={totalItems}>
@@ -76,13 +82,16 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
         <a
           href={item.ctaLink || '#'}
           className={cn(
-            'mt-auto inline-flex items-center justify-center h-12 px-7 rounded-full font-semibold text-sm transition-all w-full active:scale-[0.98]',
-            item.highlighted
-              ? 'bg-amber-500 text-white hover:bg-amber-600'
-              : 'bg-forest-500 text-white hover:bg-forest-600'
+            'mt-auto inline-flex items-center justify-center h-12 px-7 rounded-[16px] font-semibold text-sm transition-all w-full active:scale-[0.98]',
+            btnStyles
+              ? ctaBtnClass
+              : item.highlighted
+                ? 'bg-amber-500 text-white hover:bg-amber-600'
+                : 'bg-forest-500 text-white hover:bg-forest-600'
           )}
         >
           <span {...editHandlers(ctaTextEdit)} className={ctaTextEdit?.className}>{item.ctaText}</span>
+          {CtaBtnIcon && <CtaBtnIcon className="ml-2 h-4 w-4" />}
         </a>
       )}
     </div>

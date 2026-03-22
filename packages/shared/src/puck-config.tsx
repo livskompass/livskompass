@@ -81,35 +81,32 @@ function SiteHeader() {
   const { header } = useSiteSettings()
   return (
     <header
-      className="sticky top-0 z-50"
+      className={`sticky top-0 z-50 ${header.navColor || 'text-forest-800'}`}
       style={{
-        background: 'var(--surface-glass, rgba(248, 246, 242, 0.72))',
-        backdropFilter: 'blur(16px) saturate(1.8)',
-        WebkitBackdropFilter: 'blur(16px) saturate(1.8)',
-        borderBottom: '1px solid var(--surface-glass-border, rgba(200, 196, 188, 0.25))',
+        background: 'transparent',
       }}
     >
-      <nav style={{ maxWidth: 'var(--width-wide, 1440px)', marginInline: 'auto', paddingInline: 'var(--container-px, 1rem)' }}>
+      <nav style={{ maxWidth: 'var(--width-content, 1280px)', marginInline: 'auto', paddingInline: 'var(--container-px, 1rem)' }}>
         <div className="flex justify-between h-16 lg:h-[72px]">
           <div className="flex items-center">
             <a href="/">
-              <span className="font-display text-forest-950" style={{ fontSize: '1.375rem', letterSpacing: '-0.01em' }}>{header.logoText}</span>
+              <span className="font-display" style={{ fontSize: '1.375rem', letterSpacing: '-0.01em', color: 'inherit' }}>{header.logoText}</span>
             </a>
           </div>
           <div className="hidden lg:flex items-center space-x-7">
             {header.navItems.map((item) => (
               item.children && item.children.length > 0 ? (
                 <div key={item.label} className="relative group">
-                  <span className="inline-flex items-center gap-1 text-stone-600 whitespace-nowrap cursor-default" style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
+                  <span className="inline-flex items-center gap-1 opacity-80 hover:opacity-100 whitespace-nowrap cursor-default transition-opacity" style={{ fontSize: '0.9375rem', fontWeight: 500, color: 'inherit' }}>
                     {item.label}
                     <svg className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </span>
                   <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div className="bg-white rounded-lg shadow-lg border border-stone-200 py-2 min-w-[180px]">
+                    <div className="rounded-lg shadow-lg py-2 min-w-[180px]" style={{ background: 'var(--surface-elevated, #fff)', border: '1px solid var(--surface-glass-border)' }}>
                       {item.children.map((child) => (
-                        <a key={child.label} href={child.href} className="block px-4 py-2 text-sm text-stone-600 hover:text-forest-600 hover:bg-forest-50 transition-colors">
+                        <a key={child.label} href={child.href} className="block px-4 py-2 text-sm text-forest-700 hover:text-forest-900 hover:bg-forest-50 transition-colors">
                           {child.label}
                         </a>
                       ))}
@@ -117,7 +114,7 @@ function SiteHeader() {
                   </div>
                 </div>
               ) : (
-                <a key={item.label} href={item.href} className="text-stone-600 hover:text-forest-600 transition-colors duration-200 whitespace-nowrap" style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
+                <a key={item.label} href={item.href} className="opacity-80 hover:opacity-100 transition-opacity whitespace-nowrap" style={{ fontSize: '0.9375rem', fontWeight: 500, color: 'inherit' }}>
                   {item.label}
                 </a>
               )
@@ -240,6 +237,13 @@ export const puckConfig: Config = {
         contentPosition: 'center',
         showScrollIndicator: true,
         textAlignment: 'left',
+        showHeading: true,
+        showSubheading: true,
+        showInput: false,
+        inputPlaceholder: 'Din e-postadress',
+        inputButtonText: 'Prenumerera',
+        subheadings: [],
+        buttons: [],
       },
       fields: {
         preset: {
@@ -265,10 +269,6 @@ export const puckConfig: Config = {
             { label: 'Dark stone', value: 'stone' },
           ],
         },
-        ctaPrimaryText: { type: 'text', label: 'Primary button text' },
-        ctaPrimaryLink: { type: 'text', label: 'Primary button link', metadata: { isPagePicker: true } },
-        ctaSecondaryText: { type: 'text', label: 'Secondary button text' },
-        ctaSecondaryLink: { type: 'text', label: 'Secondary button link', metadata: { isPagePicker: true } },
         image: { type: 'text', label: 'Image URL', metadata: { isImage: true } },
         backgroundImage: { type: 'text', label: 'Background image URL', metadata: { isImage: true } },
         backgroundVideo: { type: 'text', label: 'Background video URL', metadata: { isVideo: true } },
@@ -286,13 +286,38 @@ export const puckConfig: Config = {
           label: 'Content position',
           options: [
             { label: 'Center', value: 'center' },
+            { label: 'Center Left', value: 'center-left' },
+            { label: 'Center Right', value: 'center-right' },
             { label: 'Top Left', value: 'top-left' },
+            { label: 'Top Center', value: 'top-center' },
             { label: 'Bottom Left', value: 'bottom-left' },
             { label: 'Bottom Center', value: 'bottom-center' },
           ],
         },
         showScrollIndicator: { type: 'radio', label: 'Show scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
         textAlignment: { type: 'radio', label: 'Text alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
+        showHeading: { type: 'radio', label: 'Show heading', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+        showSubheading: { type: 'radio', label: 'Show subheading', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+        showInput: { type: 'radio', label: 'Show email input', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+        inputPlaceholder: { type: 'text', label: 'Input placeholder' },
+        inputButtonText: { type: 'text', label: 'Input button text' },
+        subheadings: { type: 'array', label: 'Sub-headings', arrayFields: { text: { type: 'textarea', label: 'Text' } } },
+        buttons: { type: 'array', label: 'Buttons', arrayFields: { text: { type: 'text', label: 'Text' }, link: { type: 'text', label: 'Page link', metadata: { isPagePicker: true } }, externalUrl: { type: 'text', label: 'External URL (overrides page link)' }, variant: { type: 'select', label: 'Style', options: [{ label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Outline', value: 'outline' }, { label: 'Ghost', value: 'ghost' }, { label: 'Primary Inverted', value: 'primary-inv' }, { label: 'Outline Inverted', value: 'outline-inv' }] }, showIcon: { type: 'radio', label: 'Arrow icon', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] } } },
+      },
+      resolveData: ({ props }: any) => {
+        const migrated: any = { ...props }
+        // Migrate legacy buttons into buttons array
+        if ((!migrated.buttons || migrated.buttons.length === 0) && (migrated.ctaPrimaryText || migrated.ctaSecondaryText)) {
+          const btns: any[] = []
+          if (migrated.ctaPrimaryText && migrated.ctaPrimaryLink) btns.push({ text: migrated.ctaPrimaryText, link: migrated.ctaPrimaryLink, variant: 'primary', showIcon: true })
+          if (migrated.ctaSecondaryText && migrated.ctaSecondaryLink) btns.push({ text: migrated.ctaSecondaryText, link: migrated.ctaSecondaryLink, variant: 'secondary', showIcon: false })
+          migrated.buttons = btns
+        }
+        // Migrate legacy subheading into subheadings array
+        if ((!migrated.subheadings || migrated.subheadings.length === 0) && migrated.subheading) {
+          migrated.subheadings = [{ text: migrated.subheading }]
+        }
+        return { props: migrated }
       },
       resolveFields: (data: any) => {
         const p = data.props?.preset || 'centered'
@@ -307,6 +332,15 @@ export const puckConfig: Config = {
         const base = {
           preset: { type: 'select' as const, label: 'Preset', options: presetOptions },
         }
+        const modularFields = {
+          showHeading: { type: 'radio' as const, label: 'Show heading', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+          showSubheading: { type: 'radio' as const, label: 'Show subheading', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+          subheadings: { type: 'array' as const, label: 'Sub-headings', arrayFields: { text: { type: 'textarea' as const, label: 'Text' } } },
+          buttons: { type: 'array' as const, label: 'Buttons', arrayFields: { text: { type: 'text' as const, label: 'Text' }, link: { type: 'text' as const, label: 'Page link', metadata: { isPagePicker: true } }, externalUrl: { type: 'text' as const, label: 'External URL (overrides page link)' }, variant: { type: 'select' as const, label: 'Style', options: [{ label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Outline', value: 'outline' }, { label: 'Ghost', value: 'ghost' }, { label: 'Primary Inverted', value: 'primary-inv' }, { label: 'Outline Inverted', value: 'outline-inv' }] }, showIcon: { type: 'radio' as const, label: 'Arrow icon', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] } } },
+          showInput: { type: 'radio' as const, label: 'Show email input', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+          inputPlaceholder: { type: 'text' as const, label: 'Input placeholder' },
+          inputButtonText: { type: 'text' as const, label: 'Input button text' },
+        }
         if (p === 'centered') {
           return {
             ...base,
@@ -319,20 +353,14 @@ export const puckConfig: Config = {
                 { label: 'Dark stone', value: 'stone' },
               ],
             },
-            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
-            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
-            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
+            ...modularFields,
           }
         }
         if (p === 'split-right' || p === 'split-left') {
           return {
             ...base,
             image: { type: 'text' as const, label: 'Image URL', metadata: { isImage: true } },
-            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
-            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
-            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
+            ...modularFields,
           }
         }
         if (p === 'full-image') {
@@ -348,10 +376,7 @@ export const puckConfig: Config = {
                 { label: 'Heavy', value: 'heavy' },
               ],
             },
-            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
-            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
-            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
+            ...modularFields,
           }
         }
         if (p === 'fullscreen') {
@@ -373,20 +398,20 @@ export const puckConfig: Config = {
               label: 'Content position',
               options: [
                 { label: 'Center', value: 'center' },
+                { label: 'Center Left', value: 'center-left' },
+                { label: 'Center Right', value: 'center-right' },
                 { label: 'Top Left', value: 'top-left' },
+                { label: 'Top Center', value: 'top-center' },
                 { label: 'Bottom Left', value: 'bottom-left' },
                 { label: 'Bottom Center', value: 'bottom-center' },
               ],
             },
-            ctaPrimaryText: { type: 'text' as const, label: 'Primary button text' },
-            ctaPrimaryLink: { type: 'text' as const, label: 'Primary button link', metadata: { isPagePicker: true } },
-            ctaSecondaryText: { type: 'text' as const, label: 'Secondary button text' },
-            ctaSecondaryLink: { type: 'text' as const, label: 'Secondary button link', metadata: { isPagePicker: true } },
             showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+            ...modularFields,
           }
         }
-        // minimal — just heading + subheading
-        return base
+        // minimal — heading + subheading + modular controls
+        return { ...base, ...modularFields }
       },
       render: Hero as any,
     },
@@ -464,13 +489,14 @@ export const puckConfig: Config = {
     },
     FeatureGrid: {
       label: 'Feature Grid',
-      defaultProps: { heading: '', subheading: '', columns: 3, items: [{ icon: 'heart', title: 'Feature one', description: 'Description of this feature' }, { icon: 'star', title: 'Feature two', description: 'Description of this feature' }, { icon: 'shield', title: 'Feature three', description: 'Description of this feature' }], style: 'cards', iconSize: 'medium', padding: 'medium' },
+      defaultProps: { heading: '', subheading: '', columns: 3, items: [{ icon: '', title: 'Feature one', description: 'Description of this feature' }, { icon: '', title: 'Feature two', description: 'Description of this feature' }, { icon: '', title: 'Feature three', description: 'Description of this feature' }], style: 'cards', iconSize: 'medium', padding: 'medium', cardColor: 'mist' },
       fields: {
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
-        items: { type: 'array', label: 'Features', arrayFields: { icon: { type: 'text', label: 'Icon' }, title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' } } },
+        items: { type: 'array', label: 'Features', arrayFields: { image: { type: 'text', label: 'Image', metadata: { isImage: true } }, icon: { type: 'select', label: 'Icon (if no image)', options: [{ label: 'None', value: '' }, { label: 'Heart', value: 'heart' }, { label: 'Star', value: 'star' }, { label: 'Shield', value: 'shield' }, { label: 'Target', value: 'target' }, { label: 'Lightbulb', value: 'lightbulb' }, { label: 'Brain', value: 'brain' }, { label: 'Users', value: 'users' }, { label: 'User', value: 'user' }, { label: 'Handshake', value: 'handshake' }, { label: 'Book Open', value: 'book-open' }, { label: 'Graduation Cap', value: 'graduation-cap' }, { label: 'Message Circle', value: 'message-circle' }, { label: 'Check Circle', value: 'check-circle' }, { label: 'Key', value: 'key' }, { label: 'Puzzle', value: 'puzzle' }, { label: 'Sprout', value: 'sprout' }, { label: 'Leaf', value: 'leaf' }, { label: 'Mountain', value: 'mountain' }, { label: 'Sun', value: 'sun' }, { label: 'Refresh', value: 'refresh-cw' }, { label: 'Bar Chart', value: 'bar-chart-3' }, { label: 'Music', value: 'music' }, { label: 'Video', value: 'video' }, { label: 'Phone', value: 'phone' }, { label: 'Mail', value: 'mail' }, { label: 'Map Pin', value: 'map-pin' }, { label: 'Clock', value: 'clock' }, { label: 'Calendar', value: 'calendar' }, { label: 'Link', value: 'link' }, { label: 'Download', value: 'download' }, { label: 'Arrow Right', value: 'arrow-right' }, { label: 'Sparkles', value: 'sparkles' }, { label: 'Heart Handshake', value: 'heart-handshake' }, { label: 'Activity', value: 'activity' }, { label: 'Bell', value: 'bell' }, { label: 'Home', value: 'home' }, { label: 'Settings', value: 'settings' }, { label: 'Search', value: 'search' }, { label: 'Pen', value: 'pen-line' }, { label: 'Folder', value: 'folder' }] }, title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' } } },
         style: { type: 'radio', label: 'Style', options: [{ label: 'Cards', value: 'cards' }, { label: 'Minimal', value: 'minimal' }] },
         iconSize: { type: 'radio', label: 'Icon size', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
         padding: { type: 'radio', label: 'Padding', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
+        cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
       },
       render: FeatureGrid as any,
     },
@@ -520,13 +546,14 @@ export const puckConfig: Config = {
     },
     CardGrid: {
       label: 'Card Grid',
-      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fullbokat', spotsAvailableText: 'Platser kvar', emptyManualText: 'Add cards in settings...', emptyDynamicText: 'Inget innehåll tillgängligt.' },
+      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fullbokat', spotsAvailableText: 'Platser kvar', emptyManualText: 'Add cards in settings...', emptyDynamicText: 'Inget innehåll tillgängligt.', cardColor: 'mist' },
       fields: {
         source: { type: 'select', label: 'Data source', options: [{ label: 'Manual', value: 'manual' }, { label: 'Posts', value: 'posts' }, { label: 'Courses', value: 'courses' }, { label: 'Products', value: 'products' }] },
         maxItems: { type: 'number', label: 'Max items' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         manualCards: { type: 'array', label: 'Cards', arrayFields: { title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' }, image: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, link: { type: 'text', label: 'Link', metadata: { isPagePicker: true } }, badge: { type: 'text', label: 'Badge' } } },
         cardStyle: { type: 'select', label: 'Card style', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }, { label: 'Shadow', value: 'shadow' }] },
+        cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
         fullBadgeText: { type: 'text', label: 'Full badge text' },
         spotsAvailableText: { type: 'text', label: 'Spots available text' },
         emptyManualText: { type: 'text', label: 'Empty text (manual)' },
@@ -543,7 +570,7 @@ export const puckConfig: Config = {
           { quote: 'Mindfulness-övningarna har blivit en naturlig del av min vardag. Jag rekommenderar detta varmt till alla.', author: 'Anna Bergström', role: 'Lärare, Göteborg', avatar: '' },
         ],
         style: 'card',
-        showQuoteIcon: true,
+        showQuoteIcon: false,
         displayMode: 'carousel',
         autoPlaySpeed: 5,
       },
@@ -558,10 +585,7 @@ export const puckConfig: Config = {
             avatar: { type: 'text', label: 'Avatar URL', metadata: { isImage: true } },
           },
         },
-        displayMode: { type: 'select', label: 'Display mode', options: [{ label: 'Single', value: 'single' }, { label: 'Carousel', value: 'carousel' }, { label: 'Grid', value: 'grid' }] },
         autoPlaySpeed: { type: 'number', label: 'Auto-play speed (seconds)', min: 1, max: 30 },
-        style: { type: 'select', label: 'Card style', options: [{ label: 'Card', value: 'card' }, { label: 'Minimal', value: 'minimal' }, { label: 'Featured', value: 'featured' }] },
-        showQuoteIcon: { type: 'radio', label: 'Show quote icon', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
       render: Testimonial as any,
     },
@@ -653,7 +677,7 @@ export const puckConfig: Config = {
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.' },
+      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.', cardColor: 'mist' },
       fields: {
         maxItems: { type: 'number', label: 'Max items (0 = all)' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
@@ -661,6 +685,7 @@ export const puckConfig: Config = {
         compactMode: { type: 'radio', label: 'Compact mode', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showLocation: { type: 'radio', label: 'Show location', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showPrice: { type: 'radio', label: 'Show price', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
         readMoreText: { type: 'text', label: 'Read more text' },
         bookButtonText: { type: 'text', label: 'Book button text' },
         fullLabel: { type: 'text', label: 'Full label' },
@@ -671,12 +696,13 @@ export const puckConfig: Config = {
     },
     ProductList: {
       label: 'Product List',
-      defaultProps: { heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.' },
+      defaultProps: { heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.', cardColor: 'mist' },
       fields: {
         filterType: { type: 'select', label: 'Filter by type', options: [{ label: 'All', value: '' }, { label: 'Books', value: 'book' }, { label: 'CDs', value: 'cd' }, { label: 'Cards', value: 'cards' }, { label: 'Apps', value: 'app' }, { label: 'Downloads', value: 'download' }] },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         showImage: { type: 'radio', label: 'Show image', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showPrice: { type: 'radio', label: 'Show price', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
         buyButtonText: { type: 'text', label: 'Buy button text' },
         freeLabel: { type: 'text', label: 'Free label' },
         outOfStockLabel: { type: 'text', label: 'Out of stock label' },
@@ -686,26 +712,28 @@ export const puckConfig: Config = {
     },
     PostGrid: {
       label: 'Post Grid',
-      defaultProps: { heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, emptyText: 'Inga inlägg hittades' },
+      defaultProps: { heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, emptyText: 'Inga inlägg hittades', cardColor: 'mist' },
       fields: {
         count: { type: 'number', label: 'Number of posts', min: 1, max: 12 },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         showImage: { type: 'radio', label: 'Show image', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showExcerpt: { type: 'radio', label: 'Show excerpt', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showDate: { type: 'radio', label: 'Show date', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
+        cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
         emptyText: { type: 'text', label: 'Empty text' },
       },
       render: PostGrid as any,
     },
     PageCards: {
       label: 'Page Cards',
-      defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'Inga undersidor hittades', emptyManualText: 'Add pages manually or specify a parent page' },
+      defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'Inga undersidor hittades', emptyManualText: 'Add pages manually or specify a parent page', cardColor: 'mist' },
       fields: {
         parentSlug: { type: 'text', label: 'Show child pages of', metadata: { isPagePicker: true } },
         manualPages: { type: 'array', label: 'Or pick pages manually', arrayFields: { slug: { type: 'text', label: 'Page', metadata: { isPagePicker: true } } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         showDescription: { type: 'radio', label: 'Show description', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         style: { type: 'select', label: 'Style', options: [{ label: 'Card', value: 'card' }, { label: 'List', value: 'list' }, { label: 'Minimal', value: 'minimal' }] },
+        cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
         emptyText: { type: 'text', label: 'Empty text (with parent)' },
         emptyManualText: { type: 'text', label: 'Empty text (manual)' },
       },

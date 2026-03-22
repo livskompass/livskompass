@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   getSettings,
@@ -246,6 +246,9 @@ export default function Settings() {
   const [footer, setFooter] = useState<SiteFooterConfig>(defaultFooter)
   const [siteSaved, setSiteSaved] = useState(false)
   const [siteError, setSiteError] = useState('')
+  const [siteSettingsLoaded, setSiteSettingsLoaded] = useState(false)
+  const [siteDirty, setSiteDirty] = useState(false)
+  const siteAutoSaveTimer = useRef<ReturnType<typeof setTimeout>>()
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-settings'],
@@ -267,8 +270,22 @@ export default function Settings() {
     if (siteData) {
       if (siteData.header) setHeader(siteData.header)
       if (siteData.footer) setFooter(siteData.footer)
+      setSiteSettingsLoaded(true)
+      setSiteDirty(false)
     }
   }, [siteData])
+
+  // Auto-save site settings with debounce
+  useEffect(() => {
+    if (!siteSettingsLoaded) return // Don't save on initial load
+    setSiteDirty(true)
+    clearTimeout(siteAutoSaveTimer.current)
+    siteAutoSaveTimer.current = setTimeout(() => {
+      setSiteError('')
+      saveSiteMutation.mutate({ header, footer })
+    }, 1500)
+    return () => clearTimeout(siteAutoSaveTimer.current)
+  }, [header, footer])
 
   // General settings save
   const saveMutation = useMutation({
@@ -289,6 +306,7 @@ export default function Settings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-site-settings'] })
       setSiteSaved(true)
+      setSiteDirty(false)
       setTimeout(() => setSiteSaved(false), 3000)
     },
     onError: (err: Error) => {
@@ -393,6 +411,48 @@ export default function Settings() {
               onChange={(e) => setHeader({ ...header, logoText: e.target.value })}
               placeholder="Livskompass"
             />
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label>Nav text color</Label>
+            <div className="flex items-center gap-2 flex-wrap">
+              {[
+                { value: '', label: 'Default' },
+                { value: 'text-forest-800', label: 'Dark Green' },
+                { value: 'text-forest-600', label: 'Green' },
+                { value: 'text-white', label: 'White' },
+                { value: 'text-stone-950', label: 'Black' },
+                { value: 'text-amber-300', label: 'Yellow' },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                    (header.navColor || '') === opt.value
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 font-medium'
+                      : 'border-zinc-200 text-zinc-600 hover:border-zinc-300'
+                  }`}
+                  onClick={() => setHeader({ ...header, navColor: opt.value })}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="dynamic-nav-color"
+              checked={header.dynamicNavColor || false}
+              onChange={(e) => setHeader({ ...header, dynamicNavColor: e.target.checked })}
+              className="h-4 w-4 rounded border-zinc-300"
+            />
+            <Label htmlFor="dynamic-nav-color" className="text-sm text-zinc-600 cursor-pointer">
+              Dynamic nav color (auto-switch based on hero background)
+            </Label>
           </div>
 
           <Separator />
@@ -510,18 +570,26 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      <div className="sticky bottom-0 bg-zinc-50 py-3 flex justify-end">
-        <Button
-          type="button"
-          onClick={handleSiteSave}
-          disabled={saveSiteMutation.isPending}
-        >
+      {/* Auto-save status bar */}
+      <div className="sticky bottom-0 bg-white/90 backdrop-blur-sm border-t border-zinc-200 py-2 px-4 flex items-center justify-between rounded-b-lg">
+        <div className="flex items-center gap-2 text-sm">
           {saveSiteMutation.isPending ? (
-            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+            <><Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-400" /><span className="text-zinc-500">Saving...</span></>
+          ) : siteError ? (
+            <><span className="w-2 h-2 rounded-full bg-red-500" /><span className="text-red-600">{siteError}</span></>
+          ) : siteSaved ? (
+            <><span className="w-2 h-2 rounded-full bg-green-500" /><span className="text-green-600">Saved</span></>
+          ) : siteDirty ? (
+            <><span className="w-2 h-2 rounded-full bg-amber-500" /><span className="text-amber-600">Unsaved changes</span></>
           ) : (
-            <><Save className="h-4 w-4 mr-2" /> Save header & footer</>
+            <><span className="w-2 h-2 rounded-full bg-zinc-300" /><span className="text-zinc-400">Up to date</span></>
           )}
-        </Button>
+        </div>
+        {siteDirty && !saveSiteMutation.isPending && (
+          <Button type="button" size="sm" onClick={handleSiteSave}>
+            <Save className="h-3.5 w-3.5 mr-1.5" /> Save now
+          </Button>
+        )}
       </div>
 
       <Separator className="my-2" />

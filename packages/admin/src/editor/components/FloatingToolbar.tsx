@@ -87,7 +87,7 @@ export function FloatingToolbar({
       style={{
         left: Math.max(120, Math.min(position.x, window.innerWidth - 120)),
         top: position.y,
-        transform: `translate(-50%, ${position.placement === 'above' ? '-100%' : '0'})`,
+        transform: 'translate(-50%, 0)',
         zIndex: 'var(--z-editor-toolbar)',
         animation: 'editor-bounce-in 150ms var(--editor-ease) forwards',
       }}

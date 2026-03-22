@@ -43,8 +43,8 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
   }, [open])
 
   const linkActiveClass = isActive(item.href)
-    ? 'text-forest-600 font-medium'
-    : 'text-stone-600 hover:text-forest-600'
+    ? 'font-medium opacity-100'
+    : 'opacity-80 hover:opacity-100'
 
   if (!item.children || item.children.length === 0) {
     return (
@@ -84,7 +84,7 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
               className={`block px-3 py-2 text-sm rounded-[10px] transition-colors duration-150 ${
                 isActive(child.href)
                   ? 'text-forest-600 bg-forest-50 font-medium'
-                  : 'text-stone-700 hover:text-forest-600 hover:bg-stone-50'
+                  : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
               }`}
               onClick={() => setOpen(false)}
             >
@@ -110,7 +110,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
         to={item.href}
         onClick={onNavigate}
         className={`block px-3 py-2.5 text-base rounded-[10px] transition-colors ${
-          isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-stone-700 hover:text-forest-600 hover:bg-stone-50'
+          isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
         }`}
       >
         {item.name}
@@ -125,7 +125,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
           to={item.href}
           onClick={onNavigate}
           className={`flex-1 px-3 py-2.5 text-base rounded-l-[10px] transition-colors ${
-            isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-stone-700 hover:text-forest-600 hover:bg-stone-50'
+            isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
           }`}
         >
           {item.name}
@@ -170,6 +170,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
 
 export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [dynamicColor, setDynamicColor] = useState<string | null>(null)
   const location = useLocation()
 
   const { data: siteData } = useQuery({
@@ -185,6 +186,35 @@ export default function Layout() {
   useEffect(() => { window.scrollTo(0, 0) }, [location.pathname])
   useEffect(() => { setMobileMenuOpen(false) }, [location.pathname])
 
+  // Dynamic nav color — detect if hero is dark or light
+  useEffect(() => {
+    if (!headerConfig.dynamicNavColor) {
+      setDynamicColor(null)
+      return
+    }
+    // Wait for content to render
+    const timer = setTimeout(() => {
+      const firstSection = document.querySelector('#main-content > div > div > section, #main-content > div > div > div') as HTMLElement
+      if (!firstSection) return
+
+      const bg = window.getComputedStyle(firstSection).backgroundColor
+      if (!bg || bg === 'rgba(0, 0, 0, 0)') {
+        setDynamicColor('text-forest-800') // transparent → dark text
+        return
+      }
+      // Parse rgb values and calculate luminance
+      const match = bg.match(/\d+/g)
+      if (match) {
+        const [r, g, b] = match.map(Number)
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+        setDynamicColor(luminance > 0.5 ? 'text-forest-800' : 'text-white')
+      }
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [location.pathname, headerConfig.dynamicNavColor])
+
+  const navColorClass = dynamicColor || headerConfig.navColor || 'text-forest-800'
+
   const isActive = (href: string) =>
     href === '/' ? location.pathname === '/' : location.pathname.startsWith(href)
 
@@ -198,27 +228,24 @@ export default function Layout() {
         Hoppa till innehåll
       </a>
 
-      {/* Frosted glass sticky header */}
+      {/* Transparent overlapping header */}
       <header
-        className="sticky top-0 z-50"
+        className={`absolute top-0 left-0 right-0 z-50 ${navColorClass}`}
         style={{
-          background: 'var(--surface-glass)',
-          backdropFilter: 'blur(16px) saturate(1.8)',
-          WebkitBackdropFilter: 'blur(16px) saturate(1.8)',
-          borderBottom: '1px solid var(--surface-glass-border)',
+          background: 'transparent',
         }}
       >
         <nav
           aria-label="Huvudnavigering"
           className="mx-auto"
-          style={{ maxWidth: 'var(--width-wide)', paddingInline: 'var(--container-px)' }}
+          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
         >
           <div className="flex justify-between h-16 lg:h-[72px]">
             <div className="flex">
               <Link to="/" className="flex items-center hover:opacity-75 transition-opacity">
                 <span
-                  className="font-display text-forest-950"
-                  style={{ fontSize: '1.375rem', letterSpacing: '-0.01em' }}
+                  className="font-display"
+                  style={{ fontSize: '1.375rem', letterSpacing: '-0.01em', color: 'inherit' }}
                 >
                   {headerConfig.logoText}
                 </span>
@@ -235,7 +262,7 @@ export default function Layout() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center w-11 h-11 rounded-[10px] text-stone-700 hover:text-forest-600 hover:bg-stone-100 transition-colors"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-[10px] text-forest-800 hover:text-forest-600 hover:bg-stone-100 transition-colors"
                 aria-expanded={mobileMenuOpen}
                 aria-label="Visa navigeringsmeny"
               >

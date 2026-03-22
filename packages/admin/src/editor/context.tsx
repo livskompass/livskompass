@@ -67,6 +67,26 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
       const publishedData = safeParse(action.entity.content_blocks)
       const puckData = draftData || publishedData
 
+      // Migrate legacy Hero props to new arrays
+      if (puckData?.content) {
+        for (const block of puckData.content) {
+          if (block.type === 'Hero' && block.props) {
+            const p = block.props
+            // Migrate buttons
+            if ((!p.buttons || p.buttons.length === 0) && (p.ctaPrimaryText || p.ctaSecondaryText)) {
+              const btns: any[] = []
+              if (p.ctaPrimaryText && p.ctaPrimaryLink) btns.push({ text: p.ctaPrimaryText, link: p.ctaPrimaryLink, variant: 'primary', showIcon: true })
+              if (p.ctaSecondaryText && p.ctaSecondaryLink) btns.push({ text: p.ctaSecondaryText, link: p.ctaSecondaryLink, variant: 'secondary', showIcon: false })
+              if (btns.length) p.buttons = btns
+            }
+            // Migrate subheading
+            if ((!p.subheadings || p.subheadings.length === 0) && p.subheading) {
+              p.subheadings = [{ text: p.subheading }]
+            }
+          }
+        }
+      }
+
       const hasDraft = draftData !== null
       const hasDraftChanges = hasDraft && isPublished
 

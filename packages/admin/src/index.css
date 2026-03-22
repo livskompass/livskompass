@@ -5,7 +5,7 @@
 /* ==================== Design Tokens (mirror web — MUST match packages/web/src/index.css) ==================== */
 :root {
   /* Typography */
-  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
   --type-display:  clamp(3rem, 1.5rem + 4.444vw, 6rem);
@@ -40,17 +40,17 @@
      Usage in CSS:  color: rgb(var(--forest-600));
      With alpha:    background: rgb(var(--forest-600) / 0.5);
      Tailwind:      bg-forest-600/50 works automatically */
-  --forest-950: 10 26 16;
-  --forest-900: 19 43 28;
-  --forest-800: 28 61 41;
-  --forest-700: 39 81 55;
-  --forest-600: 50 102 71;
-  --forest-500: 62 123 87;
-  --forest-400: 92 152 115;
-  --forest-300: 132 180 150;
-  --forest-200: 176 209 188;
-  --forest-100: 215 233 221;
-  --forest-50:  236 245 239;
+  --forest-950: 0 30 24;
+  --forest-900: 0 50 40;
+  --forest-800: 0 70 56;
+  --forest-700: 10 90 72;
+  --forest-600: 20 110 90;
+  --forest-500: 40 135 110;
+  --forest-400: 75 160 138;
+  --forest-300: 120 185 168;
+  --forest-200: 170 210 200;
+  --forest-100: 215 233 226;
+  --forest-50:  236 245 241;
 
   --stone-950: 26 24 22;
   --stone-900: 44 41 36;
@@ -64,13 +64,13 @@
   --stone-100: 239 236 231;
   --stone-50:  248 246 242;
 
-  --amber-600: 140 101 52;
-  --amber-500: 176 131 80;
-  --amber-400: 192 149 95;
-  --amber-300: 213 182 138;
-  --amber-200: 234 213 181;
-  --amber-100: 244 234 219;
-  --amber-50:  251 245 236;
+  --amber-600: 200 175 20;
+  --amber-500: 225 205 50;
+  --amber-400: 240 220 70;
+  --amber-300: 255 233 98;
+  --amber-200: 255 241 160;
+  --amber-100: 255 248 210;
+  --amber-50:  255 252 235;
 
   --color-success-fg: #2F7A42;
   --color-success-bg: #EFF7F1;
@@ -95,7 +95,7 @@
   --overlay-dark:          rgba(0, 0, 0, 0.7);
 
   /* Gradients — reference brand color vars */
-  --gradient-hero:    linear-gradient(145deg, rgb(var(--forest-950)) 0%, rgb(var(--forest-800)) 45%, rgb(var(--forest-700)) 100%);
+  --gradient-hero:    #C7DDDC;
   --gradient-section: linear-gradient(180deg, var(--surface-primary) 0%, var(--surface-secondary) 100%);
   --gradient-glow:    radial-gradient(ellipse 60% 50% at 80% 20%, rgb(var(--forest-500) / 0.12) 0%, transparent 70%);
   --gradient-shimmer: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
@@ -275,7 +275,23 @@
   --editor-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
   --editor-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.06);
   --editor-shadow-dark: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --editor-shadow-drawer: -4px 0 24px rgba(0, 0, 0, 0.08);
   --editor-shadow-blue: 0 2px 8px rgba(var(--editor-blue-rgb), 0.3);
+
+  /* Editor Overlay */
+  --editor-overlay: rgba(0, 0, 0, 0.15);
+
+  /* Editor Status Badge Colors */
+  --editor-status-draft-bg: #fef3c7;
+  --editor-status-draft-text: #92400e;
+  --editor-status-published-bg: #d1fae5;
+  --editor-status-published-text: #065f46;
+  --editor-status-info-bg: #dbeafe;
+  --editor-status-info-text: #1e40af;
+  --editor-status-neutral-bg: #e5e7eb;
+  --editor-status-neutral-text: #374151;
+  --editor-status-error-bg: #fee2e2;
+  --editor-status-error-text: #991b1b;
   --editor-shadow-blue-glow: 0 0 8px rgba(var(--editor-blue-rgb), 0.4);
   --editor-shadow-inset-blue: inset 0 0 0 1px rgba(var(--editor-blue-rgb), 0.1);
   --editor-shadow-drag: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -450,6 +466,11 @@ body {
 @keyframes warm-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+}
+
+@keyframes testimonial-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* ===== Tiptap Editor Styles ===== */

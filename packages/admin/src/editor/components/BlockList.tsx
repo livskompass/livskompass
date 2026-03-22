@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from 'react'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
 import { puckConfig, InlineEditBlockContext } from '@livskompass/shared'
 import type { Data } from '../types'
 import { useEditor } from '../context'
@@ -11,6 +11,8 @@ import { InlineImagePickerProvider } from './InlineImagePickerProvider'
 import { InlineRichTextProvider } from './InlineRichTextProvider'
 import { InlineArrayOpsProvider } from './InlineArrayOpsProvider'
 import { InlineMediaPickerProvider } from './InlineMediaPickerProvider'
+import { TextSizePicker } from './TextSizePicker'
+import { ButtonStylePicker } from './ButtonStylePicker'
 
 /** Big + button for empty state that opens block picker inline */
 function EmptyStateInsertButton() {
@@ -305,6 +307,54 @@ export function BlockList() {
     )
   }
 
+  // Auto-select block as you scroll — the block crossing viewport center gets selected
+  const isUserScrolling = useRef(false)
+  const scrollTimer = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container || items.length === 0) return
+
+    const editorContent = document.getElementById('editor-content')
+    const scrollTarget = editorContent || window
+
+    const handleScroll = () => {
+      // Mark as user-scrolling to avoid fighting with click-to-select
+      isUserScrolling.current = true
+      clearTimeout(scrollTimer.current)
+      scrollTimer.current = setTimeout(() => {
+        isUserScrolling.current = false
+      }, 150)
+
+      // Find block closest to viewport center
+      const viewportCenter = window.innerHeight / 2
+      let closestId: string | null = null
+      let closestDist = Infinity
+
+      const blocks = container.querySelectorAll<HTMLElement>('[data-block-id]')
+      blocks.forEach((el) => {
+        const rect = el.getBoundingClientRect()
+        const blockCenter = rect.top + rect.height / 2
+        const dist = Math.abs(blockCenter - viewportCenter)
+        // Only consider blocks that are at least partially visible
+        if (rect.bottom > 0 && rect.top < window.innerHeight && dist < closestDist) {
+          closestDist = dist
+          closestId = el.getAttribute('data-block-id')
+        }
+      })
+
+      if (closestId && closestId !== state.selectedBlockId) {
+        selectBlock(closestId)
+      }
+    }
+
+    scrollTarget.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      scrollTarget.removeEventListener('scroll', handleScroll)
+      clearTimeout(scrollTimer.current)
+    }
+  }, [items.length, state.selectedBlockId, selectBlock])
+
   return (
     <InlineImagePickerProvider>
     <InlineMediaPickerProvider>
@@ -355,7 +405,7 @@ export function BlockList() {
                 isDragSource={dragState?.sourceIndex === index}
               >
                 <InlineEditBlockContext.Provider
-                  value={{ isAdmin: true, blockIndex: index, saveBlockProp }}
+                  value={{ isAdmin: true, blockIndex: index, saveBlockProp, blockProps: item.props }}
                 >
                   <Fn {...item.props} />
                 </InlineEditBlockContext.Provider>
@@ -372,7 +422,12 @@ export function BlockList() {
             </React.Fragment>
           )
         })}
+
+        {/* Bottom spacer so last inserter is clearly visible */}
+        <div className="pb-16" />
       </div>
+      <TextSizePicker puckData={puckData} saveBlockProp={saveBlockProp} />
+      <ButtonStylePicker puckData={puckData} saveBlockProp={saveBlockProp} />
     </InlineArrayOpsProvider>
     </InlineRichTextProvider>
     </InlineMediaPickerProvider>

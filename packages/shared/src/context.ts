@@ -40,6 +40,34 @@ export function usePostData(): PostContextValue | null {
 
 // ── Inline editing context ──
 
+export type TextSize = 'display' | 'h1' | 'h2' | 'h3' | 'h4' | 'body-lg' | 'body' | 'body-sm' | 'caption'
+
+/** CSS class for each text size value */
+export const TEXT_SIZE_CLASS: Record<TextSize, string> = {
+  display: 'text-display',
+  h1: 'text-h1',
+  h2: 'text-h2',
+  h3: 'text-h3',
+  h4: 'text-h4',
+  'body-lg': 'text-body-lg',
+  body: '',
+  'body-sm': 'text-body-sm',
+  caption: 'text-caption',
+}
+
+/** Inline style for each text size — used to override hardcoded block classes */
+const TEXT_SIZE_STYLE: Record<TextSize, React.CSSProperties> = {
+  display: { fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)' },
+  h1: { fontSize: 'var(--type-h1)', lineHeight: 'var(--leading-h1)', letterSpacing: 'var(--tracking-h1)' },
+  h2: { fontSize: 'var(--type-h2)', lineHeight: 'var(--leading-h2)', letterSpacing: 'var(--tracking-h2)' },
+  h3: { fontSize: 'var(--type-h3)', lineHeight: 'var(--leading-h3)', letterSpacing: 'var(--tracking-h3)' },
+  h4: { fontSize: 'var(--type-h4)', lineHeight: 'var(--leading-h4)', letterSpacing: 'var(--tracking-h4)' },
+  'body-lg': { fontSize: 'var(--type-body-lg)', lineHeight: 'var(--leading-body)' },
+  body: {},
+  'body-sm': { fontSize: 'var(--type-body-sm)', lineHeight: 'var(--leading-body-sm)' },
+  caption: { fontSize: 'var(--type-caption)', lineHeight: 'var(--leading-caption)' },
+}
+
 export interface InlineEditContextValue {
   /** Whether current user is admin */
   isAdmin: boolean
@@ -47,6 +75,8 @@ export interface InlineEditContextValue {
   blockIndex: number
   /** Save a prop value for the current block */
   saveBlockProp: (blockIndex: number, propName: string, value: string) => void
+  /** Current block props (for reading _textSizes etc.) */
+  blockProps?: Record<string, any>
 }
 
 export const InlineEditBlockContext = createContext<InlineEditContextValue | null>(null)
@@ -126,17 +156,41 @@ export function useEditableText(propName: string, currentValue: string) {
     [],
   )
 
-  if (!ctx) return null
+  // Read text size and color from block props (works for both admin and public)
+  const textSizes = ctx?.blockProps?._textSizes as Record<string, TextSize> | undefined
+  const textSize = textSizes?.[propName] as TextSize | undefined
+  const sizeStyle = textSize && textSize !== 'body' ? TEXT_SIZE_STYLE[textSize] : {}
+
+  const textColors = ctx?.blockProps?._textColors as Record<string, string> | undefined
+  const textColorClass = textColors?.[propName] || ''
+
+  const hasCustom = textSize || textColorClass
+
+  if (!ctx || !ctx.isAdmin) {
+    // Public site: only return style/class if custom values are set
+    if (!hasCustom) return null
+    return {
+      style: sizeStyle,
+      className: textColorClass || undefined,
+    } as any
+  }
 
   // Keep originalRef in sync
   originalRef.current = currentValue
+
+  // Button text fields get a different picker
+  const isButtonText = /^cta|button|submit|buy|book|readMore|backLink/i.test(propName)
 
   return {
     contentEditable: true as const,
     suppressContentEditableWarning: true as const,
     onBlur: handleBlur,
     onKeyDown: handleKeyDown,
-    className: 'outline-none ring-0 hover:ring-1 hover:ring-stone-400/40 hover:ring-offset-2 focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 rounded-sm transition-shadow cursor-text',
+    className: 'outline-none ring-0 hover:ring-1 hover:ring-stone-400/40 hover:ring-offset-2 focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 rounded-sm transition-shadow cursor-text' + (textColorClass ? ' ' + textColorClass : ''),
+    style: sizeStyle,
+    ...(isButtonText
+      ? { 'data-button-style-field': propName }
+      : { 'data-text-size-field': propName }),
   }
 }
 

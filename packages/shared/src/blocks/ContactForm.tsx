@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { getApiBase } from '../helpers'
 import { Send, CheckCircle, AlertCircle, Mail, Phone } from 'lucide-react'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { cn } from '../ui/utils'
 import { UI_STRINGS } from '../ui-strings'
+import { getButtonStyle } from './buttonUtils'
 
 export interface ContactFormProps {
   heading: string
@@ -84,6 +85,11 @@ export function ContactForm({
 
   const hHandlers = editHandlers(headingEdit)
   const dHandlers = editHandlers(descriptionEdit)
+
+  // Read button styles from block data (set by ButtonStylePicker)
+  const editBlockCtx = useInlineEditBlock()
+  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const { variantClass: submitBtnClass, Icon: SubmitBtnIcon } = getButtonStyle(btnStyles, 'submitButtonText', 'primary', '')
 
   // Detect if we're inside the Puck editor
   const isEditor = typeof window !== 'undefined' && window.frameElement !== null
@@ -184,12 +190,12 @@ export function ContactForm({
       <button
         type="submit"
         disabled={status === 'submitting' || isEditor}
-        className="w-full inline-flex items-center justify-center h-12 px-7 bg-forest-500 text-white hover:bg-forest-600 font-semibold rounded-full transition-colors disabled:opacity-50"
+        className={cn('w-full inline-flex items-center justify-center h-12 px-7 font-semibold rounded-[16px] transition-colors disabled:opacity-50', btnStyles ? submitBtnClass : 'bg-forest-500 text-white hover:bg-forest-600')}
       >
         <span {...editHandlers(submitBtnEdit)} className={submitBtnEdit?.className}>
           {status === 'submitting' ? submittingText : submitButtonText}
         </span>
-        <Send className="ml-2 h-4 w-4" />
+        {SubmitBtnIcon ? <SubmitBtnIcon className="ml-2 h-4 w-4" /> : <Send className="ml-2 h-4 w-4" />}
       </button>
     </form>
   )

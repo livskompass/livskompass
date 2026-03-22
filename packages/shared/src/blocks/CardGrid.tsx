@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { cn } from '../ui/utils'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card'
+// Card UI components no longer used directly — cardColors handles styling
 import { Badge } from '../ui/badge'
 import { Calendar, MapPin } from 'lucide-react'
 import { getApiBase, useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { InlineImage } from './InlineImage'
 import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
+import { getCardColors } from './cardColors'
 
 export interface ManualCard {
   title: string
@@ -28,6 +29,7 @@ export interface CardGridProps {
   spotsAvailableText: string
   emptyManualText: string
   emptyDynamicText: string
+  cardColor?: string
 }
 
 const columnsMap = {
@@ -36,11 +38,6 @@ const columnsMap = {
   4: 'md:grid-cols-2 lg:grid-cols-4',
 } as const
 
-const cardStyleMap = {
-  default: '',
-  bordered: 'border-2',
-  shadow: 'shadow-md',
-} as const
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -49,18 +46,19 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
-function ManualCardItem({ card, index, cardStyle, totalItems }: { card: ManualCard; index: number; cardStyle: string; totalItems: number }) {
+function ManualCardItem({ card, index, totalItems, cardColor }: { card: ManualCard; index: number; totalItems: number; cardColor?: string }) {
   const editCtx = useInlineEditBlock()
   const titleEdit = useEditableText(`manualCards[${index}].title`, card.title)
   const descEdit = useEditableText(`manualCards[${index}].description`, card.description)
   const badgeEdit = useEditableText(`manualCards[${index}].badge`, card.badge)
+  const colors = getCardColors(cardColor)
 
   return (
     <ArrayItemControls fieldName="manualCards" itemIndex={index} totalItems={totalItems}>
-    <a href={card.link || '#'} className="block group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2" onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}>
-      <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle as keyof typeof cardStyleMap])}>
+    <a href={card.link || '#'} className="block group rounded-[16px] outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2" onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}>
+      <div className={cn('rounded-[16px] overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
         {(card.image || editCtx) && (
-          <div className="aspect-video overflow-hidden rounded-t-xl">
+          <div className="aspect-video overflow-hidden rounded-t-[16px]">
             <InlineImage
               src={card.image}
               propName={`manualCards[${index}].image`}
@@ -69,22 +67,22 @@ function ManualCardItem({ card, index, cardStyle, totalItems }: { card: ManualCa
             />
           </div>
         )}
-        <CardHeader>
+        <div className="p-5">
           {(card.badge || badgeEdit) && (
-            <Badge variant="default" className="w-fit mb-1">
+            <Badge variant="default" className={cn('w-fit mb-1', colors.badge)}>
               <span {...editHandlers(badgeEdit)} className={badgeEdit?.className}>{card.badge}</span>
             </Badge>
           )}
-          <CardTitle {...editHandlers(titleEdit)} className={cn('text-h4 group-hover:text-forest-600 transition-colors', titleEdit?.className)}>
+          <h3 {...editHandlers(titleEdit)} className={cn('text-h4 transition-colors', colors.text, titleEdit?.className)}>
             {card.title}
-          </CardTitle>
+          </h3>
           {(card.description || descEdit) && (
-            <CardDescription {...editHandlers(descEdit)} className={cn('line-clamp-2', descEdit?.className)}>
+            <p {...editHandlers(descEdit)} className={cn('line-clamp-2 mt-1.5 text-sm', colors.textMuted, descEdit?.className)}>
               {card.description}
-            </CardDescription>
+            </p>
           )}
-        </CardHeader>
-      </Card>
+        </div>
+      </div>
     </a>
     </ArrayItemControls>
   )
@@ -110,14 +108,16 @@ export function CardGrid({
   source = 'manual',
   maxItems = 3,
   columns = 3,
-  cardStyle = 'default',
+  cardStyle: _cardStyle = 'default',
   manualCards = [],
   fullBadgeText = 'Fully booked',
   spotsAvailableText = 'Spots available',
   emptyManualText = 'Add cards in settings...',
   emptyDynamicText = 'No content available.',
+  cardColor = 'mist',
   id,
 }: CardGridProps & { puck?: { isEditing: boolean }; id?: string }) {
+  const colors = getCardColors(cardColor)
   const [dynamicItems, setDynamicItems] = useState<DynamicItem[]>([])
   const [dynamicLoading, setDynamicLoading] = useState(source !== 'manual')
   const revealRef = useScrollReveal()
@@ -159,7 +159,7 @@ export function CardGrid({
 
   const renderManualCards = () =>
     manualCards.slice(0, maxItems).map((card, i) => (
-      <ManualCardItem key={i} card={card} index={i} cardStyle={cardStyle} totalItems={manualCards.length} />
+      <ManualCardItem key={i} card={card} index={i} totalItems={manualCards.length} cardColor={cardColor} />
     ))
 
   const renderDynamicCards = () =>
@@ -174,10 +174,10 @@ export function CardGrid({
             : '/produkter/'
 
       return (
-        <a key={item.id} href={`${linkBase}${item.slug}`} className="block group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
-          <Card className={cn('h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', cardStyleMap[cardStyle])}>
+        <a key={item.id} href={`${linkBase}${item.slug}`} className="block group rounded-[16px] outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
+          <div className={cn('rounded-[16px] overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
             {image && (
-              <div className="aspect-video overflow-hidden rounded-t-xl">
+              <div className="aspect-video overflow-hidden rounded-t-[16px]">
                 <img
                   src={image}
                   alt={item.title}
@@ -186,7 +186,7 @@ export function CardGrid({
                 />
               </div>
             )}
-            <CardHeader>
+            <div className="p-5">
               {source === 'courses' && item.status && (
                 <Badge
                   variant={item.status === 'full' ? 'destructive' : 'success'}
@@ -200,36 +200,36 @@ export function CardGrid({
                   {new Date(item.published_at).toLocaleDateString('sv-SE')}
                 </Badge>
               )}
-              <CardTitle className="text-h4 group-hover:text-forest-600 transition-colors">
+              <h3 className={cn('text-h4 transition-colors', colors.text)}>
                 {item.title}
-              </CardTitle>
+              </h3>
               {description && (
-                <CardDescription className="line-clamp-2">
+                <p className={cn('line-clamp-2 mt-1.5 text-sm', colors.textMuted)}>
                   {description}
-                </CardDescription>
+                </p>
               )}
-            </CardHeader>
+            </div>
             {source === 'courses' && (item.location || item.start_date) && (
-              <CardContent>
-                <div className="flex flex-col gap-2 text-sm text-stone-500">
+              <div className="px-5 pb-5">
+                <div className={cn('flex flex-col gap-2 text-sm', colors.textMuted)}>
                   {item.location && (
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-stone-400" />
+                      <MapPin className="h-4 w-4" />
                       <span>{item.location}</span>
                     </div>
                   )}
                   {item.start_date && (
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-stone-400" />
+                      <Calendar className="h-4 w-4" />
                       <span>
                         {new Date(item.start_date).toLocaleDateString('sv-SE')}
                       </span>
                     </div>
                   )}
                 </div>
-              </CardContent>
+              </div>
             )}
-          </Card>
+          </div>
         </a>
       )
     })

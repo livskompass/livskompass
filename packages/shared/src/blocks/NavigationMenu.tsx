@@ -12,9 +12,9 @@ export interface NavigationMenuProps {
 const alignMap = { left: 'justify-start', center: 'justify-center', right: 'justify-end' }
 
 const styleMap: Record<string, string> = {
-  pills: 'px-4 py-2 rounded-full bg-stone-100 text-stone-700 hover:bg-forest-50 hover:text-forest-600 font-medium text-sm transition-colors',
+  pills: 'px-4 py-2 rounded-[16px] bg-stone-100 text-stone-700 hover:bg-forest-50 hover:text-forest-600 font-medium text-sm transition-colors',
   underline: 'px-3 py-2 border-b-2 border-transparent hover:border-forest-500 text-stone-700 hover:text-forest-600 font-medium text-sm transition-colors',
-  buttons: 'px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-700 hover:bg-forest-50 hover:border-forest-300 hover:text-forest-600 font-medium text-sm transition-colors',
+  buttons: 'px-4 py-2 rounded-[16px] border border-stone-200 bg-white text-stone-700 hover:bg-forest-50 hover:border-forest-300 hover:text-forest-600 font-medium text-sm transition-colors',
   minimal: 'px-2 py-1 text-stone-600 hover:text-forest-600 font-medium text-sm transition-colors',
 }
 

@@ -53,7 +53,7 @@ type PuckField = TextField | TextareaField | SelectField | RadioField | NumberFi
 // ── Known inline-editable fields per block (skip in settings) ──
 // Fields that are editable directly on the canvas via useEditableText
 const INLINE_FIELDS: Record<string, Set<string>> = {
-  Hero: new Set(['heading', 'subheading', 'ctaPrimaryText', 'ctaSecondaryText', 'image', 'backgroundImage']),
+  Hero: new Set(['heading', 'subheading', 'ctaPrimaryText', 'ctaSecondaryText', 'image']),
   CTABanner: new Set(['heading', 'description', 'buttonText']),
   Testimonial: new Set(['quote', 'author', 'role', 'avatar']),
   PostGrid: new Set(['heading', 'subheading', 'emptyText']),
@@ -187,11 +187,9 @@ export function SettingsPopover({
   left = Math.max(8, Math.min(left, viewportW - popoverWidth - 8))
 
   let top = anchorRect.bottom + 8
-  // If it would go off-screen bottom, position above and recalculate maxHeight
   let maxHeight = Math.min(600, viewportH - top - 16)
   const flippedAbove = maxHeight < 200
   if (flippedAbove) {
-    // When flipped above, maxHeight is the space above the anchor
     maxHeight = Math.min(600, anchorRect.top - 16)
     top = anchorRect.top - 8
   }

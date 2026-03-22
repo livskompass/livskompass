@@ -135,7 +135,7 @@ app.get('/api/sitemap.xml', async (c) => {
   const [pagesResult, postsResult, coursesResult] = await c.env.DB.batch([
     c.env.DB.prepare(`SELECT slug, updated_at FROM pages WHERE status = 'published'`),
     c.env.DB.prepare(`SELECT slug, updated_at FROM posts WHERE status = 'published'`),
-    c.env.DB.prepare(`SELECT slug, updated_at FROM courses WHERE status IN ('active', 'full')`),
+    c.env.DB.prepare(`SELECT slug, created_at as updated_at FROM courses WHERE status IN ('active', 'full')`),
   ])
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
@@ -144,21 +144,26 @@ app.get('/api/sitemap.xml', async (c) => {
   // Homepage
   xml += `  <url><loc>${baseUrl}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n`
 
+  const toDate = (dt: string) => dt ? dt.split(/[T ]/)[0] : ''
+
   // Pages
   for (const page of (pagesResult.results || []) as { slug: string; updated_at: string }[]) {
-    const lastmod = page.updated_at ? `<lastmod>${page.updated_at.split('T')[0]}</lastmod>` : ''
+    const d = toDate(page.updated_at)
+    const lastmod = d ? `<lastmod>${d}</lastmod>` : ''
     xml += `  <url><loc>${baseUrl}/${page.slug}</loc>${lastmod}<changefreq>weekly</changefreq><priority>0.8</priority></url>\n`
   }
 
   // Posts
   for (const post of (postsResult.results || []) as { slug: string; updated_at: string }[]) {
-    const lastmod = post.updated_at ? `<lastmod>${post.updated_at.split('T')[0]}</lastmod>` : ''
+    const d = toDate(post.updated_at)
+    const lastmod = d ? `<lastmod>${d}</lastmod>` : ''
     xml += `  <url><loc>${baseUrl}/nyhet/${post.slug}</loc>${lastmod}<changefreq>monthly</changefreq><priority>0.6</priority></url>\n`
   }
 
   // Courses
   for (const course of (coursesResult.results || []) as { slug: string; updated_at: string }[]) {
-    const lastmod = course.updated_at ? `<lastmod>${course.updated_at.split('T')[0]}</lastmod>` : ''
+    const d = toDate(course.updated_at)
+    const lastmod = d ? `<lastmod>${d}</lastmod>` : ''
     xml += `  <url><loc>${baseUrl}/utbildningar/${course.slug}</loc>${lastmod}<changefreq>weekly</changefreq><priority>0.7</priority></url>\n`
   }
 
@@ -192,4 +197,40 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal server error' }, 500)
 })
 
-export default app
+export default {
+  fetch: app.fetch,
+  async scheduled(event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
+    // Clean up abandoned bookings: pending bookings older than 30 min with no Stripe session
+    const result = await env.DB.prepare(`
+      SELECT id, course_id, participants FROM bookings
+      WHERE payment_status = 'pending'
+        AND stripe_session_id IS NULL
+        AND created_at < datetime('now', '-30 minutes')
+    `).all()
+
+    for (const booking of result.results) {
+      // Release reserved spots
+      await env.DB.prepare(`
+        UPDATE courses
+        SET current_participants = MAX(0, current_participants - ?),
+            status = CASE
+              WHEN status = 'full' THEN 'active'
+              ELSE status
+            END
+        WHERE id = ?
+      `).bind(booking.participants, booking.course_id).run()
+
+      // Delete the abandoned booking
+      await env.DB.prepare(`DELETE FROM bookings WHERE id = ?`).bind(booking.id).run()
+    }
+
+    if (result.results.length > 0) {
+      console.log(`Cleaned up ${result.results.length} abandoned bookings`)
+    }
+
+    // Clean up expired sessions
+    await env.DB.prepare(`
+      DELETE FROM sessions WHERE expires_at < datetime('now')
+    `).run()
+  }
+}

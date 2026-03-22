@@ -88,8 +88,17 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
         // Sanitize HTML content before saving
         const sanitizedValue = propName === 'content' ? sanitizeHtml(value) : value
 
-        // Optimistic update
-        parsed.content[blockIndex].props[propName] = sanitizedValue
+        // Optimistic update — handle nested paths like "items[0].quote"
+        const arrayMatch = propName.match(/^(\w+)\[(\d+)\]\.(\w+)$/)
+        if (arrayMatch) {
+          const [, arrName, idxStr, field] = arrayMatch
+          const arr = parsed.content[blockIndex].props[arrName]
+          if (Array.isArray(arr) && arr[Number(idxStr)]) {
+            arr[Number(idxStr)][field] = sanitizedValue
+          }
+        } else {
+          parsed.content[blockIndex].props[propName] = sanitizedValue
+        }
         const newBlocks = JSON.stringify(parsed)
 
         setPageData((prev) =>
@@ -108,7 +117,6 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
           },
           body: JSON.stringify({
             content_blocks: newBlocks,
-            updated_at: pageData.updatedAt,
           }),
         })
           .then((res) => {
@@ -142,7 +150,7 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
   return (
     <InlineEditContext.Provider value={{ isAdmin, editUiVisible: overlaysVisible, pageData, saveBlockProp, savingStatus }}>
       {/* Data attribute for shared components to check overlay visibility */}
-      {isAdmin && <style>{overlaysVisible ? '' : '[data-edit-badge] { display: none !important; }'}</style>}
+      {isAdmin && <style>{overlaysVisible ? '' : '[data-edit-badge], [data-edit-overlay] { display: none !important; }'}</style>}
       {children}
       {isAdmin && !toolbarHidden && (
         <EditToolbar

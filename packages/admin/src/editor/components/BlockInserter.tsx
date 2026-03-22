@@ -38,41 +38,33 @@ export function BlockInserter({ insertIndex }: BlockInserterProps) {
 
   return (
     <div
-      className="relative group py-1"
+      className="relative group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         if (!isOpen) setIsHovered(false)
       }}
       data-insert-index={insertIndex}
     >
-      {/* Line — subtle when idle, blue on hover */}
-      <div
-        className="h-px mx-8 transition-all"
-        style={{
-          background: isHovered || isOpen
-            ? 'var(--editor-blue)'
-            : 'var(--editor-neutral-200, #e5e5e5)',
-          opacity: isHovered || isOpen ? 1 : 0.5,
-          transitionDuration: 'var(--editor-duration-fast, 150ms)',
-        }}
-      />
-
-      {/* Center plus button — subtle dot when idle, full button on hover */}
+      {/* Dashed rounded area — click to add */}
       <button
         ref={btnRef}
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all focus:opacity-100 focus:scale-100"
+        className="w-full flex items-center justify-center gap-1.5 cursor-pointer"
         style={{
-          width: isHovered || isOpen ? 24 : 8,
-          height: isHovered || isOpen ? 24 : 8,
-          borderRadius: '50%',
+          margin: '4px 0',
+          width: '100%',
+          height: isHovered || isOpen ? 40 : 28,
+          borderRadius: 8,
+          border: isHovered || isOpen
+            ? '1.5px dashed var(--editor-blue)'
+            : '1.5px dashed var(--editor-neutral-300, #d4d4d4)',
           background: isHovered || isOpen
-            ? isOpen ? 'var(--editor-blue-dark, #1D4ED8)' : 'var(--editor-blue)'
-            : 'var(--editor-neutral-300, #d4d4d4)',
-          color: 'var(--editor-surface)',
-          boxShadow: isHovered || isOpen ? 'var(--editor-shadow-blue)' : 'none',
-          opacity: isHovered || isOpen ? 1 : 0.6,
-          transform: isOpen ? 'rotate(45deg)' : 'none',
-          transition: 'all 150ms ease',
+            ? 'var(--editor-blue-lightest, rgba(37, 99, 235, 0.04))'
+            : 'transparent',
+          color: isHovered || isOpen
+            ? 'var(--editor-blue)'
+            : 'var(--editor-neutral-400, #a3a3a3)',
+          opacity: isHovered || isOpen ? 1 : 0.55,
+          transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
         onClick={(e) => {
           e.stopPropagation()
@@ -86,7 +78,10 @@ export function BlockInserter({ insertIndex }: BlockInserterProps) {
         aria-expanded={isOpen}
         aria-haspopup="menu"
       >
-        {(isHovered || isOpen) && <Plus className="h-3.5 w-3.5" />}
+        <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+        {(isHovered || isOpen) && (
+          <span className="text-xs font-medium">Add block</span>
+        )}
       </button>
 
       {/* Block picker dropdown */}
@@ -196,6 +191,7 @@ function BlockPicker({
   // Position
   const anchorEl = anchorRef.current
   const pickerWidth = 280
+  const pickerMaxHeight = 400
   let left = 0
   let top = 0
 
@@ -203,7 +199,12 @@ function BlockPicker({
     const rect = anchorEl.getBoundingClientRect()
     left = rect.left + rect.width / 2 - pickerWidth / 2
     left = Math.max(8, Math.min(left, window.innerWidth - pickerWidth - 8))
-    top = rect.bottom + 8
+    const spaceBelow = window.innerHeight - rect.bottom - 16
+    if (spaceBelow < 250) {
+      top = Math.max(8, rect.top - pickerMaxHeight - 8)
+    } else {
+      top = rect.bottom + 8
+    }
   }
 
   const portalRoot = document.getElementById('editor-portals') || document.body
@@ -216,7 +217,7 @@ function BlockPicker({
         left,
         top,
         width: pickerWidth,
-        maxHeight: 400,
+        maxHeight: pickerMaxHeight,
         zIndex: 'var(--z-editor-popover, 1005)',
         animation: 'editor-slide-down 150ms var(--editor-ease, ease) forwards',
       }}

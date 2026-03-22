@@ -1,5 +1,3 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { Quote, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
 import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { cn } from '../ui/utils'
@@ -40,7 +38,7 @@ function TestimonialCard({
   item,
   index,
   style,
-  showQuoteIcon = true,
+  showQuoteIcon: _showQuoteIcon = true,
   totalItems,
   isArrayItem,
 }: {
@@ -93,9 +91,6 @@ function TestimonialCard({
             className="absolute top-0 right-0 w-48 h-48 pointer-events-none"
             style={{ background: 'var(--gradient-testimonial-glow)' }}
           />
-          {showQuoteIcon !== false && (
-            <Quote className="absolute top-6 left-6 h-10 w-10 text-forest-200" />
-          )}
           <blockquote className="relative z-10">
             <p
               {...qHandlers}
@@ -104,7 +99,7 @@ function TestimonialCard({
                 quoteEdit?.className,
               )}
             >
-              &ldquo;{item.quote}&rdquo;
+              {item.quote}
             </p>
             {(item.author || authorEdit) && (
               <footer className="flex items-center gap-3">
@@ -143,9 +138,6 @@ function TestimonialCard({
       ) : (
         /* card style (default) */
         <div className="bg-white rounded-xl p-8 border border-stone-200 shadow-sm border-l-[3px] border-l-amber-400 h-full flex flex-col">
-          {showQuoteIcon !== false && (
-            <Quote className="h-6 w-6 text-amber-300 mb-3 shrink-0" />
-          )}
           <p
             {...qHandlers}
             className={cn(
@@ -153,7 +145,7 @@ function TestimonialCard({
               quoteEdit?.className,
             )}
           >
-            &ldquo;{item.quote}&rdquo;
+            {item.quote}
           </p>
           {(item.author || authorEdit) && (
             <div className="flex items-center gap-3 mt-auto pt-4 border-t border-stone-100">
@@ -202,132 +194,6 @@ function TestimonialCard({
   return content
 }
 
-// ── Carousel component ──
-
-function TestimonialCarousel({
-  items,
-  style,
-  showQuoteIcon,
-  autoPlaySpeed = 5,
-}: {
-  items: TestimonialItem[]
-  style: TestimonialProps['style']
-  showQuoteIcon?: boolean
-  autoPlaySpeed?: number
-}) {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
-  const [direction, setDirection] = useState<'left' | 'right'>('right')
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  const goTo = useCallback(
-    (index: number, dir: 'left' | 'right') => {
-      if (isTransitioning) return
-      setDirection(dir)
-      setIsTransitioning(true)
-      // After fade-out, switch slide
-      setTimeout(() => {
-        setActiveIndex(index)
-        // After switching, start fade-in
-        setTimeout(() => {
-          setIsTransitioning(false)
-        }, 50)
-      }, 300)
-    },
-    [isTransitioning],
-  )
-
-  const goNext = useCallback(() => {
-    goTo((activeIndex + 1) % items.length, 'right')
-  }, [activeIndex, items.length, goTo])
-
-  const goPrev = useCallback(() => {
-    goTo((activeIndex - 1 + items.length) % items.length, 'left')
-  }, [activeIndex, items.length, goTo])
-
-  // Auto-play
-  useEffect(() => {
-    if (isHovered || items.length <= 1) return
-    timerRef.current = setInterval(goNext, autoPlaySpeed * 1000)
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [isHovered, goNext, autoPlaySpeed, items.length])
-
-  if (items.length === 0) return null
-
-  return (
-    <div
-      className="relative group/carousel"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Slide container */}
-      <div className="overflow-hidden">
-        <div
-          className="transition-all duration-500 ease-in-out"
-          style={{
-            opacity: isTransitioning ? 0 : 1,
-            transform: isTransitioning
-              ? `translateX(${direction === 'right' ? '-20px' : '20px'})`
-              : 'translateX(0)',
-          }}
-        >
-          <TestimonialCard
-            item={items[activeIndex]}
-            index={activeIndex}
-            style={style}
-            showQuoteIcon={showQuoteIcon}
-            totalItems={items.length}
-            isArrayItem={false}
-          />
-        </div>
-      </div>
-
-      {/* Arrow buttons (visible on hover) */}
-      {items.length > 1 && (
-        <>
-          <button
-            onClick={goPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 opacity-0 group-hover/carousel:opacity-100 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full p-2.5 shadow-lg border border-stone-200 text-stone-600 hover:text-stone-900 z-20"
-            aria-label="Previous testimonial"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            onClick={goNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 opacity-0 group-hover/carousel:opacity-100 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full p-2.5 shadow-lg border border-stone-200 text-stone-600 hover:text-stone-900 z-20"
-            aria-label="Next testimonial"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </>
-      )}
-
-      {/* Dots navigation */}
-      {items.length > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
-          {items.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i, i > activeIndex ? 'right' : 'left')}
-              className={cn(
-                'rounded-full transition-all duration-300',
-                i === activeIndex
-                  ? 'w-8 h-2.5 bg-forest-500'
-                  : 'w-2.5 h-2.5 bg-stone-300 hover:bg-stone-400',
-              )}
-              aria-label={`Go to testimonial ${i + 1}`}
-              aria-current={i === activeIndex ? 'true' : undefined}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 // ── Main Testimonial block ──
 
 export function Testimonial({
@@ -337,7 +203,7 @@ export function Testimonial({
   avatar,
   items = [],
   style = 'card',
-  showQuoteIcon = true,
+  showQuoteIcon: _showQuoteIcon = true,
   displayMode = 'carousel',
   autoPlaySpeed = 5,
   id: _id,
@@ -388,7 +254,7 @@ export function Testimonial({
             item={item}
             index={0}
             style={style}
-            showQuoteIcon={showQuoteIcon}
+            showQuoteIcon={false}
             totalItems={resolvedItems.length}
             isArrayItem={resolvedItems.length > 0 && items && items.length > 0}
           />
@@ -398,31 +264,60 @@ export function Testimonial({
     )
   }
 
-  // Carousel mode
+  // Carousel mode — infinite horizontal marquee
   if (displayMode === 'carousel') {
+    // Fill enough cards to cover 2x viewport width (400px card + 24px gap = 424px each)
+    const minCards = Math.ceil(3200 / 424)
+    const repeatCount = Math.max(Math.ceil(minCards / resolvedItems.length), 2)
+    const oneSet = Array.from({ length: repeatCount }, () => resolvedItems).flat()
+    const marqueeItems = [...oneSet, ...oneSet] // duplicate full set for seamless loop
+    const speed = Math.max(autoPlaySpeed, 1) * oneSet.length * 3 // scale with item count
+
     return (
       <div
         ref={revealRef}
-        className="mx-auto reveal"
-        style={{
-          maxWidth: 'var(--width-narrow)',
-          paddingInline: 'var(--container-px)',
-          paddingBlock: 'var(--section-md)',
-        }}
+        className="reveal"
+        style={{ paddingBlock: 'var(--section-md)', overflow: 'hidden', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}
       >
-        <TestimonialCarousel
-          items={resolvedItems}
-          style={style}
-          showQuoteIcon={showQuoteIcon}
-          autoPlaySpeed={autoPlaySpeed}
-        />
-        {/* In editor, show all items below the carousel for editing */}
-        <div className="mt-4">
+        <div
+          className="flex gap-6 hover:[animation-play-state:paused]"
+          style={{
+            animation: `testimonial-marquee ${speed}s linear infinite`,
+            width: 'max-content',
+          }}
+        >
+          {marqueeItems.map((item, i) => (
+            <div
+              key={i}
+              className="w-[400px] flex-shrink-0 rounded-[16px] p-8 flex flex-col"
+              style={{ background: '#C7DDDC' }}
+            >
+              <p className="text-lg text-forest-800 italic leading-relaxed mb-6 flex-1">
+                {item.quote}
+              </p>
+              <div className="flex items-center gap-3">
+                {item.avatar ? (
+                  <img src={item.avatar} alt={item.author} className="w-10 h-10 rounded-full object-cover" />
+                ) : item.author ? (
+                  <div className="w-10 h-10 rounded-full bg-forest-300 flex items-center justify-center text-forest-800 font-semibold text-sm">
+                    {item.author.charAt(0)}
+                  </div>
+                ) : null}
+                <div>
+                  {item.author && <div className="font-medium text-forest-800">{item.author}</div>}
+                  {item.role && <div className="text-sm text-forest-600">{item.role}</div>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* In editor, show compact editable list — hidden with overlays */}
+        <div className="mt-4 puck-overlay" data-edit-overlay="" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <ArrayDragProvider fieldName="items">
             <EditableItemsList
               items={resolvedItems}
-              style={style}
-              showQuoteIcon={showQuoteIcon}
+              style="featured"
+              showQuoteIcon={false}
             />
           </ArrayDragProvider>
           <AddItemButton fieldName="items" label="Add testimonial" />
@@ -455,7 +350,7 @@ export function Testimonial({
               item={item}
               index={i}
               style={style}
-              showQuoteIcon={showQuoteIcon}
+              showQuoteIcon={false}
               totalItems={resolvedItems.length}
               isArrayItem
             />
@@ -472,7 +367,7 @@ export function Testimonial({
 function EditableItemsList({
   items,
   style,
-  showQuoteIcon,
+  showQuoteIcon: _sqi,
 }: {
   items: TestimonialItem[]
   style: TestimonialProps['style']
@@ -494,7 +389,7 @@ function EditableItemsList({
           item={item}
           index={i}
           style={style}
-          showQuoteIcon={showQuoteIcon}
+          showQuoteIcon={false}
           totalItems={items.length}
           isArrayItem
         />

@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { useCourseData, useEditableText } from '../context'
+import { useCourseData, useEditableText, useInlineEditBlock } from '../context'
 import { getApiBase } from '../helpers'
 import { Calendar, MapPin, CreditCard, AlertCircle, ArrowRight } from 'lucide-react'
+import { cn } from '../ui/utils'
 import { UI_STRINGS } from '../ui-strings'
+import { getButtonStyle } from './buttonUtils'
 
 export interface BookingFormProps {
   showOrganization: boolean
@@ -70,6 +72,11 @@ export function BookingForm({
   const notesLabelEdit = useEditableText('notesLabel', notesLabel)
   const submitBtnEdit = useEditableText('submitButtonText', submitButtonText)
   const totalLabelEdit = useEditableText('totalLabel', totalLabel)
+
+  // Read button styles from block data (set by ButtonStylePicker)
+  const editBlockCtx = useInlineEditBlock()
+  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const { variantClass: submitBtnClass, Icon: SubmitBtnIcon } = getButtonStyle(btnStyles, 'submitButtonText', 'primary', 'arrow-right')
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -275,12 +282,12 @@ export function BookingForm({
           <button
             type="submit"
             disabled={status === 'submitting' || isEditor}
-            className="w-full inline-flex items-center justify-center h-12 bg-amber-500 text-white hover:bg-amber-600 font-semibold rounded-full transition-colors disabled:opacity-50 text-base"
+            className={cn('w-full inline-flex items-center justify-center h-12 font-semibold rounded-[16px] transition-colors disabled:opacity-50 text-base', btnStyles ? submitBtnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
           >
             <span {...editHandlers(submitBtnEdit)} className={submitBtnEdit?.className}>
               {status === 'submitting' ? processingText : submitButtonText}
             </span>
-            <ArrowRight className="ml-2 h-4 w-4" />
+            {SubmitBtnIcon ? <SubmitBtnIcon className="ml-2 h-4 w-4" /> : (!btnStyles && <ArrowRight className="ml-2 h-4 w-4" />)}
           </button>
         </form>
       </div>

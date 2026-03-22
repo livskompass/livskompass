@@ -1,7 +1,8 @@
 import { cn } from '../ui/utils'
 import { ArrowRight } from 'lucide-react'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
+import { getButtonStyle } from './buttonUtils'
 
 export interface CTAButton {
   text: string
@@ -91,6 +92,11 @@ export function CTABanner({
   const descriptionEdit = descriptionPuck || descriptionEditCtx
   const buttonTextEdit = buttonTextPuck || buttonTextEditCtx
 
+  // Read button styles from block data (set by ButtonStylePicker)
+  const editBlockCtx = useInlineEditBlock()
+  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const { variantClass: btnPrimaryClass, Icon: BtnPrimaryIcon } = getButtonStyle(btnStyles, 'buttonText', 'primary', 'arrow-right')
+
   const bg = bgMap[backgroundColor] || bgMap.primary
   const isGradient = backgroundColor === 'gradient'
 
@@ -127,8 +133,8 @@ export function CTABanner({
               <a
                 href={btn.link || '#'}
                 className={cn(
-                  'inline-flex items-center justify-center h-12 px-8 font-semibold text-base rounded-full transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
-                  getButtonClass(backgroundColor, btn.variant || 'primary')
+                  'inline-flex items-center justify-center h-12 px-8 font-semibold text-base rounded-[16px] transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
+                  btnStyles ? btnPrimaryClass : getButtonClass(backgroundColor, btn.variant || 'primary')
                 )}
               >
                 {i === 0 ? (
@@ -136,7 +142,7 @@ export function CTABanner({
                 ) : (
                   btn.text
                 )}
-                {btn.variant !== 'outline' && <ArrowRight className="ml-2 h-4 w-4" />}
+                {BtnPrimaryIcon ? <BtnPrimaryIcon className="ml-2 h-4 w-4" /> : (!btnStyles && btn.variant !== 'outline' && <ArrowRight className="ml-2 h-4 w-4" />)}
               </a>
               </ArrayItemControls>
             ))}
