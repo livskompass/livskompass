@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getSiteSettings } from '../lib/api'
+import { getSiteSettings, getMediaUrl } from '../lib/api'
 import { defaultHeader, defaultFooter, type SiteHeaderConfig } from '@livskompass/shared'
 import { SiteSearch, SearchButton } from './SiteSearch'
 import { Search } from 'lucide-react'
@@ -274,7 +274,7 @@ export default function Layout() {
               <Link to="/" className="flex items-center hover:opacity-75 transition-opacity">
                 {headerConfig.logoUrl ? (
                   <img
-                    src={headerConfig.logoUrl}
+                    src={getMediaUrl(headerConfig.logoUrl)}
                     alt={headerConfig.logoText || 'Logo'}
                     className="h-8 lg:h-9 w-auto"
                   />
@@ -354,7 +354,7 @@ export default function Layout() {
             <div>
               {footerConfig.logoUrl ? (
                 <img
-                  src={footerConfig.logoUrl}
+                  src={getMediaUrl(footerConfig.logoUrl)}
                   alt={footerConfig.companyName}
                   className="h-8 w-auto mb-4 brightness-0 invert"
                 />

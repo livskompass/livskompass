@@ -6,6 +6,7 @@ import {
   getSiteSettings,
   updateSiteSettings,
   uploadMedia,
+  getMediaUrl,
 } from '../lib/api'
 import { defaultHeader, defaultFooter, type SiteHeaderConfig, type SiteFooterConfig } from '@livskompass/shared'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
@@ -436,7 +437,8 @@ export default function Settings() {
                     if (!file) return
                     try {
                       const result = await uploadMedia(file)
-                      setHeader({ ...header, logoUrl: result.media.url })
+                      const url = result.media.url.replace(/^https?:\/\/[^/]+/, '')
+                      setHeader({ ...header, logoUrl: url })
                     } catch { /* upload error — silent */ }
                     e.target.value = ''
                   }}
@@ -447,10 +449,10 @@ export default function Settings() {
               <div className="mt-2 rounded-md border border-zinc-200 overflow-hidden">
                 <div className="flex gap-0">
                   <div className="flex-1 p-4 flex items-center justify-center" style={{ background: 'repeating-conic-gradient(#e5e5e5 0% 25%, #fff 0% 50%) 50% / 16px 16px' }}>
-                    <img src={header.logoUrl} alt="Logo on light" className="h-10 max-w-[220px] object-contain" />
+                    <img src={getMediaUrl(header.logoUrl)} alt="Logo on light" className="h-10 max-w-[220px] object-contain" />
                   </div>
                   <div className="flex-1 p-4 bg-zinc-900 flex items-center justify-center">
-                    <img src={header.logoUrl} alt="Logo on dark" className="h-10 max-w-[220px] object-contain" />
+                    <img src={getMediaUrl(header.logoUrl)} alt="Logo on dark" className="h-10 max-w-[220px] object-contain" />
                   </div>
                 </div>
                 <div className="px-3 py-2 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between">
@@ -564,7 +566,8 @@ export default function Settings() {
                     if (!file) return
                     try {
                       const result = await uploadMedia(file)
-                      setFooter({ ...footer, logoUrl: result.media.url })
+                      const url = result.media.url.replace(/^https?:\/\/[^/]+/, '')
+                      setFooter({ ...footer, logoUrl: url })
                     } catch { /* upload error — silent */ }
                     e.target.value = ''
                   }}
@@ -575,10 +578,10 @@ export default function Settings() {
               <div className="mt-2 rounded-md border border-zinc-200 overflow-hidden">
                 <div className="flex gap-0">
                   <div className="flex-1 p-4 flex items-center justify-center" style={{ background: 'repeating-conic-gradient(#e5e5e5 0% 25%, #fff 0% 50%) 50% / 16px 16px' }}>
-                    <img src={footer.logoUrl} alt="Logo on light" className="h-8 max-w-[180px] object-contain" />
+                    <img src={getMediaUrl(footer.logoUrl)} alt="Logo on light" className="h-8 max-w-[180px] object-contain" />
                   </div>
                   <div className="flex-1 p-4 bg-zinc-900 flex items-center justify-center">
-                    <img src={footer.logoUrl} alt="Logo on dark" className="h-8 max-w-[180px] object-contain" />
+                    <img src={getMediaUrl(footer.logoUrl)} alt="Logo on dark" className="h-8 max-w-[180px] object-contain" />
                   </div>
                 </div>
                 <div className="px-3 py-2 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between">
