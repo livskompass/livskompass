@@ -4,7 +4,7 @@
 //   - packages/shared/src/puck-config.tsx (lines 58-94)
 //   - packages/admin/src/pages/Settings.tsx (lines 37-77)
 
-export type LogoSize = 'small' | 'medium' | 'large'
+export type LogoSize = 'xs' | 'small' | 'medium' | 'large'
 
 export interface SiteHeaderConfig {
   logoText: string

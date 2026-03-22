@@ -5,6 +5,8 @@ import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
+import { Color } from '@tiptap/extension-color'
+import { TextStyle } from '@tiptap/extension-text-style'
 import {
   Bold,
   Italic,
@@ -35,7 +37,10 @@ function cleanPastedHTML(html: string): string {
   div.innerHTML = html
 
   div.querySelectorAll('*').forEach((el) => {
+    // Preserve color style, strip everything else
+    const color = (el as HTMLElement).style?.color
     el.removeAttribute('style')
+    if (color) (el as HTMLElement).style.color = color
     el.removeAttribute('class')
     Array.from(el.attributes).forEach((attr) => {
       if (attr.name.startsWith('data-')) {
@@ -44,8 +49,8 @@ function cleanPastedHTML(html: string): string {
     })
   })
 
-  // Unwrap font and span elements (keep their text content)
-  div.querySelectorAll('font, span').forEach((el) => {
+  // Unwrap font elements but keep spans (Tiptap uses spans for text color)
+  div.querySelectorAll('font').forEach((el) => {
     const parent = el.parentNode
     while (el.firstChild) {
       parent?.insertBefore(el.firstChild, el)
@@ -74,6 +79,8 @@ export function TiptapEditor({ content, onSave, onCancel, className, placeholder
       }),
       Underline,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextStyle,
+      Color,
     ],
     content,
     editorProps: {
@@ -256,6 +263,40 @@ export function TiptapEditor({ content, onSave, onCancel, className, placeholder
                   <TbDiv />
 
                   <TbBtn icon={<LinkIcon className="h-3.5 w-3.5" />} label="Link" onClick={handleLink} active={editor.isActive('link')} />
+
+                  <TbDiv />
+
+                  {/* Text color swatches */}
+                  {[
+                    { color: null, label: 'Default', css: 'bg-stone-800' },
+                    { color: '#ffffff', label: 'White', css: 'bg-white border border-zinc-300' },
+                    { color: 'rgb(0, 70, 56)', label: 'Brand', css: 'bg-[#004638]' },
+                    { color: 'rgb(20, 110, 90)', label: 'Accent', css: 'bg-[#146E5A]' },
+                    { color: 'rgb(255, 233, 98)', label: 'Yellow', css: 'bg-[#FFE962]' },
+                    { color: 'rgb(138, 132, 122)', label: 'Muted', css: 'bg-[#8A847A]' },
+                  ].map((swatch) => (
+                    <button
+                      key={swatch.label}
+                      type="button"
+                      onClick={() => {
+                        if (swatch.color === null) {
+                          editor.chain().focus().unsetColor().run()
+                        } else {
+                          editor.chain().focus().setColor(swatch.color).run()
+                        }
+                      }}
+                      className={`w-5 h-5 rounded-full shrink-0 ${swatch.css} ${
+                        (swatch.color === null && !editor.getAttributes('textStyle').color) ||
+                        editor.getAttributes('textStyle').color === swatch.color
+                          ? 'ring-2 ring-white ring-offset-1 ring-offset-zinc-800'
+                          : ''
+                      }`}
+                      title={swatch.label}
+                    />
+                  ))}
+
+                  <TbDiv />
+
                   <TbBtn icon={<ArrowLeft className="h-3.5 w-3.5" />} label="Done" onClick={handleDone} />
                 </>
               )}
