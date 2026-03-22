@@ -137,7 +137,7 @@ function HeroSubheadingItem({ item, index, textClass }: { item: { text: string }
   const textEdit = useEditableText(`subheadings[${index}].text`, item.text)
   const { className: _, ...editHandlers } = textEdit || { className: '' }
   return (
-    <p {...editHandlers} className={cn('text-body-lg mt-3 max-w-[540px] leading-relaxed animate-hero-enter', textClass, textEdit?.className)} style={{ animationDelay: `${350 + index * 100}ms`, animationFillMode: 'both', ...textEdit?.style }}>
+    <p {...editHandlers} className={cn('text-body-lg mt-3 max-w-[540px] mx-auto leading-relaxed animate-hero-enter', textClass, textEdit?.className)} style={{ animationDelay: `${350 + index * 100}ms`, animationFillMode: 'both', ...textEdit?.style }}>
       {item.text}
     </p>
   )
@@ -346,7 +346,7 @@ export function Hero({
             </h1>
           )}
           {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
               {subheading}
             </p>
           )}
