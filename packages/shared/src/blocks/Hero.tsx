@@ -291,7 +291,7 @@ export function Hero({
           className={cn('relative flex flex-col h-full mx-auto', positionClasses[contentPosition || 'center'])}
           style={{ maxWidth: 'var(--width-content, 1440px)', paddingInline: 'var(--container-px, 1rem)' }}
         >
-          <div className={cn('max-w-3xl', contentPosition === 'center' && 'mx-auto')}>
+          <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
               <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
                 {heading}
@@ -327,7 +327,7 @@ export function Hero({
         {/* Scroll indicator */}
         {showScrollIndicator !== false && (
           <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-hero-enter" style={{ animationDelay: '800ms', animationFillMode: 'both' }}>
-            <ChevronDown className="h-6 w-6 text-accent animate-bounce" />
+            <ChevronDown className="h-6 w-6 opacity-60 animate-bounce" />
           </div>
         )}
       </section>
@@ -409,7 +409,7 @@ export function Hero({
           className={cn('relative flex flex-col w-full mx-auto', posClass)}
           style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
         >
-          <div className={cn('max-w-3xl', contentPosition === 'center' && 'mx-auto')}>
+          <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
               <h1 {...hEdit} className={cn('text-display max-w-[24ch] animate-hero-enter', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
                 {heading}
@@ -444,7 +444,7 @@ export function Hero({
         {/* Scroll indicator */}
         {showScrollIndicator !== false && (
           <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-hero-enter" style={{ animationDelay: '800ms', animationFillMode: 'both' }}>
-            <ChevronDown className="h-6 w-6 text-accent animate-bounce" />
+            <ChevronDown className="h-6 w-6 opacity-60 animate-bounce" />
           </div>
         )}
       </section>
