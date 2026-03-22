@@ -12,6 +12,8 @@ export type HeroOverlay = 'light' | 'medium' | 'heavy'
 export type HeroContentPosition = 'center' | 'center-left' | 'center-right' | 'top-left' | 'top-center' | 'bottom-left' | 'bottom-center'
 export type HeroTextAlign = 'left' | 'center'
 
+export type HeroTopOverlay = 'none' | 'dark' | 'light'
+
 export interface HeroProps {
   preset: HeroPreset
   heading: string
@@ -33,6 +35,7 @@ export interface HeroProps {
   showInput?: boolean
   inputPlaceholder?: string
   inputButtonText?: string
+  topOverlay?: HeroTopOverlay
   subheadings?: Array<{ text: string }>
   buttons?: Array<{ text: string; link: string; externalUrl?: string; variant?: string; showIcon?: boolean; icon?: string }>
 }
@@ -53,6 +56,20 @@ const overlayOpacity: Record<HeroOverlay, string> = {
   light: '0.35',
   medium: '0.55',
   heavy: '0.75',
+}
+
+/** Top gradient overlay — covers the nav zone only (top ~120px) */
+function TopOverlay({ type }: { type: string }) {
+  if (type === 'none') return null
+  const gradient = type === 'dark'
+    ? 'linear-gradient(180deg, rgb(var(--forest-950) / 0.6) 0%, rgb(var(--forest-950) / 0.3) 40%, transparent 100%)'
+    : 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.3) 40%, transparent 100%)'
+  return (
+    <div
+      className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
+      style={{ height: '120px', background: gradient }}
+    />
+  )
 }
 
 /** Extract event handlers from editable props (everything except className) */
@@ -167,6 +184,7 @@ export function Hero({
   showInput,
   inputPlaceholder,
   inputButtonText,
+  topOverlay = 'none',
   subheadings: subheadingsRaw,
   buttons: buttonsRaw,
   id,
@@ -266,6 +284,8 @@ export function Hero({
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
         {/* Overlay */}
         {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.15), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.6).toFixed(2)}))` }} />}
+        {/* Top gradient overlay for nav contrast */}
+        <TopOverlay type={topOverlay} />
         {/* Content — aligned to page container */}
         <div
           className={cn('relative flex flex-col h-full mx-auto', positionClasses[contentPosition || 'center'])}
@@ -382,6 +402,8 @@ export function Hero({
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
         {/* Overlay */}
         {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />}
+        {/* Top gradient overlay for nav contrast */}
+        <TopOverlay type={topOverlay} />
         {/* Content */}
         <div
           className={cn('relative flex flex-col w-full mx-auto', posClass)}

@@ -262,6 +262,7 @@ export const puckConfig: Config = {
         showInput: false,
         inputPlaceholder: 'Din e-postadress',
         inputButtonText: 'Prenumerera',
+        topOverlay: 'none',
         subheadings: [],
         buttons: [],
       },
@@ -409,6 +410,7 @@ export const puckConfig: Config = {
               ],
             },
             showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+            topOverlay: { type: 'select' as const, label: 'Top gradient (nav contrast)', options: [{ label: 'None', value: 'none' }, { label: 'Dark (for light nav)', value: 'dark' }, { label: 'Light (for dark nav)', value: 'light' }] },
             ...modularFields,
           }
         }
@@ -440,6 +442,7 @@ export const puckConfig: Config = {
               ],
             },
             showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
+            topOverlay: { type: 'select' as const, label: 'Top gradient (nav contrast)', options: [{ label: 'None', value: 'none' }, { label: 'Dark (for light nav)', value: 'dark' }, { label: 'Light (for dark nav)', value: 'light' }] },
             ...modularFields,
           }
         }
