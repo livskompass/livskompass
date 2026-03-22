@@ -216,12 +216,18 @@ export const puckConfig: Config = {
     },
     SeparatorBlock: {
       label: 'Separator',
-      defaultProps: { variant: 'line', spacing: 'medium', lineColor: 'light', maxWidth: 'full' },
+      defaultProps: { variant: 'line', spacing: 'medium', lineColor: 'light', maxWidth: 'full', gradientType: 'fade-down' },
       fields: {
-        variant: { type: 'select', options: [{ label: 'Line', value: 'line' }, { label: 'Dots', value: 'dots' }, { label: 'Space only', value: 'space-only' }] },
+        variant: { type: 'select', options: [{ label: 'Line', value: 'line' }, { label: 'Dots', value: 'dots' }, { label: 'Space only', value: 'space-only' }, { label: 'Gradient', value: 'gradient' }] },
         spacing: { type: 'select', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }, { label: 'Extra large', value: 'extra-large' }] },
         lineColor: { type: 'select', options: [{ label: 'Light', value: 'light' }, { label: 'Medium', value: 'medium' }, { label: 'Dark', value: 'dark' }] },
         maxWidth: { type: 'select', options: [{ label: 'Narrow', value: 'narrow' }, { label: 'Medium', value: 'medium' }, { label: 'Full', value: 'full' }] },
+        gradientType: { type: 'select', label: 'Gradient style', options: [
+          { label: 'Fade ↓ white→light', value: 'fade-down' }, { label: 'Fade ↑ light→white', value: 'fade-up' },
+          { label: 'Mist ↓ teal→transparent', value: 'mist-down' }, { label: 'Mist ↑ transparent→teal', value: 'mist-up' },
+          { label: 'Forest ↓ green→transparent', value: 'forest-down' }, { label: 'Forest ↑ transparent→green', value: 'forest-up' },
+          { label: 'Amber ↓ yellow→transparent', value: 'amber-down' }, { label: 'Amber ↑ transparent→yellow', value: 'amber-up' },
+        ] },
       },
       render: SeparatorBlock as any,
     },
