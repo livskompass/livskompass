@@ -184,7 +184,7 @@ export const puckConfig: Config = {
       return (
         <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", backgroundColor: 'var(--surface-primary, #F8F6F2)' }}>
           {isEditor && <SiteHeader />}
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 flex flex-col [&>*]:shrink-0">{children}</main>
           {isEditor && <SiteFooter />}
         </div>
       )

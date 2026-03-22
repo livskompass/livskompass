@@ -200,17 +200,6 @@ body {
   line-height: var(--leading-body);
 }
 
-/* ==================== Block Stacking — zero gaps between sections ==================== */
-main > * {
-  margin: 0;
-  padding-left: 0;
-  padding-right: 0;
-}
-main > section,
-main > div {
-  position: relative;
-}
-
 /* ==================== Typography Utilities ==================== */
 @layer utilities {
   .text-display {

@@ -133,22 +133,22 @@ function HeroButtons({ buttons, variantClasses }: { buttons: Array<{text: string
   )
 }
 
-function HeroSubheadingItem({ item, index, textClass }: { item: { text: string }; index: number; textClass: string }) {
+function HeroSubheadingItem({ item, index, textClass, centered }: { item: { text: string }; index: number; textClass: string; centered?: boolean }) {
   const textEdit = useEditableText(`subheadings[${index}].text`, item.text)
   const { className: _, ...editHandlers } = textEdit || { className: '' }
   return (
-    <p {...editHandlers} className={cn('text-body-lg mt-3 max-w-[540px] mx-auto leading-relaxed animate-hero-enter', textClass, textEdit?.className)} style={{ animationDelay: `${350 + index * 100}ms`, animationFillMode: 'both', ...textEdit?.style }}>
+    <p {...editHandlers} className={cn('text-body-lg mt-3 max-w-[540px] leading-relaxed animate-hero-enter', centered && 'mx-auto', textClass, textEdit?.className)} style={{ animationDelay: `${350 + index * 100}ms`, animationFillMode: 'both', ...textEdit?.style }}>
       {item.text}
     </p>
   )
 }
 
-function HeroSubheadings({ items, textClass }: { items: Array<{ text: string }>; textClass: string }) {
+function HeroSubheadings({ items, textClass, centered }: { items: Array<{ text: string }>; textClass: string; centered?: boolean }) {
   if (!items.length) return null
   return (
     <>
       {items.map((item, i) => (
-        <HeroSubheadingItem key={i} item={item} index={i} textClass={textClass} />
+        <HeroSubheadingItem key={i} item={item} index={i} textClass={textClass} centered={centered} />
       ))}
     </>
   )
@@ -302,7 +302,7 @@ export function Hero({
                 {subheading}
               </p>
             )}
-            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center'} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
@@ -346,7 +346,7 @@ export function Hero({
             </h1>
           )}
           {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
               {subheading}
             </p>
           )}
@@ -421,7 +421,7 @@ export function Hero({
                 {subheading}
               </p>
             )}
-            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center' || contentPosition === 'bottom-center'} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
@@ -472,7 +472,7 @@ export function Hero({
                 {subheading}
               </p>
             )}
-            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={textAlignment === 'center'} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
@@ -539,7 +539,7 @@ export function Hero({
             {subheading}
           </p>
         )}
-        {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+        {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered />}
             {/* Buttons */}
         {buttons && buttons.length > 0 ? (
           <HeroButtons buttons={buttons} variantClasses={variantClasses} />
