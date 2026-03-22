@@ -205,19 +205,21 @@ export const puckConfig: Config = {
     // ── Layout ──
     Columns: {
       label: 'Columns',
-      defaultProps: { layout: '50-50', gap: 'medium', verticalAlignment: 'top', stackOnMobile: true },
+      defaultProps: { sectionBg: 'transparent', layout: '50-50', gap: 'medium', verticalAlignment: 'top', stackOnMobile: true },
       fields: {
+        sectionBg: sectionBgField,
         layout: { type: 'select', label: 'Layout', options: [{ label: '50/50', value: '50-50' }, { label: '33/33/33', value: '33-33-33' }, { label: '66/33', value: '66-33' }, { label: '33/66', value: '33-66' }] },
         gap: { type: 'select', label: 'Gap', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
         verticalAlignment: { type: 'select', label: 'Vertical alignment', options: [{ label: 'Top', value: 'top' }, { label: 'Center', value: 'center' }, { label: 'Bottom', value: 'bottom' }] },
         stackOnMobile: { type: 'radio', label: 'Stack on mobile', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
-      render: Columns as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><Columns {...props} /></SectionBgWrap>,
     },
     SeparatorBlock: {
       label: 'Separator',
-      defaultProps: { variant: 'line', spacing: 'medium', lineColor: 'light', maxWidth: 'full', gradientType: 'white-light' },
+      defaultProps: { sectionBg: 'transparent', variant: 'line', spacing: 'medium', lineColor: 'light', maxWidth: 'full', gradientType: 'white-light' },
       fields: {
+        sectionBg: sectionBgField,
         variant: { type: 'select', options: [{ label: 'Line', value: 'line' }, { label: 'Dots', value: 'dots' }, { label: 'Space only', value: 'space-only' }, { label: 'Gradient', value: 'gradient' }] },
         spacing: { type: 'select', label: 'Height', options: [{ label: 'XS (16px)', value: 'xs' }, { label: 'S (32px)', value: 'small' }, { label: 'M (64px)', value: 'medium' }, { label: 'L (96px)', value: 'large' }, { label: 'XL (128px)', value: 'xl' }, { label: '2XL (192px)', value: '2xl' }, { label: '3XL (256px)', value: '3xl' }] },
         lineColor: { type: 'select', options: [{ label: 'Light', value: 'light' }, { label: 'Medium', value: 'medium' }, { label: 'Dark', value: 'dark' }] },
@@ -239,19 +241,20 @@ export const puckConfig: Config = {
           { label: '↓ Mist → Light green', value: 'mist-accent' },
         ] },
       },
-      render: SeparatorBlock as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><SeparatorBlock {...props} /></SectionBgWrap>,
     },
     Spacer: {
       label: 'Spacer',
-      defaultProps: { size: 'medium' },
-      fields: { size: { type: 'select', options: [{ label: 'XS', value: 'xs' }, { label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }, { label: 'XL', value: 'xl' }] } },
-      render: Spacer as any,
+      defaultProps: { sectionBg: 'transparent', size: 'medium' },
+      fields: { sectionBg: sectionBgField, size: { type: 'select', options: [{ label: 'XS', value: 'xs' }, { label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }, { label: 'XL', value: 'xl' }] } },
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><Spacer {...props} /></SectionBgWrap>,
     },
 
     // ── Content ──
     Hero: {
       label: 'Hero',
       defaultProps: {
+        sectionBg: 'transparent',
         preset: 'centered',
         heading: 'Rubrik här',
         subheading: '',
@@ -277,6 +280,7 @@ export const puckConfig: Config = {
         buttons: [],
       },
       fields: {
+        sectionBg: sectionBgField,
         preset: {
           type: 'select',
           label: 'Preset',
@@ -463,22 +467,26 @@ export const puckConfig: Config = {
     },
     RichText: {
       label: 'Rich Text',
-      defaultProps: { content: '<p>Write your content here...</p>', maxWidth: 'medium', alignment: 'left', fontSize: 'normal' },
+      defaultProps: { sectionBg: 'transparent', content: '<p>Write your content here...</p>', maxWidth: 'medium', alignment: 'left', fontSize: 'normal' },
       fields: {
+        sectionBg: sectionBgField,
         maxWidth: { type: 'select', label: 'Max width', options: [{ label: 'Narrow (65ch)', value: 'narrow' }, { label: 'Medium (80ch)', value: 'medium' }, { label: 'Full', value: 'full' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         fontSize: { type: 'radio', label: 'Font size', options: [{ label: 'Small', value: 'small' }, { label: 'Normal', value: 'normal' }, { label: 'Large', value: 'large' }] },
       },
-      render: ({ content, maxWidth, alignment, fontSize, id }: any) => (
-        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-          <RichText content={content} maxWidth={maxWidth} alignment={alignment} fontSize={fontSize} id={id} />
-        </div>
+      render: ({ sectionBg, content, maxWidth, alignment, fontSize, id }: any) => (
+        <SectionBgWrap bg={sectionBg}>
+          <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+            <RichText content={content} maxWidth={maxWidth} alignment={alignment} fontSize={fontSize} id={id} />
+          </div>
+        </SectionBgWrap>
       ),
     },
     ImageBlock: {
       label: 'Image',
-      defaultProps: { src: '', alt: '', caption: '', size: 'full', alignment: 'center', rounded: 'small', link: '', shadow: 'none', border: 'none' },
+      defaultProps: { sectionBg: 'transparent', src: '', alt: '', caption: '', size: 'full', alignment: 'center', rounded: 'small', link: '', shadow: 'none', border: 'none' },
       fields: {
+        sectionBg: sectionBgField,
         src: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, alt: { type: 'text', label: 'Alt text' }, caption: { type: 'text', label: 'Caption' },
         size: { type: 'select', label: 'Size', options: [{ label: 'Small (50%)', value: 'small' }, { label: 'Medium (75%)', value: 'medium' }, { label: 'Full', value: 'full' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
@@ -487,10 +495,12 @@ export const puckConfig: Config = {
         border: { type: 'radio', label: 'Border', options: [{ label: 'None', value: 'none' }, { label: 'Thin', value: 'thin' }] },
         link: { type: 'text', label: 'Link URL', metadata: { isPagePicker: true } },
       },
-      render: ({ src, alt, caption, size, alignment, rounded, link, shadow, border, id }: any) => (
-        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-          <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} shadow={shadow} border={border} link={link} id={id} />
-        </div>
+      render: ({ sectionBg, src, alt, caption, size, alignment, rounded, link, shadow, border, id }: any) => (
+        <SectionBgWrap bg={sectionBg}>
+          <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+            <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} shadow={shadow} border={border} link={link} id={id} />
+          </div>
+        </SectionBgWrap>
       ),
     },
     Accordion: {
@@ -514,8 +524,9 @@ export const puckConfig: Config = {
     },
     PageHeader: {
       label: 'Page Header',
-      defaultProps: { heading: 'Heading', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Hem', backgroundColor: 'transparent' },
+      defaultProps: { sectionBg: 'transparent', heading: 'Heading', subheading: '', alignment: 'left', size: 'large', showDivider: false, breadcrumbs: [], breadcrumbHomeText: 'Hem', backgroundColor: 'transparent' },
       fields: {
+        sectionBg: sectionBgField,
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         size: { type: 'radio', label: 'Size', options: [{ label: 'Small', value: 'small' }, { label: 'Large', value: 'large' }] },
         backgroundColor: { type: 'select', label: 'Background', options: [{ label: 'Transparent', value: 'transparent' }, { label: 'Light', value: 'light' }, { label: 'Primary (green)', value: 'primary' }] },
@@ -523,7 +534,7 @@ export const puckConfig: Config = {
         breadcrumbs: { type: 'array', label: 'Breadcrumbs', arrayFields: { label: { type: 'text', label: 'Label' }, href: { type: 'text', label: 'Link', metadata: { isPagePicker: true } } } },
         breadcrumbHomeText: { type: 'text', label: 'Home breadcrumb text' },
       },
-      render: PageHeader as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><PageHeader {...props} /></SectionBgWrap>,
     },
     PersonCard: {
       label: 'Person Card',
@@ -568,6 +579,7 @@ export const puckConfig: Config = {
     CTABanner: {
       label: 'CTA Banner',
       defaultProps: {
+        sectionBg: 'transparent',
         heading: 'Ready to start?',
         description: 'Book your spot for the next session',
         buttonText: 'Book now',
@@ -579,6 +591,7 @@ export const puckConfig: Config = {
         padding: 'medium',
       },
       fields: {
+        sectionBg: sectionBgField,
         buttonLink: { type: 'text', label: 'Button link (legacy)', metadata: { isPagePicker: true } },
         buttons: { type: 'array', label: 'Buttons', arrayFields: {
           text: { type: 'text', label: 'Label' },
@@ -590,10 +603,12 @@ export const puckConfig: Config = {
         width: { type: 'radio', label: 'Width', options: [{ label: 'Full', value: 'full' }, { label: 'Contained', value: 'contained' }, { label: 'Narrow', value: 'narrow' }] },
         padding: { type: 'radio', label: 'Padding', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
       },
-      render: ({ heading, description, buttonText, buttonLink, buttons, backgroundColor, alignment, width, padding, id }: any) => (
-        <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
-          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} buttons={buttons} backgroundColor={backgroundColor} alignment={alignment} width={width} padding={padding} id={id} />
-        </div>
+      render: ({ sectionBg, heading, description, buttonText, buttonLink, buttons, backgroundColor, alignment, width, padding, id }: any) => (
+        <SectionBgWrap bg={sectionBg}>
+          <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
+            <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} buttons={buttons} backgroundColor={backgroundColor} alignment={alignment} width={width} padding={padding} id={id} />
+          </div>
+        </SectionBgWrap>
       ),
     },
     CardGrid: {
@@ -646,17 +661,20 @@ export const puckConfig: Config = {
     },
     ButtonGroup: {
       label: 'Buttons',
-      defaultProps: { buttons: [{ text: 'Primary button', link: '/', variant: 'primary' }], alignment: 'center', direction: 'horizontal', size: 'medium' },
+      defaultProps: { sectionBg: 'transparent', buttons: [{ text: 'Primary button', link: '/', variant: 'primary' }], alignment: 'center', direction: 'horizontal', size: 'medium' },
       fields: {
+        sectionBg: sectionBgField,
         buttons: { type: 'array', label: 'Buttons', arrayFields: { text: { type: 'text', label: 'Text' }, link: { type: 'text', label: 'Link', metadata: { isPagePicker: true } }, variant: { type: 'select', label: 'Variant', options: [{ label: 'Primary', value: 'primary' }, { label: 'Secondary', value: 'secondary' }, { label: 'Outline', value: 'outline' }] } } },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
         direction: { type: 'radio', label: 'Direction', options: [{ label: 'Horizontal', value: 'horizontal' }, { label: 'Vertical', value: 'vertical' }] },
         size: { type: 'select', label: 'Size', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
       },
-      render: ({ buttons, alignment, direction, size }: any) => (
-        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-          <ButtonGroup buttons={buttons} alignment={alignment} direction={direction} size={size} />
-        </div>
+      render: ({ sectionBg, buttons, alignment, direction, size }: any) => (
+        <SectionBgWrap bg={sectionBg}>
+          <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+            <ButtonGroup buttons={buttons} alignment={alignment} direction={direction} size={size} />
+          </div>
+        </SectionBgWrap>
       ),
     },
     PricingTable: {
@@ -676,8 +694,9 @@ export const puckConfig: Config = {
     // ── Media ──
     ImageGallery: {
       label: 'Image Gallery',
-      defaultProps: { images: [{ src: '', alt: 'Image 1', caption: '' }, { src: '', alt: 'Image 2', caption: '' }, { src: '', alt: 'Image 3', caption: '' }], columns: 3, gap: 'medium', aspectRatio: 'landscape', rounded: 'medium', lightbox: false },
+      defaultProps: { sectionBg: 'transparent', images: [{ src: '', alt: 'Image 1', caption: '' }, { src: '', alt: 'Image 2', caption: '' }, { src: '', alt: 'Image 3', caption: '' }], columns: 3, gap: 'medium', aspectRatio: 'landscape', rounded: 'medium', lightbox: false },
       fields: {
+        sectionBg: sectionBgField,
         images: { type: 'array', label: 'Images', arrayFields: { src: { type: 'text', label: 'Image URL', metadata: { isImage: true } }, alt: { type: 'text', label: 'Alt text' }, caption: { type: 'text', label: 'Caption' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         gap: { type: 'select', label: 'Gap', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
@@ -685,49 +704,53 @@ export const puckConfig: Config = {
         rounded: { type: 'radio', label: 'Corners', options: [{ label: 'None', value: 'none' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
         lightbox: { type: 'radio', label: 'Lightbox on click', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
-      render: ImageGallery as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><ImageGallery {...props} /></SectionBgWrap>,
     },
     VideoEmbed: {
       label: 'Video',
-      defaultProps: { url: '', aspectRatio: '16:9', caption: '' },
+      defaultProps: { sectionBg: 'transparent', url: '', aspectRatio: '16:9', caption: '' },
       fields: {
+        sectionBg: sectionBgField,
         url: { type: 'text', label: 'Video URL' },
         aspectRatio: { type: 'select', label: 'Aspect ratio', options: [{ label: '16:9', value: '16:9' }, { label: '4:3', value: '4:3' }, { label: '1:1', value: '1:1' }] },
         caption: { type: 'text', label: 'Caption' },
       },
-      render: VideoEmbed as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><VideoEmbed {...props} /></SectionBgWrap>,
     },
     AudioEmbed: {
       label: 'Audio',
-      defaultProps: { url: '', caption: '', style: 'minimal' },
+      defaultProps: { sectionBg: 'transparent', url: '', caption: '', style: 'minimal' },
       fields: {
+        sectionBg: sectionBgField,
         url: { type: 'text', label: 'Audio URL' },
         caption: { type: 'text', label: 'Caption' },
         style: { type: 'select', label: 'Style', options: [{ label: 'Minimal', value: 'minimal' }, { label: 'Card', value: 'card' }] },
       },
-      render: AudioEmbed as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><AudioEmbed {...props} /></SectionBgWrap>,
     },
     FileEmbed: {
       label: 'File / Document',
-      defaultProps: { url: '', fileName: '', caption: '', showPreview: true },
+      defaultProps: { sectionBg: 'transparent', url: '', fileName: '', caption: '', showPreview: true },
       fields: {
+        sectionBg: sectionBgField,
         url: { type: 'text', label: 'File URL' },
         fileName: { type: 'text', label: 'File name' },
         caption: { type: 'text', label: 'Caption' },
         showPreview: { type: 'radio', label: 'Show preview', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
       },
-      render: FileEmbed as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><FileEmbed {...props} /></SectionBgWrap>,
     },
     EmbedBlock: {
       label: 'Embed',
-      defaultProps: { url: '', html: '', caption: '', aspectRatio: 'auto' },
+      defaultProps: { sectionBg: 'transparent', url: '', html: '', caption: '', aspectRatio: 'auto' },
       fields: {
+        sectionBg: sectionBgField,
         url: { type: 'text', label: 'Embed URL' },
         html: { type: 'textarea', label: 'Embed HTML' },
         caption: { type: 'text', label: 'Caption' },
         aspectRatio: { type: 'select', label: 'Aspect ratio', options: [{ label: 'Auto', value: 'auto' }, { label: '16:9', value: '16:9' }, { label: '4:3', value: '4:3' }, { label: '1:1', value: '1:1' }] },
       },
-      render: EmbedBlock as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><EmbedBlock {...props} /></SectionBgWrap>,
     },
 
     // ── Dynamic ──
@@ -785,8 +808,9 @@ export const puckConfig: Config = {
     },
     PageCards: {
       label: 'Page Cards',
-      defaultProps: { heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'Inga undersidor hittades', emptyManualText: 'Add pages manually or specify a parent page', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', parentSlug: '', manualPages: [], columns: 3, showDescription: true, style: 'card', emptyText: 'Inga undersidor hittades', emptyManualText: 'Add pages manually or specify a parent page', cardColor: 'mist' },
       fields: {
+        sectionBg: sectionBgField,
         parentSlug: { type: 'text', label: 'Show child pages of', metadata: { isPagePicker: true } },
         manualPages: { type: 'array', label: 'Or pick pages manually', arrayFields: { slug: { type: 'text', label: 'Page', metadata: { isPagePicker: true } } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
@@ -796,18 +820,19 @@ export const puckConfig: Config = {
         emptyText: { type: 'text', label: 'Empty text (with parent)' },
         emptyManualText: { type: 'text', label: 'Empty text (manual)' },
       },
-      render: PageCards as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><PageCards {...props} /></SectionBgWrap>,
     },
     NavigationMenu: {
       label: 'Navigation Menu',
-      defaultProps: { items: [{ label: 'Home', link: '/' }], layout: 'horizontal', style: 'pills', alignment: 'center' },
+      defaultProps: { sectionBg: 'transparent', items: [{ label: 'Home', link: '/' }], layout: 'horizontal', style: 'pills', alignment: 'center' },
       fields: {
+        sectionBg: sectionBgField,
         items: { type: 'array', label: 'Menu items', arrayFields: { label: { type: 'text', label: 'Label' }, link: { type: 'text', label: 'Link', metadata: { isPagePicker: true } } } },
         layout: { type: 'radio', label: 'Layout', options: [{ label: 'Horizontal', value: 'horizontal' }, { label: 'Vertical', value: 'vertical' }] },
         style: { type: 'select', label: 'Style', options: [{ label: 'Pills', value: 'pills' }, { label: 'Underline', value: 'underline' }, { label: 'Buttons', value: 'buttons' }, { label: 'Minimal', value: 'minimal' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
       },
-      render: NavigationMenu as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><NavigationMenu {...props} /></SectionBgWrap>,
     },
 
     // ── Interactive ──
@@ -834,8 +859,9 @@ export const puckConfig: Config = {
     },
     BookingForm: {
       label: 'Booking Form',
-      defaultProps: { showOrganization: true, showNotes: true, submitButtonText: 'Go to payment', processingText: 'Processing...', fullMessage: 'This course is fully booked.', completedMessage: 'This course has been completed.', totalLabel: 'Total', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', organizationLabel: 'Organization', participantsLabel: 'Number of participants *', notesLabel: 'Notes', priceSuffix: 'kr/person' },
+      defaultProps: { sectionBg: 'transparent', showOrganization: true, showNotes: true, submitButtonText: 'Go to payment', processingText: 'Processing...', fullMessage: 'This course is fully booked.', completedMessage: 'This course has been completed.', totalLabel: 'Total', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', organizationLabel: 'Organization', participantsLabel: 'Number of participants *', notesLabel: 'Notes', priceSuffix: 'kr/person' },
       fields: {
+        sectionBg: sectionBgField,
         showOrganization: { type: 'radio', label: 'Show organization field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showNotes: { type: 'radio', label: 'Show notes field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         submitButtonText: { type: 'text', label: 'Submit button text' },
@@ -851,14 +877,15 @@ export const puckConfig: Config = {
         notesLabel: { type: 'text', label: 'Notes field label' },
         priceSuffix: { type: 'text', label: 'Price suffix' },
       },
-      render: BookingForm as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><BookingForm {...props} /></SectionBgWrap>,
     },
 
     // ── Data-bound ──
     CourseInfo: {
       label: 'Course Info',
-      defaultProps: { showDeadline: true, showEmpty: false, layout: 'grid', locationLabel: 'Location', dateLabel: 'Date', priceLabel: 'Price', spotsLabel: 'Spots', deadlineLabel: 'Registration deadline', fullLabel: 'Fully booked', spotsOfText: 'of', spotsRemainingText: 'remaining' },
+      defaultProps: { sectionBg: 'transparent', showDeadline: true, showEmpty: false, layout: 'grid', locationLabel: 'Location', dateLabel: 'Date', priceLabel: 'Price', spotsLabel: 'Spots', deadlineLabel: 'Registration deadline', fullLabel: 'Fully booked', spotsOfText: 'of', spotsRemainingText: 'remaining' },
       fields: {
+        sectionBg: sectionBgField,
         showDeadline: { type: 'radio', label: 'Show deadline', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showEmpty: { type: 'radio', label: 'Show empty fields', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         layout: { type: 'radio', label: 'Layout', options: [{ label: 'Grid', value: 'grid' }, { label: 'Stacked', value: 'stacked' }] },
@@ -871,12 +898,13 @@ export const puckConfig: Config = {
         spotsOfText: { type: 'text', label: 'Spots "of" text' },
         spotsRemainingText: { type: 'text', label: 'Spots "remaining" text' },
       },
-      render: CourseInfo as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><CourseInfo {...props} /></SectionBgWrap>,
     },
     BookingCTA: {
       label: 'Booking CTA',
-      defaultProps: { style: 'card', buttonText: 'Book spot', heading: 'Interested in joining?', description: 'Book your spot today', completedMessage: 'This course has been completed.', fullMessage: 'This course is fully booked.', fullSubMessage: 'Contact us if you want to be on the waiting list.' },
+      defaultProps: { sectionBg: 'transparent', style: 'card', buttonText: 'Book spot', heading: 'Interested in joining?', description: 'Book your spot today', completedMessage: 'This course has been completed.', fullMessage: 'This course is fully booked.', fullSubMessage: 'Contact us if you want to be on the waiting list.' },
       fields: {
+        sectionBg: sectionBgField,
         style: { type: 'radio', options: [{ label: 'Card', value: 'card' }, { label: 'Inline', value: 'inline' }] },
         buttonText: { type: 'text', label: 'Button text' },
         heading: { type: 'text', label: 'Heading' },
@@ -885,16 +913,17 @@ export const puckConfig: Config = {
         fullMessage: { type: 'text', label: 'Full message' },
         fullSubMessage: { type: 'text', label: 'Full sub-message' },
       },
-      render: BookingCTA as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><BookingCTA {...props} /></SectionBgWrap>,
     },
     PostHeader: {
       label: 'Post Header',
-      defaultProps: { showBackLink: true, backLinkText: 'Alla inlägg', backLinkUrl: '/blog' },
+      defaultProps: { sectionBg: 'transparent', showBackLink: true, backLinkText: 'Alla inlägg', backLinkUrl: '/blog' },
       fields: {
+        sectionBg: sectionBgField,
         showBackLink: { type: 'radio', label: 'Show back link', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         backLinkText: { type: 'text', label: 'Back link text' }, backLinkUrl: { type: 'text', label: 'Back link URL', metadata: { isPagePicker: true } },
       },
-      render: PostHeader as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><PostHeader {...props} /></SectionBgWrap>,
     },
   },
 }
