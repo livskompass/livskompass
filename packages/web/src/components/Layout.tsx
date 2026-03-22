@@ -308,9 +308,15 @@ export default function Layout() {
               {navigation.map((item) => (
                 <DesktopDropdown key={item.name} item={item} isActive={isActive} onSearchClick={() => setSearchOpen(true)} />
               ))}
+              {headerConfig.showSearch && (
+                <SearchButton onClick={() => setSearchOpen(true)} />
+              )}
             </div>
 
             <div className="lg:hidden flex items-center gap-2">
+              {headerConfig.showSearch && (
+                <SearchButton onClick={() => setSearchOpen(true)} />
+              )}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -416,6 +422,18 @@ export default function Layout() {
               </div>
             ))}
           </div>
+          {footerConfig.showSearch && (
+            <div className="mt-8">
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className="inline-flex items-center gap-2 text-faint hover:text-white transition-colors duration-200 font-normal text-body-sm"
+              >
+                <Search className="w-4 h-4" />
+                Sök på sidan
+              </button>
+            </div>
+          )}
           <div className="mt-12 pt-8 border-t border-stone-800 text-center text-muted text-caption">
             <p>{footerConfig.copyright.replace('{year}', String(new Date().getFullYear()))}</p>
           </div>

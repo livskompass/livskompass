@@ -513,7 +513,28 @@ export default function Settings() {
             </div>
           )}
 
-          <p className="text-xs text-zinc-400">To add search, add a nav item with href <code className="bg-zinc-100 px-1 rounded">#search</code> — it renders as a search icon. Works in both header nav and footer links.</p>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="showNavSearch"
+                checked={!!header.showSearch}
+                onChange={(e) => setHeader({ ...header, showSearch: e.target.checked })}
+                className="rounded border-zinc-300"
+              />
+              <Label htmlFor="showNavSearch" className="cursor-pointer text-zinc-600 font-normal">Include search in nav bar</Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="showFooterSearch"
+                checked={!!footer.showSearch}
+                onChange={(e) => setFooter({ ...footer, showSearch: e.target.checked })}
+                className="rounded border-zinc-300"
+              />
+              <Label htmlFor="showFooterSearch" className="cursor-pointer text-zinc-600 font-normal">Include search in footer</Label>
+            </div>
+          </div>
 
           <Separator />
 
@@ -733,11 +754,11 @@ export default function Settings() {
           ) : siteError ? (
             <><span className="w-2 h-2 rounded-full bg-red-500" /><span className="text-red-600">{siteError}</span></>
           ) : siteSaved ? (
-            <><span className="w-2 h-2 rounded-full bg-green-500" /><span className="text-green-600">Saved</span></>
+            <><CheckCircle className="h-3.5 w-3.5 text-green-500" /><span className="text-green-600">Saved</span></>
           ) : siteDirty ? (
-            <><span className="w-2 h-2 rounded-full bg-amber-500" /><span className="text-amber-600">Unsaved changes</span></>
+            <><span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" /><span className="text-amber-600">Unsaved changes</span></>
           ) : (
-            <><span className="w-2 h-2 rounded-full bg-zinc-300" /><span className="text-zinc-400">Up to date</span></>
+            <><CheckCircle className="h-3.5 w-3.5 text-zinc-300" /><span className="text-zinc-400">All saved</span></>
           )}
         </div>
         {siteDirty && !saveSiteMutation.isPending && (
