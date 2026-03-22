@@ -36,10 +36,16 @@ export const sectionBgOptions = [
   { label: '↓ Yellow → Transparent', value: 'grad-amber-transparent' },
   { label: '↑ Transparent → Yellow', value: 'grad-transparent-amber' },
   { label: '↓ Yellow → White', value: 'grad-amber-white' },
+  // ── Darkest green (forest-950) gradients ──
+  { label: '↓ Darkest green → Transparent', value: 'grad-darkest-transparent' },
+  { label: '↑ Transparent → Darkest green', value: 'grad-transparent-darkest' },
+  { label: '↓ Darkest green → White', value: 'grad-darkest-white' },
+  { label: '↓ Darkest green → Mist', value: 'grad-darkest-mist' },
   // ── Cross-color combos ──
   { label: '↓ Mist → Light green', value: 'grad-mist-accent' },
   { label: '↓ Yellow → Mist', value: 'grad-amber-mist' },
   { label: '↓ Dark green → Yellow', value: 'grad-brand-amber' },
+  { label: '↓ Darkest green → Yellow', value: 'grad-darkest-amber' },
 ]
 
 // Gradient CSS definitions — uses CSS custom properties
@@ -68,6 +74,12 @@ const gradients: Record<string, string> = {
   'grad-amber-transparent':     'linear-gradient(180deg, rgb(var(--amber-300)) 0%, transparent 100%)',
   'grad-transparent-amber':     'linear-gradient(180deg, transparent 0%, rgb(var(--amber-300)) 100%)',
   'grad-amber-white':           'linear-gradient(180deg, rgb(var(--amber-300)) 0%, #ffffff 100%)',
+  // Darkest green (forest-950)
+  'grad-darkest-transparent':   'linear-gradient(180deg, rgb(var(--forest-950)) 0%, transparent 100%)',
+  'grad-transparent-darkest':   'linear-gradient(180deg, transparent 0%, rgb(var(--forest-950)) 100%)',
+  'grad-darkest-white':         'linear-gradient(180deg, rgb(var(--forest-950)) 0%, #ffffff 100%)',
+  'grad-darkest-mist':          'linear-gradient(180deg, rgb(var(--forest-950)) 0%, rgb(var(--mist)) 100%)',
+  'grad-darkest-amber':         'linear-gradient(180deg, rgb(var(--forest-950)) 0%, rgb(var(--amber-300)) 100%)',
   // Cross-color
   'grad-mist-accent':           'linear-gradient(180deg, rgb(var(--mist)) 0%, rgb(var(--forest-50)) 100%)',
   'grad-amber-mist':            'linear-gradient(180deg, rgb(var(--amber-300)) 0%, rgb(var(--mist)) 100%)',
@@ -75,7 +87,11 @@ const gradients: Record<string, string> = {
 }
 
 /** Dark backgrounds that need white text */
-const darkBgs = new Set(['brand', 'grad-brand-transparent', 'grad-brand-white', 'grad-brand-mist', 'grad-brand-accent', 'grad-brand-amber', 'grad-transparent-brand', 'grad-white-brand', 'grad-mist-brand'])
+const darkBgs = new Set([
+  'brand', 'grad-brand-transparent', 'grad-brand-white', 'grad-brand-mist', 'grad-brand-accent', 'grad-brand-amber',
+  'grad-transparent-brand', 'grad-white-brand', 'grad-mist-brand',
+  'grad-darkest-transparent', 'grad-darkest-white', 'grad-darkest-mist', 'grad-darkest-amber', 'grad-transparent-darkest',
+])
 
 /** Returns Tailwind className for solid section backgrounds */
 export function sectionBgClass(bg: string = 'transparent'): string {

@@ -216,11 +216,12 @@ export const puckConfig: Config = {
     },
     SeparatorBlock: {
       label: 'Separator',
-      defaultProps: { variant: 'line', spacing: 'medium', lineColor: 'light', maxWidth: 'full', gradientType: 'white-light' },
+      defaultProps: { variant: 'line', spacing: 'medium', lineColor: 'light', lineThickness: 'thin', maxWidth: 'full', gradientType: 'white-light' },
       fields: {
         variant: { type: 'select', options: [{ label: 'Line', value: 'line' }, { label: 'Dots', value: 'dots' }, { label: 'Space only', value: 'space-only' }, { label: 'Gradient', value: 'gradient' }] },
         spacing: { type: 'select', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }, { label: 'Extra large', value: 'extra-large' }] },
         lineColor: { type: 'select', options: [{ label: 'Light', value: 'light' }, { label: 'Medium', value: 'medium' }, { label: 'Dark', value: 'dark' }] },
+        lineThickness: { type: 'select', label: 'Thickness', options: [{ label: 'Thin (1px)', value: 'thin' }, { label: 'Regular (2px)', value: 'regular' }, { label: 'Thick (3px)', value: 'thick' }, { label: 'Heavy (4px)', value: 'heavy' }] },
         maxWidth: { type: 'select', options: [{ label: 'Narrow', value: 'narrow' }, { label: 'Medium', value: 'medium' }, { label: 'Full', value: 'full' }] },
         gradientType: { type: 'select', label: 'Gradient style', options: [
           { label: '↓ White → Light', value: 'white-light' }, { label: '↑ Light → White', value: 'light-white' },
@@ -232,6 +233,9 @@ export const puckConfig: Config = {
           { label: '↓ Mist → White', value: 'mist-white' }, { label: '↑ White → Mist', value: 'white-mist' },
           { label: '↓ Light green → Transparent', value: 'accent-transparent' }, { label: '↓ Light green → White', value: 'accent-white' },
           { label: '↓ Yellow → Transparent', value: 'amber-transparent' }, { label: '↓ Yellow → White', value: 'amber-white' },
+          { label: '↓ Darkest green → Transparent', value: 'darkest-transparent' }, { label: '↑ Transparent → Darkest green', value: 'transparent-darkest' },
+          { label: '↓ Darkest green → White', value: 'darkest-white' }, { label: '↓ Darkest green → Mist', value: 'darkest-mist' },
+          { label: '↓ Darkest green → Yellow', value: 'darkest-amber' },
           { label: '↓ Dark green → Yellow', value: 'brand-amber' }, { label: '↓ Yellow → Mist', value: 'amber-mist' },
           { label: '↓ Mist → Light green', value: 'mist-accent' },
         ] },
