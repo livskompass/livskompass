@@ -469,6 +469,49 @@ export default function Settings() {
             )}
           </div>
 
+          {header.logoUrl && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Logo size</Label>
+                <div className="flex items-center gap-2">
+                  {([
+                    { value: 'small', label: 'S' },
+                    { value: 'medium', label: 'M' },
+                    { value: 'large', label: 'L' },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setHeader({ ...header, logoSize: opt.value })}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        (header.logoSize || 'medium') === opt.value
+                          ? 'bg-zinc-900 text-white'
+                          : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Dynamic color</Label>
+                <div className="flex items-center gap-3 pt-1">
+                  <input
+                    type="checkbox"
+                    id="logoDynamic"
+                    checked={!!header.logoDynamic}
+                    onChange={(e) => setHeader({ ...header, logoDynamic: e.target.checked })}
+                    className="rounded border-zinc-300"
+                  />
+                  <Label htmlFor="logoDynamic" className="cursor-pointer text-zinc-500 font-normal">
+                    Follow nav color (dark/light)
+                  </Label>
+                </div>
+              </div>
+            </div>
+          )}
+
           <p className="text-xs text-zinc-400">To add search, add a nav item with href <code className="bg-zinc-100 px-1 rounded">#search</code> — it renders as a search icon. Works in both header nav and footer links.</p>
 
           <Separator />

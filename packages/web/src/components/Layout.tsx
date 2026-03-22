@@ -244,6 +244,17 @@ export default function Layout() {
 
   const navColorClass = dynamicColor || headerConfig.navColor || 'text-forest-800'
 
+  // Determine if nav is on a dark background (light text) — for logo filter
+  const isNavLight = navColorClass.includes('white') || navColorClass.includes('amber')
+
+  // Logo size classes
+  const logoSizeMap = {
+    small:  'h-6 lg:h-7',
+    medium: 'h-8 lg:h-9',
+    large:  'h-10 lg:h-12',
+  }
+  const logoSizeClass = logoSizeMap[headerConfig.logoSize || 'medium']
+
   const isActive = (href: string) =>
     href === '/' ? location.pathname === '/' : location.pathname.startsWith(href)
 
@@ -276,7 +287,10 @@ export default function Layout() {
                   <img
                     src={getMediaUrl(headerConfig.logoUrl)}
                     alt={headerConfig.logoText || 'Logo'}
-                    className="h-8 lg:h-9 w-auto"
+                    className={`${logoSizeClass} w-auto transition-[filter] duration-200`}
+                    style={headerConfig.logoDynamic ? {
+                      filter: isNavLight ? 'brightness(0) invert(1)' : 'brightness(0)',
+                    } : undefined}
                   />
                 ) : (
                   <span

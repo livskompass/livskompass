@@ -4,14 +4,18 @@
 //   - packages/shared/src/puck-config.tsx (lines 58-94)
 //   - packages/admin/src/pages/Settings.tsx (lines 37-77)
 
+export type LogoSize = 'small' | 'medium' | 'large'
+
 export interface SiteHeaderConfig {
   logoText: string
-  logoUrl?: string        // URL to logo image/SVG — if set, renders image instead of text
+  logoUrl?: string         // URL to logo image/SVG — if set, renders image instead of text
+  logoSize?: LogoSize      // small (h-6), medium (h-8, default), large (h-10)
+  logoDynamic?: boolean    // SVG follows nav color (filter-based, like text does)
   navItems: { label: string; href: string; children?: { label: string; href: string }[] }[]
   ctaButton?: { text: string; href: string }
-  navColor?: string       // Tailwind text color class (e.g., 'text-forest-800', 'text-white')
+  navColor?: string        // Tailwind text color class (e.g., 'text-forest-800', 'text-white')
   dynamicNavColor?: boolean // Auto-switch nav color based on content below
-  showSearch?: boolean    // Show search icon in header
+  showSearch?: boolean     // Show search icon in header
 }
 
 export interface SiteFooterConfig {
