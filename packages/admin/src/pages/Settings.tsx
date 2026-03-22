@@ -475,6 +475,7 @@ export default function Settings() {
                 <Label>Logo size</Label>
                 <div className="flex items-center gap-2">
                   {([
+                    { value: 'xs', label: 'XS' },
                     { value: 'small', label: 'S' },
                     { value: 'medium', label: 'M' },
                     { value: 'large', label: 'L' },

@@ -249,6 +249,7 @@ export default function Layout() {
 
   // Logo size classes
   const logoSizeMap = {
+    xs:     'h-4 lg:h-5',
     small:  'h-6 lg:h-7',
     medium: 'h-8 lg:h-9',
     large:  'h-10 lg:h-12',
