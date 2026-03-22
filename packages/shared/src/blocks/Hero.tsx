@@ -406,7 +406,7 @@ export function Hero({
         <TopOverlay type={topOverlay} />
         {/* Content */}
         <div
-          className={cn('relative flex flex-col w-full mx-auto', posClass)}
+          className={cn('relative flex flex-col flex-1 w-full mx-auto', posClass)}
           style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
         >
           <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
