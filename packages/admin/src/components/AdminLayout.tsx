@@ -69,6 +69,23 @@ export default function AdminLayout() {
     queryFn: getMe,
   })
 
+  // Fetch unread message count for sidebar badge
+  const { data: statsData } = useQuery({
+    queryKey: ['admin-stats-sidebar'],
+    queryFn: async () => {
+      const token = localStorage.getItem('admin_token')
+      if (!token) return null
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/admin/stats`, {
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return null
+      return res.json()
+    },
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+  })
+  const unreadCount = (statsData as any)?.stats?.unreadContacts ?? 0
+
   const currentUser = meData?.user
   const isAdmin = currentUser?.role === 'admin'
 
@@ -156,10 +173,20 @@ export default function AdminLayout() {
                     {!collapsed && (
                       <>
                         <span className="transition-opacity duration-150">{item.name}</span>
-                        {isActive && (
+                        {item.name === 'Messages' && unreadCount > 0 && (
+                          <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                            {unreadCount}
+                          </span>
+                        )}
+                        {isActive && item.name !== 'Messages' && (
                           <ChevronRight className="ml-auto h-4 w-4 text-zinc-500" />
                         )}
                       </>
+                    )}
+                    {collapsed && item.name === 'Messages' && unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5">
+                        {unreadCount}
+                      </span>
                     )}
                   </Link>
                   {item.dividerAfter && (
