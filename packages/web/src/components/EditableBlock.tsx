@@ -64,7 +64,7 @@ export default function EditableBlock({ children, blockType, blockIndex }: Edita
   }
 
   return (
-    <div className="group/edit relative" style={{ paddingTop: '2px' }}>
+    <div className="group/edit relative">
       {children}
 
       {/* Dashed border overlay */}
