@@ -16,6 +16,7 @@ export interface SiteHeaderConfig {
 
 export interface SiteFooterConfig {
   companyName: string
+  logoUrl?: string         // URL to footer logo image/SVG
   tagline: string
   contactHeading?: string
   contact: { email: string; phone: string }

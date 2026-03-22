@@ -252,12 +252,20 @@ export default function Layout() {
           <div className="flex justify-between h-16 lg:h-[72px]">
             <div className="flex">
               <Link to="/" className="flex items-center hover:opacity-75 transition-opacity">
-                <span
-                  className="font-display"
-                  style={{ fontSize: '1.375rem', letterSpacing: '-0.01em', color: 'inherit' }}
-                >
-                  {headerConfig.logoText}
-                </span>
+                {headerConfig.logoUrl ? (
+                  <img
+                    src={headerConfig.logoUrl}
+                    alt={headerConfig.logoText || 'Logo'}
+                    className="h-8 lg:h-9 w-auto"
+                  />
+                ) : (
+                  <span
+                    className="font-display"
+                    style={{ fontSize: '1.375rem', letterSpacing: '-0.01em', color: 'inherit' }}
+                  >
+                    {headerConfig.logoText}
+                  </span>
+                )}
               </Link>
             </div>
 
@@ -329,7 +337,15 @@ export default function Layout() {
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
             <div>
-              <span className="font-display text-h4 text-white block mb-4">{footerConfig.companyName}</span>
+              {footerConfig.logoUrl ? (
+                <img
+                  src={footerConfig.logoUrl}
+                  alt={footerConfig.companyName}
+                  className="h-8 w-auto mb-4 brightness-0 invert"
+                />
+              ) : (
+                <span className="font-display text-h4 text-white block mb-4">{footerConfig.companyName}</span>
+              )}
               <p className="text-faint leading-relaxed font-normal">
                 {footerConfig.tagline}
               </p>

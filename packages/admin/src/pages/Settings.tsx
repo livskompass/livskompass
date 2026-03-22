@@ -413,6 +413,43 @@ export default function Settings() {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label>Logo image URL <span className="text-zinc-400 font-normal">(optional — overrides text)</span></Label>
+            <Input
+              value={header.logoUrl || ''}
+              onChange={(e) => setHeader({ ...header, logoUrl: e.target.value || undefined })}
+              placeholder="/media/logo.svg or https://..."
+            />
+            {header.logoUrl && (
+              <div className="mt-2 p-3 bg-zinc-50 rounded-md border border-zinc-200 flex items-center gap-3">
+                <img
+                  src={header.logoUrl.startsWith('/') ? header.logoUrl : header.logoUrl}
+                  alt="Logo preview"
+                  className="h-8 max-w-[200px] object-contain"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setHeader({ ...header, logoUrl: undefined })}
+                  className="text-xs text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="showSearch"
+              checked={!!header.showSearch}
+              onChange={(e) => setHeader({ ...header, showSearch: e.target.checked })}
+              className="rounded border-zinc-300"
+            />
+            <Label htmlFor="showSearch" className="cursor-pointer">Show search icon in header</Label>
+          </div>
+
           <Separator />
 
           <div className="space-y-2">
@@ -487,6 +524,32 @@ export default function Settings() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Footer logo URL <span className="text-zinc-400 font-normal">(optional — overrides company name text)</span></Label>
+            <Input
+              value={footer.logoUrl || ''}
+              onChange={(e) => setFooter({ ...footer, logoUrl: e.target.value || undefined })}
+              placeholder="/media/logo.svg or https://..."
+            />
+            {footer.logoUrl && (
+              <div className="mt-2 p-3 bg-zinc-800 rounded-md border border-zinc-700 flex items-center gap-3">
+                <img
+                  src={footer.logoUrl}
+                  alt="Footer logo preview"
+                  className="h-6 max-w-[160px] object-contain brightness-0 invert"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setFooter({ ...footer, logoUrl: undefined })}
+                  className="text-xs text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Company name</Label>
