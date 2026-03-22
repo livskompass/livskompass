@@ -5,7 +5,7 @@
 /* ==================== Design Tokens (mirror web — MUST match packages/web/src/index.css) ==================== */
 :root {
   /* Typography */
-  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-display: 'Rubik', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
   --type-display:  clamp(3rem, 1.5rem + 4.444vw, 6rem);

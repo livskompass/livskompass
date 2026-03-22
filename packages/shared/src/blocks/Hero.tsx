@@ -216,7 +216,7 @@ export function Hero({
   const btnSecondary = variantClasses[secondaryStyle?.variant || 'secondary']
   const PrimaryIcon = resolveButtonIcon(primaryStyle?.icon ?? 'arrow-right')
   const SecondaryIcon = resolveButtonIcon(secondaryStyle?.icon ?? '')
-  const headingStyle: React.CSSProperties = { fontFamily: 'var(--font-display)', fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 500 }
+  const headingStyle: React.CSSProperties = { fontFamily: "var(--font-display, 'Rubik', sans-serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 460 }
 
   // ── Fullscreen preset ──
   if (preset === 'fullscreen') {
