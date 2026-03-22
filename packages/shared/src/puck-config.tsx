@@ -33,6 +33,20 @@ import { PageHeader } from './blocks/PageHeader'
 import { PersonCard } from './blocks/PersonCard'
 import { FeatureGrid } from './blocks/FeatureGrid'
 import { StatsCounter } from './blocks/StatsCounter'
+import { sectionBgField, sectionBgClass, sectionBgStyle, sectionTextClass } from './blocks/sectionBackground'
+
+/** Wrapper that applies section background color/gradient around a block */
+function SectionBgWrap({ bg, children }: { bg?: string; children: React.ReactNode }) {
+  if (!bg || bg === 'transparent') return <>{children}</>
+  const cls = sectionBgClass(bg)
+  const style = sectionBgStyle(bg)
+  const textCls = sectionTextClass(bg)
+  return (
+    <div className={[cls, textCls].filter(Boolean).join(' ')} style={style}>
+      {children}
+    </div>
+  )
+}
 
 // Empty Puck data structure for initializing new pages
 export const emptyPuckData: Data = {
@@ -462,18 +476,21 @@ export const puckConfig: Config = {
     },
     Accordion: {
       label: 'Accordion / FAQ',
-      defaultProps: { heading: '', items: [{ question: 'Question here', answer: 'Answer here' }], defaultOpen: 'none', style: 'default', iconPosition: 'right' },
+      defaultProps: { sectionBg: 'transparent', heading: '', items: [{ question: 'Question here', answer: 'Answer here' }], defaultOpen: 'none', style: 'default', iconPosition: 'right' },
       fields: {
+        sectionBg: sectionBgField,
         heading: { type: 'text', label: 'Heading' },
         items: { type: 'array', label: 'Questions', arrayFields: { question: { type: 'text', label: 'Question' }, answer: { type: 'textarea', label: 'Answer' } } },
         defaultOpen: { type: 'select', label: 'Initially expanded', options: [{ label: 'None', value: 'none' }, { label: 'First item', value: 'first' }, { label: 'All items', value: 'all' }] },
         style: { type: 'select', label: 'Style', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }, { label: 'Minimal', value: 'minimal' }] },
         iconPosition: { type: 'radio', label: 'Icon position', options: [{ label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }] },
       },
-      render: ({ heading, items, defaultOpen, style, iconPosition, id }: any) => (
-        <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-          <Accordion heading={heading} items={items} defaultOpen={defaultOpen} style={style} iconPosition={iconPosition} id={id} />
-        </div>
+      render: ({ sectionBg, heading, items, defaultOpen, style, iconPosition, id }: any) => (
+        <SectionBgWrap bg={sectionBg}>
+          <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+            <Accordion heading={heading} items={items} defaultOpen={defaultOpen} style={style} iconPosition={iconPosition} id={id} />
+          </div>
+        </SectionBgWrap>
       ),
     },
     PageHeader: {
@@ -491,19 +508,21 @@ export const puckConfig: Config = {
     },
     PersonCard: {
       label: 'Person Card',
-      defaultProps: { name: 'Fredrik Livheim', title: 'Licensed psychologist', bio: '', image: '', email: '', phone: '', style: 'horizontal', imageSize: 'medium' },
+      defaultProps: { sectionBg: 'transparent', name: 'Fredrik Livheim', title: 'Licensed psychologist', bio: '', image: '', email: '', phone: '', style: 'horizontal', imageSize: 'medium' },
       fields: {
+        sectionBg: sectionBgField,
         name: { type: 'text', label: 'Name' }, title: { type: 'text', label: 'Title / Role' }, bio: { type: 'textarea', label: 'Bio' },
         image: { type: 'text', label: 'Photo URL', metadata: { isImage: true } }, email: { type: 'text', label: 'Email' }, phone: { type: 'text', label: 'Phone' },
         style: { type: 'radio', label: 'Layout', options: [{ label: 'Card', value: 'card' }, { label: 'Horizontal', value: 'horizontal' }] },
         imageSize: { type: 'radio', label: 'Image size', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
       },
-      render: PersonCard as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><PersonCard {...props} /></SectionBgWrap>,
     },
     FeatureGrid: {
       label: 'Feature Grid',
-      defaultProps: { heading: '', subheading: '', columns: 3, items: [{ icon: '', title: 'Feature one', description: 'Description of this feature' }, { icon: '', title: 'Feature two', description: 'Description of this feature' }, { icon: '', title: 'Feature three', description: 'Description of this feature' }], style: 'cards', iconSize: 'medium', padding: 'medium', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', subheading: '', columns: 3, items: [{ icon: '', title: 'Feature one', description: 'Description of this feature' }, { icon: '', title: 'Feature two', description: 'Description of this feature' }, { icon: '', title: 'Feature three', description: 'Description of this feature' }], style: 'cards', iconSize: 'medium', padding: 'medium', cardColor: 'mist' },
       fields: {
+        sectionBg: sectionBgField,
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         items: { type: 'array', label: 'Features', arrayFields: { image: { type: 'text', label: 'Image', metadata: { isImage: true } }, icon: { type: 'select', label: 'Icon (if no image)', options: [{ label: 'None', value: '' }, { label: 'Heart', value: 'heart' }, { label: 'Star', value: 'star' }, { label: 'Shield', value: 'shield' }, { label: 'Target', value: 'target' }, { label: 'Lightbulb', value: 'lightbulb' }, { label: 'Brain', value: 'brain' }, { label: 'Users', value: 'users' }, { label: 'User', value: 'user' }, { label: 'Handshake', value: 'handshake' }, { label: 'Book Open', value: 'book-open' }, { label: 'Graduation Cap', value: 'graduation-cap' }, { label: 'Message Circle', value: 'message-circle' }, { label: 'Check Circle', value: 'check-circle' }, { label: 'Key', value: 'key' }, { label: 'Puzzle', value: 'puzzle' }, { label: 'Sprout', value: 'sprout' }, { label: 'Leaf', value: 'leaf' }, { label: 'Mountain', value: 'mountain' }, { label: 'Sun', value: 'sun' }, { label: 'Refresh', value: 'refresh-cw' }, { label: 'Bar Chart', value: 'bar-chart-3' }, { label: 'Music', value: 'music' }, { label: 'Video', value: 'video' }, { label: 'Phone', value: 'phone' }, { label: 'Mail', value: 'mail' }, { label: 'Map Pin', value: 'map-pin' }, { label: 'Clock', value: 'clock' }, { label: 'Calendar', value: 'calendar' }, { label: 'Link', value: 'link' }, { label: 'Download', value: 'download' }, { label: 'Arrow Right', value: 'arrow-right' }, { label: 'Sparkles', value: 'sparkles' }, { label: 'Heart Handshake', value: 'heart-handshake' }, { label: 'Activity', value: 'activity' }, { label: 'Bell', value: 'bell' }, { label: 'Home', value: 'home' }, { label: 'Settings', value: 'settings' }, { label: 'Search', value: 'search' }, { label: 'Pen', value: 'pen-line' }, { label: 'Folder', value: 'folder' }] }, title: { type: 'text', label: 'Title' }, description: { type: 'textarea', label: 'Description' } } },
         style: { type: 'radio', label: 'Style', options: [{ label: 'Cards', value: 'cards' }, { label: 'Minimal', value: 'minimal' }] },
@@ -511,18 +530,19 @@ export const puckConfig: Config = {
         padding: { type: 'radio', label: 'Padding', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
         cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
       },
-      render: FeatureGrid as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><FeatureGrid {...props} /></SectionBgWrap>,
     },
     StatsCounter: {
       label: 'Stats Counter',
-      defaultProps: { items: [{ value: '100', label: 'Participants', prefix: '', suffix: '+' }, { value: '15', label: 'Years experience', prefix: '', suffix: '' }, { value: '98', label: 'Satisfaction', prefix: '', suffix: '%' }], columns: 3, style: 'default', animation: 'none' },
+      defaultProps: { sectionBg: 'transparent', items: [{ value: '100', label: 'Participants', prefix: '', suffix: '+' }, { value: '15', label: 'Years experience', prefix: '', suffix: '' }, { value: '98', label: 'Satisfaction', prefix: '', suffix: '%' }], columns: 3, style: 'default', animation: 'none' },
       fields: {
+        sectionBg: sectionBgField,
         items: { type: 'array', label: 'Stats', arrayFields: { value: { type: 'text', label: 'Value' }, label: { type: 'text', label: 'Label' }, prefix: { type: 'text', label: 'Prefix' }, suffix: { type: 'text', label: 'Suffix' } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         style: { type: 'radio', label: 'Style', options: [{ label: 'Default', value: 'default' }, { label: 'Bordered', value: 'bordered' }] },
         animation: { type: 'radio', label: 'Animation', options: [{ label: 'None', value: 'none' }, { label: 'Count up', value: 'countUp' }] },
       },
-      render: StatsCounter as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><StatsCounter {...props} /></SectionBgWrap>,
     },
 
     // ── Marketing ──
@@ -559,8 +579,9 @@ export const puckConfig: Config = {
     },
     CardGrid: {
       label: 'Card Grid',
-      defaultProps: { heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fullbokat', spotsAvailableText: 'Platser kvar', emptyManualText: 'Add cards in settings...', emptyDynamicText: 'Inget innehåll tillgängligt.', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', subheading: '', source: 'manual', maxItems: 3, columns: 3, cardStyle: 'default', manualCards: [], fullBadgeText: 'Fullbokat', spotsAvailableText: 'Platser kvar', emptyManualText: 'Add cards in settings...', emptyDynamicText: 'Inget innehåll tillgängligt.', cardColor: 'mist' },
       fields: {
+        sectionBg: sectionBgField,
         source: { type: 'select', label: 'Data source', options: [{ label: 'Manual', value: 'manual' }, { label: 'Posts', value: 'posts' }, { label: 'Courses', value: 'courses' }, { label: 'Products', value: 'products' }] },
         maxItems: { type: 'number', label: 'Max items' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
@@ -572,11 +593,12 @@ export const puckConfig: Config = {
         emptyManualText: { type: 'text', label: 'Empty text (manual)' },
         emptyDynamicText: { type: 'text', label: 'Empty text (dynamic)' },
       },
-      render: CardGrid as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><CardGrid {...props} /></SectionBgWrap>,
     },
     Testimonial: {
       label: 'Testimonial',
       defaultProps: {
+        sectionBg: 'transparent',
         items: [
           { quote: 'ACT-utbildningen förändrade mitt sätt att se på livet. Jag känner mig mer närvarande och engagerad i allt jag gör.', author: 'Maria Lindqvist', role: 'Deltagare, ACT-kurs 2025', avatar: '' },
           { quote: 'Fredrik är en fantastisk utbildare. Hans kombination av vetenskap och personliga berättelser gör materialet verkligt levande.', author: 'Johan Eriksson', role: 'Psykolog, Stockholms kommun', avatar: '' },
@@ -598,9 +620,10 @@ export const puckConfig: Config = {
             avatar: { type: 'text', label: 'Avatar URL', metadata: { isImage: true } },
           },
         },
+        sectionBg: sectionBgField,
         autoPlaySpeed: { type: 'number', label: 'Auto-play speed (seconds)', min: 1, max: 30 },
       },
-      render: Testimonial as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><Testimonial {...props} /></SectionBgWrap>,
     },
     ButtonGroup: {
       label: 'Buttons',
@@ -619,15 +642,16 @@ export const puckConfig: Config = {
     },
     PricingTable: {
       label: 'Pricing Table',
-      defaultProps: { heading: '', items: [], columns: 2, highlightLabel: 'Populärt val', emptyText: 'Add pricing plans in settings...', showCurrency: true },
+      defaultProps: { sectionBg: 'transparent', heading: '', items: [], columns: 2, highlightLabel: 'Populärt val', emptyText: 'Add pricing plans in settings...', showCurrency: true },
       fields: {
+        sectionBg: sectionBgField,
         items: { type: 'array', label: 'Plans', arrayFields: { name: { type: 'text', label: 'Name' }, price: { type: 'text', label: 'Price' }, description: { type: 'textarea', label: 'Description' }, features: { type: 'textarea', label: 'Features (one per line)' }, highlighted: { type: 'radio', label: 'Highlighted', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] }, ctaText: { type: 'text', label: 'Button text' }, ctaLink: { type: 'text', label: 'Button link', metadata: { isPagePicker: true } } } },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         highlightLabel: { type: 'text', label: 'Highlight label' },
         showCurrency: { type: 'radio', label: 'Show currency (kr)', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         emptyText: { type: 'text', label: 'Empty text' },
       },
-      render: PricingTable as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><PricingTable {...props} /></SectionBgWrap>,
     },
 
     // ── Media ──
@@ -690,8 +714,9 @@ export const puckConfig: Config = {
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.', cardColor: 'mist' },
       fields: {
+        sectionBg: sectionBgField,
         maxItems: { type: 'number', label: 'Max items (0 = all)' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         showBookButton: { type: 'radio', label: 'Show book button', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -705,12 +730,13 @@ export const puckConfig: Config = {
         spotsText: { type: 'text', label: 'Spots remaining text' },
         emptyText: { type: 'text', label: 'Empty text' },
       },
-      render: CourseList as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><CourseList {...props} /></SectionBgWrap>,
     },
     ProductList: {
       label: 'Product List',
-      defaultProps: { heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.', cardColor: 'mist' },
       fields: {
+        sectionBg: sectionBgField,
         filterType: { type: 'select', label: 'Filter by type', options: [{ label: 'All', value: '' }, { label: 'Books', value: 'book' }, { label: 'CDs', value: 'cd' }, { label: 'Cards', value: 'cards' }, { label: 'Apps', value: 'app' }, { label: 'Downloads', value: 'download' }] },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         showImage: { type: 'radio', label: 'Show image', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -721,12 +747,13 @@ export const puckConfig: Config = {
         outOfStockLabel: { type: 'text', label: 'Out of stock label' },
         emptyText: { type: 'text', label: 'Empty text' },
       },
-      render: ProductList as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><ProductList {...props} /></SectionBgWrap>,
     },
     PostGrid: {
       label: 'Post Grid',
-      defaultProps: { heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, emptyText: 'Inga inlägg hittades', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', subheading: '', count: 3, columns: 3, showImage: true, showExcerpt: true, showDate: true, emptyText: 'Inga inlägg hittades', cardColor: 'mist' },
       fields: {
+        sectionBg: sectionBgField,
         count: { type: 'number', label: 'Number of posts', min: 1, max: 12 },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }] },
         showImage: { type: 'radio', label: 'Show image', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -735,7 +762,7 @@ export const puckConfig: Config = {
         cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
         emptyText: { type: 'text', label: 'Empty text' },
       },
-      render: PostGrid as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><PostGrid {...props} /></SectionBgWrap>,
     },
     PageCards: {
       label: 'Page Cards',
@@ -767,8 +794,9 @@ export const puckConfig: Config = {
     // ── Interactive ──
     ContactForm: {
       label: 'Contact Form',
-      defaultProps: { heading: 'Contact us', description: 'Have questions? Get in touch and we will get back to you as soon as possible.', showPhone: true, showSubject: true, layout: 'full', contactName: 'Fredrik Livheim', contactTitle: 'Licensed psychologist and ACT trainer', contactEmail: 'livheim@gmail.com', contactPhone: '070-694 03 64', submitButtonText: 'Send message', submittingText: 'Sending...', successHeading: 'Thank you for your message!', successMessage: 'We will get back to you as soon as possible.', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', subjectLabel: 'Subject', messageLabel: 'Message *' },
+      defaultProps: { sectionBg: 'transparent', heading: 'Contact us', description: 'Have questions? Get in touch and we will get back to you as soon as possible.', showPhone: true, showSubject: true, layout: 'full', contactName: 'Fredrik Livheim', contactTitle: 'Licensed psychologist and ACT trainer', contactEmail: 'livheim@gmail.com', contactPhone: '070-694 03 64', submitButtonText: 'Send message', submittingText: 'Sending...', successHeading: 'Thank you for your message!', successMessage: 'We will get back to you as soon as possible.', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', subjectLabel: 'Subject', messageLabel: 'Message *' },
       fields: {
+        sectionBg: sectionBgField,
         showPhone: { type: 'radio', label: 'Show phone field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showSubject: { type: 'radio', label: 'Show subject field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         layout: { type: 'radio', label: 'Layout', options: [{ label: 'Full', value: 'full' }, { label: 'Split', value: 'split' }] },
@@ -783,7 +811,7 @@ export const puckConfig: Config = {
         subjectLabel: { type: 'text', label: 'Subject field label' },
         messageLabel: { type: 'text', label: 'Message field label' },
       },
-      render: ContactForm as any,
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><ContactForm {...props} /></SectionBgWrap>,
     },
     BookingForm: {
       label: 'Booking Form',
