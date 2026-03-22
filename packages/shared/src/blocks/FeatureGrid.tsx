@@ -74,7 +74,7 @@ function FeatureItem({ item, index, style, iconSize = 'medium', totalItems, card
         </div>
         )}
         <h3 {...editHandlers(titleEdit)} className={cn('font-semibold mb-2 transition-colors', colors.text, titleEdit?.className)}>{item.title}</h3>
-        <p {...editHandlers(descEdit)} className={cn('text-sm leading-relaxed', colors.textMuted, descEdit?.className)}>{item.description}</p>
+        <p {...editHandlers(descEdit)} className={cn('text-body-sm leading-relaxed', colors.textMuted, descEdit?.className)}>{item.description}</p>
       </div>
     </div>
   ) : (
@@ -89,7 +89,7 @@ function FeatureItem({ item, index, style, iconSize = 'medium', totalItems, card
         </div>
       ) : null}
       <h3 {...editHandlers(titleEdit)} className={cn('font-semibold mb-2 transition-colors', colors.text, titleEdit?.className)}>{item.title}</h3>
-      <p {...editHandlers(descEdit)} className={cn('text-sm leading-relaxed', colors.textMuted, descEdit?.className)}>{item.description}</p>
+      <p {...editHandlers(descEdit)} className={cn('text-body-sm leading-relaxed', colors.textMuted, descEdit?.className)}>{item.description}</p>
     </div>
   )}
     </ArrayItemControls>
@@ -137,7 +137,7 @@ export function FeatureGrid({
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="text-center mb-12 reveal">
           {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-3', headingEdit?.className)}>{heading}</h2>}
-          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-lg text-stone-600 max-w-2xl mx-auto', subheadingEdit?.className)}>{subheading}</p>}
+          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-stone-600 max-w-2xl mx-auto', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
       <ArrayDragProvider fieldName="items">

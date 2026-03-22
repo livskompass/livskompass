@@ -20,7 +20,7 @@ export default function EditToolbar({ onHide, savingStatus, editUiVisible = true
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
       <div className="flex items-center gap-1 rounded-full bg-zinc-900/80 backdrop-blur-md px-2 py-1.5 shadow-2xl border border-white/10">
         {/* Edit mode badge */}
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-300">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium text-blue-300">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
           {UI_STRINGS.editToolbar.editMode}
         </span>
@@ -29,7 +29,7 @@ export default function EditToolbar({ onHide, savingStatus, editUiVisible = true
         {/* Save status indicator */}
         {savingStatus !== 'idle' && (
           <>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium">
               {savingStatus === 'saving' && (
                 <>
                   <Loader2 className="h-3.5 w-3.5 text-white/60 animate-spin" />
@@ -58,7 +58,7 @@ export default function EditToolbar({ onHide, savingStatus, editUiVisible = true
           <>
             <button
               onClick={onToggleEditUi}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-caption font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               title={editUiVisible ? 'Hide edit overlays' : 'Show edit overlays'}
             >
               {editUiVisible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -72,7 +72,7 @@ export default function EditToolbar({ onHide, savingStatus, editUiVisible = true
           href={cmsUrl || '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-caption font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           {UI_STRINGS.editToolbar.openInCMS}

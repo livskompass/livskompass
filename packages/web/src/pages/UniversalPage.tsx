@@ -107,7 +107,7 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
             <Link key={child.id} to={`/${child.slug}`}>
               <Card className="h-full hover:shadow-md transition-shadow group cursor-pointer">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center justify-between group-hover:text-forest-600 transition-colors">
+                  <CardTitle className="text-body-lg flex items-center justify-between group-hover:text-forest-600 transition-colors">
                     {child.title}
                     <ChevronRight className="h-5 w-5 text-stone-400 group-hover:text-forest-600 transition-colors" />
                   </CardTitle>

@@ -59,7 +59,7 @@ export default function BookingConfirmation() {
             <h1 className="text-h2 text-stone-900 mb-3">
               {s.cancelledHeading}
             </h1>
-            <p className="text-stone-500 mb-8 text-lg">
+            <p className="text-stone-500 mb-8 text-body-lg">
               {s.cancelledMessage}
             </p>
             <Button size="lg" asChild>
@@ -78,7 +78,7 @@ export default function BookingConfirmation() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Loader2 className="h-12 w-12 text-forest-600 animate-spin mx-auto mb-6" />
-        <p className="text-stone-500 text-lg">{s.confirming}</p>
+        <p className="text-stone-500 text-body-lg">{s.confirming}</p>
       </div>
     )
   }
@@ -94,7 +94,7 @@ export default function BookingConfirmation() {
         <h1 className="text-h2 text-stone-900 mb-3">
           {s.processingHeading}
         </h1>
-        <p className="text-stone-500 text-lg" aria-live="polite">
+        <p className="text-stone-500 text-body-lg" aria-live="polite">
           {s.processingMessage}
         </p>
       </div>
@@ -110,14 +110,14 @@ export default function BookingConfirmation() {
         <h1 className="text-h2 text-stone-900 mb-3">
           {s.successHeading}
         </h1>
-        <p className="text-stone-500 mb-8 text-lg" aria-live="polite">
+        <p className="text-stone-500 mb-8 text-body-lg" aria-live="polite">
           {s.successMessage}
         </p>
         <Card className="text-left mb-8">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-stone-500 mb-0.5">{s.bookingNumberLabel}</p>
+                <p className="text-body-sm text-stone-500 mb-0.5">{s.bookingNumberLabel}</p>
                 <p className="font-mono font-medium text-stone-900">{bookingId}</p>
               </div>
               <Badge variant="success">{s.confirmedBadge}</Badge>
@@ -144,7 +144,7 @@ export default function BookingConfirmation() {
           <h1 className="text-h2 text-stone-900 mb-3">
             {s.errorHeading}
           </h1>
-          <p className="text-stone-500 mb-8 text-lg">
+          <p className="text-stone-500 mb-8 text-body-lg">
             {s.errorMessage}
           </p>
           <Button size="lg" asChild>

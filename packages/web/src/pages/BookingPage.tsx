@@ -144,11 +144,11 @@ export default function BookingPage() {
       </Button>
 
       <h1 className="text-h2 text-stone-900 mb-2">{s.heading}</h1>
-      <p className="text-xl text-stone-500 mb-8">{course.title}</p>
+      <p className="text-h4 text-stone-500 mb-8">{course.title}</p>
 
       <Card className="mb-8">
         <CardContent className="p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-body-sm">
             {course.start_date && (
               <div className="flex items-center gap-2 text-stone-600">
                 <Calendar className="h-4 w-4 text-stone-400" />
@@ -172,14 +172,14 @@ export default function BookingPage() {
       </Card>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-body-sm">
           {error}
         </div>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">{s.yourDetails}</CardTitle>
+          <CardTitle className="text-h4">{s.yourDetails}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -262,7 +262,7 @@ export default function BookingPage() {
 
             <Separator />
 
-            <div className="flex justify-between text-lg font-semibold">
+            <div className="flex justify-between text-body-lg font-semibold">
               <span>{s.totalToPay}</span>
               <span>{totalPrice.toLocaleString('sv-SE')} {strings.common.currency}</span>
             </div>
@@ -276,7 +276,7 @@ export default function BookingPage() {
               {bookingMutation.isPending ? s.processingButton : s.submitButton}
             </Button>
 
-            <p className="text-xs text-stone-400 text-center flex items-center justify-center gap-1.5">
+            <p className="text-caption text-stone-400 text-center flex items-center justify-center gap-1.5">
               <Lock className="h-3.5 w-3.5" />
               {s.stripeRedirectNote}
             </p>

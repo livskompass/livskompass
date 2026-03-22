@@ -32,8 +32,8 @@ const fallbackSizeMap = {
 } as const
 
 const fallbackTextMap = {
-  horizontal: { small: 'text-2xl', medium: 'text-4xl', large: 'text-5xl' },
-  card: { small: 'text-xl', medium: 'text-3xl', large: 'text-4xl' },
+  horizontal: { small: 'text-h3', medium: 'text-h1', large: 'text-h1' },
+  card: { small: 'text-h4', medium: 'text-h2', large: 'text-h1' },
 } as const
 
 export function PersonCard({
@@ -92,12 +92,12 @@ export function PersonCard({
             {(email || phone || emailEdit || phoneEdit) && (
               <div className="flex flex-wrap gap-4 mt-4">
                 {(email || emailEdit) && (
-                  <span className="inline-flex items-center gap-2 text-sm text-forest-600">
+                  <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
                     <Mail className="h-4 w-4" /><span {...eHandlers} className={emailEdit?.className}>{email}</span>
                   </span>
                 )}
                 {(phone || phoneEdit) && (
-                  <span className="inline-flex items-center gap-2 text-sm text-forest-600">
+                  <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
                     <Phone className="h-4 w-4" /><span {...pHandlers} className={phoneEdit?.className}>{phone}</span>
                   </span>
                 )}
@@ -124,17 +124,17 @@ export function PersonCard({
           }
         />
         <h3 {...nHandlers} className={cn('text-h4 text-stone-800', nameEdit?.className)}>{name}</h3>
-        {(title || titleEdit) && <p {...tHandlers} className={cn('text-amber-600 font-medium mt-1 text-sm', titleEdit?.className)}>{title}</p>}
-        {(bio || bioEdit) && <p {...bHandlers} className={cn('text-stone-600 mt-3 text-sm leading-relaxed', bioEdit?.className)}>{bio}</p>}
+        {(title || titleEdit) && <p {...tHandlers} className={cn('text-amber-600 font-medium mt-1 text-body-sm', titleEdit?.className)}>{title}</p>}
+        {(bio || bioEdit) && <p {...bHandlers} className={cn('text-stone-600 mt-3 text-body-sm leading-relaxed', bioEdit?.className)}>{bio}</p>}
         {(email || phone || emailEdit || phoneEdit) && (
           <div className="flex flex-col items-center gap-2 mt-4">
             {(email || emailEdit) && (
-              <span className="inline-flex items-center gap-2 text-sm text-forest-600">
+              <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
                 <Mail className="h-4 w-4" /><span {...eHandlers} className={emailEdit?.className}>{email}</span>
               </span>
             )}
             {(phone || phoneEdit) && (
-              <span className="inline-flex items-center gap-2 text-sm text-forest-600">
+              <span className="inline-flex items-center gap-2 text-body-sm text-forest-600">
                 <Phone className="h-4 w-4" /><span {...pHandlers} className={phoneEdit?.className}>{phone}</span>
               </span>
             )}

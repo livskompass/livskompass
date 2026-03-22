@@ -109,7 +109,7 @@ export function PageCards({
               <a href={`/${page.slug}`} className="flex items-center justify-between flex-1">
                 <div>
                   <h3 className="font-medium text-stone-800 group-hover:text-forest-600 transition-colors">{page.title}</h3>
-                  {showDescription && page.description && <p className="text-sm text-stone-500 mt-0.5">{page.description}</p>}
+                  {showDescription && page.description && <p className="text-body-sm text-stone-500 mt-0.5">{page.description}</p>}
                 </div>
                 <svg className="w-5 h-5 text-stone-400 group-hover:text-forest-600 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </a>
@@ -126,7 +126,7 @@ export function PageCards({
         {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-stone-800 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="flex flex-wrap gap-3">
           {pages.map((page, i) => (
-            <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-[16px] border border-stone-200 bg-white text-sm font-medium text-stone-700 hover:border-forest-300 hover:text-forest-600 transition-colors">
+            <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-[16px] border border-stone-200 bg-white text-body-sm font-medium text-stone-700 hover:border-forest-300 hover:text-forest-600 transition-colors">
               {page.title}
             </a>
           ))}
@@ -146,7 +146,7 @@ export function PageCards({
             <EditItemBadge cmsRoute="pages" entityId={page.id} label="Edit page" slug={page.slug} />
             <a href={`/${page.slug}`} className="block">
               <h3 className={cn('font-semibold transition-colors mb-1', colors.text)}>{page.title}</h3>
-              {showDescription && page.description && <p className={cn('text-sm line-clamp-2', colors.textMuted)}>{page.description}</p>}
+              {showDescription && page.description && <p className={cn('text-body-sm line-clamp-2', colors.textMuted)}>{page.description}</p>}
             </a>
           </div>
           </ArrayItemControls>
@@ -200,7 +200,7 @@ function AddPageButton({ allPages, fieldName, existingSlugs }: {
     <div className="relative mt-3">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg border-2 border-dashed border-blue-300 text-blue-500 text-sm font-medium hover:border-blue-400 hover:bg-blue-50/50 transition-colors"
+        className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg border-2 border-dashed border-blue-300 text-blue-500 text-body-sm font-medium hover:border-blue-400 hover:bg-blue-50/50 transition-colors"
       >
         <Plus className="h-4 w-4" />
         Add page
@@ -211,7 +211,7 @@ function AddPageButton({ allPages, fieldName, existingSlugs }: {
             <input
               type="text"
               placeholder="Search pages..."
-              className="w-full text-sm px-2.5 py-1.5 rounded-md border border-zinc-200 bg-white outline-none focus:border-blue-400"
+              className="w-full text-body-sm px-2.5 py-1.5 rounded-md border border-zinc-200 bg-white outline-none focus:border-blue-400"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
@@ -222,14 +222,14 @@ function AddPageButton({ allPages, fieldName, existingSlugs }: {
               <button
                 key={p.slug}
                 onClick={() => handleSelect(p.slug)}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 transition-colors border-b border-zinc-50 last:border-0"
+                className="w-full text-left px-3 py-2 text-body-sm hover:bg-blue-50 transition-colors border-b border-zinc-50 last:border-0"
               >
                 <span className="font-medium text-zinc-800">{p.title}</span>
                 <span className="text-[10px] text-zinc-400 ml-2">/{p.slug}</span>
               </button>
             ))}
             {filtered.length === 0 && (
-              <div className="text-center py-4 text-sm text-zinc-400">No pages found</div>
+              <div className="text-center py-4 text-body-sm text-zinc-400">No pages found</div>
             )}
           </div>
         </div>

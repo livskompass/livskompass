@@ -130,7 +130,7 @@ export function CourseList({
                   {(isFull || hasCapacity) && (
                   <div className="flex items-center gap-2 mb-3">
                     <span className={cn(
-                      'text-xs font-semibold px-2.5 py-1 rounded-full',
+                      'text-caption font-semibold px-2.5 py-1 rounded-full',
                       isFull
                         ? 'bg-amber-50 text-amber-700'
                         : colors.badge
@@ -141,9 +141,9 @@ export function CourseList({
                   )}
                   <h3 className={cn('text-h4 mb-2', colors.text)}>{course.title}</h3>
                   {!compactMode && course.description && (
-                    <p className={cn('text-sm line-clamp-2 mb-4', colors.textMuted)}>{course.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
+                    <p className={cn('text-body-sm line-clamp-2 mb-4', colors.textMuted)}>{course.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                   )}
-                  <div className={cn('flex flex-wrap gap-4 text-sm', colors.textMuted, compactMode ? 'mb-3' : 'mb-5')}>
+                  <div className={cn('flex flex-wrap gap-4 text-body-sm', colors.textMuted, compactMode ? 'mb-3' : 'mb-5')}>
                     {showLocation !== false && course.location && (
                       <span className="inline-flex items-center gap-1.5">
                         <MapPin className="h-4 w-4" />{course.location}
@@ -159,13 +159,13 @@ export function CourseList({
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     {showPrice !== false && course.price_sek != null ? (
                     <span className={cn('font-display text-h3', colors.text)}>
-                      {course.price_sek.toLocaleString('sv-SE')} <span className={cn('text-base font-normal', colors.textMuted)}>kr</span>
+                      {course.price_sek.toLocaleString('sv-SE')} <span className={cn('font-normal', colors.textMuted)}>kr</span>
                     </span>
                     ) : <span />}
                     <div className="flex gap-2 flex-shrink-0">
                       <a
                         href={`/utbildningar/${course.slug}`}
-                        className={cn('inline-flex items-center h-9 px-4 text-sm font-medium rounded-[16px] transition-colors', btnStyles ? readMoreClass : (cardColor === 'dark' ? 'text-amber-300 hover:text-amber-200 hover:bg-amber-300/10' : 'text-forest-600 hover:text-forest-700 hover:bg-forest-50'))}
+                        className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-[16px] transition-colors', btnStyles ? readMoreClass : (cardColor === 'dark' ? 'text-amber-300 hover:text-amber-200 hover:bg-amber-300/10' : 'text-forest-600 hover:text-forest-700 hover:bg-forest-50'))}
                       >
                         <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText}</span>
                         {ReadMoreIcon && <ReadMoreIcon className="ml-1.5 h-3.5 w-3.5" />}
@@ -173,7 +173,7 @@ export function CourseList({
                       {showBookButton && !isFull && (
                         <a
                           href={`/utbildningar/${course.slug}/boka`}
-                          className={cn('inline-flex items-center h-9 px-4 text-sm font-medium rounded-[16px] transition-all active:scale-[0.97]', btnStyles ? bookBtnClass : (cardColor === 'dark' ? 'bg-amber-300 text-forest-800 hover:bg-amber-200' : 'bg-forest-500 text-white hover:bg-forest-600'))}
+                          className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-[16px] transition-all active:scale-[0.97]', btnStyles ? bookBtnClass : (cardColor === 'dark' ? 'bg-amber-300 text-forest-800 hover:bg-amber-200' : 'bg-forest-500 text-white hover:bg-forest-600'))}
                         >
                           <span {...editHandlers(bookBtnEdit)} className={bookBtnEdit?.className}>{bookButtonText}</span>
                           {BookBtnIcon ? <BookBtnIcon className="ml-1.5 h-3.5 w-3.5" /> : (!btnStyles && <ArrowRight className="ml-1.5 h-3.5 w-3.5" />)}

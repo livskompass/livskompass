@@ -37,7 +37,7 @@ function GalleryImage({ img, index, aspectRatio, rounded = 'medium', totalItems 
         className={`w-full object-cover ${ratioMap[aspectRatio as keyof typeof ratioMap] || ''}`}
       />
       {(img.caption || captionEdit) && (
-        <figcaption {...editHandlers(captionEdit)} className={cn('text-xs text-stone-500 mt-1', captionEdit?.className)}>
+        <figcaption {...editHandlers(captionEdit)} className={cn('text-caption text-stone-500 mt-1', captionEdit?.className)}>
           {img.caption}
         </figcaption>
       )}

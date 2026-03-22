@@ -39,7 +39,7 @@ function StatItem({ item, index, style, totalItems }: { item: { value: string; l
         <span {...editHandlers(valueEdit)} className={valueEdit?.className}>{item.value}</span>
         <span {...editHandlers(suffixEdit)} className={suffixEdit?.className}>{item.suffix}</span>
       </div>
-      <div {...editHandlers(labelEdit)} className={cn('text-sm text-stone-500 font-medium uppercase tracking-wide', labelEdit?.className)}>
+      <div {...editHandlers(labelEdit)} className={cn('text-body-sm text-stone-500 font-medium uppercase tracking-wide', labelEdit?.className)}>
         {item.label}
       </div>
     </div>

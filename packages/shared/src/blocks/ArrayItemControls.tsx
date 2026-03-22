@@ -278,7 +278,7 @@ export function AddItemButton({ fieldName, label = 'Add item' }: { fieldName: st
         e.stopPropagation()
         arrayOps.addItem(editCtx.blockIndex, fieldName)
       }}
-      className="w-full flex items-center justify-center gap-1.5 py-2.5 mt-2 rounded-lg border-2 border-dashed border-zinc-300 text-zinc-400 text-sm font-medium hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50/50 transition-colors"
+      className="w-full flex items-center justify-center gap-1.5 py-2.5 mt-2 rounded-lg border-2 border-dashed border-zinc-300 text-zinc-400 text-body-sm font-medium hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50/50 transition-colors"
     >
       <Plus className="h-4 w-4" />
       {label}

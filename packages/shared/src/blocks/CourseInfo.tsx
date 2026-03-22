@@ -24,12 +24,12 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">Course details are shown when a course is selected.</p>
+        <p className="text-stone-400 text-body-sm">Course details are shown when a course is selected.</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           {['Location', 'Date', 'Price', 'Spots'].map((label) => (
             <div key={label} className="bg-white rounded-lg border border-stone-200 p-3">
               <div className="h-4 bg-stone-100 rounded w-1/2 mx-auto mb-2" />
-              <div className="text-xs text-stone-400">{label}</div>
+              <div className="text-caption text-stone-400">{label}</div>
             </div>
           ))}
         </div>
@@ -106,7 +106,7 @@ export function CourseInfo({
             <div key={idx} className="flex items-center gap-4 px-6 py-4">
               <item.icon className="h-5 w-5 text-forest-500 flex-shrink-0" />
               <div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">
+                <div className="text-caption text-stone-400 uppercase tracking-wide">
                   <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
                 </div>
                 <div className="text-stone-800 font-medium">{item.value || <span className="text-stone-300">—</span>}</div>
@@ -128,7 +128,7 @@ export function CourseInfo({
           {visibleItems.map((item, idx) => (
             <div key={idx} className="text-center">
               <item.icon className="h-5 w-5 text-forest-500 mx-auto mb-2" />
-              <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">
+              <div className="text-caption text-stone-400 uppercase tracking-wide mb-1">
                 <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
               </div>
               <div className={cn(

@@ -123,7 +123,7 @@ export function CTABanner({
       <div className={cn('relative max-w-3xl flex flex-col', alignClass, alignment === 'center' && 'mx-auto')}>
         <h2 {...editHandlers(headingEdit)} className={cn('text-h2 mb-4', headingEdit?.className)}>{heading}</h2>
         {(description || descriptionEdit) && (
-          <p {...editHandlers(descriptionEdit)} className={cn('text-lg mb-8 opacity-90 leading-relaxed', descriptionEdit?.className)}>{description}</p>
+          <p {...editHandlers(descriptionEdit)} className={cn('text-body-lg mb-8 opacity-90 leading-relaxed', descriptionEdit?.className)}>{description}</p>
         )}
         {renderButtons.length > 0 && (
           <ArrayDragProvider fieldName="buttons">
@@ -133,7 +133,7 @@ export function CTABanner({
               <a
                 href={btn.link || '#'}
                 className={cn(
-                  'inline-flex items-center justify-center h-12 px-8 font-semibold text-base rounded-[16px] transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
+                  'inline-flex items-center justify-center h-12 px-8 font-semibold rounded-[16px] transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
                   btnStyles ? btnPrimaryClass : getButtonClass(backgroundColor, btn.variant || 'primary')
                 )}
               >

@@ -120,7 +120,7 @@ export function ContactForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
             <span {...editHandlers(nameLabelEdit)} className={nameLabelEdit?.className}>{nameLabel}</span>
           </label>
           <input
@@ -133,7 +133,7 @@ export function ContactForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
             <span {...editHandlers(emailLabelEdit)} className={emailLabelEdit?.className}>{emailLabel}</span>
           </label>
           <input
@@ -148,7 +148,7 @@ export function ContactForm({
       </div>
       {showPhone && (
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
             <span {...editHandlers(phoneLabelEdit)} className={phoneLabelEdit?.className}>{phoneLabel}</span>
           </label>
           <input
@@ -162,7 +162,7 @@ export function ContactForm({
       )}
       {showSubject && (
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-1.5">
+          <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
             <span {...editHandlers(subjectLabelEdit)} className={subjectLabelEdit?.className}>{subjectLabel}</span>
           </label>
           <input
@@ -175,7 +175,7 @@ export function ContactForm({
         </div>
       )}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1.5">
+        <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
           <span {...editHandlers(messageLabelEdit)} className={messageLabelEdit?.className}>{messageLabel}</span>
         </label>
         <textarea
@@ -221,16 +221,16 @@ export function ContactForm({
           <div className="space-y-4">
             <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
               <h3 {...editHandlers(contactNameEdit)} className={cn('font-semibold text-stone-800 mb-1', contactNameEdit?.className)}>{contactName}</h3>
-              <p {...editHandlers(contactTitleEdit)} className={cn('text-sm text-stone-500 mb-4', contactTitleEdit?.className)}>{contactTitle}</p>
+              <p {...editHandlers(contactTitleEdit)} className={cn('text-body-sm text-stone-500 mb-4', contactTitleEdit?.className)}>{contactTitle}</p>
               <div className="space-y-3">
                 {(contactEmail || contactEmailEdit) && (
-                  <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-sm text-stone-600 hover:text-forest-600 transition-colors">
+                  <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-body-sm text-stone-600 hover:text-forest-600 transition-colors">
                     <Mail className="h-4 w-4 text-forest-500" />
                     <span {...editHandlers(contactEmailEdit)} className={contactEmailEdit?.className}>{contactEmail}</span>
                   </a>
                 )}
                 {(contactPhone || contactPhoneEdit) && (
-                  <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-sm text-stone-600 hover:text-forest-600 transition-colors">
+                  <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-body-sm text-stone-600 hover:text-forest-600 transition-colors">
                     <Phone className="h-4 w-4 text-forest-500" />
                     <span {...editHandlers(contactPhoneEdit)} className={contactPhoneEdit?.className}>{contactPhone}</span>
                   </a>
@@ -240,7 +240,7 @@ export function ContactForm({
           </div>
           <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
             {status === 'error' && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-sm text-red-700">
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-body-sm text-red-700">
                 <AlertCircle className="h-4 w-4" />{errorMsg}
               </div>
             )}
@@ -257,7 +257,7 @@ export function ContactForm({
       {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-stone-600 mb-6', descriptionEdit?.className)}>{description}</p>}
       <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
         {status === 'error' && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-sm text-red-700">
+          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-body-sm text-red-700">
             <AlertCircle className="h-4 w-4" />{errorMsg}
           </div>
         )}

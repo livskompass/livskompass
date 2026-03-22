@@ -140,8 +140,8 @@ function HeroSubheadings({ items, textClass }: { items: Array<{ text: string }>;
 function HeroInput({ placeholder, buttonText }: { placeholder: string; buttonText: string }) {
   return (
     <div className="flex items-center bg-white rounded-[16px] p-1.5 mt-8 max-w-md animate-hero-enter shadow-lg" style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
-      <input type="email" placeholder={placeholder} className="flex-1 px-4 py-2 bg-transparent text-forest-800 placeholder:text-stone-400 outline-none text-sm" />
-      <button className="bg-amber-300 text-forest-800 font-medium px-5 py-2 rounded-[12px] hover:bg-amber-200 transition-colors text-sm whitespace-nowrap">{buttonText}</button>
+      <input type="email" placeholder={placeholder} className="flex-1 px-4 py-2 bg-transparent text-forest-800 placeholder:text-stone-400 outline-none text-body-sm" />
+      <button className="bg-amber-300 text-forest-800 font-medium px-5 py-2 rounded-[12px] hover:bg-amber-200 transition-colors text-body-sm whitespace-nowrap">{buttonText}</button>
     </div>
   )
 }
@@ -259,7 +259,7 @@ export function Hero({
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center text-forest-400">
               <Camera className="h-14 w-14 mx-auto mb-3 opacity-50" />
-              <span className="text-sm font-medium">Click to add background image</span>
+              <span className="text-body-sm font-medium">Click to add background image</span>
             </div>
           </div>
         )}
@@ -353,7 +353,7 @@ export function Hero({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-stone-400">
               <Camera className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <span className="text-sm font-medium">Click to add background image</span>
+              <span className="text-body-sm font-medium">Click to add background image</span>
             </div>
           </div>
         )}
@@ -447,8 +447,8 @@ export function Hero({
                 <div className="w-full rounded-xl bg-stone-100 border-2 border-dashed border-stone-300 animate-hero-enter flex items-center justify-center" style={{ aspectRatio: '4 / 3', animationDelay: '400ms', animationFillMode: 'both' }}>
                   <div className="text-center text-stone-400">
                     <Camera className="h-8 w-8 mx-auto mb-2 opacity-60" />
-                    <span className="text-sm font-medium">Click to add image</span>
-                    <span className="text-xs block mt-1 opacity-60">4:3 aspect ratio</span>
+                    <span className="text-body-sm font-medium">Click to add image</span>
+                    <span className="text-caption block mt-1 opacity-60">4:3 aspect ratio</span>
                   </div>
                 </div>
               }

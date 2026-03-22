@@ -69,7 +69,7 @@ export function PostGrid({
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="mb-8 reveal">
           {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-2', headingEdit?.className)}>{heading}</h2>}
-          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-lg text-stone-600', subheadingEdit?.className)}>{subheading}</p>}
+          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-stone-600', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
       {loading ? (
@@ -98,13 +98,13 @@ export function PostGrid({
               )}
               <div className="p-5">
                 {showDate && post.published_at && (
-                  <span className={cn('text-xs font-medium mb-1 block', colors.textMuted)}>
+                  <span className={cn('text-caption font-medium mb-1 block', colors.textMuted)}>
                     {new Date(post.published_at).toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
                 )}
                 <h3 className={cn('text-h4 transition-colors mb-1', colors.text)}>{post.title}</h3>
                 {showExcerpt && post.excerpt && (
-                  <p className={cn('text-sm line-clamp-2', colors.textMuted)}>{post.excerpt}</p>
+                  <p className={cn('text-body-sm line-clamp-2', colors.textMuted)}>{post.excerpt}</p>
                 )}
               </div>
             </a>

@@ -44,13 +44,13 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
 
   const linkActiveClass = isActive(item.href)
     ? 'font-medium opacity-100'
-    : 'opacity-80 hover:opacity-100'
+    : 'opacity-75 hover:opacity-100'
 
   if (!item.children || item.children.length === 0) {
     return (
       <Link
         to={item.href}
-        className={`text-[0.9375rem] transition-colors duration-200 whitespace-nowrap ${linkActiveClass}`}
+        className={`font-normal transition-colors duration-200 whitespace-nowrap ${linkActiveClass}`}
       >
         {item.name}
       </Link>
@@ -61,7 +61,7 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
     <div className="relative" onMouseEnter={openMenu} onMouseLeave={closeMenu}>
       <button
         type="button"
-        className={`inline-flex items-center gap-1 text-[0.9375rem] transition-colors duration-200 whitespace-nowrap ${linkActiveClass}`}
+        className={`inline-flex items-center gap-1 font-normal transition-colors duration-200 whitespace-nowrap ${linkActiveClass}`}
         aria-expanded={open}
         aria-haspopup="true"
       >
@@ -81,7 +81,7 @@ function DesktopDropdown({ item, isActive }: { item: NavItem; isActive: (href: s
               key={child.href}
               to={child.href}
               role="menuitem"
-              className={`block px-3 py-2 text-sm rounded-[10px] transition-colors duration-150 ${
+              className={`block px-3 py-2 text-body-sm rounded-[10px] transition-colors duration-150 ${
                 isActive(child.href)
                   ? 'text-forest-600 bg-forest-50 font-medium'
                   : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
@@ -109,7 +109,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
       <Link
         to={item.href}
         onClick={onNavigate}
-        className={`block px-3 py-2.5 text-base rounded-[10px] transition-colors ${
+        className={`block px-3 py-2.5 rounded-[10px] transition-colors ${
           isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
         }`}
       >
@@ -124,7 +124,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
         <Link
           to={item.href}
           onClick={onNavigate}
-          className={`flex-1 px-3 py-2.5 text-base rounded-l-[10px] transition-colors ${
+          className={`flex-1 px-3 py-2.5 rounded-l-[10px] transition-colors ${
             isActive(item.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-forest-800 hover:text-forest-600 hover:bg-stone-50'
           }`}
         >
@@ -151,7 +151,7 @@ function MobileDropdown({ item, isActive, onNavigate }: { item: NavItem; isActiv
               key={child.href}
               to={child.href}
               onClick={onNavigate}
-              className={`block px-3 py-1.5 text-sm rounded-[10px] transition-colors ${
+              className={`block px-3 py-1.5 text-body-sm rounded-[10px] transition-colors ${
                 isActive(child.href) ? 'text-forest-600 bg-forest-50 font-medium' : 'text-stone-500 hover:text-forest-600 hover:bg-stone-50'
               }`}
             >
@@ -230,7 +230,7 @@ export default function Layout() {
       {/* Skip to content link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-forest-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-forest-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:text-body-sm focus:font-medium"
       >
         Hoppa till innehåll
       </a>
@@ -321,14 +321,14 @@ export default function Layout() {
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
             <div>
-              <span className="font-display text-xl text-white block mb-4">{footerConfig.companyName}</span>
-              <p className="text-stone-400 leading-relaxed text-[0.9375rem]">
+              <span className="font-display text-h4 text-white block mb-4">{footerConfig.companyName}</span>
+              <p className="text-stone-400 leading-relaxed font-normal">
                 {footerConfig.tagline}
               </p>
             </div>
             <div>
               <h3 className="text-h4 mb-4">{footerConfig.contactHeading || 'Kontakt'}</h3>
-              <p className="text-stone-400 leading-relaxed text-[0.9375rem]">
+              <p className="text-stone-400 leading-relaxed font-normal">
                 {footerConfig.contact.email}<br />
                 {footerConfig.contact.phone}
               </p>
@@ -341,7 +341,7 @@ export default function Layout() {
                     <li key={link.href}>
                       <Link
                         to={link.href}
-                        className="text-stone-400 hover:text-white transition-colors duration-200 text-[0.9375rem]"
+                        className="text-stone-400 hover:text-white transition-colors duration-200 font-normal"
                       >
                         {link.label}
                       </Link>

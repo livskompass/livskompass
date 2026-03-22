@@ -34,7 +34,7 @@ function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       <div className="bg-stone-50 rounded-xl border border-dashed border-stone-300 p-8 text-center">
-        <p className="text-stone-400 text-sm">The booking form is shown when a course is selected.</p>
+        <p className="text-stone-400 text-body-sm">The booking form is shown when a course is selected.</p>
       </div>
     </div>
   )
@@ -151,7 +151,7 @@ export function BookingForm({
       {/* Course summary */}
       <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-5 mb-6">
         <h3 className="text-h4 text-stone-800 mb-3">{course.title}</h3>
-        <div className="flex flex-wrap gap-4 text-sm text-stone-500">
+        <div className="flex flex-wrap gap-4 text-body-sm text-stone-500">
           {course.start_date && (
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-stone-400" />
@@ -175,14 +175,14 @@ export function BookingForm({
       {/* Booking form */}
       <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
         {status === 'error' && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-sm text-red-700">
+          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2 text-body-sm text-red-700">
             <AlertCircle className="h-4 w-4" />{errorMsg}
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
                 <span {...editHandlers(nameLabelEdit)} className={nameLabelEdit?.className}>{nameLabel}</span>
               </label>
               <input
@@ -195,7 +195,7 @@ export function BookingForm({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
                 <span {...editHandlers(emailLabelEdit)} className={emailLabelEdit?.className}>{emailLabel}</span>
               </label>
               <input
@@ -209,7 +209,7 @@ export function BookingForm({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
               <span {...editHandlers(phoneLabelEdit)} className={phoneLabelEdit?.className}>{phoneLabel}</span>
             </label>
             <input
@@ -222,7 +222,7 @@ export function BookingForm({
           </div>
           {showOrganization && (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
                 <span {...editHandlers(orgLabelEdit)} className={orgLabelEdit?.className}>{organizationLabel}</span>
               </label>
               <input
@@ -235,7 +235,7 @@ export function BookingForm({
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
               <span {...editHandlers(participantsLabelEdit)} className={participantsLabelEdit?.className}>{participantsLabel}</span>
             </label>
             <div className="relative">
@@ -256,7 +256,7 @@ export function BookingForm({
           </div>
           {showNotes && (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">
+              <label className="block text-body-sm font-medium text-stone-700 mb-1.5">
                 <span {...editHandlers(notesLabelEdit)} className={notesLabelEdit?.className}>{notesLabel}</span>
               </label>
               <textarea
@@ -282,7 +282,7 @@ export function BookingForm({
           <button
             type="submit"
             disabled={status === 'submitting' || isEditor}
-            className={cn('w-full inline-flex items-center justify-center h-12 font-semibold rounded-[16px] transition-colors disabled:opacity-50 text-base', btnStyles ? submitBtnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
+            className={cn('w-full inline-flex items-center justify-center h-12 font-semibold rounded-[16px] transition-colors disabled:opacity-50', btnStyles ? submitBtnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
           >
             <span {...editHandlers(submitBtnEdit)} className={submitBtnEdit?.className}>
               {status === 'submitting' ? processingText : submitButtonText}

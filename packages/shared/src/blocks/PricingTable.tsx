@@ -55,7 +55,7 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
       {item.highlighted && (
         <>
           <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: 'var(--gradient-pricing-glow)' }} />
-          <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">{highlightLabel}</span>
+          <span className="text-caption font-semibold text-amber-600 uppercase tracking-wider mb-2">{highlightLabel}</span>
         </>
       )}
       <h3 {...editHandlers(nameEdit)} className={cn('text-h4 text-stone-800', nameEdit?.className)}>{item.name}</h3>
@@ -66,12 +66,12 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
         )}
       </div>
       {(item.description || descEdit) && (
-        <p {...editHandlers(descEdit)} className={cn('text-stone-600 text-sm mb-6', descEdit?.className)}>{item.description}</p>
+        <p {...editHandlers(descEdit)} className={cn('text-stone-600 text-body-sm mb-6', descEdit?.className)}>{item.description}</p>
       )}
       {item.features && (typeof item.features === 'string' ? item.features.split('\n').filter(Boolean) : item.features).length > 0 && (
         <ul className="space-y-3 mb-8 flex-1">
           {(typeof item.features === 'string' ? item.features.split('\n').filter(Boolean) : item.features).map((feature, j) => (
-            <li key={j} className="flex items-start gap-3 text-sm text-stone-600">
+            <li key={j} className="flex items-start gap-3 text-body-sm text-stone-600">
               <Check className="h-5 w-5 text-forest-500 flex-shrink-0 mt-0.5" />
               {feature}
             </li>
@@ -82,7 +82,7 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
         <a
           href={item.ctaLink || '#'}
           className={cn(
-            'mt-auto inline-flex items-center justify-center h-12 px-7 rounded-[16px] font-semibold text-sm transition-all w-full active:scale-[0.98]',
+            'mt-auto inline-flex items-center justify-center h-12 px-7 rounded-[16px] font-semibold text-body-sm transition-all w-full active:scale-[0.98]',
             btnStyles
               ? ctaBtnClass
               : item.highlighted

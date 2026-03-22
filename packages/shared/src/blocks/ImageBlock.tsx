@@ -105,7 +105,7 @@ export function ImageBlock({
       <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
         {wrappedImg}
         {(caption || captionEdit) && (
-          <figcaption {...editHandlers(captionEdit)} className={cn('mt-2 text-sm text-stone-500 text-center', captionEdit?.className)}>
+          <figcaption {...editHandlers(captionEdit)} className={cn('mt-2 text-body-sm text-stone-500 text-center', captionEdit?.className)}>
             {caption}
           </figcaption>
         )}

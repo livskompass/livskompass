@@ -138,27 +138,27 @@ export function ProductList({
                       </div>
                     )}
                     <div className="p-5 flex flex-col flex-1">
-                      <span className={cn('text-xs font-medium uppercase tracking-wide', cardColor === 'dark' ? 'text-amber-300/80' : 'text-amber-600')}>
+                      <span className={cn('text-caption font-medium uppercase tracking-wide', cardColor === 'dark' ? 'text-amber-300/80' : 'text-amber-600')}>
                         {typeLabels[product.type] || product.type}
                       </span>
                       <h4 className={cn('font-semibold mt-1 mb-2', colors.text)}>{product.title}</h4>
                       {product.description && (
-                        <p className={cn('text-sm line-clamp-3 mb-4', colors.textMuted)}>{product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
+                        <p className={cn('text-body-sm line-clamp-3 mb-4', colors.textMuted)}>{product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                       )}
                       <div className="flex items-center justify-between mt-auto pt-2">
                         {showPrice !== false ? (
                           product.price_sek ? (
                             <span className={cn('font-display text-h4', colors.text)}>
-                              {product.price_sek.toLocaleString('sv-SE')} <span className={cn('text-sm font-normal', colors.textMuted)}>kr</span>
+                              {product.price_sek.toLocaleString('sv-SE')} <span className={cn('text-body-sm font-normal', colors.textMuted)}>kr</span>
                             </span>
                           ) : (
-                            <span className={cn('text-sm font-medium px-2 py-1 rounded', colors.badge)}>
+                            <span className={cn('text-body-sm font-medium px-2 py-1 rounded', colors.badge)}>
                               <span {...editHandlers(freeLabelEdit)} className={freeLabelEdit?.className}>{freeLabel}</span>
                             </span>
                           )
                         ) : <span />}
                         {!product.in_stock ? (
-                          <span className={cn('text-xs font-medium', colors.textMuted)}>
+                          <span className={cn('text-caption font-medium', colors.textMuted)}>
                             <span {...editHandlers(outOfStockEdit)} className={outOfStockEdit?.className}>{outOfStockLabel}</span>
                           </span>
                         ) : product.external_url ? (
@@ -166,7 +166,7 @@ export function ProductList({
                             href={product.external_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={cn('inline-flex items-center h-9 px-4 text-sm font-medium rounded-[16px] transition-colors', btnStyles ? buyBtnClass : (cardColor === 'dark' ? 'bg-amber-300 text-forest-800 hover:bg-amber-200' : 'bg-amber-500 text-white hover:bg-amber-600'))}
+                            className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-[16px] transition-colors', btnStyles ? buyBtnClass : (cardColor === 'dark' ? 'bg-amber-300 text-forest-800 hover:bg-amber-200' : 'bg-amber-500 text-white hover:bg-amber-600'))}
                           >
                             <span {...editHandlers(buyBtnEdit)} className={buyBtnEdit?.className}>{buyButtonText}</span>
                             {BuyBtnIcon ? <BuyBtnIcon className="ml-1.5 h-3.5 w-3.5" /> : (!btnStyles && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />)}

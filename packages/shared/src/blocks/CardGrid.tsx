@@ -77,7 +77,7 @@ function ManualCardItem({ card, index, totalItems, cardColor }: { card: ManualCa
             {card.title}
           </h3>
           {(card.description || descEdit) && (
-            <p {...editHandlers(descEdit)} className={cn('line-clamp-2 mt-1.5 text-sm', colors.textMuted, descEdit?.className)}>
+            <p {...editHandlers(descEdit)} className={cn('line-clamp-2 mt-1.5 text-body-sm', colors.textMuted, descEdit?.className)}>
               {card.description}
             </p>
           )}
@@ -204,14 +204,14 @@ export function CardGrid({
                 {item.title}
               </h3>
               {description && (
-                <p className={cn('line-clamp-2 mt-1.5 text-sm', colors.textMuted)}>
+                <p className={cn('line-clamp-2 mt-1.5 text-body-sm', colors.textMuted)}>
                   {description}
                 </p>
               )}
             </div>
             {source === 'courses' && (item.location || item.start_date) && (
               <div className="px-5 pb-5">
-                <div className={cn('flex flex-col gap-2 text-sm', colors.textMuted)}>
+                <div className={cn('flex flex-col gap-2 text-body-sm', colors.textMuted)}>
                   {item.location && (
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
@@ -245,7 +245,7 @@ export function CardGrid({
             <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-stone-800 mb-3', headingEdit?.className)}>{heading}</h2>
           )}
           {(subheading || subheadingEdit) && (
-            <p {...editHandlers(subheadingEdit)} className={cn('text-stone-600 text-lg', subheadingEdit?.className)}>{subheading}</p>
+            <p {...editHandlers(subheadingEdit)} className={cn('text-stone-600 text-body-lg', subheadingEdit?.className)}>{subheading}</p>
           )}
         </div>
       )}

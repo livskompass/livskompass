@@ -64,12 +64,12 @@ function TestimonialCard({
         <blockquote className="border-l-[3px] border-forest-400 pl-6 py-2">
           <p
             {...qHandlers}
-            className={cn('text-lg italic text-stone-700 leading-relaxed', quoteEdit?.className)}
+            className={cn('text-body-lg italic text-stone-700 leading-relaxed', quoteEdit?.className)}
           >
             {item.quote}
           </p>
           {(item.author || authorEdit) && (
-            <footer className="mt-3 text-sm text-stone-500">
+            <footer className="mt-3 text-body-sm text-stone-500">
               &mdash;{' '}
               <span {...aHandlers} className={authorEdit?.className}>
                 {item.author}
@@ -111,7 +111,7 @@ function TestimonialCard({
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-forest-700 font-semibold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-forest-700 font-semibold text-body-sm">
                     {item.author.charAt(0)}
                   </div>
                 )}
@@ -125,7 +125,7 @@ function TestimonialCard({
                   {(item.role || roleEdit) && (
                     <div
                       {...rHandlers}
-                      className={cn('text-sm text-stone-500', roleEdit?.className)}
+                      className={cn('text-body-sm text-stone-500', roleEdit?.className)}
                     >
                       {item.role}
                     </div>
@@ -141,7 +141,7 @@ function TestimonialCard({
           <p
             {...qHandlers}
             className={cn(
-              'text-lg text-stone-700 italic mb-4 leading-relaxed flex-1',
+              'text-body-lg text-stone-700 italic mb-4 leading-relaxed flex-1',
               quoteEdit?.className,
             )}
           >
@@ -157,7 +157,7 @@ function TestimonialCard({
                   className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-medium text-xs">
+                <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-medium text-caption">
                   {item.author.charAt(0)}
                 </div>
               )}
@@ -171,7 +171,7 @@ function TestimonialCard({
                 {(item.role || roleEdit) && (
                   <div
                     {...rHandlers}
-                    className={cn('text-sm text-stone-500', roleEdit?.className)}
+                    className={cn('text-body-sm text-stone-500', roleEdit?.className)}
                   >
                     {item.role}
                   </div>
@@ -292,20 +292,20 @@ export function Testimonial({
               className="w-[400px] flex-shrink-0 rounded-[16px] p-8 flex flex-col"
               style={{ background: '#C7DDDC' }}
             >
-              <p className="text-lg text-forest-800 italic leading-relaxed mb-6 flex-1">
+              <p className="text-body-lg text-forest-800 italic leading-relaxed mb-6 flex-1">
                 {item.quote}
               </p>
               <div className="flex items-center gap-3">
                 {item.avatar ? (
                   <img src={item.avatar} alt={item.author} className="w-10 h-10 rounded-full object-cover" />
                 ) : item.author ? (
-                  <div className="w-10 h-10 rounded-full bg-forest-300 flex items-center justify-center text-forest-800 font-semibold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-forest-300 flex items-center justify-center text-forest-800 font-semibold text-body-sm">
                     {item.author.charAt(0)}
                   </div>
                 ) : null}
                 <div>
                   {item.author && <div className="font-medium text-forest-800">{item.author}</div>}
-                  {item.role && <div className="text-sm text-forest-600">{item.role}</div>}
+                  {item.role && <div className="text-body-sm text-forest-600">{item.role}</div>}
                 </div>
               </div>
             </div>
@@ -382,7 +382,7 @@ function EditableItemsList({
 
   return (
     <div className="space-y-3 border-2 border-dashed border-stone-200 rounded-lg p-4 bg-stone-50/50">
-      <div className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">
+      <div className="text-caption font-medium text-stone-400 uppercase tracking-wider mb-2">
         All testimonials (edit here)
       </div>
       {items.map((item, i) => (

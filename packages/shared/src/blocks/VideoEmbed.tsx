@@ -108,7 +108,7 @@ export function VideoEmbed({
           {videoContent || (
             <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 gap-2">
               <Film className="h-10 w-10 text-stone-300" />
-              <span className="text-sm">Paste a video URL</span>
+              <span className="text-body-sm">Paste a video URL</span>
             </div>
           )}
 
@@ -126,9 +126,9 @@ export function VideoEmbed({
               {url ? (
                 <>
                   <Play className="h-8 w-8 text-white" />
-                  <span className="text-white text-sm font-medium">Change video</span>
+                  <span className="text-white text-body-sm font-medium">Change video</span>
                   {provider && (
-                    <span className="text-white/60 text-xs flex items-center gap-1">
+                    <span className="text-white/60 text-caption flex items-center gap-1">
                       <ExternalLink className="h-3 w-3" />
                       {provider}
                     </span>
@@ -137,7 +137,7 @@ export function VideoEmbed({
               ) : (
                 <>
                   <Film className="h-8 w-8 text-white" />
-                  <span className="text-white text-sm font-medium">Add video</span>
+                  <span className="text-white text-body-sm font-medium">Add video</span>
                 </>
               )}
             </div>
@@ -157,7 +157,7 @@ export function VideoEmbed({
         {(caption || captionEdit) && (
           <figcaption
             {...editHandlers(captionEdit)}
-            className={cn('text-sm text-stone-500 mt-2 text-center', captionEdit?.className)}
+            className={cn('text-body-sm text-stone-500 mt-2 text-center', captionEdit?.className)}
           >
             {caption}
           </figcaption>
@@ -194,7 +194,7 @@ function VideoUrlInput({
       onClick={(e) => e.stopPropagation()}
     >
       <div className="w-full max-w-md space-y-3">
-        <div className="flex items-center justify-between text-white/80 text-xs mb-2">
+        <div className="flex items-center justify-between text-white/80 text-caption mb-2">
           <div className="flex items-center gap-2">
             <LinkIcon className="h-3.5 w-3.5" />
             <span>YouTube, Vimeo, Loom, or direct video URL</span>
@@ -215,7 +215,7 @@ function VideoUrlInput({
             ref={inputRef}
             type="url"
             placeholder="https://youtube.com/watch?v=..."
-            className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm outline-none placeholder:text-white/30 focus:border-white/40 focus:bg-white/15"
+            className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-body-sm outline-none placeholder:text-white/30 focus:border-white/40 focus:bg-white/15"
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={(e) => {
@@ -225,13 +225,13 @@ function VideoUrlInput({
           />
           <button
             onClick={() => onSave(value)}
-            className="px-3 py-2 rounded-lg bg-white text-stone-800 text-sm font-medium hover:bg-stone-100 transition-colors flex items-center gap-1"
+            className="px-3 py-2 rounded-lg bg-white text-stone-800 text-body-sm font-medium hover:bg-stone-100 transition-colors flex items-center gap-1"
           >
             <Check className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={onCancel}
-            className="px-2 py-2 rounded-lg bg-white/10 text-white/70 text-sm hover:bg-white/20 transition-colors"
+            className="px-2 py-2 rounded-lg bg-white/10 text-white/70 text-body-sm hover:bg-white/20 transition-colors"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -239,7 +239,7 @@ function VideoUrlInput({
 
         {/* Provider detection preview */}
         {value && getProviderName(value) && (
-          <div className="text-xs text-white/50 flex items-center gap-1">
+          <div className="text-caption text-white/50 flex items-center gap-1">
             <ExternalLink className="h-3 w-3" />
             Detected: {getProviderName(value)}
           </div>
@@ -249,7 +249,7 @@ function VideoUrlInput({
         {value && (
           <button
             onClick={() => onSave('')}
-            className="text-xs text-red-300 hover:text-red-200 transition-colors"
+            className="text-caption text-red-300 hover:text-red-200 transition-colors"
           >
             Remove video
           </button>

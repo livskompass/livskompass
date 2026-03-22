@@ -105,7 +105,7 @@ export function EmbedBlock({
           {embedContent || (
             <div className="w-full flex flex-col items-center justify-center text-stone-400 gap-2 py-12 border-2 border-dashed border-stone-200 rounded-xl">
               <Code className="h-10 w-10 text-stone-300" />
-              <span className="text-sm">Paste a URL or embed code</span>
+              <span className="text-body-sm">Paste a URL or embed code</span>
             </div>
           )}
 
@@ -125,9 +125,9 @@ export function EmbedBlock({
               {hasContent ? (
                 <>
                   <Code className="h-5 w-5 text-white" />
-                  <span className="text-white text-sm font-medium">Edit embed</span>
+                  <span className="text-white text-body-sm font-medium">Edit embed</span>
                   {provider && (
-                    <span className="text-white/60 text-xs flex items-center gap-1 ml-2">
+                    <span className="text-white/60 text-caption flex items-center gap-1 ml-2">
                       <ExternalLink className="h-3 w-3" />
                       {provider}
                     </span>
@@ -136,7 +136,7 @@ export function EmbedBlock({
               ) : (
                 <>
                   <Code className="h-5 w-5 text-white" />
-                  <span className="text-white text-sm font-medium">Add embed</span>
+                  <span className="text-white text-body-sm font-medium">Add embed</span>
                 </>
               )}
             </div>
@@ -167,7 +167,7 @@ export function EmbedBlock({
         {(caption || captionEdit) && (
           <figcaption
             {...editHandlers(captionEdit)}
-            className={cn('text-sm text-stone-500 mt-2 text-center', captionEdit?.className)}
+            className={cn('text-body-sm text-stone-500 mt-2 text-center', captionEdit?.className)}
           >
             {caption}
           </figcaption>
@@ -221,14 +221,14 @@ function EmbedInput({
         {/* Mode tabs */}
         <div className="flex gap-1 bg-white/10 rounded-lg p-0.5">
           <button
-            className={cn('flex-1 text-xs py-1.5 rounded-md transition-colors', mode === 'url' ? 'bg-white/20 text-white font-medium' : 'text-white/50 hover:text-white/70')}
+            className={cn('flex-1 text-caption py-1.5 rounded-md transition-colors', mode === 'url' ? 'bg-white/20 text-white font-medium' : 'text-white/50 hover:text-white/70')}
             onClick={() => onModeChange('url')}
           >
             <LinkIcon className="h-3 w-3 inline mr-1" />
             URL
           </button>
           <button
-            className={cn('flex-1 text-xs py-1.5 rounded-md transition-colors', mode === 'html' ? 'bg-white/20 text-white font-medium' : 'text-white/50 hover:text-white/70')}
+            className={cn('flex-1 text-caption py-1.5 rounded-md transition-colors', mode === 'html' ? 'bg-white/20 text-white font-medium' : 'text-white/50 hover:text-white/70')}
             onClick={() => onModeChange('html')}
           >
             <Code className="h-3 w-3 inline mr-1" />
@@ -242,7 +242,7 @@ function EmbedInput({
               ref={inputRef}
               type="url"
               placeholder="https://..."
-              className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm outline-none placeholder:text-white/30 focus:border-white/40 focus:bg-white/15"
+              className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-body-sm outline-none placeholder:text-white/30 focus:border-white/40 focus:bg-white/15"
               value={urlValue}
               onChange={(e) => onUrlChange(e.target.value)}
               onKeyDown={(e) => {
@@ -250,10 +250,10 @@ function EmbedInput({
                 if (e.key === 'Escape') onCancel()
               }}
             />
-            <button onClick={onSave} className="px-3 py-2 rounded-lg bg-white text-stone-800 text-sm font-medium hover:bg-stone-100 transition-colors">
+            <button onClick={onSave} className="px-3 py-2 rounded-lg bg-white text-stone-800 text-body-sm font-medium hover:bg-stone-100 transition-colors">
               <Check className="h-3.5 w-3.5" />
             </button>
-            <button onClick={onCancel} className="px-2 py-2 rounded-lg bg-white/10 text-white/70 text-sm hover:bg-white/20 transition-colors">
+            <button onClick={onCancel} className="px-2 py-2 rounded-lg bg-white/10 text-white/70 text-body-sm hover:bg-white/20 transition-colors">
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -262,7 +262,7 @@ function EmbedInput({
             <textarea
               ref={textareaRef}
               placeholder='<iframe src="..." ...></iframe>'
-              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm outline-none placeholder:text-white/30 focus:border-white/40 focus:bg-white/15 font-mono resize-y min-h-[80px]"
+              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-body-sm outline-none placeholder:text-white/30 focus:border-white/40 focus:bg-white/15 font-mono resize-y min-h-[80px]"
               rows={4}
               value={htmlValue}
               onChange={(e) => onHtmlChange(e.target.value)}
@@ -271,10 +271,10 @@ function EmbedInput({
               }}
             />
             <div className="flex gap-2 justify-end">
-              <button onClick={onCancel} className="px-3 py-1.5 rounded-lg bg-white/10 text-white/70 text-xs hover:bg-white/20 transition-colors">
+              <button onClick={onCancel} className="px-3 py-1.5 rounded-lg bg-white/10 text-white/70 text-caption hover:bg-white/20 transition-colors">
                 Cancel
               </button>
-              <button onClick={onSave} className="px-3 py-1.5 rounded-lg bg-white text-stone-800 text-xs font-medium hover:bg-stone-100 transition-colors">
+              <button onClick={onSave} className="px-3 py-1.5 rounded-lg bg-white text-stone-800 text-caption font-medium hover:bg-stone-100 transition-colors">
                 Save
               </button>
             </div>
@@ -282,14 +282,14 @@ function EmbedInput({
         )}
 
         {urlValue && getEmbedProvider(urlValue) && mode === 'url' && (
-          <div className="text-xs text-white/50 flex items-center gap-1">
+          <div className="text-caption text-white/50 flex items-center gap-1">
             <ExternalLink className="h-3 w-3" />
             Detected: {getEmbedProvider(urlValue)}
           </div>
         )}
 
         {(urlValue || htmlValue) && (
-          <button onClick={onRemove} className="text-xs text-red-300 hover:text-red-200 transition-colors">
+          <button onClick={onRemove} className="text-caption text-red-300 hover:text-red-200 transition-colors">
             Remove embed
           </button>
         )}
