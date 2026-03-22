@@ -20,6 +20,7 @@ remote = true
 
 [vars]
 SITE_URL = "https://livskompass-web.pages.dev"
+API_URL = "https://livskompass-api.livskompass-config.workers.dev"
 ADMIN_URL = "https://livskompass-admin.pages.dev"
 CORS_ORIGIN = "https://livskompass-web.pages.dev,https://livskompass-admin.pages.dev,http://localhost:3000,http://localhost:3001"
 

@@ -20,6 +20,7 @@ export type Bindings = {
   STRIPE_SECRET_KEY: string
   STRIPE_WEBHOOK_SECRET: string
   SITE_URL: string
+  API_URL: string
   ADMIN_URL: string
   CORS_ORIGIN: string
   // Google OAuth

@@ -30,7 +30,7 @@ export async function verifySession(db: D1Database, token: string) {
 // Start Google OAuth flow
 authRoutes.get('/google', async (c) => {
   const clientId = c.env.GOOGLE_CLIENT_ID
-  const redirectUri = `${c.env.SITE_URL}/api/auth/google/callback`
+  const redirectUri = `${c.env.API_URL || c.env.SITE_URL}/api/auth/google/callback`
 
   // Allow admin to pass its origin so callback redirects back to the right place (e.g. localhost:3001)
   const adminOrigin = c.req.query('admin_origin')
@@ -80,7 +80,7 @@ authRoutes.get('/google/callback', async (c) => {
         client_secret: c.env.GOOGLE_CLIENT_SECRET,
         code,
         grant_type: 'authorization_code',
-        redirect_uri: `${c.env.SITE_URL}/api/auth/google/callback`,
+        redirect_uri: `${c.env.API_URL || c.env.SITE_URL}/api/auth/google/callback`,
       }),
     })
 
