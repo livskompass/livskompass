@@ -8,11 +8,13 @@ import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
-import { Plus, Pencil, Trash2, Newspaper } from 'lucide-react'
+import { Input } from '../components/ui/input'
+import { Plus, Pencil, Trash2, Newspaper, Search } from 'lucide-react'
 
 export default function PostsList() {
   const queryClient = useQueryClient()
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null)
+  const [search, setSearch] = useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-posts'],
@@ -41,6 +43,16 @@ export default function PostsList() {
         </Button>
       </div>
 
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+        <Input
+          placeholder="Search posts..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9 max-w-sm"
+        />
+      </div>
+
       <Card>
         {isLoading ? (
           <CardContent className="p-6 space-y-4">
@@ -48,7 +60,10 @@ export default function PostsList() {
               <Skeleton key={i} className="h-12 w-full" />
             ))}
           </CardContent>
-        ) : data?.posts && data.posts.length > 0 ? (
+        ) : data?.posts && data.posts.length > 0 ? (() => {
+          const q = search.toLowerCase().trim()
+          const filtered = data.posts.filter(p => !q || p.title.toLowerCase().includes(q) || (p.excerpt || '').toLowerCase().includes(q))
+          return filtered.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow className="bg-zinc-100">
@@ -59,7 +74,7 @@ export default function PostsList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.posts.map((post) => (
+              {filtered.map((post) => (
                 <TableRow key={post.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
@@ -100,7 +115,13 @@ export default function PostsList() {
               ))}
             </TableBody>
           </Table>
-        ) : (
+          ) : (
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <Search className="h-10 w-10 text-zinc-300 mb-3" />
+              <p className="text-zinc-500 mb-2">No posts matching "{search}"</p>
+            </CardContent>
+          )
+        })() : (
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <Newspaper className="h-10 w-10 text-zinc-300 mb-3" />
             <p className="text-zinc-500 mb-2">No posts yet</p>
