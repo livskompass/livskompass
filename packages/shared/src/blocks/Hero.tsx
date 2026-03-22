@@ -375,7 +375,7 @@ export function Hero({
     const gridPos = gridPlace[contentPosition || 'center'] || gridPlace.center
 
     return (
-      <section data-nav-theme={navTheme} className={cn('relative group/hero-bg', bgStyles[bgStyle])} style={{ minHeight: '70vh', display: 'grid', ...gridPos, ...bgInlineStyles[bgStyle] }}>
+      <section data-nav-theme={navTheme} className={cn('relative overflow-hidden group/hero-bg', bgStyles[bgStyle])} style={{ height: 'max(70vh, 560px)', display: 'grid', ...gridPos, ...bgInlineStyles[bgStyle] }}>
         {/* Background video */}
         {backgroundVideo && (
           <video
