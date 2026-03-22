@@ -216,12 +216,11 @@ export const puckConfig: Config = {
     },
     SeparatorBlock: {
       label: 'Separator',
-      defaultProps: { variant: 'line', spacing: 'medium', lineColor: 'light', lineThickness: 'thin', maxWidth: 'full', gradientType: 'white-light' },
+      defaultProps: { variant: 'line', spacing: 'medium', lineColor: 'light', maxWidth: 'full', gradientType: 'white-light' },
       fields: {
         variant: { type: 'select', options: [{ label: 'Line', value: 'line' }, { label: 'Dots', value: 'dots' }, { label: 'Space only', value: 'space-only' }, { label: 'Gradient', value: 'gradient' }] },
-        spacing: { type: 'select', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }, { label: 'Extra large', value: 'extra-large' }] },
+        spacing: { type: 'select', label: 'Height', options: [{ label: 'XS (16px)', value: 'xs' }, { label: 'S (32px)', value: 'small' }, { label: 'M (64px)', value: 'medium' }, { label: 'L (96px)', value: 'large' }, { label: 'XL (128px)', value: 'xl' }, { label: '2XL (192px)', value: '2xl' }, { label: '3XL (256px)', value: '3xl' }] },
         lineColor: { type: 'select', options: [{ label: 'Light', value: 'light' }, { label: 'Medium', value: 'medium' }, { label: 'Dark', value: 'dark' }] },
-        lineThickness: { type: 'select', label: 'Thickness', options: [{ label: 'Thin (1px)', value: 'thin' }, { label: 'Regular (2px)', value: 'regular' }, { label: 'Thick (3px)', value: 'thick' }, { label: 'Heavy (4px)', value: 'heavy' }] },
         maxWidth: { type: 'select', options: [{ label: 'Narrow', value: 'narrow' }, { label: 'Medium', value: 'medium' }, { label: 'Full', value: 'full' }] },
         gradientType: { type: 'select', label: 'Gradient style', options: [
           { label: '↓ White → Light', value: 'white-light' }, { label: '↑ Light → White', value: 'light-white' },

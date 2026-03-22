@@ -2,19 +2,21 @@ import { cn } from '../ui/utils'
 
 export interface SeparatorBlockProps {
   variant: 'line' | 'dots' | 'space-only' | 'gradient'
-  spacing: 'small' | 'medium' | 'large' | 'extra-large'
+  spacing: string
   lineColor: 'light' | 'medium' | 'dark'
-  lineThickness?: 'thin' | 'regular' | 'thick' | 'heavy'
   maxWidth: 'narrow' | 'medium' | 'full'
   gradientType?: string
 }
 
-const spacingMap = {
+const spacingMap: Record<string, string> = {
+  xs: 'py-2',
   small: 'py-4',
   medium: 'py-8',
-  large: 'py-16',
-  'extra-large': 'py-24',
-} as const
+  large: 'py-12',
+  xl: 'py-16',
+  '2xl': 'py-24',
+  '3xl': 'py-32',
+}
 
 const maxWidthMap = {
   narrow: 'max-w-md',
@@ -28,12 +30,15 @@ const colorMap = {
   dark: 'border-stone-500',
 } as const
 
-const gradientHeightMap = {
+const gradientHeightMap: Record<string, string> = {
+  xs: 'h-4',
   small: 'h-8',
   medium: 'h-16',
-  large: 'h-32',
-  'extra-large': 'h-48',
-} as const
+  large: 'h-24',
+  xl: 'h-32',
+  '2xl': 'h-48',
+  '3xl': 'h-64',
+}
 
 const gradientStyles: Record<string, string> = {
   // Neutral
@@ -72,18 +77,10 @@ const gradientStyles: Record<string, string> = {
   'brand-amber':           'linear-gradient(180deg, rgb(var(--forest-800)) 0%, rgb(var(--amber-300)) 100%)',
 }
 
-const thicknessMap = {
-  thin: 'border-t',
-  regular: 'border-t-2',
-  thick: 'border-t-[3px]',
-  heavy: 'border-t-4',
-} as const
-
 export function SeparatorBlock({
   variant = 'line',
   spacing = 'medium',
   lineColor = 'light',
-  lineThickness = 'thin',
   maxWidth = 'full',
   gradientType = 'white-light',
 }: SeparatorBlockProps) {
@@ -106,7 +103,7 @@ export function SeparatorBlock({
       )}
     >
       {variant === 'line' && (
-        <hr className={cn(thicknessMap[lineThickness] || 'border-t', colorMap[lineColor])} />
+        <hr className={cn('border-t', colorMap[lineColor])} />
       )}
       {variant === 'dots' && (
         <div className="flex justify-center gap-2">
