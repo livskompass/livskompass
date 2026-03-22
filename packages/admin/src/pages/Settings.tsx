@@ -444,20 +444,25 @@ export default function Settings() {
               </label>
             </div>
             {header.logoUrl && (
-              <div className="mt-2 p-3 bg-zinc-50 rounded-md border border-zinc-200 flex items-center gap-3">
-                <img
-                  src={header.logoUrl}
-                  alt="Logo preview"
-                  className="h-8 max-w-[200px] object-contain"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setHeader({ ...header, logoUrl: undefined })}
-                  className="text-xs text-red-500 hover:text-red-700"
-                >
-                  Remove
-                </button>
+              <div className="mt-2 rounded-md border border-zinc-200 overflow-hidden">
+                <div className="flex gap-0">
+                  <div className="flex-1 p-4 flex items-center justify-center" style={{ background: 'repeating-conic-gradient(#e5e5e5 0% 25%, #fff 0% 50%) 50% / 16px 16px' }}>
+                    <img src={header.logoUrl} alt="Logo on light" className="h-10 max-w-[220px] object-contain" />
+                  </div>
+                  <div className="flex-1 p-4 bg-zinc-900 flex items-center justify-center">
+                    <img src={header.logoUrl} alt="Logo on dark" className="h-10 max-w-[220px] object-contain" />
+                  </div>
+                </div>
+                <div className="px-3 py-2 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between">
+                  <span className="text-xs text-zinc-400 truncate max-w-[300px]">{header.logoUrl.split('/').pop()}</span>
+                  <button
+                    type="button"
+                    onClick={() => setHeader({ ...header, logoUrl: undefined })}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -567,20 +572,25 @@ export default function Settings() {
               </label>
             </div>
             {footer.logoUrl && (
-              <div className="mt-2 p-3 bg-zinc-800 rounded-md border border-zinc-700 flex items-center gap-3">
-                <img
-                  src={footer.logoUrl}
-                  alt="Footer logo preview"
-                  className="h-6 max-w-[160px] object-contain brightness-0 invert"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setFooter({ ...footer, logoUrl: undefined })}
-                  className="text-xs text-red-500 hover:text-red-700"
-                >
-                  Remove
-                </button>
+              <div className="mt-2 rounded-md border border-zinc-200 overflow-hidden">
+                <div className="flex gap-0">
+                  <div className="flex-1 p-4 flex items-center justify-center" style={{ background: 'repeating-conic-gradient(#e5e5e5 0% 25%, #fff 0% 50%) 50% / 16px 16px' }}>
+                    <img src={footer.logoUrl} alt="Logo on light" className="h-8 max-w-[180px] object-contain" />
+                  </div>
+                  <div className="flex-1 p-4 bg-zinc-900 flex items-center justify-center">
+                    <img src={footer.logoUrl} alt="Logo on dark" className="h-8 max-w-[180px] object-contain" />
+                  </div>
+                </div>
+                <div className="px-3 py-2 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between">
+                  <span className="text-xs text-zinc-400 truncate max-w-[300px]">{footer.logoUrl.split('/').pop()}</span>
+                  <button
+                    type="button"
+                    onClick={() => setFooter({ ...footer, logoUrl: undefined })}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             )}
           </div>
