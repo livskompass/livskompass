@@ -186,32 +186,39 @@ export default function Layout() {
   useEffect(() => { window.scrollTo(0, 0) }, [location.pathname])
   useEffect(() => { setMobileMenuOpen(false) }, [location.pathname])
 
-  // Dynamic nav color — detect if hero is dark or light
+  // Dynamic nav color — read data-nav-theme from the first section (set by Hero)
   useEffect(() => {
     if (!headerConfig.dynamicNavColor) {
       setDynamicColor(null)
       return
     }
-    // Wait for content to render
-    const timer = setTimeout(() => {
-      const firstSection = document.querySelector('#main-content > div > div > section, #main-content > div > div > div') as HTMLElement
-      if (!firstSection) return
-
-      const bg = window.getComputedStyle(firstSection).backgroundColor
-      if (!bg || bg === 'rgba(0, 0, 0, 0)') {
-        setDynamicColor('text-forest-800') // transparent → dark text
+    const detect = () => {
+      // Find the first section with data-nav-theme
+      const themed = document.querySelector('[data-nav-theme]') as HTMLElement | null
+      if (!themed) {
+        setDynamicColor(null) // no hero → keep manual color
         return
       }
-      // Parse rgb values and calculate luminance
-      const match = bg.match(/\d+/g)
-      if (match) {
-        const [r, g, b] = match.map(Number)
-        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-        setDynamicColor(luminance > 0.5 ? 'text-forest-800' : 'text-white')
+
+      const theme = themed.getAttribute('data-nav-theme') // 'dark' or 'light'
+      const manualColor = headerConfig.navColor || 'text-forest-800'
+      const isManualLight = manualColor.includes('white') || manualColor.includes('amber')
+
+      if (theme === 'dark' && !isManualLight) {
+        // Dark hero but manual color is dark → override to white
+        setDynamicColor('text-white')
+      } else if (theme === 'light' && isManualLight) {
+        // Light hero but manual color is light → override to dark
+        setDynamicColor('text-forest-800')
+      } else {
+        // Manual color already has good contrast → keep it
+        setDynamicColor(null)
       }
-    }, 200)
+    }
+
+    const timer = setTimeout(detect, 200)
     return () => clearTimeout(timer)
-  }, [location.pathname, headerConfig.dynamicNavColor])
+  }, [location.pathname, headerConfig.dynamicNavColor, headerConfig.navColor])
 
   const navColorClass = dynamicColor || headerConfig.navColor || 'text-forest-800'
 

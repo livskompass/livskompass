@@ -27,7 +27,7 @@ const TEXT_COLOR_OPTIONS: { value: string; label: string; css: string }[] = [
 
 interface Props {
   puckData: { content: Array<{ type: string; props: Record<string, any> }> } | null
-  saveBlockProp: (blockIndex: number, propName: string, value: string) => void
+  saveBlockProp: (blockIndex: number, propName: string, value: any) => void
 }
 
 export function TextSizePicker({ puckData, saveBlockProp }: Props) {
@@ -96,17 +96,25 @@ export function TextSizePicker({ puckData, saveBlockProp }: Props) {
     }
   }, [activeField, updatePos])
 
-  const setSize = useCallback((size: TextSize) => {
-    if (!activeField) return
-    saveBlockProp(activeField.blockIdx, `_textSizes.${activeField.prop}`, size === 'body' ? '' : size)
+  // Save by updating the full _textSizes/_textColors object as a prop
+  const savePropMap = useCallback((mapName: string, key: string, value: string) => {
+    if (!activeField || !puckData) return
+    const block = puckData.content?.[activeField.blockIdx]
+    if (!block) return
+    const existing = { ...(block.props?.[mapName] as Record<string, string> || {}) }
+    if (!value) { delete existing[key] } else { existing[key] = value }
+    // Save entire map as top-level prop (no dot path parsing issues)
+    saveBlockProp(activeField.blockIdx, mapName, existing as any)
     activeField.el.focus()
-  }, [activeField, saveBlockProp])
+  }, [activeField, puckData, saveBlockProp])
+
+  const setSize = useCallback((size: TextSize) => {
+    savePropMap('_textSizes', activeField?.prop || '', size === 'body' ? '' : size)
+  }, [activeField, savePropMap])
 
   const setColor = useCallback((color: string) => {
-    if (!activeField) return
-    saveBlockProp(activeField.blockIdx, `_textColors.${activeField.prop}`, color)
-    activeField.el.focus()
-  }, [activeField, saveBlockProp])
+    savePropMap('_textColors', activeField?.prop || '', color)
+  }, [activeField, savePropMap])
 
   if (!activeField || !pos) return null
 

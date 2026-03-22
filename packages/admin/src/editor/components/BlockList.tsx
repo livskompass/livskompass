@@ -166,7 +166,7 @@ export function BlockList() {
 
   // saveBlockProp: update a block's prop and trigger auto-save
   const saveBlockProp = useCallback(
-    (blockIndex: number, propName: string, value: string) => {
+    (blockIndex: number, propName: string, value: any) => {
       if (!puckData) return
       if (blockIndex < 0 || blockIndex >= puckData.content.length) return
 
@@ -174,9 +174,17 @@ export function BlockList() {
       const block = content[blockIndex]
       if (!block) return
 
-      content[blockIndex] = {
-        ...block,
-        props: setNestedProp(block.props || {}, propName, value),
+      // If value is an object (not a string), set it directly as a top-level prop
+      if (typeof value === 'object' && value !== null) {
+        content[blockIndex] = {
+          ...block,
+          props: { ...(block.props || {}), [propName]: value },
+        }
+      } else {
+        content[blockIndex] = {
+          ...block,
+          props: setNestedProp(block.props || {}, propName, value),
+        }
       }
 
       updateData({ ...puckData, content } as Data)

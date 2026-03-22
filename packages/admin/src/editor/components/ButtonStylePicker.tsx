@@ -26,7 +26,7 @@ const BUTTON_VARIANTS = [
 
 interface Props {
   puckData: { content: Array<{ type: string; props: Record<string, any> }> } | null
-  saveBlockProp: (blockIndex: number, propName: string, value: string) => void
+  saveBlockProp: (blockIndex: number, propName: string, value: any) => void
 }
 
 export function ButtonStylePicker({ puckData, saveBlockProp }: Props) {
@@ -36,15 +36,25 @@ export function ButtonStylePicker({ puckData, saveBlockProp }: Props) {
 
   // Read current values from puckData
   const block = activeField ? puckData?.content?.[activeField.blockIdx] : null
-  const btnStylesRaw = block?.props?._buttonStyles as Record<string, any> | undefined
-  const rawVal = btnStylesRaw?.[activeField?.prop || '']
-  const current = (() => {
-    if (!rawVal) return null
-    if (typeof rawVal === 'string') { try { return JSON.parse(rawVal) } catch { return null } }
-    return rawVal
-  })()
-  const currentVariant = current?.variant || 'primary'
-  const currentIcon = current?.icon || 'arrow-right' // default arrow-right
+
+  // Read current variant/icon — from array item or from _buttonStyles map
+  const readCurrent = () => {
+    if (!activeField || !block) return { variant: 'primary', icon: 'arrow-right' }
+    const prop = activeField.prop
+    const arrayMatch = prop.match(/^(.+)\[(\d+)\]\.text$/)
+    if (arrayMatch) {
+      // Read from array item directly (e.g., buttons[0].variant)
+      const arr = block.props?.[arrayMatch[1]] as any[]
+      const item = arr?.[Number(arrayMatch[2])]
+      return { variant: item?.variant || 'primary', icon: item?.icon || (item?.showIcon !== false ? 'arrow-right' : '') }
+    }
+    // Legacy: read from _buttonStyles map
+    const btnStylesRaw = block.props?._buttonStyles as Record<string, any> | undefined
+    const rawVal = btnStylesRaw?.[prop]
+    const parsed = (() => { try { return typeof rawVal === 'string' ? JSON.parse(rawVal) : rawVal } catch { return null } })()
+    return { variant: parsed?.variant || 'primary', icon: parsed?.icon || 'arrow-right' }
+  }
+  const { variant: currentVariant, icon: currentIcon } = readCurrent()
 
   useEffect(() => {
     const onFocusIn = (e: FocusEvent) => {
@@ -104,18 +114,43 @@ export function ButtonStylePicker({ puckData, saveBlockProp }: Props) {
   }, [activeField, updatePos])
 
   const saveVariant = useCallback((variant: string) => {
-    if (!activeField) return
-    const val = JSON.stringify({ variant, icon: currentIcon })
-    saveBlockProp(activeField.blockIdx, `_buttonStyles.${activeField.prop}`, val)
+    if (!activeField || !puckData) return
+    const prop = activeField.prop
+    // For array button fields like "buttons[0].text", save variant to "buttons[0].variant"
+    const arrayMatch = prop.match(/^(.+\[\d+\])\.text$/)
+    if (arrayMatch) {
+      saveBlockProp(activeField.blockIdx, `${arrayMatch[1]}.variant`, variant)
+    } else {
+      // Legacy: save to _buttonStyles map
+      const block = puckData.content?.[activeField.blockIdx]
+      if (!block) return
+      const existing = { ...(block.props?._buttonStyles as Record<string, any> || {}) }
+      const cur = (() => { try { return typeof existing[prop] === 'string' ? JSON.parse(existing[prop]) : existing[prop] || {} } catch { return {} } })()
+      existing[prop] = JSON.stringify({ ...cur, variant })
+      saveBlockProp(activeField.blockIdx, '_buttonStyles', existing)
+    }
     activeField.el.focus()
-  }, [activeField, saveBlockProp, currentIcon])
+  }, [activeField, puckData, saveBlockProp])
 
   const saveIcon = useCallback((icon: string) => {
-    if (!activeField) return
-    const val = JSON.stringify({ variant: currentVariant, icon })
-    saveBlockProp(activeField.blockIdx, `_buttonStyles.${activeField.prop}`, val)
+    if (!activeField || !puckData) return
+    const prop = activeField.prop
+    // For array button fields, save icon to "buttons[0].icon"
+    const arrayMatch = prop.match(/^(.+\[\d+\])\.text$/)
+    if (arrayMatch) {
+      saveBlockProp(activeField.blockIdx, `${arrayMatch[1]}.icon`, icon)
+      // Also save showIcon based on whether icon is set
+      saveBlockProp(activeField.blockIdx, `${arrayMatch[1]}.showIcon`, icon ? true : false)
+    } else {
+      const block = puckData.content?.[activeField.blockIdx]
+      if (!block) return
+      const existing = { ...(block.props?._buttonStyles as Record<string, any> || {}) }
+      const cur = (() => { try { return typeof existing[prop] === 'string' ? JSON.parse(existing[prop]) : existing[prop] || {} } catch { return {} } })()
+      existing[prop] = JSON.stringify({ ...cur, icon })
+      saveBlockProp(activeField.blockIdx, '_buttonStyles', existing)
+    }
     activeField.el.focus()
-  }, [activeField, saveBlockProp, currentVariant])
+  }, [activeField, puckData, saveBlockProp])
 
   if (!activeField || !pos) return null
 

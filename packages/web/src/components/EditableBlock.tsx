@@ -64,21 +64,28 @@ export default function EditableBlock({ children, blockType, blockIndex }: Edita
   }
 
   return (
-    <div className="group/edit relative">
+    <div className="group/edit relative" style={{ paddingTop: '2px' }}>
       {children}
 
       {/* Dashed border overlay */}
-      <div className="absolute inset-0 rounded-lg border-[1.5px] border-dashed border-blue-500 pointer-events-none opacity-0 group-hover/edit:opacity-50 transition-opacity duration-200" />
+      <div className="absolute inset-0 rounded-lg border-[1.5px] border-dashed border-blue-500 pointer-events-none opacity-0 group-hover/edit:opacity-50 transition-opacity duration-200" style={{ transitionDelay: '0s' }} />
 
-      {/* Edit button */}
-      <button
-        onClick={handleClick}
-        className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-full text-[13px] font-medium leading-snug shadow-sm cursor-pointer border-none opacity-0 -translate-y-1 group-hover/edit:opacity-100 group-hover/edit:translate-y-0 transition-all duration-200"
-        title={isLinked ? `Edit ${label} items in CMS` : `Edit ${label} in CMS`}
+      {/* Edit button — stays visible with delay to prevent flicker */}
+      <div
+        className="absolute bottom-4 right-4 z-10 opacity-0 group-hover/edit:opacity-100"
+        style={{ transition: 'opacity 200ms ease', transitionDelay: '0s' }}
+        onMouseEnter={(e) => { (e.currentTarget.style.opacity = '1') }}
+        onMouseLeave={(e) => { setTimeout(() => { e.currentTarget.style.opacity = '' }, 500) }}
       >
-        {isLinked ? <ExternalLink className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
-        {isLinked ? `Edit ${label}` : `Edit ${label}`}
-      </button>
+        <button
+          onClick={handleClick}
+          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-full text-[13px] font-medium leading-snug shadow-lg cursor-pointer border-none hover:bg-blue-700 transition-colors"
+          title={isLinked ? `Edit ${label} items in CMS` : `Edit ${label} in CMS`}
+        >
+          {isLinked ? <ExternalLink className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+          Edit {label}
+        </button>
+      </div>
     </div>
   )
 }

@@ -177,6 +177,13 @@ export function Hero({
     ...(ctaSecondaryText && ctaSecondaryLink ? [{ text: ctaSecondaryText, link: ctaSecondaryLink, variant: 'secondary', showIcon: false }] : []),
   ].filter(b => b.text)
   const subheadings = (subheadingsRaw && subheadingsRaw.length > 0) ? subheadingsRaw : (subheading ? [{ text: subheading }] : [])
+
+  // Determine nav theme: dark hero = light nav text, light hero = dark nav text
+  const hasDarkBg = (backgroundImage || backgroundVideo)
+    ? overlayDarkness !== 'light' // image/video with medium+ overlay = dark
+    : false // solid mist bg = light
+  const navTheme = hasDarkBg ? 'dark' : 'light'
+
   // Puck editor inline editing (via postMessage)
   const headingPuck = useInlineEdit('heading', heading, id || '')
   const subheadingPuck = useInlineEdit('subheading', subheading, id || '')
@@ -231,7 +238,7 @@ export function Hero({
     }
 
     return (
-      <section className={cn('relative overflow-hidden group/hero-bg', bgStyles[bgStyle])} style={{ height: '100svh', width: '100vw', marginLeft: 'calc(-50vw + 50%)', ...bgInlineStyles[bgStyle] }}>
+      <section data-nav-theme={navTheme} className={cn('relative overflow-hidden group/hero-bg', bgStyles[bgStyle])} style={{ height: '100svh', width: '100vw', marginLeft: 'calc(-50vw + 50%)', ...bgInlineStyles[bgStyle] }}>
         {/* Background video */}
         {backgroundVideo && (
           <video
@@ -310,7 +317,7 @@ export function Hero({
   // ── Minimal preset ──
   if (preset === 'minimal') {
     return (
-      <section className={cn('relative overflow-hidden', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-md)', ...bgInlineStyles[bgStyle] }}>
+      <section data-nav-theme={navTheme} className={cn('relative overflow-hidden', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-md)', ...bgInlineStyles[bgStyle] }}>
         {bgStyle === 'gradient' && <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />}
         <div className="relative" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           {showHeading !== false && (
@@ -338,7 +345,7 @@ export function Hero({
   // ── Full-image preset ──
   if (preset === 'full-image') {
     return (
-      <section className={cn('relative overflow-hidden min-h-[70vh] flex items-center group/hero-bg', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
+      <section data-nav-theme={navTheme} className={cn('relative overflow-hidden min-h-[70vh] flex items-center group/hero-bg', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
         {backgroundImage && (
           <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         )}
@@ -391,7 +398,7 @@ export function Hero({
   if (preset === 'split-right' || preset === 'split-left') {
     const imageFirst = preset === 'split-left'
     return (
-      <section className={cn('overflow-hidden relative', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-lg)', ...bgInlineStyles[bgStyle] }}>
+      <section data-nav-theme={navTheme} className={cn('overflow-hidden relative', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-lg)', paddingBottom: 'var(--section-lg)', ...bgInlineStyles[bgStyle] }}>
         {bgStyle === 'gradient' && (
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />
         )}
@@ -456,7 +463,7 @@ export function Hero({
   const hasLegacyButtons = ctaPrimaryText || ctaSecondaryText
 
   return (
-    <section className={cn('relative overflow-hidden text-forest-800', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
+    <section data-nav-theme={navTheme} className={cn('relative overflow-hidden text-forest-800', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
       {bgStyle === 'gradient' && (
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />
       )}
