@@ -408,7 +408,7 @@ export function Hero({
         {/* Content — CSS grid on section handles all positioning */}
         <div
           className="relative w-full mx-auto"
-          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingTop: '80px', paddingBottom: 'var(--section-md)' }}
+          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
         >
           <div className={cn('max-w-3xl', (contentPosition === 'center' || contentPosition === 'bottom-center') && 'mx-auto')}>
             {showHeading !== false && (
