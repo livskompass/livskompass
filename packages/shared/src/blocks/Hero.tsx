@@ -286,10 +286,10 @@ export function Hero({
         {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.15), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.6).toFixed(2)}))` }} />}
         {/* Top gradient overlay for nav contrast */}
         <TopOverlay type={topOverlay} />
-        {/* Content — aligned to page container */}
+        {/* Content — aligned to page container, offset for nav height */}
         <div
           className={cn('relative flex flex-col h-full mx-auto', positionClasses[contentPosition || 'center'])}
-          style={{ maxWidth: 'var(--width-content, 1440px)', paddingInline: 'var(--container-px, 1rem)' }}
+          style={{ maxWidth: 'var(--width-content, 1440px)', paddingInline: 'var(--container-px, 1rem)', paddingTop: '72px' }}
         >
           <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
@@ -404,10 +404,10 @@ export function Hero({
         {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />}
         {/* Top gradient overlay for nav contrast */}
         <TopOverlay type={topOverlay} />
-        {/* Content */}
+        {/* Content — offset for nav height */}
         <div
           className={cn('relative flex flex-col w-full mx-auto', posClass)}
-          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
+          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingTop: '72px' }}
         >
           <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
