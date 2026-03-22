@@ -44,14 +44,9 @@ export function EditItemBadge({ cmsRoute, entityId, slug, label = 'Edit' }: Edit
   const linkId = entityId || slug || ''
   if (!linkId) return null
   const editCtx = useInlineEditBlock()
-  // Show badge regardless of context — data-bound items need edit links everywhere in CMS
-  // The context check was preventing badges from showing because useFetchJson
-  // renders cards asynchronously after the context might have changed
-  if (!editCtx) {
-    // Still render on admin site even without context
-    const isAdminSite = typeof window !== 'undefined' && (window.location.port === '3001' || window.location.hostname.includes('admin'))
-    if (!isAdminSite) return null
-  }
+  // Only show on admin sites — never on public site for regular visitors
+  const isAdminSite = typeof window !== 'undefined' && (window.location.port === '3001' || window.location.hostname.includes('admin'))
+  if (!isAdminSite && !editCtx?.isAdmin) return null
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
