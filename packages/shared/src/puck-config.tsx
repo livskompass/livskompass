@@ -367,6 +367,7 @@ export const puckConfig: Config = {
           return {
             ...base,
             backgroundImage: { type: 'text' as const, label: 'Background image URL', metadata: { isImage: true } },
+            backgroundVideo: { type: 'text' as const, label: 'Background video URL', metadata: { isVideo: true } },
             overlayDarkness: {
               type: 'select' as const,
               label: 'Overlay darkness',
@@ -376,6 +377,18 @@ export const puckConfig: Config = {
                 { label: 'Heavy', value: 'heavy' },
               ],
             },
+            contentPosition: {
+              type: 'select' as const,
+              label: 'Content position',
+              options: [
+                { label: 'Center', value: 'center' },
+                { label: 'Center Left', value: 'center-left' },
+                { label: 'Center Right', value: 'center-right' },
+                { label: 'Bottom Left', value: 'bottom-left' },
+                { label: 'Bottom Center', value: 'bottom-center' },
+              ],
+            },
+            showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
             ...modularFields,
           }
         }

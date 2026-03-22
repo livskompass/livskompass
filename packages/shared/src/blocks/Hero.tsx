@@ -342,14 +342,36 @@ export function Hero({
     )
   }
 
-  // ── Full-image preset ──
+  // ── Full-image preset (with video support + content position) ──
   if (preset === 'full-image') {
+    const posMap: Record<string, string> = {
+      'center': 'items-center justify-center text-center',
+      'center-left': 'items-start justify-center text-left',
+      'center-right': 'items-end justify-center text-right',
+      'bottom-left': 'items-start justify-end text-left pb-12 md:pb-20',
+      'bottom-center': 'items-center justify-end text-center pb-12 md:pb-20',
+    }
+    const posClass = posMap[contentPosition || 'center'] || posMap.center
+
     return (
-      <section data-nav-theme={navTheme} className={cn('relative overflow-hidden min-h-[70vh] flex items-center group/hero-bg', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
-        {backgroundImage && (
+      <section data-nav-theme={navTheme} className={cn('relative overflow-hidden min-h-[70vh] flex group/hero-bg', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
+        {/* Background video */}
+        {backgroundVideo && (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            src={resolveMediaUrl(backgroundVideo)}
+          />
+        )}
+        {/* Background image (fallback when no video) */}
+        {!backgroundVideo && backgroundImage && (
           <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         )}
-        {!backgroundImage && (
+        {/* Placeholder when no media */}
+        {!backgroundVideo && !backgroundImage && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-faint">
               <Camera className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -358,38 +380,51 @@ export function Hero({
           </div>
         )}
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
-        {backgroundImage && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />}
-        <div className="relative flex flex-col items-center text-center" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
-          {showHeading !== false && (
-            <h1 {...hEdit} className={cn('text-display max-w-[24ch] mx-auto animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
-              {heading}
-            </h1>
-          )}
-          {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
-              {subheading}
-            </p>
-          )}
-          {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
+        {/* Overlay */}
+        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />}
+        {/* Content */}
+        <div
+          className={cn('relative flex flex-col w-full mx-auto', posClass)}
+          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
+        >
+          <div className={cn('max-w-3xl', contentPosition === 'center' && 'mx-auto')}>
+            {showHeading !== false && (
+              <h1 {...hEdit} className={cn('text-display max-w-[24ch] animate-hero-enter', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
+                {heading}
+              </h1>
+            )}
+            {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
+              <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+                {subheading}
+              </p>
+            )}
+            {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
             {/* Buttons */}
-          {buttons && buttons.length > 0 ? (
-            <HeroButtons buttons={buttons} variantClasses={variantClasses} />
-          ) : ctaPrimaryText && ctaPrimaryLink ? (
-            <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-              <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
-                <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
-                {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
-              </a>
-              {ctaSecondaryText && ctaSecondaryLink && (
-                <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnSecondary)}>
-                  <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
+            {buttons && buttons.length > 0 ? (
+              <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+            ) : ctaPrimaryText && ctaPrimaryLink ? (
+              <div className={cn('flex flex-col sm:flex-row gap-4 mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
+                  <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
+                  {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
                 </a>
-              )}
-            </div>
-          ) : null}
-          {/* Email input */}
-          {showInput && <HeroInput placeholder={inputPlaceholder || 'Din e-postadress'} buttonText={inputButtonText || 'Prenumerera'} />}
+                {ctaSecondaryText && ctaSecondaryLink && (
+                  <a href={ctaSecondaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnSecondary)}>
+                    <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
+                  </a>
+                )}
+              </div>
+            ) : null}
+            {/* Email input */}
+            {showInput && <HeroInput placeholder={inputPlaceholder || 'Din e-postadress'} buttonText={inputButtonText || 'Prenumerera'} />}
+          </div>
         </div>
+        {/* Scroll indicator */}
+        {showScrollIndicator !== false && (
+          <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-hero-enter" style={{ animationDelay: '800ms', animationFillMode: 'both' }}>
+            <ChevronDown className="h-6 w-6 text-accent animate-bounce" />
+          </div>
+        )}
       </section>
     )
   }
