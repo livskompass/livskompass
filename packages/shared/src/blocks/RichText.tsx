@@ -14,6 +14,7 @@ export interface RichTextProps {
   maxWidth: 'narrow' | 'medium' | 'full'
   alignment?: 'left' | 'center'
   fontSize?: 'small' | 'normal' | 'large'
+  textColor?: string
 }
 
 const maxWidthMap = {
@@ -28,11 +29,21 @@ const fontSizeMap = {
   large: 'prose-xl',
 } as const
 
+const textColorMap: Record<string, string> = {
+  default: '',
+  white: 'prose-invert text-white',
+  light: 'text-surface-alt prose-p:text-stone-300 prose-headings:text-white prose-strong:text-white',
+  brand: 'prose-headings:text-brand prose-p:text-brand/80',
+  accent: 'prose-headings:text-accent prose-p:text-accent/80',
+  muted: 'text-muted',
+}
+
 export function RichText({
   content = '',
   maxWidth = 'medium',
   alignment = 'left',
   fontSize = 'normal',
+  textColor = 'default',
   id,
 }: RichTextProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -53,6 +64,7 @@ export function RichText({
     fontSizeMap[fontSize] || fontSizeMap.normal,
     maxWidthMap[maxWidth],
     alignment === 'center' && 'text-center',
+    textColorMap[textColor] || '',
   )
 
   const wrapContent = (inner: React.ReactNode) => (

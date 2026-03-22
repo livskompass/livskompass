@@ -467,17 +467,18 @@ export const puckConfig: Config = {
     },
     RichText: {
       label: 'Rich Text',
-      defaultProps: { sectionBg: 'transparent', content: '<p>Write your content here...</p>', maxWidth: 'medium', alignment: 'left', fontSize: 'normal' },
+      defaultProps: { sectionBg: 'transparent', content: '<p>Write your content here...</p>', maxWidth: 'medium', alignment: 'left', fontSize: 'normal', textColor: 'default' },
       fields: {
         sectionBg: sectionBgField,
         maxWidth: { type: 'select', label: 'Max width', options: [{ label: 'Narrow (65ch)', value: 'narrow' }, { label: 'Medium (80ch)', value: 'medium' }, { label: 'Full', value: 'full' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
         fontSize: { type: 'radio', label: 'Font size', options: [{ label: 'Small', value: 'small' }, { label: 'Normal', value: 'normal' }, { label: 'Large', value: 'large' }] },
+        textColor: { type: 'select', label: 'Text color', options: [{ label: 'Default', value: 'default' }, { label: 'White (on dark bg)', value: 'white' }, { label: 'Light (on dark bg)', value: 'light' }, { label: 'Brand green', value: 'brand' }, { label: 'Accent green', value: 'accent' }, { label: 'Muted', value: 'muted' }] },
       },
-      render: ({ sectionBg, content, maxWidth, alignment, fontSize, id }: any) => (
+      render: ({ sectionBg, content, maxWidth, alignment, fontSize, textColor, id }: any) => (
         <SectionBgWrap bg={sectionBg}>
           <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-            <RichText content={content} maxWidth={maxWidth} alignment={alignment} fontSize={fontSize} id={id} />
+            <RichText content={content} maxWidth={maxWidth} alignment={alignment} fontSize={fontSize} textColor={textColor} id={id} />
           </div>
         </SectionBgWrap>
       ),
