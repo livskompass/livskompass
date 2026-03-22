@@ -7,7 +7,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
 import { setPageEditData } from '../components/InlineEditProvider'
-import { defaultHomeTemplate, defaultPageTemplate, defaultBlogTemplate, UI_STRINGS } from '@livskompass/shared'
+import { defaultBlogTemplate } from '@livskompass/shared'
 import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
@@ -54,16 +54,16 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
 
   if (isLoading) return <PageSkeleton />
 
-  // Blog listing fallback when no "nyhet" page exists in DB
-  if ((error || !data?.page) && slug === 'nyhet') {
-    return <BlockRenderer data={defaultBlogTemplate} />
+  // Fallback for pages that don't exist yet — render default template
+  // Once the page is created in CMS, this fallback is bypassed
+  if (error || !data?.page) {
+    if (slug === 'nyhet') return <BlockRenderer data={defaultBlogTemplate} />
+    return <NotFound />
   }
-
-  if (error || !data?.page) return <NotFound />
 
   const { page, children } = data
 
-  // Puck blocks: render through BlockRenderer (skip empty Puck documents)
+  // Puck blocks: render through BlockRenderer
   if (page.content_blocks) {
     try {
       const parsed = JSON.parse(page.content_blocks)
@@ -71,22 +71,8 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
         return <BlockRenderer data={page.content_blocks} />
       }
     } catch {
-      // Invalid JSON — fall through to legacy/default
+      // Invalid JSON — fall through to legacy content
     }
-  }
-
-  // Homepage with empty blocks: use default home template
-  if (slug === 'home-2' && (!page.content || page.content.trim() === '')) {
-    return <BlockRenderer data={defaultHomeTemplate} />
-  }
-
-  // Non-home pages with no content_blocks: use default page template
-  if (!page.content_blocks && (!page.content || page.content.trim() === '')) {
-    const safeTitle = JSON.stringify(page.title || UI_STRINGS.page.fallbackTitle).slice(1, -1)
-    const template = defaultPageTemplate
-      .replace('__PAGE_TITLE__', safeTitle)
-      .replace('__LEGACY_CONTENT__', '<p></p>')
-    return <BlockRenderer data={template} />
   }
 
   // Legacy fallback: old HTML content with child page cards
