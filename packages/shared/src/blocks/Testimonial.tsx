@@ -311,7 +311,8 @@ export function Testimonial({
             </div>
           ))}
         </div>
-        {/* In editor, show compact editable list — hidden with overlays */}
+        {/* In editor only — show compact editable list */}
+        {typeof window !== 'undefined' && (window.location.port === '3001' || window.location.hostname.includes('admin')) && (
         <div className="mt-4 puck-overlay" data-edit-overlay="" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <ArrayDragProvider fieldName="items">
             <EditableItemsList
@@ -322,6 +323,7 @@ export function Testimonial({
           </ArrayDragProvider>
           <AddItemButton fieldName="items" label="Add testimonial" />
         </div>
+        )}
       </div>
     )
   }
