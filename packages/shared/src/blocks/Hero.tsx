@@ -364,17 +364,18 @@ export function Hero({
 
   // ── Full-image preset (with video support + content position) ──
   if (preset === 'full-image') {
-    const posMap: Record<string, string> = {
-      'center': 'items-center justify-center text-center',
-      'center-left': 'items-start justify-center text-left',
-      'center-right': 'items-end justify-center text-right',
-      'bottom-left': 'items-start justify-end text-left pb-12 md:pb-20',
-      'bottom-center': 'items-center justify-end text-center pb-12 md:pb-20',
+    // Grid placement for content position
+    const gridPlace: Record<string, React.CSSProperties> = {
+      'center':        { placeContent: 'center', textAlign: 'center' as const },
+      'center-left':   { alignContent: 'center', justifyContent: 'start', textAlign: 'left' as const },
+      'center-right':  { alignContent: 'center', justifyContent: 'end', textAlign: 'right' as const },
+      'bottom-left':   { alignContent: 'end', justifyContent: 'start', textAlign: 'left' as const },
+      'bottom-center': { alignContent: 'end', justifyContent: 'center', textAlign: 'center' as const },
     }
-    const posClass = posMap[contentPosition || 'center'] || posMap.center
+    const gridPos = gridPlace[contentPosition || 'center'] || gridPlace.center
 
     return (
-      <section data-nav-theme={navTheme} className={cn('relative overflow-hidden min-h-[70vh] flex group/hero-bg', bgStyles[bgStyle])} style={{ paddingTop: 'var(--section-xl)', paddingBottom: 'var(--section-xl)', ...bgInlineStyles[bgStyle] }}>
+      <section data-nav-theme={navTheme} className={cn('relative group/hero-bg', bgStyles[bgStyle])} style={{ minHeight: '70vh', display: 'grid', ...gridPos, ...bgInlineStyles[bgStyle] }}>
         {/* Background video */}
         {backgroundVideo && (
           <video
@@ -404,12 +405,12 @@ export function Hero({
         {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />}
         {/* Top gradient overlay for nav contrast */}
         <TopOverlay type={topOverlay} />
-        {/* Content */}
+        {/* Content — CSS grid on section handles all positioning */}
         <div
-          className={cn('relative flex flex-col flex-1 w-full mx-auto', posClass)}
-          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
+          className="relative w-full mx-auto"
+          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingTop: '80px', paddingBottom: 'var(--section-md)' }}
         >
-          <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
+          <div className={cn('max-w-3xl', (contentPosition === 'center' || contentPosition === 'bottom-center') && 'mx-auto')}>
             {showHeading !== false && (
               <h1 {...hEdit} className={cn('text-display max-w-[24ch] animate-hero-enter', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
                 {heading}
