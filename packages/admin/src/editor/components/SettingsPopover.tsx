@@ -121,6 +121,8 @@ export function SettingsPopover({
   const blockProps = block?.props || {}
   // Access fields from the raw puck config (bypass TypeScript Config type which may strip fields)
   const comp = (puckConfig as any).components?.[blockType]
+  // Default props used to show correct initial values for unset fields
+  const defaultProps = comp?.defaultProps || {}
   // If component has resolveFields (dynamic fields based on props), use it
   const rawFields = comp?.resolveFields
     ? (() => { try { return comp.resolveFields({ props: blockProps }) } catch { return comp.fields } })()
@@ -256,7 +258,7 @@ export function SettingsPopover({
               key={key}
               fieldKey={key}
               field={field}
-              value={blockProps[key]}
+              value={blockProps[key] ?? defaultProps[key]}
               onChange={(val) => updateProp(key, val)}
               expanded={expandedArrays.has(key)}
               onToggle={() => toggleArray(key)}

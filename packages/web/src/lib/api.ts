@@ -7,8 +7,11 @@ const MEDIA_BASE = API_BASE.replace(/\/api$/, '')
 
 export function getMediaUrl(url: string): string {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `${MEDIA_BASE}${url}`
+  // Fix legacy absolute URLs stored with the wrong (frontend) domain
+  const mediaPathMatch = url.match(/^https?:\/\/[^/]+(\/media\/.+)$/)
+  if (mediaPathMatch) return `${MEDIA_BASE}${mediaPathMatch[1]}`
+  if (url.startsWith('/')) return `${MEDIA_BASE}${url}`
+  return url
 }
 
 /**

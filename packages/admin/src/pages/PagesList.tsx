@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPages, deletePage, getSettings } from '../lib/api'
+import { getPages, deletePage, duplicatePage, getSettings } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
@@ -9,7 +9,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '.
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Input } from '../components/ui/input'
-import { Plus, Pencil, Trash2, FileText, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, FileText, Search } from 'lucide-react'
 
 export default function PagesList() {
   const queryClient = useQueryClient()
@@ -29,6 +29,13 @@ export default function PagesList() {
 
   const deleteMutation = useMutation({
     mutationFn: deletePage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-pages'] })
+    },
+  })
+
+  const duplicateMutation = useMutation({
+    mutationFn: duplicatePage,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pages'] })
     },
@@ -70,13 +77,22 @@ export default function PagesList() {
           const q = search.toLowerCase().trim()
           const filtered = [...data.pages]
             .filter(p => !q || p.title.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q))
-            .sort((a, b) => a.slug === _homepageSlug ? -1 : b.slug === _homepageSlug ? 1 : 0)
+            .sort((a, b) => {
+              // Homepage always first
+              if (a.slug === _homepageSlug) return -1
+              if (b.slug === _homepageSlug) return 1
+              // Then by last edited (most recent first)
+              const aTime = a.updated_at || a.created_at || ''
+              const bTime = b.updated_at || b.created_at || ''
+              return bTime.localeCompare(aTime)
+            })
           return filtered.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow className="bg-zinc-100">
                 <TableHead>Title</TableHead>
                 <TableHead>Slug</TableHead>
+                <TableHead>Last edited</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -100,6 +116,11 @@ export default function PagesList() {
                   <TableCell className="text-zinc-500 font-mono text-xs">
                     /{page.slug}
                   </TableCell>
+                  <TableCell className="text-zinc-500 text-sm whitespace-nowrap">
+                    {page.updated_at
+                      ? new Date(page.updated_at).toLocaleDateString('sv-SE', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                      : <span className="text-zinc-400">--</span>}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={page.status === 'published' ? 'success' : 'warning'}>
                       {page.status === 'published' ? 'Published' : 'Draft'}
@@ -111,6 +132,15 @@ export default function PagesList() {
                         <Link to={`/pages/${page.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => duplicateMutation.mutate(page.id)}
+                        disabled={duplicateMutation.isPending}
+                        title="Duplicate"
+                      >
+                        <Copy className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"

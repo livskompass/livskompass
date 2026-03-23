@@ -11,11 +11,18 @@ export function getMediaBase(): string {
   return getApiBase().replace(/\/api$/, '')
 }
 
-/** Resolve a potentially relative /media/ URL to an absolute URL */
+/** Resolve a potentially relative /media/ URL to an absolute URL.
+ *  Also rewrites legacy absolute URLs that point to the wrong domain
+ *  (e.g. livskompass-web.pages.dev/media/...) to use the API base. */
 export function resolveMediaUrl(url: string): string {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `${getMediaBase()}${url}`
+  // Fix legacy absolute URLs stored with the wrong (frontend) domain
+  const mediaPathMatch = url.match(/^https?:\/\/[^/]+(\/media\/.+)$/)
+  if (mediaPathMatch) {
+    return `${getMediaBase()}${mediaPathMatch[1]}`
+  }
+  if (url.startsWith('/')) return `${getMediaBase()}${url}`
+  return url
 }
 
 /** Rewrite relative /media/ URLs inside HTML strings to absolute URLs */

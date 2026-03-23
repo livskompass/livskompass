@@ -12,8 +12,11 @@ export const MEDIA_BASE = API_BASE.replace(/\/api$/, '')
  */
 export function getMediaUrl(url: string): string {
   if (!url) return ''
-  if (url.startsWith('http')) return url // already absolute
-  return `${MEDIA_BASE}${url}`
+  // Fix legacy absolute URLs stored with the wrong (frontend) domain
+  const mediaPathMatch = url.match(/^https?:\/\/[^/]+(\/media\/.+)$/)
+  if (mediaPathMatch) return `${MEDIA_BASE}${mediaPathMatch[1]}`
+  if (url.startsWith('/')) return `${MEDIA_BASE}${url}`
+  return url
 }
 
 let authToken: string | null = localStorage.getItem('admin_token')
@@ -107,6 +110,21 @@ export const savePageDraft = (id: string, data: any) =>
 export const deletePage = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/pages/${id}`, { method: 'DELETE' })
 
+export const duplicatePage = async (id: string): Promise<{ page: Page }> => {
+  const { page } = await getPage(id)
+  return createPage({
+    title: `${page.title} (copy)`,
+    slug: `${page.slug}-copy-${Date.now().toString(36)}`,
+    content: (page as any).content || null,
+    content_blocks: page.content_blocks || null,
+    editor_version: page.editor_version || 'puck',
+    meta_description: (page as any).meta_description || null,
+    parent_slug: (page as any).parent_slug || null,
+    sort_order: (page as any).sort_order || 0,
+    status: 'draft',
+  } as any)
+}
+
 // Posts
 export const getPosts = () => fetchApi<{ posts: Post[] }>('/admin/posts')
 export const getPost = (id: string) => fetchApi<{ post: Post }>(`/admin/posts/${id}`)
@@ -127,6 +145,20 @@ export const savePostDraft = (id: string, data: any) =>
   })
 export const deletePost = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/posts/${id}`, { method: 'DELETE' })
+
+export const duplicatePost = async (id: string): Promise<{ post: Post }> => {
+  const { post } = await getPost(id)
+  return createPost({
+    title: `${post.title} (copy)`,
+    slug: `${post.slug}-copy-${Date.now().toString(36)}`,
+    content: (post as any).content || null,
+    content_blocks: post.content_blocks || null,
+    editor_version: post.editor_version || 'puck',
+    excerpt: (post as any).excerpt || null,
+    featured_image: (post as any).featured_image || null,
+    status: 'draft',
+  } as any)
+}
 
 // Courses
 export const getCourses = () => fetchApi<{ courses: Course[] }>('/admin/courses')

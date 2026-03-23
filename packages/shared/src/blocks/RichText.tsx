@@ -12,7 +12,8 @@ function sanitize(html: string): string {
 export interface RichTextProps {
   content: string
   maxWidth: 'narrow' | 'medium' | 'full'
-  alignment?: 'left' | 'center'
+  position?: 'left' | 'center' | 'right'
+  alignment?: 'left' | 'center' | 'right'
   fontSize?: 'small' | 'normal' | 'large'
   textColor?: string
 }
@@ -41,6 +42,7 @@ const textColorMap: Record<string, string> = {
 export function RichText({
   content = '',
   maxWidth = 'medium',
+  position = 'center',
   alignment = 'left',
   fontSize = 'normal',
   textColor = 'default',
@@ -63,20 +65,19 @@ export function RichText({
     'prose prose-headings:font-display prose-headings:tracking-tight prose-a:text-accent prose-neutral',
     fontSizeMap[fontSize] || fontSizeMap.normal,
     maxWidthMap[maxWidth],
+    // Column position within section
+    position === 'center' && 'mx-auto',
+    position === 'right' && 'ml-auto',
+    // Text alignment within column
     alignment === 'center' && 'text-center',
+    alignment === 'right' && 'text-right',
     textColorMap[textColor] || '',
-  )
-
-  const wrapContent = (inner: React.ReactNode) => (
-    <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
-      {inner}
-    </div>
   )
 
   // Puck iframe editing (legacy contentEditable for Puck compatibility)
   if (puckEdit) {
     if (!content) {
-      return wrapContent(
+      return (
         <div
           className={cn(baseClass, puckEdit.className, 'min-h-[3em]')}
           contentEditable={puckEdit.contentEditable}
@@ -86,7 +87,7 @@ export function RichText({
         />
       )
     }
-    return wrapContent(
+    return (
       <div
         className={cn(baseClass, puckEdit.className)}
         contentEditable={puckEdit.contentEditable}
@@ -101,7 +102,7 @@ export function RichText({
   if (editCtx && rtCtx) {
     if (editing) {
       const Editor = rtCtx.Editor
-      return wrapContent(
+      return (
         <Editor
           content={rewriteHtmlMediaUrls(localContent)}
           className={cn(baseClass, 'outline-none focus:ring-2 focus:ring-forest-400 focus:ring-offset-2 rounded-sm transition-shadow', !localContent && 'min-h-[3em]')}
@@ -117,7 +118,7 @@ export function RichText({
     }
 
     // Static HTML with click-to-edit
-    return wrapContent(
+    return (
       <div
         className={cn(baseClass, 'outline-none hover:ring-1 hover:ring-forest-300/50 hover:ring-offset-2 rounded-sm transition-shadow cursor-text', !localContent && 'min-h-[3em]')}
         onClick={() => setEditing(true)}
@@ -132,7 +133,7 @@ export function RichText({
 
   // Admin without Tiptap context — fallback to contentEditable (shouldn't happen but safe)
   if (editCtx) {
-    return wrapContent(
+    return (
       <div
         className={cn(baseClass, 'outline-none hover:ring-1 hover:ring-forest-300/50 hover:ring-offset-2 focus:ring-2 focus:ring-forest-400 focus:ring-offset-2 rounded-sm transition-shadow cursor-text', !content && 'min-h-[3em]')}
         contentEditable
@@ -154,7 +155,7 @@ export function RichText({
   // Public site: render static HTML
   if (!content) return null
 
-  return wrapContent(
+  return (
     <div
       className={baseClass}
       dangerouslySetInnerHTML={{ __html: sanitize(rewriteHtmlMediaUrls(content)) }}

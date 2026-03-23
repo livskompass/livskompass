@@ -139,6 +139,8 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
       return { ...state, isDirty: false }
     case 'MARK_PUBLISHED':
       return { ...state, isPublished: true, isDirty: false, hasDraftChanges: false, publishState: 'published' }
+    case 'MARK_UNPUBLISHED':
+      return { ...state, isPublished: false, isDirty: false, hasDraftChanges: false, publishState: 'draft' }
     case 'SET_DRAFT_STATE':
       return {
         ...state,
@@ -188,6 +190,8 @@ interface EditorContextValue {
   canRedo: boolean
   /** Discard draft and revert to published content */
   discardDraft: () => Promise<void>
+  /** Unpublish: set status back to draft */
+  unpublish: () => Promise<void>
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -423,6 +427,44 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
   }, [dispatch])
 
+  // Unpublish: set status back to draft via PUT
+  const unpublish = useCallback(async () => {
+    const { entity, contentType } = stateRef.current
+    if (!entity?.id) return
+
+    const token = localStorage.getItem('admin_token')
+    if (!token) return
+
+    const route = CONTENT_TYPE_ROUTES[contentType]
+
+    const res = await fetch(`${API_BASE}/admin/${route}/${entity.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ...entity,
+        content_blocks: entity.content_blocks,
+        status: 'draft',
+      }),
+    })
+
+    if (!res.ok) throw new Error('Unpublish failed')
+
+    // Re-fetch entity to get updated state
+    const refetch = await fetch(`${API_BASE}/admin/${route}/${entity.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!refetch.ok) throw new Error('Failed to reload entity')
+
+    const data = await refetch.json() as Record<string, any>
+    const refreshed = data.page || data.post || data.course || data.product
+    if (refreshed) {
+      dispatch({ type: 'SET_ENTITY', entity: refreshed, contentType })
+    }
+  }, [dispatch])
+
   const value: EditorContextValue = {
     state,
     dispatch,
@@ -438,6 +480,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     canUndo: history.index > 0,
     canRedo: history.index < history.stack.length - 1,
     discardDraft,
+    unpublish,
   }
 
   return (

@@ -77,7 +77,7 @@ function legacyHtmlToPuckData(html: string): string {
 function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { setEntity, state, dispatch } = useEditor()
+  const { setEntity, state, dispatch, unpublish } = useEditor()
   const [user, setUser] = useState<{ name: string; avatar_url: string; role: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -324,6 +324,16 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
     }
   }
 
+  const handleUnpublish = async () => {
+    try {
+      await unpublish()
+      showToast('Reverted to draft', 'success')
+    } catch (err) {
+      console.error('Unpublish failed:', err)
+      showToast('Unpublish failed. Please try again.', 'error')
+    }
+  }
+
   const handleBack = () => {
     navigate(ADMIN_LIST_ROUTES[contentType])
   }
@@ -355,7 +365,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} onToggleHistory={toggleHistory} onToggleEntitySettings={toggleEntitySettings} isNew={isNew} />
+      <EditorTopBar user={user} onBack={handleBack} onPublish={handlePublish} onUnpublish={handleUnpublish} onToggleHistory={toggleHistory} onToggleEntitySettings={toggleEntitySettings} isNew={isNew} />
 
       {/* Legacy conversion banner */}
       {legacyConverted && (

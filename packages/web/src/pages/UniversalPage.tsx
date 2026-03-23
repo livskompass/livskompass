@@ -7,7 +7,6 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
 import { setPageEditData } from '../components/InlineEditProvider'
-import { defaultBlogTemplate } from '@livskompass/shared'
 import { Skeleton } from '../components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import { ChevronRight } from 'lucide-react'
@@ -54,10 +53,7 @@ export default function UniversalPage({ slug: propSlug }: { slug?: string }) {
 
   if (isLoading) return <PageSkeleton />
 
-  // Fallback for pages that don't exist yet — render default template
-  // Once the page is created in CMS, this fallback is bypassed
   if (error || !data?.page) {
-    if (slug === 'nyhet') return <BlockRenderer data={defaultBlogTemplate} />
     return <NotFound />
   }
 

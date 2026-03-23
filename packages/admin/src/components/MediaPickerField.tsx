@@ -187,24 +187,26 @@ export function MediaPickerField({ value, onChange, mediaType = 'image' }: Media
                         setOpen(false)
                       }}
                       className={cn(
-                        'relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:shadow-md focus:outline-none',
+                        'flex flex-col rounded-lg overflow-hidden border-2 transition-all hover:shadow-md focus:outline-none',
                         value === media.url
                           ? 'border-zinc-900 ring-2 ring-zinc-400/20'
                           : 'border-transparent hover:border-zinc-300'
                       )}
                     >
-                      {media.type?.startsWith('video') ? (
-                        <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
-                          <Film className="h-8 w-8 text-zinc-400" />
-                        </div>
-                      ) : (
-                        <img
-                          src={getMediaUrl(media.url)}
-                          alt={media.alt_text || media.filename}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-zinc-950/60 to-transparent text-white text-[9px] p-1.5 pt-3 truncate">
+                      <div className="relative aspect-square">
+                        {media.type?.startsWith('video') ? (
+                          <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
+                            <Film className="h-8 w-8 text-zinc-400" />
+                          </div>
+                        ) : (
+                          <img
+                            src={getMediaUrl(media.url)}
+                            alt={media.alt_text || media.filename}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                      <div className="bg-zinc-100 text-zinc-600 text-[10px] leading-tight px-1.5 py-1 text-center break-all line-clamp-2">
                         {media.filename}
                       </div>
                     </button>

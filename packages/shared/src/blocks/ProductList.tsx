@@ -118,9 +118,9 @@ export function ProductList({
         <div className="space-y-12 reveal">
           {Array.from(grouped.entries()).map(([type, typeProducts]) => (
             <div key={type}>
-              {!filterType && grouped.size > 1 && (
+              {!filterType && grouped.size > 1 && typeLabels[type] && (
                 <h3 className="text-h4 text-foreground mb-4">
-                  {typeLabels[type] || type}
+                  {typeLabels[type]}
                 </h3>
               )}
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>

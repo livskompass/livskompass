@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPosts, deletePost } from '../lib/api'
+import { getPosts, deletePost, duplicatePost } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
@@ -9,7 +9,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '.
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Input } from '../components/ui/input'
-import { Plus, Pencil, Trash2, Newspaper, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, Newspaper, Search } from 'lucide-react'
 
 export default function PostsList() {
   const queryClient = useQueryClient()
@@ -23,6 +23,13 @@ export default function PostsList() {
 
   const deleteMutation = useMutation({
     mutationFn: deletePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
+    },
+  })
+
+  const duplicateMutation = useMutation({
+    mutationFn: duplicatePost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
     },
@@ -62,13 +69,20 @@ export default function PostsList() {
           </CardContent>
         ) : data?.posts && data.posts.length > 0 ? (() => {
           const q = search.toLowerCase().trim()
-          const filtered = data.posts.filter(p => !q || p.title.toLowerCase().includes(q) || (p.excerpt || '').toLowerCase().includes(q))
+          const filtered = [...data.posts]
+            .filter(p => !q || p.title.toLowerCase().includes(q) || (p.excerpt || '').toLowerCase().includes(q))
+            .sort((a, b) => {
+              const aTime = a.updated_at || a.created_at || ''
+              const bTime = b.updated_at || b.created_at || ''
+              return bTime.localeCompare(aTime)
+            })
           return filtered.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow className="bg-zinc-100">
                 <TableHead>Title</TableHead>
                 <TableHead>Published</TableHead>
+                <TableHead>Last edited</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -89,6 +103,11 @@ export default function PostsList() {
                       ? new Date(post.published_at).toLocaleDateString('sv-SE')
                       : <span className="text-zinc-400">--</span>}
                   </TableCell>
+                  <TableCell className="text-zinc-500 text-sm whitespace-nowrap">
+                    {post.updated_at
+                      ? new Date(post.updated_at).toLocaleDateString('sv-SE', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                      : <span className="text-zinc-400">--</span>}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={post.status === 'published' ? 'success' : 'warning'}>
                       {post.status === 'published' ? 'Published' : 'Draft'}
@@ -100,6 +119,15 @@ export default function PostsList() {
                         <Link to={`/posts/${post.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => duplicateMutation.mutate(post.id)}
+                        disabled={duplicateMutation.isPending}
+                        title="Duplicate"
+                      >
+                        <Copy className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"

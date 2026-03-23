@@ -41,19 +41,40 @@ function NavItemEditor({
   index,
   onChange,
   onRemove,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
+  isDragOver,
 }: {
   item: SiteHeaderConfig['navItems'][0]
   index: number
   onChange: (index: number, updated: SiteHeaderConfig['navItems'][0]) => void
   onRemove: (index: number) => void
+  onDragStart: (index: number) => void
+  onDragOver: (e: React.DragEvent, index: number) => void
+  onDrop: (e: React.DragEvent, index: number) => void
+  onDragEnd: () => void
+  isDragOver: boolean
 }) {
   const [expanded, setExpanded] = useState(false)
   const hasChildren = item.children && item.children.length > 0
 
   return (
-    <div className="border border-zinc-200 rounded-lg bg-white">
+    <div
+      className="border rounded-lg bg-white transition-colors"
+      style={{ borderColor: isDragOver ? '#3b82f6' : undefined }}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = 'move'
+        onDragStart(index)
+      }}
+      onDragOver={(e) => onDragOver(e, index)}
+      onDrop={(e) => onDrop(e, index)}
+      onDragEnd={onDragEnd}
+    >
       <div className="flex items-center gap-2 px-3 py-2">
-        <GripVertical className="h-4 w-4 text-zinc-300 shrink-0" />
+        <GripVertical className="h-4 w-4 text-zinc-300 shrink-0 cursor-grab active:cursor-grabbing" />
         <Input
           value={item.label}
           onChange={(e) => onChange(index, { ...item, label: e.target.value })}
@@ -250,6 +271,8 @@ export default function Settings() {
   const [siteSaved, setSiteSaved] = useState(false)
   const [siteError, setSiteError] = useState('')
   const [siteSettingsLoaded, setSiteSettingsLoaded] = useState(false)
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [siteDirty, setSiteDirty] = useState(false)
   const siteAutoSaveTimer = useRef<ReturnType<typeof setTimeout>>()
 
@@ -337,6 +360,13 @@ export default function Settings() {
 
   const removeNavItem = (index: number) => {
     setHeader({ ...header, navItems: header.navItems.filter((_, i) => i !== index) })
+  }
+
+  const moveNavItem = (from: number, to: number) => {
+    const items = [...header.navItems]
+    const [moved] = items.splice(from, 1)
+    items.splice(to, 0, moved)
+    setHeader({ ...header, navItems: items })
   }
 
   const addNavItem = () => {
@@ -590,6 +620,25 @@ export default function Settings() {
                   index={i}
                   onChange={updateNavItem}
                   onRemove={removeNavItem}
+                  onDragStart={setDragIndex}
+                  onDragOver={(e, idx) => {
+                    e.preventDefault()
+                    e.dataTransfer.dropEffect = 'move'
+                    setDragOverIndex(idx)
+                  }}
+                  onDrop={(e, idx) => {
+                    e.preventDefault()
+                    if (dragIndex !== null && dragIndex !== idx) {
+                      moveNavItem(dragIndex, idx)
+                    }
+                    setDragIndex(null)
+                    setDragOverIndex(null)
+                  }}
+                  onDragEnd={() => {
+                    setDragIndex(null)
+                    setDragOverIndex(null)
+                  }}
+                  isDragOver={dragOverIndex === i}
                 />
               ))}
             </div>

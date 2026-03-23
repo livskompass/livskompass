@@ -425,6 +425,8 @@ export const puckConfig: Config = {
             },
             showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
             topOverlay: { type: 'select' as const, label: 'Top gradient (nav contrast)', options: [{ label: 'None', value: 'none' }, { label: 'Dark (for light nav)', value: 'dark' }, { label: 'Light (for dark nav)', value: 'light' }] },
+            bottomOverlay: { type: 'select' as const, label: 'Bottom gradient (melt into next section)', options: [{ label: 'None', value: 'none' }, { label: 'Surface (page bg)', value: 'surface' }, { label: 'White', value: 'white' }, { label: 'Mist (teal)', value: 'mist' }, { label: 'Yellow (amber)', value: 'amber' }, { label: 'Dark green (forest-800)', value: 'forest-800' }, { label: 'Darkest green (forest-950)', value: 'forest-950' }] },
+            subBlur: { type: 'select' as const, label: 'Subheading blur backdrop', options: [{ label: 'None', value: 'none' }, { label: 'Light (frosted white)', value: 'light' }, { label: 'Dark (frosted dark)', value: 'dark' }] },
             ...modularFields,
           }
         }
@@ -457,6 +459,8 @@ export const puckConfig: Config = {
             },
             showScrollIndicator: { type: 'radio' as const, label: 'Scroll indicator', options: [{ label: 'Show', value: true }, { label: 'Hide', value: false }] },
             topOverlay: { type: 'select' as const, label: 'Top gradient (nav contrast)', options: [{ label: 'None', value: 'none' }, { label: 'Dark (for light nav)', value: 'dark' }, { label: 'Light (for dark nav)', value: 'light' }] },
+            bottomOverlay: { type: 'select' as const, label: 'Bottom gradient (melt into next section)', options: [{ label: 'None', value: 'none' }, { label: 'Surface (page bg)', value: 'surface' }, { label: 'White', value: 'white' }, { label: 'Mist (teal)', value: 'mist' }, { label: 'Yellow (amber)', value: 'amber' }, { label: 'Dark green (forest-800)', value: 'forest-800' }, { label: 'Darkest green (forest-950)', value: 'forest-950' }] },
+            subBlur: { type: 'select' as const, label: 'Subheading blur backdrop', options: [{ label: 'None', value: 'none' }, { label: 'Light (frosted white)', value: 'light' }, { label: 'Dark (frosted dark)', value: 'dark' }] },
             ...modularFields,
           }
         }
@@ -467,18 +471,19 @@ export const puckConfig: Config = {
     },
     RichText: {
       label: 'Rich Text',
-      defaultProps: { sectionBg: 'transparent', content: '<p>Write your content here...</p>', maxWidth: 'medium', alignment: 'left', fontSize: 'normal', textColor: 'default' },
+      defaultProps: { sectionBg: 'transparent', content: '<p>Write your content here...</p>', maxWidth: 'medium', position: 'center', alignment: 'left', fontSize: 'normal', textColor: 'default' },
       fields: {
         sectionBg: sectionBgField,
-        maxWidth: { type: 'select', label: 'Max width', options: [{ label: 'Narrow (65ch)', value: 'narrow' }, { label: 'Medium (80ch)', value: 'medium' }, { label: 'Full', value: 'full' }] },
-        alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }] },
+        maxWidth: { type: 'select', label: 'Width', options: [{ label: 'Narrow (65ch)', value: 'narrow' }, { label: 'Medium (80ch)', value: 'medium' }, { label: 'Full', value: 'full' }] },
+        position: { type: 'radio', label: 'Position', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
+        alignment: { type: 'radio', label: 'Text align', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
         fontSize: { type: 'radio', label: 'Font size', options: [{ label: 'Small', value: 'small' }, { label: 'Normal', value: 'normal' }, { label: 'Large', value: 'large' }] },
         textColor: { type: 'select', label: 'Text color', options: [{ label: 'Default', value: 'default' }, { label: 'White (on dark bg)', value: 'white' }, { label: 'Light (on dark bg)', value: 'light' }, { label: 'Brand green', value: 'brand' }, { label: 'Accent green', value: 'accent' }, { label: 'Muted', value: 'muted' }] },
       },
-      render: ({ sectionBg, content, maxWidth, alignment, fontSize, textColor, id }: any) => (
+      render: ({ sectionBg, content, maxWidth, position, alignment, fontSize, textColor, id }: any) => (
         <SectionBgWrap bg={sectionBg}>
-          <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-            <RichText content={content} maxWidth={maxWidth} alignment={alignment} fontSize={fontSize} textColor={textColor} id={id} />
+          <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+            <RichText content={content} maxWidth={maxWidth} position={position} alignment={alignment} fontSize={fontSize} textColor={textColor} id={id} />
           </div>
         </SectionBgWrap>
       ),
@@ -601,14 +606,12 @@ export const puckConfig: Config = {
         } },
         backgroundColor: { type: 'select', label: 'Background', options: [{ label: 'Primary (green)', value: 'primary' }, { label: 'Gradient', value: 'gradient' }, { label: 'Dark', value: 'dark' }, { label: 'Light', value: 'light' }] },
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
-        width: { type: 'radio', label: 'Width', options: [{ label: 'Full', value: 'full' }, { label: 'Contained', value: 'contained' }, { label: 'Narrow', value: 'narrow' }] },
+        width: { type: 'radio', label: 'Width', options: [{ label: 'Full width', value: 'full' }, { label: 'Medium', value: 'contained' }, { label: 'Small', value: 'narrow' }] },
         padding: { type: 'radio', label: 'Padding', options: [{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }] },
       },
       render: ({ sectionBg, heading, description, buttonText, buttonLink, buttons, backgroundColor, alignment, width, padding, id }: any) => (
         <SectionBgWrap bg={sectionBg}>
-          <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
-            <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} buttons={buttons} backgroundColor={backgroundColor} alignment={alignment} width={width} padding={padding} id={id} />
-          </div>
+          <CTABanner heading={heading} description={description} buttonText={buttonText} buttonLink={buttonLink} buttons={buttons} backgroundColor={backgroundColor} alignment={alignment} width={width} padding={padding} id={id} />
         </SectionBgWrap>
       ),
     },

@@ -13,6 +13,7 @@ export type HeroContentPosition = 'center' | 'center-left' | 'center-right' | 't
 export type HeroTextAlign = 'left' | 'center'
 
 export type HeroTopOverlay = 'none' | 'dark' | 'light'
+export type HeroSubBlur = 'none' | 'light' | 'dark'
 
 export interface HeroProps {
   preset: HeroPreset
@@ -36,6 +37,8 @@ export interface HeroProps {
   inputPlaceholder?: string
   inputButtonText?: string
   topOverlay?: HeroTopOverlay
+  subBlur?: HeroSubBlur
+  bottomOverlay?: HeroBottomOverlay
   subheadings?: Array<{ text: string }>
   buttons?: Array<{ text: string; link: string; externalUrl?: string; variant?: string; showIcon?: boolean; icon?: string }>
 }
@@ -58,18 +61,124 @@ const overlayOpacity: Record<HeroOverlay, string> = {
   heavy: '0.75',
 }
 
-/** Top gradient overlay — covers the nav zone only (top ~120px) */
+/**
+ * Eased gradient generator — creates a smooth multi-stop gradient
+ * using an ease-out curve (stays opaque longer, accelerates fade).
+ * This avoids the visible banding of 2-3 stop CSS gradients.
+ */
+function easedGradient(direction: string, color: string, startAlpha: number, endAlpha: number, stops = 12): string {
+  const points: string[] = []
+  for (let i = 0; i <= stops; i++) {
+    const t = i / stops
+    // Ease-out cubic: stays opaque longer, then accelerates to transparent
+    const eased = 1 - Math.pow(1 - t, 3)
+    const alpha = startAlpha + (endAlpha - startAlpha) * eased
+    const pct = Math.round(t * 100)
+    points.push(`${color.replace('$a', alpha.toFixed(3))} ${pct}%`)
+  }
+  return `linear-gradient(${direction}, ${points.join(', ')})`
+}
+
+/** Eased gradient with CSS var color (space-separated RGB channels) */
+function easedVarGradient(direction: string, cssVar: string, startAlpha: number, endAlpha: number, stops = 12): string {
+  const points: string[] = []
+  for (let i = 0; i <= stops; i++) {
+    const t = i / stops
+    const eased = 1 - Math.pow(1 - t, 3)
+    const alpha = startAlpha + (endAlpha - startAlpha) * eased
+    const pct = Math.round(t * 100)
+    points.push(`rgb(var(${cssVar}) / ${alpha.toFixed(3)}) ${pct}%`)
+  }
+  return `linear-gradient(${direction}, ${points.join(', ')})`
+}
+
+/** Top gradient overlay — covers the nav zone only (top ~140px) */
 function TopOverlay({ type }: { type: string }) {
-  if (type === 'none') return null
+  if (!type || type === 'none') return null
   const gradient = type === 'dark'
-    ? 'linear-gradient(180deg, rgb(var(--forest-950) / 0.6) 0%, rgb(var(--forest-950) / 0.3) 40%, transparent 100%)'
-    : 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.3) 40%, transparent 100%)'
+    ? easedVarGradient('180deg', '--forest-950', 0.82, 0)
+    : easedGradient('180deg', 'rgba(255,255,255,$a)', 0.85, 0)
   return (
     <div
       className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
-      style={{ height: '120px', background: gradient }}
+      style={{ height: '140px', background: gradient }}
     />
   )
+}
+
+export type HeroBottomOverlay = 'none' | 'surface' | 'white' | 'forest-800' | 'forest-950'
+
+/** Bottom gradient overlay — melts hero into the next section */
+function BottomOverlay({ type }: { type?: string }) {
+  if (!type || type === 'none') return null
+
+  // For CSS var colors (space-separated channels), use rgb(var(--x) / alpha)
+  // For hex/resolved colors, use rgba
+  type ColorDef = { cssVar: string } | { hex: string }
+  const colorDefs: Record<string, ColorDef> = {
+    'surface':     { hex: '#F8F6F2' },
+    'white':       { hex: '#ffffff' },
+    'mist':        { cssVar: '--mist' },
+    'amber':       { cssVar: '--amber-300' },
+    'forest-800':  { cssVar: '--forest-800' },
+    'forest-950':  { cssVar: '--forest-950' },
+  }
+  const def = colorDefs[type] || colorDefs.surface
+
+  const stops: string[] = []
+  const numStops = 16
+  for (let i = 0; i <= numStops; i++) {
+    const t = i / numStops
+    // Smooth ease-in-out: gentle start, gradual middle, soft landing
+    const alpha = t < 0.5
+      ? 2 * t * t
+      : 1 - Math.pow(-2 * t + 2, 2) / 2
+    const pct = Math.round(t * 100)
+    if ('cssVar' in def) {
+      stops.push(`rgb(var(${def.cssVar}) / ${alpha.toFixed(3)}) ${pct}%`)
+    } else {
+      const r = parseInt(def.hex.slice(1, 3), 16)
+      const g = parseInt(def.hex.slice(3, 5), 16)
+      const b = parseInt(def.hex.slice(5, 7), 16)
+      stops.push(`rgba(${r},${g},${b},${alpha.toFixed(3)}) ${pct}%`)
+    }
+  }
+  return (
+    <div
+      className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
+      style={{ height: '320px', background: `linear-gradient(to bottom, ${stops.join(', ')})` }}
+    />
+  )
+}
+
+/** Build the main hero overlay gradient (covers full area, bottom-heavy).
+ *  Single gradient from top to bottom with eased curve:
+ *  top = moderate darkness → middle = lightest → bottom = peak darkness */
+function heroOverlayGradient(overlayDarkness: HeroOverlay): string {
+  const peak = parseFloat(overlayOpacity[overlayDarkness])
+  const top = peak * 0.55
+  const mid = peak * 0.2
+  const stops = 16
+  const points: string[] = []
+  for (let i = 0; i <= stops; i++) {
+    const t = i / stops
+    // Custom curve: starts at `top`, dips to `mid` around 40%, rises to `peak` at bottom
+    let alpha: number
+    if (t <= 0.4) {
+      // Top → mid: ease out
+      const p = t / 0.4
+      const eased = 1 - Math.pow(1 - p, 2)
+      alpha = top + (mid - top) * eased
+    } else {
+      // Mid → bottom: ease in (stays lighter, accelerates to dark)
+      const p = (t - 0.4) / 0.6
+      const eased = Math.pow(p, 2.5)
+      alpha = mid + (peak - mid) * eased
+    }
+    const pct = Math.round(t * 100)
+    points.push(`rgb(var(--forest-950) / ${alpha.toFixed(3)}) ${pct}%`)
+  }
+  return `linear-gradient(to bottom, ${points.join(', ')})`
 }
 
 /** Extract event handlers from editable props (everything except className) */
@@ -185,6 +294,8 @@ export function Hero({
   inputPlaceholder,
   inputButtonText,
   topOverlay = 'none',
+  bottomOverlay = 'none',
+  subBlur = 'none',
   subheadings: subheadingsRaw,
   buttons: buttonsRaw,
   id,
@@ -243,6 +354,19 @@ export function Hero({
   const SecondaryIcon = resolveButtonIcon(secondaryStyle?.icon ?? '')
   const headingStyle: React.CSSProperties = { fontFamily: "var(--font-display, 'Rubik', sans-serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 460 }
 
+  // Sub-heading soft glow — uses box-shadow (not clipped by overflow-hidden)
+  const subGlowShadow = subBlur && subBlur !== 'none'
+    ? subBlur === 'light'
+      ? '0 0 120px 160px rgba(255,255,255,0.12)'
+      : '0 0 120px 160px rgba(0,0,0,0.15)'
+    : undefined
+  // Tight text-shadow on subheading letters for extra readability
+  const subTextShadow = subBlur && subBlur !== 'none'
+    ? subBlur === 'light'
+      ? '0 1px 4px rgba(255,255,255,1), 0 0 40px rgba(255,255,255,0.9), 0 0 80px rgba(255,255,255,0.5)'
+      : '0 1px 4px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.9), 0 0 80px rgba(0,0,0,0.5)'
+    : undefined
+
   // ── Fullscreen preset ──
   if (preset === 'fullscreen') {
     const positionClasses: Record<HeroContentPosition, string> = {
@@ -282,10 +406,12 @@ export function Hero({
           </div>
         )}
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
-        {/* Overlay */}
-        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.15), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.6).toFixed(2)}))` }} />}
+        {/* Overlay — smooth multi-stop eased gradient */}
+        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: heroOverlayGradient(overlayDarkness) }} />}
         {/* Top gradient overlay for nav contrast */}
         <TopOverlay type={topOverlay} />
+        {/* Bottom gradient overlay — melt into next section */}
+        <BottomOverlay type={bottomOverlay} />
         {/* Content — aligned to page container, offset for nav height */}
         <div
           className={cn('relative flex flex-col h-full mx-auto', positionClasses[contentPosition || 'center'])}
@@ -293,16 +419,25 @@ export function Hero({
         >
           <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
-              <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
+              <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
                 {heading}
               </h1>
             )}
-            {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
-                {subheading}
-              </p>
+            {showSubheading !== false && (
+              <div className={cn('relative mt-6 animate-hero-enter', contentPosition === 'center' && 'mx-auto')} style={{ animationDelay: '300ms', animationFillMode: 'both', maxWidth: 540, isolation: 'isolate' }}>
+                {subGlowShadow && (
+                  <div className="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 pointer-events-none" style={{ height: 0, boxShadow: subGlowShadow, borderRadius: '50%', zIndex: -1 }} />
+                )}
+                <div className="relative" style={{ zIndex: 1, textShadow: subTextShadow }}>
+                  {(!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
+                    <p {...sEdit} className={cn('text-body-lg leading-relaxed', textSecondary, sCls)}>
+                      {subheading}
+                    </p>
+                  )}
+                  {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center'} />}
+                </div>
+              </div>
             )}
-            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center'} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
@@ -341,12 +476,12 @@ export function Hero({
         {bgStyle === 'gradient' && <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />}
         <div className="relative" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           {showHeading !== false && (
-            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
+            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
               {heading}
             </h1>
           )}
           {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both', ...sEdit?.style }}>
               {subheading}
             </p>
           )}
@@ -366,11 +501,11 @@ export function Hero({
   if (preset === 'full-image') {
     // Grid placement for content position
     const gridPlace: Record<string, React.CSSProperties> = {
-      'center':        { placeContent: 'center', textAlign: 'center' as const },
-      'center-left':   { alignContent: 'center', justifyContent: 'start', textAlign: 'left' as const },
-      'center-right':  { alignContent: 'center', justifyContent: 'end', textAlign: 'right' as const },
-      'bottom-left':   { alignContent: 'end', justifyContent: 'start', textAlign: 'left' as const },
-      'bottom-center': { alignContent: 'end', justifyContent: 'center', textAlign: 'center' as const },
+      'center':        { alignContent: 'center', textAlign: 'center' as const },
+      'center-left':   { alignContent: 'center', textAlign: 'left' as const },
+      'center-right':  { alignContent: 'center', textAlign: 'right' as const },
+      'bottom-left':   { alignContent: 'end', textAlign: 'left' as const },
+      'bottom-center': { alignContent: 'end', textAlign: 'center' as const },
     }
     const gridPos = gridPlace[contentPosition || 'center'] || gridPlace.center
 
@@ -401,10 +536,12 @@ export function Hero({
           </div>
         )}
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
-        {/* Overlay */}
-        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgb(var(--forest-950) / ${overlayOpacity[overlayDarkness]}), rgb(var(--forest-950) / 0.2), rgb(var(--forest-950) / ${(parseFloat(overlayOpacity[overlayDarkness]) * 0.5).toFixed(2)}))` }} />}
+        {/* Overlay — smooth multi-stop eased gradient */}
+        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: heroOverlayGradient(overlayDarkness) }} />}
         {/* Top gradient overlay for nav contrast */}
         <TopOverlay type={topOverlay} />
+        {/* Bottom gradient overlay — melt into next section */}
+        <BottomOverlay type={bottomOverlay} />
         {/* Content — CSS grid on section handles all positioning */}
         <div
           className="relative w-full mx-auto"
@@ -412,16 +549,25 @@ export function Hero({
         >
           <div className={cn('max-w-3xl', contentPosition === 'center' || contentPosition === 'bottom-center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
-              <h1 {...hEdit} className={cn('text-display max-w-[24ch] animate-hero-enter', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
+              <h1 {...hEdit} className={cn('text-display max-w-[24ch] animate-hero-enter', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
                 {heading}
               </h1>
             )}
-            {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, contentPosition === 'center' && 'mx-auto', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
-                {subheading}
-              </p>
+            {showSubheading !== false && (
+              <div className={cn('relative mt-6 animate-hero-enter', (contentPosition === 'center' || contentPosition === 'bottom-center') && 'mx-auto')} style={{ animationDelay: '300ms', animationFillMode: 'both', maxWidth: 540, isolation: 'isolate' }}>
+                {subGlowShadow && (
+                  <div className="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 pointer-events-none" style={{ height: 0, boxShadow: subGlowShadow, borderRadius: '50%', zIndex: -1 }} />
+                )}
+                <div className="relative" style={{ zIndex: 1, textShadow: subTextShadow }}>
+                  {(!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
+                    <p {...sEdit} className={cn('text-body-lg leading-relaxed', textSecondary, sCls)}>
+                      {subheading}
+                    </p>
+                  )}
+                  {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center' || contentPosition === 'bottom-center'} />}
+                </div>
+              </div>
             )}
-            {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center' || contentPosition === 'bottom-center'} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
@@ -463,12 +609,12 @@ export function Hero({
         <div className="relative grid grid-cols-1 lg:grid-cols-[2fr_3fr] items-center gap-6 lg:gap-10" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('flex flex-col justify-center', imageFirst ? 'lg:order-2' : 'lg:order-1', textAlignment === 'center' ? 'items-center text-center' : 'items-start text-left')}>
             {showHeading !== false && (
-              <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
+              <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
                 {heading}
               </h1>
             )}
             {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+              <p {...sEdit} className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both', ...sEdit?.style }}>
                 {subheading}
               </p>
             )}
@@ -530,12 +676,12 @@ export function Hero({
       )}
       <div className="relative flex flex-col items-center text-center" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
         {showHeading !== false && (
-          <h1 {...hEdit} className={cn('text-display max-w-[24ch] mx-auto animate-hero-enter', hCls)} style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+          <h1 {...hEdit} className={cn('text-display max-w-[24ch] mx-auto animate-hero-enter', hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
             {heading}
           </h1>
         )}
         {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-          <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed text-accent animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+          <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed text-accent animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both', ...sEdit?.style }}>
             {subheading}
           </p>
         )}

@@ -65,6 +65,7 @@ export type EditorAction =
   | { type: 'MARK_DIRTY' }
   | { type: 'MARK_CLEAN' }
   | { type: 'MARK_PUBLISHED' }
+  | { type: 'MARK_UNPUBLISHED' }
   | { type: 'SET_DRAFT_STATE'; hasDraftChanges: boolean }
   | { type: 'UNDO' }
   | { type: 'REDO' }

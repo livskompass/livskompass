@@ -681,9 +681,9 @@ adminRoutes.post('/media/upload', async (c) => {
     httpMetadata: { contentType: file.type }
   })
 
-  // Generate absolute public URL via the Worker's /media/ route
-  const siteUrl = c.env.SITE_URL.replace(/\/$/, '')
-  const url = `${siteUrl}/media/${r2Key}`
+  // Store relative /media/ path — resolveMediaUrl() on the frontend
+  // will prepend the correct API domain at render time
+  const url = `/media/${r2Key}`
 
   // Save to database
   await c.env.DB.prepare(`

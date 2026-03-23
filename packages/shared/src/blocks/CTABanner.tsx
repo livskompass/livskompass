@@ -30,9 +30,9 @@ const bgMap: Record<string, string> = {
 }
 
 const widthMap: Record<string, string> = {
-  full: 'rounded-none',
+  full: 'rounded-2xl',
   contained: 'rounded-2xl',
-  narrow: 'rounded-2xl max-w-3xl mx-auto',
+  narrow: 'rounded-2xl',
 }
 
 
@@ -108,7 +108,7 @@ export function CTABanner({
   const alignClass = alignment === 'center' ? 'text-center items-center' : alignment === 'right' ? 'text-right items-end' : 'text-left items-start'
 
   return (
-    <div className={cn('mx-auto px-4 sm:px-6', width === 'full' ? '' : '')} style={{ maxWidth: width === 'narrow' ? 'var(--width-narrow)' : 'var(--width-content)' }}>
+    <div className="mx-auto" style={{ maxWidth: width === 'full' ? 'var(--width-content)' : width === 'narrow' ? '640px' : '960px', paddingInline: 'var(--container-px)' }}>
     <section
       className={cn('relative overflow-hidden', bg, widthMap[width] || widthMap.contained)}
       style={{

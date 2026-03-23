@@ -69,7 +69,7 @@ export function PostGrid({
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="mb-8 reveal">
           {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-2', headingEdit?.className)}>{heading}</h2>}
-          {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-secondary', subheadingEdit?.className)}>{subheading}</p>}
+          {subheading && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-secondary', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
       {loading ? (

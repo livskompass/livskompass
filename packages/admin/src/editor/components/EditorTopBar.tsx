@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Check, Loader2, AlertCircle, Globe, FileEdit, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Check, Loader2, AlertCircle, Globe, FileEdit, RotateCcw, EyeOff } from 'lucide-react'
 import { useEditor } from '../context'
 import { VersionHistoryButton } from './VersionHistoryPanel'
 import { EntitySettingsButton } from './EntitySettingsDrawer'
@@ -8,16 +8,19 @@ interface EditorTopBarProps {
   user: { name: string; avatar_url: string; role: string } | null
   onBack: () => void
   onPublish: () => void
+  onUnpublish: () => void
   onToggleHistory?: () => void
   onToggleEntitySettings?: () => void
   isNew?: boolean
 }
 
-export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, onToggleEntitySettings, isNew }: EditorTopBarProps) {
+export function EditorTopBar({ user, onBack, onPublish, onUnpublish, onToggleHistory, onToggleEntitySettings, isNew }: EditorTopBarProps) {
   const { state, discardDraft } = useEditor()
   const { entity, saveStatus, publishState, hasDraftChanges } = state
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
   const [discarding, setDiscarding] = useState(false)
+  const [showUnpublishConfirm, setShowUnpublishConfirm] = useState(false)
+  const [unpublishing, setUnpublishing] = useState(false)
 
   const handleDiscard = async () => {
     setDiscarding(true)
@@ -28,6 +31,19 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, onToggl
       setShowDiscardConfirm(false)
     }
   }
+
+  const handleUnpublish = async () => {
+    setUnpublishing(true)
+    try {
+      await onUnpublish()
+    } finally {
+      setUnpublishing(false)
+      setShowUnpublishConfirm(false)
+    }
+  }
+
+  // Only show unpublish for pages and posts (not courses/products which use active/inactive)
+  const showUnpublish = !isNew && (publishState === 'published' || publishState === 'unpublished-changes') && (state.contentType === 'page' || state.contentType === 'post')
 
   return (
     <div
@@ -221,6 +237,71 @@ export function EditorTopBar({ user, onBack, onPublish, onToggleHistory, onToggl
                       style={{ background: 'var(--editor-red, #dc2626)' }}
                     >
                       {discarding ? 'Discarding...' : 'Discard changes'}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Unpublish button — only for published pages/posts */}
+        {showUnpublish && (
+          <div className="relative">
+            <button
+              onClick={() => setShowUnpublishConfirm(true)}
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors"
+              style={{
+                color: 'var(--editor-text-muted)',
+                background: 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--editor-neutral-100, #f4f4f5)'
+                e.currentTarget.style.color = 'var(--editor-text-primary)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.color = 'var(--editor-text-muted)'
+              }}
+            >
+              <EyeOff className="h-3 w-3" />
+              <span className="hidden md:inline">Unpublish</span>
+            </button>
+
+            {/* Unpublish confirmation popover */}
+            {showUnpublishConfirm && (
+              <>
+                <div
+                  className="fixed inset-0"
+                  style={{ zIndex: 'var(--z-editor-toolbar)' }}
+                  onClick={() => setShowUnpublishConfirm(false)}
+                />
+                <div
+                  className="absolute top-full right-0 mt-2 w-64 rounded-lg border p-3 shadow-lg"
+                  style={{
+                    background: 'var(--editor-surface-primary, white)',
+                    borderColor: 'var(--editor-border)',
+                    zIndex: 'calc(var(--z-editor-toolbar) + 1)',
+                  }}
+                >
+                  <p className="text-xs mb-3" style={{ color: 'var(--editor-text-secondary)' }}>
+                    Revert to draft? This page will no longer be visible on the public site.
+                  </p>
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={() => setShowUnpublishConfirm(false)}
+                      className="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+                      style={{ color: 'var(--editor-text-muted)' }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleUnpublish}
+                      disabled={unpublishing}
+                      className="px-2.5 py-1 rounded text-xs font-medium text-white transition-colors disabled:opacity-50"
+                      style={{ background: 'var(--editor-red, #dc2626)' }}
+                    >
+                      {unpublishing ? 'Unpublishing...' : 'Unpublish'}
                     </button>
                   </div>
                 </div>

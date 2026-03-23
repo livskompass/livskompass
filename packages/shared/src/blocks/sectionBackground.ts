@@ -11,6 +11,7 @@ export const sectionBgOptions = [
   { label: 'Mist (teal)', value: 'mist' },
   { label: 'Light green (forest-50)', value: 'accent-soft' },
   { label: 'Dark green (forest-800)', value: 'brand' },
+  { label: 'Darkest green (forest-950)', value: 'darkest' },
   { label: 'Yellow (amber-300)', value: 'highlight-soft' },
   // ── Neutral gradients ──
   { label: '↓ White → Light', value: 'grad-white-light' },
@@ -88,7 +89,7 @@ const gradients: Record<string, string> = {
 
 /** Dark backgrounds that need white text */
 const darkBgs = new Set([
-  'brand', 'grad-brand-transparent', 'grad-brand-white', 'grad-brand-mist', 'grad-brand-accent', 'grad-brand-amber',
+  'brand', 'darkest', 'grad-brand-transparent', 'grad-brand-white', 'grad-brand-mist', 'grad-brand-accent', 'grad-brand-amber',
   'grad-transparent-brand', 'grad-white-brand', 'grad-mist-brand',
   'grad-darkest-transparent', 'grad-darkest-white', 'grad-darkest-mist', 'grad-darkest-amber', 'grad-transparent-darkest',
 ])
@@ -103,6 +104,7 @@ export function sectionBgClass(bg: string = 'transparent'): string {
     mist: 'bg-mist',
     'accent-soft': 'bg-accent-soft',
     brand: 'bg-brand',
+    darkest: '',
     'highlight-soft': 'bg-highlight-soft',
   }
   return map[bg] || ''
@@ -110,6 +112,7 @@ export function sectionBgClass(bg: string = 'transparent'): string {
 
 /** Returns inline style for gradient backgrounds */
 export function sectionBgStyle(bg: string = 'transparent'): React.CSSProperties | undefined {
+  if (bg === 'darkest') return { background: 'rgb(var(--forest-950))' }
   if (gradients[bg]) return { background: gradients[bg] }
   return undefined
 }

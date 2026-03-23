@@ -218,7 +218,10 @@ export default function Layout() {
       // Find the first section with data-nav-theme
       const themed = document.querySelector('[data-nav-theme]') as HTMLElement | null
       if (!themed) {
-        setDynamicColor(null) // no hero → keep manual color
+        // No hero on this page → page has default light background → force dark nav
+        const manualColor = headerConfig.navColor || 'text-forest-800'
+        const isManualLight = manualColor.includes('white') || manualColor.includes('amber')
+        setDynamicColor(isManualLight ? 'text-forest-800' : null)
         return
       }
 
