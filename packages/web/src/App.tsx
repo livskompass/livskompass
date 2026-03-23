@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import { BrowserRouter, Routes, Route, useSearchParams, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useNavigate, useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_HOMEPAGE_SLUG } from '@livskompass/shared'
@@ -9,11 +9,17 @@ import InlineEditProvider from './components/InlineEditProvider'
 
 const UniversalPage = React.lazy(() => import('./pages/UniversalPage'))
 const CourseDetail = React.lazy(() => import('./pages/CourseDetail'))
-const BookingPage = React.lazy(() => import('./pages/BookingPage'))
+// BookingPage removed — booking form is now inline on course detail page
 const BookingConfirmation = React.lazy(() => import('./pages/BookingConfirmation'))
 const PostDetail = React.lazy(() => import('./pages/PostDetail'))
 const NotFound = React.lazy(() => import('./pages/NotFound'))
 const DesignSystem = React.lazy(() => import('./pages/DesignSystem'))
+
+/** Redirect old /utbildningar/:slug/boka to /utbildningar/:slug#boka */
+function BookingRedirect() {
+  const { slug } = useParams<{ slug: string }>()
+  return <Navigate to={`/utbildningar/${slug}#boka`} replace />
+}
 
 function PageLoader() {
   return (
@@ -120,7 +126,7 @@ function App() {
 
           {/* Detail pages: context-wrapped renderers */}
           <Route path="utbildningar/:slug" element={<Suspense fallback={<PageLoader />}><CourseDetail /></Suspense>} />
-          <Route path="utbildningar/:slug/boka" element={<Suspense fallback={<PageLoader />}><BookingPage /></Suspense>} />
+          <Route path="utbildningar/:slug/boka" element={<BookingRedirect />} />
           <Route path="utbildningar/bekraftelse" element={<Suspense fallback={<PageLoader />}><BookingConfirmation /></Suspense>} />
 
           {/* Blog detail */}

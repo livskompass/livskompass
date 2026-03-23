@@ -7,7 +7,7 @@ export const defaultCourseTemplate = JSON.stringify({
     { type: 'SeparatorBlock', props: { id: 'sep-1', variant: 'space-only', spacing: 'small', lineColor: 'light', maxWidth: 'full' } },
     { type: 'RichText', props: { id: 'content', content: '__LEGACY_CONTENT__', maxWidth: 'medium' } },
     { type: 'SeparatorBlock', props: { id: 'sep-2', variant: 'space-only', spacing: 'medium', lineColor: 'light', maxWidth: 'full' } },
-    { type: 'BookingCTA', props: { id: 'booking-cta', style: 'card' } },
+    { type: 'BookingForm', props: { id: 'booking-form', showOrganization: true, showNotes: true } },
   ],
   root: { props: {} },
   zones: {},

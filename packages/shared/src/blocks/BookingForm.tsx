@@ -147,7 +147,7 @@ export function BookingForm({
   }
 
   return (
-    <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
+    <div id="boka" className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {/* Course summary */}
       <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-5 mb-6">
         <h3 className="text-h4 text-foreground mb-3">{course.title}</h3>

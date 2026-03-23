@@ -2,20 +2,19 @@ import { cn } from '../ui/utils'
 import { useFetchJson, useScrollReveal } from '../helpers'
 import { EditItemBadge } from './EditItemBadge'
 import { MapPin, Calendar, ArrowRight } from 'lucide-react'
-import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { useInlineEdit, useEditableText } from '../context'
 import { getCardColors } from './cardColors'
-import { getButtonStyle } from './buttonUtils'
 
 export interface CourseListProps {
   heading: string
   maxItems: number
   columns: 2 | 3
-  showBookButton: boolean
+  showBookButton?: boolean
   compactMode: boolean
   showLocation?: boolean
   showPrice?: boolean
-  readMoreText: string
-  bookButtonText: string
+  readMoreText?: string
+  bookButtonText?: string
   fullLabel: string
   spotsText: string
   emptyText: string
@@ -65,12 +64,10 @@ export function CourseList({
   heading = '',
   maxItems = 0,
   columns = 2,
-  showBookButton = true,
   compactMode = false,
   showLocation = true,
   showPrice = true,
-  readMoreText = 'Read more',
-  bookButtonText = 'Book a spot',
+  readMoreText = 'View course',
   fullLabel = 'Fully booked',
   spotsText = 'spots left',
   emptyText = 'There are no courses scheduled right now.',
@@ -90,16 +87,9 @@ export function CourseList({
   const headingEdit = headingPuck || headingEditCtx
 
   // Template text inline editing
-  const readMoreEdit = useEditableText('readMoreText', readMoreText)
-  const bookBtnEdit = useEditableText('bookButtonText', bookButtonText)
+  const readMoreEdit = useEditableText('readMoreText', readMoreText || 'View course')
   const fullLabelEdit = useEditableText('fullLabel', fullLabel)
   const emptyTextEdit = useEditableText('emptyText', emptyText)
-
-  // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
-  const { variantClass: bookBtnClass, Icon: BookBtnIcon } = getButtonStyle(btnStyles, 'bookButtonText', 'primary', 'arrow-right')
-  const { variantClass: readMoreClass, Icon: ReadMoreIcon } = getButtonStyle(btnStyles, 'readMoreText', 'ghost', '')
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
@@ -124,9 +114,9 @@ export function CourseList({
             const hasCapacity = course.max_participants != null
             const spotsLeft = hasCapacity ? course.max_participants - course.current_participants : null
             return (
-              <div key={course.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
+              <a key={course.slug} href={`/utbildningar/${course.slug}`} className={cn('relative group block rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
                 <EditItemBadge cmsRoute="courses" entityId={course.id} label="Edit course" />
-                <div className="p-6">
+                <div className="p-6 flex flex-col h-full">
                   {(isFull || hasCapacity) && (
                   <div className="flex items-center gap-2 mb-3">
                     <span className={cn(
@@ -156,33 +146,19 @@ export function CourseList({
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mt-auto">
                     {showPrice !== false && course.price_sek != null ? (
                     <span className={cn('font-display text-h3', colors.text)}>
                       {course.price_sek.toLocaleString('sv-SE')} <span className={cn('font-normal', colors.textMuted)}>kr</span>
                     </span>
                     ) : <span />}
-                    <div className="flex gap-2 flex-shrink-0">
-                      <a
-                        href={`/utbildningar/${course.slug}`}
-                        className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-lg transition-colors', btnStyles ? readMoreClass : (cardColor === 'dark' ? 'text-highlight-soft hover:text-amber-200 hover:bg-amber-300/10' : 'text-accent hover:text-accent-hover hover:bg-accent-soft'))}
-                      >
-                        <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText}</span>
-                        {ReadMoreIcon && <ReadMoreIcon className="ml-1.5 h-3.5 w-3.5" />}
-                      </a>
-                      {showBookButton && !isFull && (
-                        <a
-                          href={`/utbildningar/${course.slug}/boka`}
-                          className={cn('inline-flex items-center h-9 px-4 text-body-sm font-medium rounded-lg transition-all active:scale-[0.97]', btnStyles ? bookBtnClass : (cardColor === 'dark' ? 'bg-highlight-soft text-brand hover:bg-amber-200' : 'bg-forest-500 text-white hover:bg-forest-600'))}
-                        >
-                          <span {...editHandlers(bookBtnEdit)} className={bookBtnEdit?.className}>{bookButtonText}</span>
-                          {BookBtnIcon ? <BookBtnIcon className="ml-1.5 h-3.5 w-3.5" /> : (!btnStyles && <ArrowRight className="ml-1.5 h-3.5 w-3.5" />)}
-                        </a>
-                      )}
-                    </div>
+                    <span className={cn('inline-flex items-center gap-1.5 text-body-sm font-medium', cardColor === 'dark' ? 'text-highlight-soft' : 'text-accent group-hover:text-accent-hover')}>
+                      <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText || 'View course'}</span>
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
                   </div>
                 </div>
-              </div>
+              </a>
             )
           })}
         </div>

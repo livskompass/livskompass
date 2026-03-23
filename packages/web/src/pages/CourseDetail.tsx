@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getCourse, rewriteMediaUrls } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { CourseContext } from '../lib/context'
-import { defaultCourseTemplate } from '@livskompass/shared'
+import { defaultCourseTemplate, BookingForm } from '@livskompass/shared'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
 import { setPageEditData } from '../components/InlineEditProvider'
@@ -70,22 +70,43 @@ export default function CourseDetail() {
 
   // Determine which blocks to render
   let blocksJson: string
+  let hasBookingForm = false
   if (courseAny.content_blocks) {
-    // Course has custom Puck blocks
+    // Course has custom Puck blocks — check if BookingForm is included
     blocksJson = courseAny.content_blocks
+    hasBookingForm = blocksJson.includes('"BookingForm"')
   } else {
-    // Use default course template, replacing __LEGACY_CONTENT__ with actual HTML.
+    // Use default course template (includes BookingForm), replacing __LEGACY_CONTENT__ with actual HTML.
     // JSON.stringify the content to properly escape quotes, newlines, backslashes, etc.,
     // then strip the wrapping quotes since we're inserting into an existing JSON string.
     const safeContent = course.content
       ? JSON.stringify(rewriteMediaUrls(course.content)).slice(1, -1)
       : ''
     blocksJson = defaultCourseTemplate.replace('__LEGACY_CONTENT__', safeContent)
+    hasBookingForm = true
   }
 
   return (
     <CourseContext.Provider value={courseAny}>
       <BlockRenderer data={blocksJson} />
+      {!hasBookingForm && (
+        <BookingForm
+          showOrganization={true}
+          showNotes={true}
+          submitButtonText="Gå till betalning"
+          processingText="Bearbetar..."
+          fullMessage="Kursen är fullbokad."
+          completedMessage="Kursen har avslutats."
+          totalLabel="Totalt"
+          nameLabel="Namn *"
+          emailLabel="E-post *"
+          phoneLabel="Telefon"
+          organizationLabel="Organisation"
+          participantsLabel="Antal deltagare *"
+          notesLabel="Meddelande"
+          priceSuffix="kr/person"
+        />
+      )}
     </CourseContext.Provider>
   )
 }

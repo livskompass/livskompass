@@ -760,18 +760,16 @@ export const puckConfig: Config = {
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { sectionBg: 'transparent', heading: '', maxItems: 0, columns: 2, showBookButton: true, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Läs mer', bookButtonText: 'Boka plats', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', maxItems: 0, columns: 2, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Visa kurs', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.', cardColor: 'mist' },
       fields: {
         sectionBg: sectionBgField,
         maxItems: { type: 'number', label: 'Max items (0 = all)' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
-        showBookButton: { type: 'radio', label: 'Show book button', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         compactMode: { type: 'radio', label: 'Compact mode', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showLocation: { type: 'radio', label: 'Show location', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showPrice: { type: 'radio', label: 'Show price', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },
-        readMoreText: { type: 'text', label: 'Read more text' },
-        bookButtonText: { type: 'text', label: 'Book button text' },
+        readMoreText: { type: 'text', label: 'Link text' },
         fullLabel: { type: 'text', label: 'Full label' },
         spotsText: { type: 'text', label: 'Spots remaining text' },
         emptyText: { type: 'text', label: 'Empty text' },

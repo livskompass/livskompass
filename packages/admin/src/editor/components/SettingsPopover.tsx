@@ -60,7 +60,7 @@ const INLINE_FIELDS: Record<string, Set<string>> = {
   PageCards: new Set(['heading', 'emptyText', 'emptyManualText']),
   CardGrid: new Set(['heading', 'subheading']),
   ContactForm: new Set(['heading', 'description', 'nameLabel', 'emailLabel', 'phoneLabel', 'subjectLabel', 'messageLabel', 'submitButtonText', 'contactName', 'contactTitle', 'contactEmail', 'contactPhone']),
-  CourseList: new Set(['heading', 'readMoreText', 'bookButtonText', 'fullLabel', 'emptyText']),
+  CourseList: new Set(['heading', 'readMoreText', 'fullLabel', 'emptyText']),
   ProductList: new Set(['heading', 'buyButtonText', 'freeLabel', 'outOfStockLabel', 'emptyText']),
   Accordion: new Set(['heading']),
   ImageBlock: new Set(['caption', 'src']),

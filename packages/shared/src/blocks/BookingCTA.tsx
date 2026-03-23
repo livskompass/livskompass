@@ -97,7 +97,7 @@ export function BookingCTA({
     return (
       <div className="mx-auto text-center" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
         <a
-          href={`/utbildningar/${course.slug}/boka`}
+          href="#boka"
           className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-lg transition-colors', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
         >
           <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
@@ -113,7 +113,7 @@ export function BookingCTA({
         <h3 {...hHandlers} className={cn('text-h3 text-brand mb-2', headingEdit?.className)}>{heading}</h3>
         <p {...dHandlers} className={cn('text-accent mb-6', descriptionEdit?.className)}>{description}</p>
         <a
-          href={`/utbildningar/${course.slug}/boka`}
+          href="#boka"
           className={cn('inline-flex items-center h-12 px-8 font-semibold rounded-lg transition-colors', btnStyles ? btnClass : 'bg-amber-500 text-white hover:bg-amber-600')}
         >
           <span {...bHandlers} className={buttonTextEdit?.className}>{buttonText}</span>
