@@ -55,7 +55,16 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Read the session token from localStorage (shared with admin panel on same domain)
+      // Check URL for edit token (cross-domain support for pages.dev)
+      const url = new URL(window.location.href)
+      const urlToken = url.searchParams.get('edit_token')
+      if (urlToken) {
+        localStorage.setItem('admin_token', urlToken)
+        url.searchParams.delete('edit_token')
+        window.history.replaceState({}, '', url.toString())
+      }
+
+      // Read the session token from localStorage
       const token = localStorage.getItem('admin_token')
       if (!token) return
 
