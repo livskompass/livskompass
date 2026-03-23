@@ -90,7 +90,7 @@ bookingsRoutes.post('/:id/checkout', async (c) => {
     return c.json({ error: 'Invalid booking price' }, 400)
   }
 
-  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
+  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: '2025-02-24.acacia' as any })
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],

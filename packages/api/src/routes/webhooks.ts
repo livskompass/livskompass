@@ -6,7 +6,7 @@ export const webhookRoutes = new Hono<{ Bindings: Bindings }>()
 
 // Stripe webhook handler
 webhookRoutes.post('/', async (c) => {
-  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
+  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: '2025-02-24.acacia' as any })
 
   // Get raw body for signature verification
   const rawBody = await c.req.text()

@@ -489,7 +489,7 @@ adminRoutes.post('/bookings/:id/refund', async (c) => {
   }
 
   // Process Stripe refund
-  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
+  const stripe = new Stripe(c.env.STRIPE_SECRET_KEY, { apiVersion: '2025-02-24.acacia' as any })
 
   try {
     await stripe.refunds.create({
