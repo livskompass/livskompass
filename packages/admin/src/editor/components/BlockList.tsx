@@ -280,42 +280,8 @@ export function BlockList() {
     [puckData, updateData, findPanelDropIndex],
   )
 
-  // ── Empty state — also a drop target ──
-
-  if (items.length === 0) {
-    return (
-      <div
-        ref={containerRef}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] transition-colors rounded-lg mx-4"
-        style={{
-          border: isPanelDragOver
-            ? '2px dashed var(--editor-blue)'
-            : '2px dashed transparent',
-          background: isPanelDragOver
-            ? 'var(--editor-blue-lightest, #EFF6FF)'
-            : 'transparent',
-        }}
-      >
-        <EmptyStateInsertButton />
-        <p className="text-base font-medium mb-1" style={{ color: 'var(--editor-text-primary)' }}>
-          {isPanelDragOver ? 'Drop here to add block' : 'Start building your page'}
-        </p>
-        <p className="text-sm mb-2" style={{ color: 'var(--editor-text-subtle)' }}>
-          {isPanelDragOver ? '' : 'Click + or drag blocks from the panel'}
-        </p>
-        {!isPanelDragOver && (
-          <p className="text-xs" style={{ color: 'var(--editor-text-disabled)' }}>
-            Press <kbd className="px-1 py-0.5 rounded border text-[10px] font-mono" style={{ borderColor: 'var(--editor-neutral-200)', background: 'var(--editor-surface)' }}>/</kbd> to search
-          </p>
-        )}
-      </div>
-    )
-  }
-
   // Auto-select block as you scroll — the block crossing viewport center gets selected
+  // NOTE: These hooks MUST be before any early returns to satisfy Rules of Hooks
   const isUserScrolling = useRef(false)
   const scrollTimer = useRef<ReturnType<typeof setTimeout>>()
 
@@ -362,6 +328,41 @@ export function BlockList() {
       clearTimeout(scrollTimer.current)
     }
   }, [items.length, state.selectedBlockId, selectBlock])
+
+  // ── Empty state — also a drop target ──
+
+  if (items.length === 0) {
+    return (
+      <div
+        ref={containerRef}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] transition-colors rounded-lg mx-4"
+        style={{
+          border: isPanelDragOver
+            ? '2px dashed var(--editor-blue)'
+            : '2px dashed transparent',
+          background: isPanelDragOver
+            ? 'var(--editor-blue-lightest, #EFF6FF)'
+            : 'transparent',
+        }}
+      >
+        <EmptyStateInsertButton />
+        <p className="text-base font-medium mb-1" style={{ color: 'var(--editor-text-primary)' }}>
+          {isPanelDragOver ? 'Drop here to add block' : 'Start building your page'}
+        </p>
+        <p className="text-sm mb-2" style={{ color: 'var(--editor-text-subtle)' }}>
+          {isPanelDragOver ? '' : 'Click + or drag blocks from the panel'}
+        </p>
+        {!isPanelDragOver && (
+          <p className="text-xs" style={{ color: 'var(--editor-text-disabled)' }}>
+            Press <kbd className="px-1 py-0.5 rounded border text-[10px] font-mono" style={{ borderColor: 'var(--editor-neutral-200)', background: 'var(--editor-surface)' }}>/</kbd> to search
+          </p>
+        )}
+      </div>
+    )
+  }
 
   return (
     <InlineImagePickerProvider>
