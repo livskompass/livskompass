@@ -45,7 +45,7 @@ function pushHistory(data: Data) {
 function editorReducer(state: EditorState, action: EditorAction): EditorState {
   switch (action.type) {
     case 'SET_ENTITY': {
-      const isPublished = action.entity.status === 'published'
+      const isPublished = action.entity.status === 'published' || action.entity.status === 'active' || action.entity.status === 'full'
 
       // Safely parse a JSON string into Puck Data, returning null on failure
       const safeParse = (json: string | null | undefined): Data | null => {
