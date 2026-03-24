@@ -181,6 +181,41 @@ export const saveCourseDraft = (id: string, data: any) =>
 export const deleteCourse = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/courses/${id}`, { method: 'DELETE' })
 
+export const duplicateCourse = async (id: string): Promise<{ course: Course }> => {
+  const { course } = await getCourse(id)
+  return createCourse({
+    title: `${course.title} (copy)`,
+    slug: `${course.slug}-copy-${Date.now().toString(36)}`,
+    description: (course as any).description || null,
+    content_blocks: course.content_blocks || null,
+    editor_version: (course as any).editor_version || 'puck',
+    location: course.location || null,
+    start_date: course.start_date || null,
+    end_date: course.end_date || null,
+    price_sek: course.price_sek || null,
+    max_participants: course.max_participants || null,
+    registration_deadline: course.registration_deadline || null,
+    status: 'draft',
+  } as any)
+}
+
+export const duplicateProduct = async (id: string): Promise<{ product: Product }> => {
+  const { product } = await getProduct(id)
+  return createProduct({
+    title: `${product.title} (copy)`,
+    slug: `${product.slug}-copy-${Date.now().toString(36)}`,
+    description: product.description || null,
+    content_blocks: product.content_blocks || null,
+    editor_version: (product as any).editor_version || 'puck',
+    type: product.type || null,
+    price_sek: product.price_sek || null,
+    external_url: product.external_url || null,
+    image_url: product.image_url || null,
+    in_stock: product.in_stock,
+    status: 'draft',
+  } as any)
+}
+
 // Bookings
 export const getBookings = () => fetchApi<{ bookings: Booking[] }>('/admin/bookings')
 export const getBooking = (id: string) => fetchApi<{ booking: Booking }>(`/admin/bookings/${id}`)

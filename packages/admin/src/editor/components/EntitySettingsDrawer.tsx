@@ -32,7 +32,7 @@ const COURSE_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'Slug', type: 'text' },
   { key: 'status', label: 'Status', type: 'select', options: [
     { label: 'Draft', value: 'draft' },
-    { label: 'Active', value: 'active' },
+    { label: 'Published', value: 'published' },
     { label: 'Full', value: 'full' },
     { label: 'Completed', value: 'completed' },
     { label: 'Cancelled', value: 'cancelled' },
@@ -50,8 +50,7 @@ const PRODUCT_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'Slug', type: 'text' },
   { key: 'status', label: 'Status', type: 'select', options: [
     { label: 'Draft', value: 'draft' },
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
+    { label: 'Published', value: 'published' },
   ]},
   { key: 'description', label: 'Short description', type: 'textarea' },
   { key: 'type', label: 'Type', type: 'select', options: [

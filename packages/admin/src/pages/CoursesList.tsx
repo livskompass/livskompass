@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getCourses, deleteCourse, archiveItem } from '../lib/api'
+import { getCourses, deleteCourse, archiveItem, duplicateCourse } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
-import { Plus, Pencil, Trash2, GraduationCap, Archive } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, GraduationCap, Archive } from 'lucide-react'
 
 export default function CoursesList() {
   const queryClient = useQueryClient()
@@ -26,6 +26,13 @@ export default function CoursesList() {
     },
   })
 
+  const duplicateMutation = useMutation({
+    mutationFn: duplicateCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
+    },
+  })
+
   const archiveMutation = useMutation({
     mutationFn: (id: string) => archiveItem('course', id),
     onSuccess: () => {
@@ -36,7 +43,7 @@ export default function CoursesList() {
 
   const getStatusVariant = (status: string) => {
     switch (status) {
-      case 'active': return 'success'
+      case 'published': return 'success'
       case 'full': return 'default'
       case 'completed': return 'secondary'
       case 'cancelled': return 'destructive'
@@ -47,7 +54,7 @@ export default function CoursesList() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'active': return 'Active'
+      case 'published': return 'Published'
       case 'full': return 'Full'
       case 'completed': return 'Completed'
       case 'cancelled': return 'Cancelled'
@@ -123,6 +130,15 @@ export default function CoursesList() {
                         <Link to={`/courses/${course.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => duplicateMutation.mutate(course.id)}
+                        disabled={duplicateMutation.isPending}
+                        title="Duplicate"
+                      >
+                        <Copy className="h-4 w-4" />
                       </Button>
                       {['cancelled', 'completed', 'draft'].includes(course.status) && (
                         <Button

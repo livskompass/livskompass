@@ -10,7 +10,7 @@ productsRoutes.get('/', async (c) => {
   let query = `
     SELECT id, slug, title, description, type, price_sek, external_url, image_url, in_stock
     FROM products
-    WHERE status = 'active'
+    WHERE status = 'published'
   `
 
   if (type) {
@@ -35,7 +35,7 @@ productsRoutes.get('/:slug', async (c) => {
 
   const result = await c.env.DB.prepare(`
     SELECT id, slug, title, description, content_blocks, editor_version, type, price_sek, external_url, image_url, in_stock, status, created_at
-    FROM products WHERE slug = ? AND status = 'active'
+    FROM products WHERE slug = ? AND status = 'published'
   `).bind(slug).first()
 
   if (!result) {

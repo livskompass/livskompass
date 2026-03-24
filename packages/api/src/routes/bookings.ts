@@ -26,7 +26,7 @@ bookingsRoutes.post('/', rateLimit(60_000, 10), async (c) => {
 
   // Validate course exists
   const course = await c.env.DB.prepare(`
-    SELECT id, price_sek, status FROM courses WHERE id = ? AND status = 'active'
+    SELECT id, price_sek, status FROM courses WHERE id = ? AND status = 'published'
   `).bind(courseId).first()
 
   if (!course) {
@@ -43,7 +43,7 @@ bookingsRoutes.post('/', rateLimit(60_000, 10), async (c) => {
           WHEN max_participants IS NOT NULL AND current_participants + ? >= max_participants THEN 'full'
           ELSE status
         END
-    WHERE id = ? AND status = 'active'
+    WHERE id = ? AND status = 'published'
       AND (max_participants IS NULL OR current_participants + ? <= max_participants)
   `).bind(participants, participants, courseId, participants).run()
 

@@ -9,7 +9,7 @@ coursesRoutes.get('/', async (c) => {
     SELECT id, slug, title, description, location, start_date, end_date,
            price_sek, max_participants, current_participants, registration_deadline, status
     FROM courses
-    WHERE status IN ('active', 'full')
+    WHERE status IN ('published', 'full')
     ORDER BY start_date ASC
   `).all()
 
@@ -23,7 +23,7 @@ coursesRoutes.get('/:slug', async (c) => {
 
   const result = await c.env.DB.prepare(`
     SELECT id, slug, title, description, content, content_blocks, editor_version, location, start_date, end_date, price_sek, max_participants, current_participants, registration_deadline, status, created_at
-    FROM courses WHERE slug = ? AND status IN ('active', 'full')
+    FROM courses WHERE slug = ? AND status IN ('published', 'full')
   `).bind(slug).first()
 
   if (!result) {

@@ -335,7 +335,7 @@ adminRoutes.post('/courses', async (c) => {
   `).bind(id, slug, title, description, content || null, contentBlocks || null,
           editorVersion || 'legacy', location || null, startDate || null, endDate || null,
           priceSek || null, maxParticipants || null, registrationDeadline || null,
-          status || 'active').run()
+          status || 'draft').run()
 
   return c.json({ course: { id, slug, title } }, 201)
 })
@@ -514,7 +514,7 @@ adminRoutes.post('/bookings/:id/refund', async (c) => {
     UPDATE courses
     SET current_participants = MAX(0, current_participants - ?),
         status = CASE
-          WHEN status = 'full' AND (current_participants - ?) < max_participants THEN 'active'
+          WHEN status = 'full' AND (current_participants - ?) < max_participants THEN 'published'
           ELSE status
         END
     WHERE id = ?
@@ -595,7 +595,7 @@ adminRoutes.post('/products', async (c) => {
                          type, price_sek, external_url, image_url, in_stock, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(id, slug, title, description, contentBlocks || null, editorVersion || 'legacy',
-          type, priceSek, externalUrl, imageUrl, inStock ?? 1, status || 'active').run()
+          type, priceSek, externalUrl, imageUrl, inStock ?? 1, status || 'draft').run()
 
   return c.json({ product: { id, slug, title } }, 201)
 })
@@ -913,8 +913,8 @@ adminRoutes.post('/archive/:contentType/:id', async (c) => {
   const activeStatuses: Record<string, string[]> = {
     page: ['published'],
     post: ['published'],
-    course: ['active', 'full'],
-    product: ['active'],
+    course: ['published', 'full'],
+    product: ['published'],
   }
 
   if (activeStatuses[contentType]?.includes(item.status)) {
@@ -977,7 +977,7 @@ adminRoutes.get('/stats', async (c) => {
   const results = await c.env.DB.batch([
     c.env.DB.prepare(`SELECT COUNT(*) as count FROM pages WHERE status = 'published'`),
     c.env.DB.prepare(`SELECT COUNT(*) as count FROM posts WHERE status = 'published'`),
-    c.env.DB.prepare(`SELECT COUNT(*) as count FROM courses WHERE status = 'active'`),
+    c.env.DB.prepare(`SELECT COUNT(*) as count FROM courses WHERE status IN ('published', 'full')`),
     c.env.DB.prepare(`SELECT COUNT(*) as count FROM bookings WHERE payment_status = 'paid'`),
     c.env.DB.prepare(`SELECT COUNT(*) as count FROM contacts WHERE read = 0`),
   ])

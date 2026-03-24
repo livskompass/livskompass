@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getProducts, deleteProduct, getMediaUrl, archiveItem } from '../lib/api'
+import { getProducts, deleteProduct, getMediaUrl, archiveItem, duplicateProduct } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
-import { Plus, Pencil, Trash2, ShoppingBag, Archive } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, ShoppingBag, Archive } from 'lucide-react'
 
 export default function ProductsList() {
   const queryClient = useQueryClient()
@@ -21,6 +21,13 @@ export default function ProductsList() {
 
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] })
+    },
+  })
+
+  const duplicateMutation = useMutation({
+    mutationFn: duplicateProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] })
     },
@@ -98,8 +105,8 @@ export default function ProductsList() {
                       : <span className="text-zinc-400">Free</span>}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={product.status === 'active' ? 'success' : product.status === 'draft' ? 'warning' : 'secondary'}>
-                      {product.status === 'active' ? 'Active' : product.status === 'draft' ? 'Draft' : 'Inactive'}
+                    <Badge variant={product.status === 'published' ? 'success' : 'warning'}>
+                      {product.status === 'published' ? 'Published' : 'Draft'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -109,7 +116,16 @@ export default function ProductsList() {
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
-                      {['inactive', 'draft'].includes(product.status) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => duplicateMutation.mutate(product.id)}
+                        disabled={duplicateMutation.isPending}
+                        title="Duplicate"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      {product.status === 'draft' && (
                         <Button
                           variant="ghost"
                           size="sm"

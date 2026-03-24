@@ -88,7 +88,7 @@ webhookRoutes.post('/', async (c) => {
           UPDATE courses
           SET current_participants = MAX(0, current_participants - ?),
               status = CASE
-                WHEN status = 'full' AND (current_participants - ?) < max_participants THEN 'active'
+                WHEN status = 'full' AND (current_participants - ?) < max_participants THEN 'published'
                 ELSE status
               END
           WHERE id = ?
@@ -120,7 +120,7 @@ webhookRoutes.post('/', async (c) => {
           UPDATE courses
           SET current_participants = MAX(0, current_participants - ?),
               status = CASE
-                WHEN status = 'full' AND (current_participants - ?) < max_participants THEN 'active'
+                WHEN status = 'full' AND (current_participants - ?) < max_participants THEN 'published'
                 ELSE status
               END
           WHERE id = ?
