@@ -40,6 +40,45 @@ const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   product: 'New product',
 }
 
+/** Default block templates per content type */
+function getDefaultTemplate(contentType: ContentType) {
+  const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+
+  switch (contentType) {
+    case 'course':
+      return {
+        content: [
+          { type: 'CourseInfo', props: { id: `CourseInfo-${uid()}`, sectionBg: 'transparent', showDeadline: true, showEmpty: false, layout: 'grid' } },
+          { type: 'RichText', props: { id: `RichText-${uid()}`, content: '<h2>Om kursen</h2><p>Beskriv kursen här...</p>', maxWidth: 'medium', position: 'center', alignment: 'left', fontSize: 'normal', textColor: 'default' } },
+          { type: 'BookingForm', props: { id: `BookingForm-${uid()}`, sectionBg: 'transparent', showOrganization: true, showNotes: true } },
+        ],
+        root: { props: {} },
+        zones: {},
+      }
+    case 'post':
+      return {
+        content: [
+          { type: 'PostHeader', props: { id: `PostHeader-${uid()}`, sectionBg: 'transparent', showBackLink: true, backLinkText: 'Tillbaka till nyheter', backLinkUrl: '/nyheter' } },
+          { type: 'RichText', props: { id: `RichText-${uid()}`, content: '<p>Skriv ditt inlägg här...</p>', maxWidth: 'medium', position: 'center', alignment: 'left', fontSize: 'normal', textColor: 'default' } },
+        ],
+        root: { props: {} },
+        zones: {},
+      }
+    case 'product':
+      return {
+        content: [
+          { type: 'PageHeader', props: { id: `PageHeader-${uid()}`, sectionBg: 'transparent', alignment: 'left', size: 'large', showDivider: true } },
+          { type: 'RichText', props: { id: `RichText-${uid()}`, content: '<p>Beskriv produkten här...</p>', maxWidth: 'medium', position: 'center', alignment: 'left', fontSize: 'normal', textColor: 'default' } },
+        ],
+        root: { props: {} },
+        zones: {},
+      }
+    case 'page':
+    default:
+      return { content: [], root: { props: {} }, zones: {} }
+  }
+}
+
 /**
  * Extract legacy HTML content from a WordPress-migrated entity.
  * Pages/posts store HTML in `content`, courses/products in `description`.
@@ -113,7 +152,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
     const blankEntity: ContentEntity = {
       id: '', slug: '', title: CONTENT_TYPE_LABELS[contentType],
       status: 'draft',
-      content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
+      content_blocks: JSON.stringify(getDefaultTemplate(contentType)),
       editor_version: 'puck', updated_at: '', draft: null,
     }
     // Use queueMicrotask to set state outside render
@@ -152,7 +191,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
           slug: '',
           title: CONTENT_TYPE_LABELS[contentType],
           status: 'draft',
-          content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
+          content_blocks: JSON.stringify(getDefaultTemplate(contentType)),
           editor_version: 'puck',
           updated_at: '',
           draft: null,
@@ -174,7 +213,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
           slug: '',
           title: CONTENT_TYPE_LABELS[contentType],
           status: 'draft',
-          content_blocks: JSON.stringify({ content: [], root: { props: {} }, zones: {} }),
+          content_blocks: JSON.stringify(getDefaultTemplate(contentType)),
           editor_version: 'puck',
           updated_at: '',
           draft: null,
