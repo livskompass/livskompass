@@ -61,50 +61,8 @@ function AuthBridge() {
   return null
 }
 
-const SITE_PASSWORD = 'livskompass2026'
-
-function PasswordGate({ children }: { children: React.ReactNode }) {
-  const [authenticated, setAuthenticated] = React.useState(() => sessionStorage.getItem('site-auth') === 'true')
-  const [input, setInput] = React.useState('')
-  const [error, setError] = React.useState(false)
-
-  if (authenticated) return <>{children}</>
-
-  return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#C7DDDC' }}>
-      <div className="bg-white rounded-[16px] p-8 shadow-lg max-w-sm w-full mx-4">
-        <h1 className="text-xl font-semibold text-forest-800 mb-2">Livskompass</h1>
-        <p className="text-sm text-stone-500 mb-6">This site is under development. Enter password to continue.</p>
-        <form onSubmit={(e) => {
-          e.preventDefault()
-          if (input === SITE_PASSWORD) {
-            sessionStorage.setItem('site-auth', 'true')
-            setAuthenticated(true)
-          } else {
-            setError(true)
-          }
-        }}>
-          <input
-            type="password"
-            value={input}
-            onChange={(e) => { setInput(e.target.value); setError(false) }}
-            placeholder="Password"
-            className="w-full px-4 py-3 rounded-[12px] border border-stone-200 text-sm outline-none focus:border-forest-600 focus:ring-1 focus:ring-forest-600/20 mb-3"
-            autoFocus
-          />
-          {error && <p className="text-red-500 text-xs mb-3">Wrong password</p>}
-          <button type="submit" className="w-full bg-forest-800 text-white rounded-[16px] py-3 text-sm font-medium hover:bg-forest-900 transition-colors">
-            Enter
-          </button>
-        </form>
-      </div>
-    </div>
-  )
-}
-
 function App() {
   return (
-    <PasswordGate>
     <BrowserRouter>
       <InlineEditProvider>
       <Routes>
@@ -141,7 +99,6 @@ function App() {
       </Routes>
       </InlineEditProvider>
     </BrowserRouter>
-    </PasswordGate>
   )
 }
 
