@@ -98,8 +98,8 @@ export default function ProductsList() {
                       : <span className="text-zinc-400">Free</span>}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>
-                      {product.status === 'active' ? 'Active' : 'Inactive'}
+                    <Badge variant={product.status === 'active' ? 'success' : product.status === 'draft' ? 'warning' : 'secondary'}>
+                      {product.status === 'active' ? 'Active' : product.status === 'draft' ? 'Draft' : 'Inactive'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -109,7 +109,7 @@ export default function ProductsList() {
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
-                      {product.status === 'inactive' && (
+                      {['inactive', 'draft'].includes(product.status) && (
                         <Button
                           variant="ghost"
                           size="sm"

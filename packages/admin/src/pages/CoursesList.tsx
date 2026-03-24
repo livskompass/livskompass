@@ -40,6 +40,7 @@ export default function CoursesList() {
       case 'full': return 'default'
       case 'completed': return 'secondary'
       case 'cancelled': return 'destructive'
+      case 'draft': return 'warning'
       default: return 'secondary'
     }
   }
@@ -50,6 +51,7 @@ export default function CoursesList() {
       case 'full': return 'Full'
       case 'completed': return 'Completed'
       case 'cancelled': return 'Cancelled'
+      case 'draft': return 'Draft'
       default: return status
     }
   }
@@ -122,7 +124,7 @@ export default function CoursesList() {
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
-                      {['cancelled', 'completed'].includes(course.status) && (
+                      {['cancelled', 'completed', 'draft'].includes(course.status) && (
                         <Button
                           variant="ghost"
                           size="sm"

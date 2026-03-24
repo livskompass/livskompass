@@ -957,8 +957,8 @@ adminRoutes.post('/unarchive/:contentType/:id', async (c) => {
   const restoreStatus: Record<string, string> = {
     page: 'draft',
     post: 'draft',
-    course: 'cancelled',
-    product: 'inactive',
+    course: 'draft',
+    product: 'draft',
   }
 
   const newStatus = restoreStatus[contentType]

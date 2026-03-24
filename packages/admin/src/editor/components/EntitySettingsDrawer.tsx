@@ -31,6 +31,7 @@ const POST_FIELDS: FieldDef[] = [
 const COURSE_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'Slug', type: 'text' },
   { key: 'status', label: 'Status', type: 'select', options: [
+    { label: 'Draft', value: 'draft' },
     { label: 'Active', value: 'active' },
     { label: 'Full', value: 'full' },
     { label: 'Completed', value: 'completed' },
@@ -47,6 +48,11 @@ const COURSE_FIELDS: FieldDef[] = [
 
 const PRODUCT_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'Slug', type: 'text' },
+  { key: 'status', label: 'Status', type: 'select', options: [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' },
+  ]},
   { key: 'description', label: 'Short description', type: 'textarea' },
   { key: 'type', label: 'Type', type: 'select', options: [
     { label: 'Book', value: 'book' },
@@ -253,11 +259,13 @@ export function EntitySettingsDrawer({ open, onClose, contentType }: EntitySetti
           />
         </div>
 
-        {/* Status field (all types) */}
-        <div className="px-5 pb-2">
-          <FieldLabel label="Status" />
-          <StatusBadge status={entity.status || 'draft'} />
-        </div>
+        {/* Status badge (pages/posts only — courses/products have status in their fields) */}
+        {(contentType === 'page' || contentType === 'post') && (
+          <div className="px-5 pb-2">
+            <FieldLabel label="Status" />
+            <StatusBadge status={entity.status || 'draft'} />
+          </div>
+        )}
 
         {/* Homepage toggle (pages only) */}
         {contentType === 'page' && (
