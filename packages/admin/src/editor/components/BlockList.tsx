@@ -104,6 +104,60 @@ function EmptyStateInsertButton() {
   )
 }
 
+/** Title input shown on empty state for new pages/posts/courses/products */
+function EmptyStateTitleInput() {
+  const { state, dispatch } = useEditor()
+  const entity = state.entity as Record<string, any> | null
+  const contentType = state.contentType
+
+  const defaultTitles: Record<string, string> = {
+    page: 'New page',
+    post: 'New post',
+    course: 'New course',
+    product: 'New product',
+  }
+
+  const isDefault = !entity?.title || Object.values(defaultTitles).includes(entity.title)
+  const label = contentType === 'post' ? 'Post title'
+    : contentType === 'course' ? 'Course title'
+    : contentType === 'product' ? 'Product title'
+    : 'Page title'
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!entity) return
+    const updated = { ...entity, title: e.target.value }
+    dispatch({ type: 'SET_ENTITY', entity: updated as any, contentType })
+    dispatch({ type: 'MARK_DIRTY' })
+  }
+
+  if (!entity) return null
+
+  return (
+    <div className="w-full max-w-md mb-6">
+      <label className="block text-sm font-medium mb-1.5 text-center" style={{ color: 'var(--editor-text-subtle)' }}>
+        {label}
+      </label>
+      <input
+        type="text"
+        value={isDefault ? '' : entity.title || ''}
+        onChange={handleChange}
+        placeholder={label + '...'}
+        className="w-full text-center text-lg font-semibold px-4 py-2.5 rounded-xl border-2 outline-none transition-all"
+        style={{
+          borderColor: 'var(--editor-neutral-200, #e5e7eb)',
+          color: 'var(--editor-text-primary)',
+          background: 'var(--editor-surface, #fff)',
+        }}
+        onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--editor-blue, #2563eb)' }}
+        onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--editor-neutral-200, #e5e7eb)' }}
+      />
+      <p className="text-sm text-center mt-1.5" style={{ color: 'var(--editor-text-subtle)' }}>
+        You can also change this later in settings
+      </p>
+    </div>
+  )
+}
+
 interface PuckItem {
   type: string
   props: Record<string, any>
@@ -348,6 +402,7 @@ export function BlockList() {
             : 'transparent',
         }}
       >
+        {!isPanelDragOver && <EmptyStateTitleInput />}
         <EmptyStateInsertButton />
         <p className="text-base font-medium mb-1" style={{ color: 'var(--editor-text-primary)' }}>
           {isPanelDragOver ? 'Drop here to add block' : 'Start building your page'}
@@ -356,8 +411,8 @@ export function BlockList() {
           {isPanelDragOver ? '' : 'Click + or drag blocks from the panel'}
         </p>
         {!isPanelDragOver && (
-          <p className="text-xs" style={{ color: 'var(--editor-text-disabled)' }}>
-            Press <kbd className="px-1 py-0.5 rounded border text-[10px] font-mono" style={{ borderColor: 'var(--editor-neutral-200)', background: 'var(--editor-surface)' }}>/</kbd> to search
+          <p className="text-sm" style={{ color: 'var(--editor-text-subtle)' }}>
+            Press <kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: 'var(--editor-neutral-300, #d4d4d8)', background: 'var(--editor-surface)', color: 'var(--editor-text-primary)' }}>/</kbd> to search blocks
           </p>
         )}
       </div>

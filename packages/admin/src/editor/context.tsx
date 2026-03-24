@@ -62,40 +62,54 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
         }
       }
 
-      // Prefer draft if it has actual content, otherwise fall back to content_blocks
-      const draftData = safeParse(action.entity.draft)
-      const publishedData = safeParse(action.entity.content_blocks)
-      const puckData = draftData || publishedData
+      // If we already have puckData in state and the entity ID hasn't changed,
+      // this is a metadata-only update (e.g. title, slug, settings) — preserve current blocks
+      const isMetadataUpdate = state.puckData && state.entity &&
+        action.entity.id === state.entity.id &&
+        action.contentType === state.contentType
 
-      // Migrate legacy Hero props to new arrays
-      if (puckData?.content) {
-        for (const block of puckData.content) {
-          if (block.type === 'Hero' && block.props) {
-            const p = block.props
-            // Migrate buttons
-            if ((!p.buttons || p.buttons.length === 0) && (p.ctaPrimaryText || p.ctaSecondaryText)) {
-              const btns: any[] = []
-              if (p.ctaPrimaryText && p.ctaPrimaryLink) btns.push({ text: p.ctaPrimaryText, link: p.ctaPrimaryLink, variant: 'primary', showIcon: true })
-              if (p.ctaSecondaryText && p.ctaSecondaryLink) btns.push({ text: p.ctaSecondaryText, link: p.ctaSecondaryLink, variant: 'secondary', showIcon: false })
-              if (btns.length) p.buttons = btns
-            }
-            // Migrate subheading
-            if ((!p.subheadings || p.subheadings.length === 0) && p.subheading) {
-              p.subheadings = [{ text: p.subheading }]
+      let puckData: Data | null
+
+      if (isMetadataUpdate) {
+        // Keep the in-memory blocks — don't re-derive from content_blocks
+        puckData = state.puckData
+      } else {
+        // Fresh entity load — parse from stored data
+        // Prefer draft if it has actual content, otherwise fall back to content_blocks
+        const draftData = safeParse(action.entity.draft)
+        const publishedData = safeParse(action.entity.content_blocks)
+        puckData = draftData || publishedData
+
+        // Migrate legacy Hero props to new arrays
+        if (puckData?.content) {
+          for (const block of puckData.content) {
+            if (block.type === 'Hero' && block.props) {
+              const p = block.props
+              // Migrate buttons
+              if ((!p.buttons || p.buttons.length === 0) && (p.ctaPrimaryText || p.ctaSecondaryText)) {
+                const btns: any[] = []
+                if (p.ctaPrimaryText && p.ctaPrimaryLink) btns.push({ text: p.ctaPrimaryText, link: p.ctaPrimaryLink, variant: 'primary', showIcon: true })
+                if (p.ctaSecondaryText && p.ctaSecondaryLink) btns.push({ text: p.ctaSecondaryText, link: p.ctaSecondaryLink, variant: 'secondary', showIcon: false })
+                if (btns.length) p.buttons = btns
+              }
+              // Migrate subheading
+              if ((!p.subheadings || p.subheadings.length === 0) && p.subheading) {
+                p.subheadings = [{ text: p.subheading }]
+              }
             }
           }
         }
       }
 
-      const hasDraft = draftData !== null
-      const hasDraftChanges = hasDraft && isPublished
+      const hasDraft = isMetadataUpdate ? state.hasDraftChanges : safeParse(action.entity.draft) !== null
+      const hasDraftChanges = isMetadataUpdate ? (state.isDirty || state.hasDraftChanges) : (hasDraft && isPublished)
 
       return {
         ...state,
         entity: action.entity,
         contentType: action.contentType,
         puckData,
-        isDirty: false,
+        isDirty: isMetadataUpdate ? state.isDirty : false,
         isPublished,
         hasDraftChanges,
         publishState: derivePublishState(isPublished, hasDraftChanges),
@@ -231,7 +245,11 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_SAVE_STATUS', status })
   }, [])
 
+  // Track whether we're currently creating a new entity (prevent double-create)
+  const creatingRef = useRef(false)
+
   // Auto-save: debounced PATCH to /draft endpoint (never touches published content)
+  // For new entities (no ID): auto-creates via POST first, then switches to PATCH
   const autoSave = useCallback((data: Data, entity: ContentEntity, contentType: ContentType) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
 
@@ -250,6 +268,61 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
       try {
         const route = CONTENT_TYPE_ROUTES[contentType]
+
+        // New entity — create it first
+        if (!entity.id) {
+          if (creatingRef.current) return // Already creating
+          creatingRef.current = true
+
+          const slug = (entity.title || 'untitled')
+            .toLowerCase()
+            .replace(/[åä]/g, 'a').replace(/ö/g, 'o')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '')
+            || `untitled-${Date.now().toString(36)}`
+
+          const res = await fetch(`${API_BASE}/admin/${route}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              title: entity.title || 'Untitled',
+              slug,
+              content_blocks: JSON.stringify(data),
+              editor_version: 'puck',
+              status: 'draft',
+            }),
+            signal: controller.signal,
+          })
+
+          if (!res.ok) throw new Error('Create failed')
+          const result = await res.json() as Record<string, any>
+          const created = result.page || result.post || result.course || result.product
+
+          if (created?.id) {
+            // Update entity in state with the new ID
+            const updatedEntity = { ...entity, id: created.id, slug: created.slug || slug }
+            dispatch({ type: 'SET_ENTITY', entity: updatedEntity as ContentEntity, contentType })
+
+            // Replace URL from /pages/new to /pages/:id without triggering re-load
+            const newPath = `/${route}/${created.id}`
+            window.history.replaceState(null, '', newPath)
+          }
+
+          creatingRef.current = false
+          dispatch({ type: 'SET_SAVE_STATUS', status: 'saved' })
+          dispatch({ type: 'MARK_CLEAN' })
+
+          if (savedFeedbackRef.current) clearTimeout(savedFeedbackRef.current)
+          savedFeedbackRef.current = setTimeout(() => {
+            dispatch({ type: 'SET_SAVE_STATUS', status: 'idle' })
+          }, 2000)
+          return
+        }
+
+        // Existing entity — save draft via PATCH
         const res = await fetch(`${API_BASE}/admin/${route}/${entity.id}/draft`, {
           method: 'PATCH',
           headers: {
@@ -279,6 +352,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           dispatch({ type: 'SET_SAVE_STATUS', status: 'idle' })
         }, 2000)
       } catch (err) {
+        creatingRef.current = false
         // Ignore aborted requests — a newer save superseded this one
         if (err instanceof DOMException && err.name === 'AbortError') return
 
@@ -299,8 +373,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     pushHistory(data)
     dispatch({ type: 'SET_PUCK_DATA', data })
     const { entity, contentType } = stateRef.current
-    // Skip auto-save for new entities (no ID yet — will be created on first publish)
-    if (entity && entity.id) {
+    if (entity) {
       autoSave(data, entity, contentType)
     }
   }, [autoSave])

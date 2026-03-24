@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { EditorProvider, useEditor } from './context'
 import { EditorTopBar } from './components/EditorTopBar'
 import { BlockList } from './components/BlockList'
@@ -77,6 +78,7 @@ function legacyHtmlToPuckData(html: string): string {
 function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { setEntity, state, dispatch, unpublish } = useEditor()
   const [user, setUser] = useState<{ name: string; avatar_url: string; role: string } | null>(null)
   const [loading, setLoading] = useState(true)
@@ -335,6 +337,8 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   }
 
   const handleBack = () => {
+    const route = CONTENT_TYPE_ROUTES[contentType]
+    queryClient.invalidateQueries({ queryKey: [`admin-${route}`] })
     navigate(ADMIN_LIST_ROUTES[contentType])
   }
 

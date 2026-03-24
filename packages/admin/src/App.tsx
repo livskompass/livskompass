@@ -19,6 +19,7 @@ import ContactsList from './pages/ContactsList'
 import UsersList from './pages/UsersList'
 import Settings from './pages/Settings'
 import InlineEditorPage from './editor/InlineEditor'
+import HelpAssistant from './components/HelpAssistant'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = getAuthToken()
@@ -58,7 +59,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" replace />
   }
 
-  return <>{children}</>
+  return <>
+    {children}
+    <HelpAssistant />
+  </>
 }
 
 function App() {
