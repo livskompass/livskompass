@@ -42,8 +42,7 @@ export function EditorTopBar({ user, onBack, onPublish, onUnpublish, onToggleHis
     }
   }
 
-  // Only show unpublish for pages and posts (not courses/products which use active/inactive)
-  const showUnpublish = !isNew && (publishState === 'published' || publishState === 'unpublished-changes') && (state.contentType === 'page' || state.contentType === 'post')
+  const showUnpublish = !isNew && (publishState === 'published' || publishState === 'unpublished-changes')
 
   return (
     <div
