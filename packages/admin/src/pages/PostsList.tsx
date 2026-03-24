@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPosts, deletePost, duplicatePost } from '../lib/api'
+import { getPosts, deletePost, duplicatePost, archiveItem } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
@@ -9,7 +9,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '.
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Input } from '../components/ui/input'
-import { Plus, Pencil, Trash2, Copy, Newspaper, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, Newspaper, Search, Archive } from 'lucide-react'
 
 export default function PostsList() {
   const queryClient = useQueryClient()
@@ -32,6 +32,14 @@ export default function PostsList() {
     mutationFn: duplicatePost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
+    },
+  })
+
+  const archiveMutation = useMutation({
+    mutationFn: (id: string) => archiveItem('post', id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-archive'] })
     },
   })
 
@@ -129,6 +137,17 @@ export default function PostsList() {
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
+                      {post.status === 'draft' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => archiveMutation.mutate(post.id)}
+                          disabled={archiveMutation.isPending}
+                          title="Archive"
+                        >
+                          <Archive className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"

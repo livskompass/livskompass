@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getCourses, deleteCourse } from '../lib/api'
+import { getCourses, deleteCourse, archiveItem } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
-import { Plus, Pencil, Trash2, GraduationCap } from 'lucide-react'
+import { Plus, Pencil, Trash2, GraduationCap, Archive } from 'lucide-react'
 
 export default function CoursesList() {
   const queryClient = useQueryClient()
@@ -23,6 +23,14 @@ export default function CoursesList() {
     mutationFn: deleteCourse,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
+    },
+  })
+
+  const archiveMutation = useMutation({
+    mutationFn: (id: string) => archiveItem('course', id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-archive'] })
     },
   })
 
@@ -114,6 +122,17 @@ export default function CoursesList() {
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
+                      {['cancelled', 'completed'].includes(course.status) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => archiveMutation.mutate(course.id)}
+                          disabled={archiveMutation.isPending}
+                          title="Archive"
+                        >
+                          <Archive className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"

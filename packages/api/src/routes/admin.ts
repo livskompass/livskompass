@@ -63,7 +63,7 @@ adminRoutes.use('*', async (c, next) => {
 // List all pages
 adminRoutes.get('/pages', async (c) => {
   const result = await c.env.DB.prepare(`
-    SELECT * FROM pages ORDER BY sort_order ASC
+    SELECT * FROM pages WHERE status != 'archived' ORDER BY sort_order ASC
   `).all()
   return c.json({ pages: result.results })
 })
@@ -185,7 +185,7 @@ adminRoutes.delete('/pages/:id', async (c) => {
 
 adminRoutes.get('/posts', async (c) => {
   const result = await c.env.DB.prepare(`
-    SELECT * FROM posts ORDER BY created_at DESC
+    SELECT * FROM posts WHERE status != 'archived' ORDER BY created_at DESC
   `).all()
   return c.json({ posts: result.results })
 })
@@ -288,7 +288,7 @@ adminRoutes.delete('/posts/:id', async (c) => {
 
 adminRoutes.get('/courses', async (c) => {
   const result = await c.env.DB.prepare(`
-    SELECT * FROM courses ORDER BY start_date DESC
+    SELECT * FROM courses WHERE status != 'archived' ORDER BY start_date DESC
   `).all()
   return c.json({ courses: result.results })
 })
@@ -526,7 +526,7 @@ adminRoutes.post('/bookings/:id/refund', async (c) => {
 // ============ PRODUCTS ============
 
 adminRoutes.get('/products', async (c) => {
-  const result = await c.env.DB.prepare(`SELECT * FROM products ORDER BY title`).all()
+  const result = await c.env.DB.prepare(`SELECT * FROM products WHERE status != 'archived' ORDER BY title`).all()
   return c.json({ products: result.results })
 })
 
@@ -871,6 +871,104 @@ adminRoutes.put('/settings/homepage-slug', async (c) => {
   ).bind('homepage_slug', slug || 'home-2').run()
 
   return c.json({ success: true })
+})
+
+// ============ ARCHIVE ============
+
+// Get all archived items across all content types
+adminRoutes.get('/archive', async (c) => {
+  const [pages, posts, courses, products] = await c.env.DB.batch([
+    c.env.DB.prepare(`SELECT id, slug, title, status, created_at, updated_at, 'page' as content_type FROM pages WHERE status = 'archived' ORDER BY updated_at DESC`),
+    c.env.DB.prepare(`SELECT id, slug, title, status, created_at, updated_at, 'post' as content_type FROM posts WHERE status = 'archived' ORDER BY updated_at DESC`),
+    c.env.DB.prepare(`SELECT id, slug, title, status, created_at, 'course' as content_type FROM courses WHERE status = 'archived' ORDER BY created_at DESC`),
+    c.env.DB.prepare(`SELECT id, slug, title, status, created_at, 'product' as content_type FROM products WHERE status = 'archived' ORDER BY created_at DESC`),
+  ])
+
+  return c.json({
+    items: [
+      ...(pages.results || []),
+      ...(posts.results || []),
+      ...(courses.results || []),
+      ...(products.results || []),
+    ]
+  })
+})
+
+// Archive an item (only if not active)
+adminRoutes.post('/archive/:contentType/:id', async (c) => {
+  const contentType = c.req.param('contentType')
+  const id = c.req.param('id')
+  const table = CONTENT_TYPE_TABLES[contentType]
+
+  if (!table) {
+    return c.json({ error: 'Invalid content type' }, 400)
+  }
+
+  const item = await c.env.DB.prepare(`SELECT status FROM ${table} WHERE id = ?`).bind(id).first<{ status: string }>()
+  if (!item) {
+    return c.json({ error: 'Item not found' }, 404)
+  }
+
+  // Only allow archiving non-active items
+  const activeStatuses: Record<string, string[]> = {
+    page: ['published'],
+    post: ['published'],
+    course: ['active', 'full'],
+    product: ['active'],
+  }
+
+  if (activeStatuses[contentType]?.includes(item.status)) {
+    return c.json({ error: 'Cannot archive an active item. Set it to draft/inactive first.' }, 400)
+  }
+
+  if (item.status === 'archived') {
+    return c.json({ error: 'Item is already archived' }, 400)
+  }
+
+  const hasUpdatedAt = contentType === 'page' || contentType === 'post'
+  const updateSql = hasUpdatedAt
+    ? `UPDATE ${table} SET status = 'archived', updated_at = datetime('now') WHERE id = ?`
+    : `UPDATE ${table} SET status = 'archived' WHERE id = ?`
+
+  await c.env.DB.prepare(updateSql).bind(id).run()
+  return c.json({ success: true })
+})
+
+// Unarchive an item (restore to default inactive status)
+adminRoutes.post('/unarchive/:contentType/:id', async (c) => {
+  const contentType = c.req.param('contentType')
+  const id = c.req.param('id')
+  const table = CONTENT_TYPE_TABLES[contentType]
+
+  if (!table) {
+    return c.json({ error: 'Invalid content type' }, 400)
+  }
+
+  const item = await c.env.DB.prepare(`SELECT status FROM ${table} WHERE id = ?`).bind(id).first<{ status: string }>()
+  if (!item) {
+    return c.json({ error: 'Item not found' }, 404)
+  }
+
+  if (item.status !== 'archived') {
+    return c.json({ error: 'Item is not archived' }, 400)
+  }
+
+  // Restore to default inactive status per content type
+  const restoreStatus: Record<string, string> = {
+    page: 'draft',
+    post: 'draft',
+    course: 'cancelled',
+    product: 'inactive',
+  }
+
+  const newStatus = restoreStatus[contentType]
+  const hasUpdatedAt = contentType === 'page' || contentType === 'post'
+  const updateSql = hasUpdatedAt
+    ? `UPDATE ${table} SET status = ?, updated_at = datetime('now') WHERE id = ?`
+    : `UPDATE ${table} SET status = ? WHERE id = ?`
+
+  await c.env.DB.prepare(updateSql).bind(newStatus, id).run()
+  return c.json({ success: true, status: newStatus })
 })
 
 // ============ DASHBOARD STATS ============

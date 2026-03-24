@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPages, deletePage, duplicatePage, getSettings } from '../lib/api'
+import { getPages, deletePage, duplicatePage, getSettings, archiveItem } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
@@ -9,7 +9,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '.
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
 import { Input } from '../components/ui/input'
-import { Plus, Pencil, Trash2, Copy, FileText, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, FileText, Search, Archive } from 'lucide-react'
 
 export default function PagesList() {
   const queryClient = useQueryClient()
@@ -38,6 +38,14 @@ export default function PagesList() {
     mutationFn: duplicatePage,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-pages'] })
+    },
+  })
+
+  const archiveMutation = useMutation({
+    mutationFn: (id: string) => archiveItem('page', id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-pages'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-archive'] })
     },
   })
 
@@ -142,6 +150,17 @@ export default function PagesList() {
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
+                      {page.status === 'draft' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => archiveMutation.mutate(page.id)}
+                          disabled={archiveMutation.isPending}
+                          title="Archive"
+                        >
+                          <Archive className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"

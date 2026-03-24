@@ -13,6 +13,7 @@ import CoursesList from './pages/CoursesList'
 import BookingsList from './pages/BookingsList'
 import BookingDetail from './pages/BookingDetail'
 import ProductsList from './pages/ProductsList'
+import ArchivePage from './pages/ArchivePage'
 import MediaLibrary from './pages/MediaLibrary'
 import ContactsList from './pages/ContactsList'
 import UsersList from './pages/UsersList'
@@ -87,6 +88,7 @@ function App() {
           <Route path="bookings" element={<BookingsList />} />
           <Route path="bookings/:id" element={<BookingDetail />} />
           <Route path="products" element={<ProductsList />} />
+          <Route path="archive" element={<ArchivePage />} />
           <Route path="media" element={<MediaLibrary />} />
           <Route path="messages" element={<ContactsList />} />
           <Route path="users" element={<UsersList />} />

@@ -259,6 +259,25 @@ export const restoreVersion = (versionId: string) =>
     method: 'POST',
   })
 
+// Archive
+export interface ArchivedItem {
+  id: string
+  slug: string
+  title: string
+  status: string
+  content_type: 'page' | 'post' | 'course' | 'product'
+  created_at: string
+  updated_at?: string
+}
+
+export const getArchive = () => fetchApi<{ items: ArchivedItem[] }>('/admin/archive')
+
+export const archiveItem = (contentType: string, id: string) =>
+  fetchApi<{ success: boolean }>(`/admin/archive/${contentType}/${id}`, { method: 'POST' })
+
+export const unarchiveItem = (contentType: string, id: string) =>
+  fetchApi<{ success: boolean; status: string }>(`/admin/unarchive/${contentType}/${id}`, { method: 'POST' })
+
 // Contacts
 export const getContacts = () => fetchApi<{ contacts: Contact[] }>('/admin/contacts')
 export const markContactRead = (id: string) =>
