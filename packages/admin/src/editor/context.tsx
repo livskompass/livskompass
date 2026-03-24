@@ -64,7 +64,8 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
 
       // If we already have puckData in state and the entity ID hasn't changed,
       // this is a metadata-only update (e.g. title, slug, settings) — preserve current blocks
-      const isMetadataUpdate = state.puckData && state.entity &&
+      // Unless forceReload is set (discard draft, version restore, unpublish)
+      const isMetadataUpdate = !action.forceReload && state.puckData && state.entity &&
         action.entity.id === state.entity.id &&
         action.contentType === state.contentType
 
@@ -496,7 +497,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     if (refreshed) {
       // Force draft to null so SET_ENTITY loads from content_blocks
       refreshed.draft = null
-      dispatch({ type: 'SET_ENTITY', entity: refreshed, contentType })
+      dispatch({ type: 'SET_ENTITY', entity: refreshed, contentType, forceReload: true })
     }
   }, [dispatch])
 
@@ -534,7 +535,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     const data = await refetch.json() as Record<string, any>
     const refreshed = data.page || data.post || data.course || data.product
     if (refreshed) {
-      dispatch({ type: 'SET_ENTITY', entity: refreshed, contentType })
+      dispatch({ type: 'SET_ENTITY', entity: refreshed, contentType, forceReload: true })
     }
   }, [dispatch])
 

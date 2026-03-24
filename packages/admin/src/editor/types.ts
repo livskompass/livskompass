@@ -55,7 +55,7 @@ export interface EditorState {
 // ── Editor Actions ──
 
 export type EditorAction =
-  | { type: 'SET_ENTITY'; entity: ContentEntity; contentType: ContentType }
+  | { type: 'SET_ENTITY'; entity: ContentEntity; contentType: ContentType; forceReload?: boolean }
   | { type: 'SET_PUCK_DATA'; data: Data }
   | { type: 'SET_HOVERED'; blockId: string | null }
   | { type: 'SET_SELECTED'; blockId: string | null }
