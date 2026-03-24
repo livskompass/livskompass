@@ -1,8 +1,39 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { HelpCircle, Search, X, ChevronLeft, ChevronDown, ChevronRight, Minimize2, Maximize2 } from 'lucide-react'
+import {
+  HelpCircle, Search, X, ChevronLeft, ChevronDown, ChevronRight, Minimize2, Maximize2,
+  Archive, ArchiveRestore, Trash2, Copy, Pencil, Plus, Settings, GripVertical,
+  Eye, FileText, Newspaper, GraduationCap, ShoppingBag, Image, Mail, Users,
+  type LucideIcon,
+} from 'lucide-react'
 import { cn } from '../lib/utils'
 import { helpArticles, helpCategories } from '../data/help-content'
 import type { HelpArticle } from '../data/help-content'
+
+/** Map of icon names to Lucide components for inline rendering in help text */
+const ICON_MAP: Record<string, LucideIcon> = {
+  archive: Archive, restore: ArchiveRestore, trash: Trash2, copy: Copy,
+  pencil: Pencil, plus: Plus, settings: Settings, grip: GripVertical,
+  eye: Eye, page: FileText, post: Newspaper, course: GraduationCap,
+  product: ShoppingBag, image: Image, mail: Mail, users: Users,
+  search: Search,
+}
+
+/** Renders text with inline {icon:name} markers replaced by actual icons */
+function RichText({ text }: { text: string }) {
+  const parts = text.split(/(\{icon:[a-zA-Z]+\})/g)
+  return (
+    <>
+      {parts.map((part, i) => {
+        const match = part.match(/^\{icon:([a-zA-Z]+)\}$/)
+        if (match) {
+          const Icon = ICON_MAP[match[1].toLowerCase()]
+          if (Icon) return <Icon key={i} className="inline-block h-3.5 w-3.5 align-text-bottom mx-0.5 text-zinc-500" />
+        }
+        return <span key={i}>{part}</span>
+      })}
+    </>
+  )
+}
 
 const STORAGE_KEY = 'cms-help-state'
 
@@ -340,7 +371,7 @@ export default function HelpAssistant() {
                     <span className="shrink-0 w-5 h-5 rounded-full bg-zinc-100 text-zinc-500 text-[11px] font-semibold flex items-center justify-center mt-0.5">
                       {i + 1}
                     </span>
-                    <span>{step}</span>
+                    <span><RichText text={step} /></span>
                   </li>
                 ))}
               </ol>
@@ -357,7 +388,7 @@ export default function HelpAssistant() {
                     <div key={i} className="text-sm">
                       <span className="font-medium text-zinc-800">{s.name}</span>
                       <span className="text-zinc-400 mx-1.5">&mdash;</span>
-                      <span className="text-zinc-600">{s.description}</span>
+                      <span className="text-zinc-600"><RichText text={s.description} /></span>
                     </div>
                   ))}
                 </div>
@@ -374,7 +405,7 @@ export default function HelpAssistant() {
                   {activeArticle.tips.map((tip, i) => (
                     <li key={i} className="text-sm text-amber-800 leading-relaxed flex gap-2">
                       <span className="shrink-0 mt-1 text-amber-500">&bull;</span>
-                      <span>{tip}</span>
+                      <span><RichText text={tip} /></span>
                     </li>
                   ))}
                 </ul>
