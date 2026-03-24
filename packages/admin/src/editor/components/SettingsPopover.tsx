@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
+import { X, Plus, Trash2, ChevronDown, ChevronRight, Settings } from 'lucide-react'
 import { puckConfig } from '@livskompass/shared'
 import type { Data } from '../types'
 import { useEditor } from '../context'
@@ -98,6 +98,14 @@ interface SettingsPopoverProps {
   blockIndex: number
   anchorRect: DOMRect | null
   onClose: () => void
+  onOpenEntitySettings?: () => void
+}
+
+const DATA_BOUND_BLOCKS: Record<string, string> = {
+  CourseInfo: 'Course details',
+  BookingForm: 'Course details',
+  BookingCTA: 'Course details',
+  PostHeader: 'Post details',
 }
 
 // Access components with 'any' to bypass Puck's Config type which may strip fields
@@ -111,6 +119,7 @@ export function SettingsPopover({
   blockIndex,
   anchorRect,
   onClose,
+  onOpenEntitySettings,
 }: SettingsPopoverProps) {
   const { state, updateData } = useEditor()
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -247,6 +256,19 @@ export function SettingsPopover({
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
+
+        {/* Shortcut to entity settings for data-bound blocks */}
+        {DATA_BOUND_BLOCKS[blockType] && onOpenEntitySettings && (
+          <div className="px-3 pt-2.5 pb-1">
+            <button
+              onClick={() => { onClose(); onOpenEntitySettings() }}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"
+            >
+              <Settings className="h-3.5 w-3.5" />
+              Edit {DATA_BOUND_BLOCKS[blockType].toLowerCase()}
+            </button>
+          </div>
+        )}
 
         {/* Fields */}
         <div className="overflow-y-auto p-3 flex flex-col gap-3" style={{ maxHeight: maxHeight - 44 }}>

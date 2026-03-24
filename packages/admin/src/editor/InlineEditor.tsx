@@ -165,6 +165,13 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const toggleHistory = useCallback(() => setHistoryOpen((v) => !v), [])
   const toggleEntitySettings = useCallback(() => setEntitySettingsOpen((v) => !v), [])
 
+  // Listen for open-entity-settings custom event (from SettingsPopover shortcut button)
+  useEffect(() => {
+    const handler = () => setEntitySettingsOpen(true)
+    window.addEventListener('open-entity-settings', handler)
+    return () => window.removeEventListener('open-entity-settings', handler)
+  }, [])
+
   // Auth — get user info (ProtectedRoute already verified auth)
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
@@ -531,6 +538,7 @@ function SelectedBlockToolbar() {
       blockLabel={blockLabel}
       blockIndex={blockIndex}
       totalBlocks={items.length}
+      onOpenEntitySettings={() => window.dispatchEvent(new CustomEvent('open-entity-settings'))}
     />
   )
 }

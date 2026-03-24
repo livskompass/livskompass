@@ -12,6 +12,7 @@ interface FloatingToolbarProps {
   blockLabel?: string
   blockIndex: number
   totalBlocks: number
+  onOpenEntitySettings?: () => void
 }
 
 export function FloatingToolbar({
@@ -20,6 +21,7 @@ export function FloatingToolbar({
   blockLabel,
   blockIndex,
   totalBlocks,
+  onOpenEntitySettings,
 }: FloatingToolbarProps) {
   const displayName = blockLabel || blockType
   const position = useToolbarPosition(blockId)
@@ -200,6 +202,7 @@ export function FloatingToolbar({
           blockIndex={blockIndex}
           anchorRect={settingsBtnRef.current?.getBoundingClientRect() ?? null}
           onClose={() => setShowSettings(false)}
+          onOpenEntitySettings={onOpenEntitySettings}
         />
       )}
     </div>

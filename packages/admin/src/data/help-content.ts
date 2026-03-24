@@ -925,6 +925,7 @@ export const helpArticles: HelpArticle[] = [
     tips: [
       'This block is for course detail pages only — it reads data from the current course.',
       'Labels are customizable inline: Location, Date, Price, Spots, Deadline.',
+      'To edit the actual course data (dates, price, location): click the "Edit course details" button in the block settings, or click "Course details" in the top bar.',
     ],
   },
   {

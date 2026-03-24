@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react'
-import { puckConfig, InlineEditBlockContext } from '@livskompass/shared'
+import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
+import { puckConfig, InlineEditBlockContext, CourseContext, PostContext } from '@livskompass/shared'
 import type { Data } from '../types'
 import { useEditor } from '../context'
 import { useEditorSelection } from '../hooks/useEditorSelection'
@@ -383,6 +383,29 @@ export function BlockList() {
     }
   }, [items.length, state.selectedBlockId, selectBlock])
 
+  // Provide data context for data-bound blocks (CourseInfo, BookingForm, PostHeader, etc.)
+  const courseContextValue = useMemo(() => {
+    if (state.contentType !== 'course' || !state.entity) return null
+    const e = state.entity as Record<string, any>
+    return {
+      id: e.id, slug: e.slug, title: e.title, description: e.description || '',
+      location: e.location || '', start_date: e.start_date || null, end_date: e.end_date || null,
+      price_sek: e.price_sek ?? null, max_participants: e.max_participants ?? null,
+      current_participants: e.current_participants ?? 0, registration_deadline: e.registration_deadline || null,
+      status: e.status || 'draft', content: e.content || '',
+    }
+  }, [state.contentType, state.entity])
+
+  const postContextValue = useMemo(() => {
+    if (state.contentType !== 'post' || !state.entity) return null
+    const e = state.entity as Record<string, any>
+    return {
+      id: e.id, slug: e.slug, title: e.title, excerpt: e.excerpt || '',
+      featured_image: e.featured_image || null, published_at: e.published_at || '',
+      content: e.content || '',
+    }
+  }, [state.contentType, state.entity])
+
   // ── Empty state — also a drop target ──
 
   if (items.length === 0) {
@@ -419,7 +442,22 @@ export function BlockList() {
     )
   }
 
+  // Wrap content with data context providers for data-bound blocks
+  const DataProviders = useMemo(() => {
+    return ({ children }: { children: React.ReactNode }) => {
+      let wrapped = <>{children}</>
+      if (courseContextValue) {
+        wrapped = <CourseContext.Provider value={courseContextValue}>{wrapped}</CourseContext.Provider>
+      }
+      if (postContextValue) {
+        wrapped = <PostContext.Provider value={postContextValue}>{wrapped}</PostContext.Provider>
+      }
+      return wrapped
+    }
+  }, [courseContextValue, postContextValue])
+
   return (
+    <DataProviders>
     <InlineImagePickerProvider>
     <InlineMediaPickerProvider>
     <InlineRichTextProvider>
@@ -496,6 +534,7 @@ export function BlockList() {
     </InlineRichTextProvider>
     </InlineMediaPickerProvider>
     </InlineImagePickerProvider>
+    </DataProviders>
   )
 }
 
