@@ -102,14 +102,14 @@ export const helpArticles: HelpArticle[] = [
     steps: [
       'Items that are not active can be archived to keep your lists clean.',
       'Pages/Posts: archive when status is "Draft".',
-      'Courses: archive when status is "Cancelled" or "Completed".',
-      'Products: archive when status is "Inactive".',
+      'Courses: archive when status is "Draft", "Cancelled", or "Completed".',
+      'Products: archive when status is "Draft".',
       'Click the {icon:archive} archive icon in the actions column of the list view.',
       'Archived items move to the {icon:archive} Archive section in the sidebar.',
       'From the Archive page, click the {icon:restore} restore icon to unarchive, or the {icon:trash} trash icon to delete permanently.',
     ],
     tips: [
-      'You cannot archive active/published items — set them to draft/inactive first.',
+      'You cannot archive published items — set them to draft first.',
       'Archiving does NOT delete the item — it just hides it from the main list.',
     ],
   },
@@ -212,7 +212,7 @@ export const helpArticles: HelpArticle[] = [
     ],
     tips: [
       'Products with an External URL show a "Buy" button that links to that URL.',
-      'To temporarily hide a product, change its status to "Inactive" instead of deleting it.',
+      'To temporarily hide a product, unpublish it (set to "Draft") instead of deleting it.',
     ],
   },
   {
@@ -564,7 +564,7 @@ export const helpArticles: HelpArticle[] = [
       { name: 'Section Background', description: 'Background color behind the grid.' },
     ],
     tips: [
-      'Use source "courses" to auto-show active courses without manual updating.',
+      'Use source "courses" to auto-show published courses without manual updating.',
       'Use source "posts" to auto-show latest blog posts.',
     ],
   },
@@ -727,7 +727,7 @@ export const helpArticles: HelpArticle[] = [
     keywords: ['course', 'list', 'courses', 'training', 'workshop', 'utbildningar', 'auto'],
     steps: [
       'Drag "Course List" from the Dynamic category in the block panel.',
-      'It automatically fetches and displays active courses from the database.',
+      'It automatically fetches and displays published courses from the database.',
       'Click the heading to edit it inline.',
       'Open settings to adjust display options.',
     ],
@@ -745,7 +745,7 @@ export const helpArticles: HelpArticle[] = [
     ],
     tips: [
       'This block updates automatically — when you add or remove courses, the list reflects the changes.',
-      'Only active and full courses are shown (not cancelled, completed, or archived).',
+      'Only published and full courses are shown (not draft, cancelled, completed, or archived).',
     ],
   },
   {
@@ -773,7 +773,7 @@ export const helpArticles: HelpArticle[] = [
     ],
     tips: [
       'This block updates automatically when you add, remove, or change products.',
-      'Only active products are shown (not inactive or archived).',
+      'Only published products are shown (not draft or archived).',
     ],
   },
   {
@@ -1038,7 +1038,7 @@ export const helpArticles: HelpArticle[] = [
     settings: [
       { name: 'Title', description: 'The course name.' },
       { name: 'Slug', description: 'URL path (e.g. "act-workshop" becomes /utbildningar/act-workshop).' },
-      { name: 'Status', description: 'Active (bookable), Full (at capacity), Completed (past), or Cancelled.' },
+      { name: 'Status', description: 'Draft (hidden), Published (bookable), Full (at capacity), Completed (past), or Cancelled.' },
       { name: 'Description', description: 'Short description shown in course list cards.' },
       { name: 'Location', description: 'Where the course takes place (e.g. "Stockholm" or "Online").' },
       { name: 'Start date', description: 'Course start date. Shown on the course page and in listings.' },
@@ -1067,7 +1067,7 @@ export const helpArticles: HelpArticle[] = [
     settings: [
       { name: 'Title', description: 'The product name.' },
       { name: 'Slug', description: 'URL path (e.g. "act-book" becomes /material/act-book).' },
-      { name: 'Status', description: 'Active (visible on public site) or Inactive (hidden).' },
+      { name: 'Status', description: 'Draft (hidden from public site) or Published (visible).' },
       { name: 'Type', description: 'Product category: book, cd, cards, app, or download.' },
       { name: 'Price (SEK)', description: 'Product price in Swedish kronor.' },
       { name: 'In stock', description: 'Whether the product is currently available for purchase.' },
@@ -1078,7 +1078,7 @@ export const helpArticles: HelpArticle[] = [
     tips: [
       'If External URL is set, the "Buy" button links directly to that URL.',
       'Products without an external URL show the price but have no checkout flow (external purchase only for now).',
-      'Set status to "Inactive" to hide a product without deleting it.',
+      'Set status to "Draft" to hide a product without deleting it.',
     ],
   },
   {
@@ -1118,7 +1118,7 @@ export const helpArticles: HelpArticle[] = [
       'Go to Courses in the sidebar to see all courses.',
       'Click "New course" to create a new course.',
       'Course-specific fields: title, dates, location, price, max participants, registration deadline.',
-      'Course statuses: Active (bookable), Full (at capacity), Completed (past), Cancelled.',
+      'Course statuses: Draft (hidden), Published (bookable), Full (at capacity), Completed (past), Cancelled.',
       'The status auto-updates to "Full" when participants reach max capacity.',
       'Add content blocks to build a rich course detail page.',
       'Use "Course Info" and "Booking Form" blocks on course pages for dynamic data display.',
@@ -1133,7 +1133,7 @@ export const helpArticles: HelpArticle[] = [
       'Go to Products in the sidebar to see all products.',
       'Click "New product" to create a new product.',
       'Product-specific fields: title, type (book/cd/cards/app/download), price, stock status, external URL, image.',
-      'Product statuses: Active (visible on public site) or Inactive (hidden).',
+      'Product statuses: Draft (hidden) or Published (visible on public site).',
       'If external URL is set, the buy button links to that URL (e.g. an external store).',
       'Add content blocks to build a rich product detail page.',
     ],
@@ -1321,7 +1321,7 @@ export const helpArticles: HelpArticle[] = [
     keywords: ['dashboard', 'overview', 'stats', 'home', 'summary', 'count'],
     steps: [
       'The Dashboard is the first page you see after logging in.',
-      'It shows quick stats: published pages, published posts, active courses, paid bookings, and unread messages.',
+      'It shows quick stats: published pages, published posts, published courses, paid bookings, and unread messages.',
       'Click any stat card to navigate to the corresponding section.',
     ],
   },
