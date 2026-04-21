@@ -307,13 +307,17 @@ export function BlockList() {
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       const blockType = e.dataTransfer.getData(PANEL_DRAG_TYPE)
-      if (!blockType || !puckData) {
+      if (!blockType) {
         setIsPanelDragOver(false)
         setPanelDropIndex(-1)
         return
       }
 
       e.preventDefault()
+
+      // For a brand-new empty page, puckData is null (reducer rejects empty
+      // content arrays). Seed an empty shape so the first drop starts the page.
+      const base: Data = puckData || { content: [], root: { props: {} }, zones: {} }
 
       const comp = components[blockType]
       const defaultProps = comp?.defaultProps
@@ -324,10 +328,10 @@ export function BlockList() {
 
       const newBlock = { type: blockType, props: defaultProps }
       const insertAt = findPanelDropIndex(e.clientY)
-      const content = [...puckData.content]
+      const content = [...base.content]
       content.splice(insertAt, 0, newBlock)
 
-      updateData({ ...puckData, content } as Data)
+      updateData({ ...base, content } as Data)
       setIsPanelDragOver(false)
       setPanelDropIndex(-1)
     },
