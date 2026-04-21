@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button } from '../components/ui/button'
+import { CardGrid, PostGrid, PageCards, CourseList, ProductList, CTABanner, Testimonial, FeatureGrid, PersonCard, PricingTable } from '@livskompass/shared'
 // Card components available: Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
 import { Badge } from '../components/ui/badge'
 import { Input } from '../components/ui/input'
@@ -7,6 +8,185 @@ import { Textarea } from '../components/ui/textarea'
 import { Label } from '../components/ui/label'
 import { Separator } from '../components/ui/separator'
 import { Skeleton } from '../components/ui/skeleton'
+import { cn } from '../lib/utils'
+
+type CardColor = 'white' | 'yellow' | 'mist' | 'dark'
+type CTABannerBg = 'primary' | 'dark' | 'light' | 'gradient'
+
+const cardColorSwatches: Array<{ value: CardColor; label: string; bg: string; border?: string }> = [
+  { value: 'white', label: 'White', bg: 'bg-white', border: 'border border-stone-300' },
+  { value: 'yellow', label: 'Yellow', bg: 'bg-amber-300' },
+  { value: 'mist', label: 'Mist', bg: 'bg-mist' },
+  { value: 'dark', label: 'Dark green', bg: 'bg-forest-800' },
+]
+
+const ctaBannerBgSwatches: Array<{ value: CTABannerBg; label: string; bg: string; border?: string }> = [
+  { value: 'primary', label: 'Primary', bg: 'bg-forest-600' },
+  { value: 'dark', label: 'Dark', bg: 'bg-stone-900' },
+  { value: 'light', label: 'Light', bg: 'bg-surface-alt', border: 'border border-stone-300' },
+  { value: 'gradient', label: 'Gradient', bg: '' },
+]
+
+function Swatch({ active, bg, label, border, onClick, gradient }: { active: boolean; bg: string; label: string; border?: string; onClick: () => void; gradient?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'w-9 h-9 rounded-full transition-all',
+        bg,
+        border,
+        active ? 'ring-2 ring-offset-2 ring-forest-700 scale-110' : 'hover:scale-105'
+      )}
+      style={gradient ? { background: 'var(--gradient-hero)' } : undefined}
+      aria-label={label}
+      title={label}
+    />
+  )
+}
+
+function CardColorPicker({ value, onChange }: { value: CardColor; onChange: (c: CardColor) => void }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-xs font-semibold text-forest-700 uppercase tracking-wider w-28">Card color</span>
+      <div className="flex gap-2">
+        {cardColorSwatches.map((s) => (
+          <Swatch key={s.value} active={value === s.value} bg={s.bg} label={s.label} border={s.border} onClick={() => onChange(s.value)} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function CTABannerBgPicker({ value, onChange }: { value: CTABannerBg; onChange: (c: CTABannerBg) => void }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-xs font-semibold text-forest-700 uppercase tracking-wider w-28">Background</span>
+      <div className="flex gap-2">
+        {ctaBannerBgSwatches.map((s) => (
+          <Swatch key={s.value} active={value === s.value} bg={s.bg} label={s.label} border={s.border} onClick={() => onChange(s.value)} gradient={s.value === 'gradient'} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ColumnPicker({ value, onChange, options = [2, 3, 4] }: { value: number; onChange: (n: number) => void; options?: number[] }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-xs font-semibold text-forest-700 uppercase tracking-wider w-28">Columns</span>
+      <div className="flex gap-2">
+        {options.map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onChange(n)}
+            className={cn(
+              'w-9 h-9 rounded-lg font-semibold text-sm transition-all',
+              value === n
+                ? 'bg-forest-800 text-white ring-2 ring-offset-2 ring-forest-700'
+                : 'bg-stone-100 text-forest-800 hover:bg-stone-200'
+            )}
+            aria-label={`${n} columns`}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+type CTABannerPadding = 'small' | 'medium' | 'large'
+type CTABannerWidth = 'full' | 'contained' | 'narrow'
+
+function SegmentedPicker<T extends string>({ label, value, onChange, options }: { label: string; value: T; onChange: (v: T) => void; options: Array<{ value: T; label: string }> }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-xs font-semibold text-forest-700 uppercase tracking-wider w-28">{label}</span>
+      <div className="flex gap-2">
+        {options.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => onChange(o.value)}
+            className={cn(
+              'h-9 px-4 rounded-lg font-medium text-xs uppercase tracking-wider transition-all',
+              value === o.value
+                ? 'bg-forest-800 text-white ring-2 ring-offset-2 ring-forest-700'
+                : 'bg-stone-100 text-forest-800 hover:bg-stone-200'
+            )}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function VariantLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h4 className="text-xs font-semibold text-forest-700 uppercase tracking-wider mb-3">
+      {children}
+    </h4>
+  )
+}
+
+function VariantCell({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col">
+      <VariantLabel>{label}</VariantLabel>
+      <div>{children}</div>
+    </div>
+  )
+}
+
+/** Collapses block section-padding CSS vars to 0 so multiple variants fit compactly in grid cells.
+    Only applied inside VariantGrid — stacked variants keep their natural production padding. */
+const compactGridStyle: React.CSSProperties = {
+  // @ts-expect-error CSS custom properties
+  '--section-xs': '0',
+  '--section-sm': '0',
+  '--section-md': '0',
+  '--section-lg': '0',
+  '--section-xl': '0',
+}
+
+function VariantGrid({ children, cols = 3 }: { children: React.ReactNode; cols?: number }) {
+  const colClass =
+    cols === 2 ? 'grid-cols-1 md:grid-cols-2'
+    : cols === 4 ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4'
+    : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+  return (
+    <div className={cn('grid gap-8', colClass)} style={compactGridStyle}>
+      {children}
+    </div>
+  )
+}
+
+const sampleImage1 = 'https://picsum.photos/seed/livs1/800/450'
+const sampleImage2 = 'https://picsum.photos/seed/livs2/800/450'
+const sampleImage3 = 'https://picsum.photos/seed/livs3/800/450'
+const sampleImage4 = 'https://picsum.photos/seed/livs4/800/450'
+
+const sampleTestimonials = [
+  { quote: 'Den här utbildningen har förändrat hur jag arbetar med klienter. Otroligt givande.', author: 'Anna Lindqvist', role: 'Legitimerad psykolog', avatar: sampleImage1 },
+  { quote: 'Fredrik är en fantastisk lärare. Innehållet är både djupgående och praktiskt tillämpbart.', author: 'Erik Johansson', role: 'Kurator', avatar: sampleImage2 },
+  { quote: 'Bästa investeringen i min yrkesroll på flera år. Rekommenderas varmt.', author: 'Maria Karlsson', role: 'Psykoterapeut', avatar: sampleImage3 },
+]
+
+const sampleFeatureItems = [
+  { icon: 'heart', title: 'Evidensbaserat', description: 'Bygger på gedigen forskning inom ACT och mindfulness.' },
+  { icon: 'users', title: 'Gruppformat', description: 'Lär dig i en stödjande gemenskap med andra professionella.' },
+  { icon: 'target', title: 'Praktisk tillämpning', description: 'Verktyg du kan använda direkt i ditt dagliga arbete.' },
+]
+
+const samplePricingTiers = [
+  { name: 'Bas', price: '2 500', description: 'För privatpersoner', features: ['2 dagar utbildning', 'Kursmaterial', 'Certifikat'], highlighted: false, ctaText: 'Välj Bas', ctaLink: '#' },
+  { name: 'Professional', price: '4 500', description: 'För yrkesverksamma', features: ['3 dagar utbildning', 'Komplett kursmaterial', 'Individuell coaching', 'Certifikat'], highlighted: true, ctaText: 'Välj Professional', ctaLink: '#' },
+  { name: 'Team', price: '12 000', description: 'För hela teamet', features: ['3 dagar utbildning', 'Upp till 10 deltagare', 'Företagsanpassat', 'Uppföljning'], highlighted: false, ctaText: 'Kontakta oss', ctaLink: '#' },
+]
 
 const colors = {
   'Forest (Primary)': [
@@ -98,6 +278,23 @@ export default function DesignSystem() {
 }
 
 function ComponentsTab() {
+  const [cardGridColor, setCardGridColor] = useState<CardColor>('yellow')
+  const [postGridColor, setPostGridColor] = useState<CardColor>('yellow')
+  const [pageCardsColor, setPageCardsColor] = useState<CardColor>('yellow')
+  const [courseListColor, setCourseListColor] = useState<CardColor>('yellow')
+  const [productListColor, setProductListColor] = useState<CardColor>('yellow')
+  const [featureGridColor, setFeatureGridColor] = useState<CardColor>('yellow')
+  const [ctaBannerBg, setCtaBannerBg] = useState<CTABannerBg>('primary')
+
+  const [cardGridCols, setCardGridCols] = useState(3)
+  const [postGridCols, setPostGridCols] = useState(3)
+  const [pageCardsCols, setPageCardsCols] = useState(3)
+  const [courseListCols, setCourseListCols] = useState(2)
+  const [productListCols, setProductListCols] = useState(3)
+
+  const [ctaBannerPadding, setCtaBannerPadding] = useState<CTABannerPadding>('medium')
+  const [ctaBannerWidth, setCtaBannerWidth] = useState<CTABannerWidth>('contained')
+
   return (
     <>
       {/* Buttons */}
@@ -149,114 +346,310 @@ function ComponentsTab() {
         </div>
       </Section>
 
-      {/* Cards */}
-      <Section title="Cards">
-        {/* 4 color variants from Figma */}
-        <div>
-          <h3 className="text-sm font-semibold text-forest-700 uppercase tracking-wider mb-4">Color variants (with image)</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Yellow card */}
-            <div className="rounded-[16px] overflow-hidden bg-amber-300">
-              <div className="h-[220px] bg-forest-200" />
-              <div className="p-6">
-                <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">Acceptance and commitment therapy exercises</h3>
-                <p className="text-sm text-forest-800/70">Läs mer om nästa gruppledarutbildning och anmäl dig</p>
-              </div>
-            </div>
-            {/* Mist card */}
-            <div className="rounded-[16px] overflow-hidden" style={{ background: '#C7DDDC' }}>
-              <div className="h-[220px] bg-forest-300" />
-              <div className="p-6">
-                <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">Acceptance and commitment therapy exercises</h3>
-                <p className="text-sm text-forest-800/70">Läs mer om nästa gruppledarutbildning och anmäl dig</p>
-              </div>
-            </div>
-            {/* Dark green card */}
-            <div className="rounded-[16px] overflow-hidden bg-forest-800">
-              <div className="h-[220px] bg-forest-400" />
-              <div className="p-6">
-                <h3 className="text-[22px] font-semibold text-amber-300 leading-tight mb-2">Acceptance and commitment therapy exercises</h3>
-                <p className="text-sm text-amber-300/70">Läs mer om nästa gruppledarutbildning och anmäl dig</p>
-              </div>
-            </div>
-            {/* Yellow card (rounded image) */}
-            <div className="rounded-[16px] overflow-hidden bg-amber-300">
-              <div className="p-4 pb-0">
-                <div className="h-[200px] bg-forest-200 rounded-[12px]" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">Acceptance and commitment therapy exercises</h3>
-                <p className="text-sm text-forest-800/70">Läs mer om nästa gruppledarutbildning och anmäl dig</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Cards — real production block components, interactive color picker + all CMS option variants.
+          Edit the blocks in packages/shared/src/blocks/ and changes reflect here + in production. */}
 
-        {/* Without image */}
-        <div className="mt-10">
-          <h3 className="text-sm font-semibold text-forest-700 uppercase tracking-wider mb-4">Without image</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="rounded-[16px] overflow-hidden bg-amber-300 p-6 flex flex-col">
-              <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">Course title here</h3>
-              <p className="text-sm text-forest-800/70 mb-6 flex-1">Short description of the content or course.</p>
-              <Button variant="default" size="sm" className="w-fit">Läs mer</Button>
-            </div>
-            <div className="rounded-[16px] overflow-hidden p-6 flex flex-col" style={{ background: '#C7DDDC' }}>
-              <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">Article title here</h3>
-              <p className="text-sm text-forest-800/70 mb-6 flex-1">Short description of the content or article.</p>
-              <Button variant="default" size="sm" className="w-fit">Läs mer</Button>
-            </div>
-            <div className="rounded-[16px] overflow-hidden bg-forest-800 p-6 flex flex-col">
-              <h3 className="text-[22px] font-semibold text-amber-300 leading-tight mb-2">Featured content</h3>
-              <p className="text-sm text-amber-300/70 mb-6 flex-1">Highlighted on dark background.</p>
-              <Button variant="secondary" size="sm" className="w-fit">Läs mer</Button>
-            </div>
-            <div className="rounded-[16px] overflow-hidden bg-white border border-stone-200 p-6 flex flex-col">
-              <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">Neutral card</h3>
-              <p className="text-sm text-stone-600 mb-6 flex-1">Clean white card with subtle border.</p>
-              <Button variant="outline" size="sm" className="w-fit">Läs mer</Button>
-            </div>
-          </div>
-        </div>
+      <Section title="CardGrid">
+        <p className="text-sm text-stone-600 mb-6">Manual card block. Badge, image, title, description. Manual source in the design system; dynamic sources (posts/courses/products) fetch live data.</p>
+        <CardColorPicker value={cardGridColor} onChange={setCardGridColor} />
+        <ColumnPicker value={cardGridCols} onChange={setCardGridCols} options={[2, 3, 4]} />
 
-        {/* With button + meta */}
-        <div className="mt-10">
-          <h3 className="text-sm font-semibold text-forest-700 uppercase tracking-wider mb-4">With image + button</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-[16px] overflow-hidden bg-amber-300">
-              <div className="h-[200px] bg-forest-200" />
-              <div className="p-6 flex flex-col">
-                <span className="text-xs font-medium text-forest-800/50 uppercase tracking-wider mb-2">Utbildning</span>
-                <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">ACT Gruppledarutbildning</h3>
-                <p className="text-sm text-forest-800/70 mb-4">Stockholm, 15-17 april 2026</p>
-                <div className="flex gap-3">
-                  <Button variant="default" size="sm">Boka plats</Button>
-                  <Button variant="ghost" size="sm" className="text-forest-800">Läs mer</Button>
-                </div>
-              </div>
+        <VariantGrid cols={cardGridCols}>
+          <VariantCell label="Full — image + badge + description">
+            <CardGrid
+              heading="" subheading="" source="manual" maxItems={1} columns={1 as 3} cardStyle="default"
+              cardColor={cardGridColor}
+              manualCards={[{ title: 'ACT Gruppledarutbildning', description: 'En tre dagar lång utbildning för terapeuter och gruppledare.', image: sampleImage1, link: '#', badge: 'Utbildning' }]}
+              fullBadgeText="Fully booked" spotsAvailableText="Spots available" emptyManualText="" emptyDynamicText=""
+            />
+          </VariantCell>
+          <VariantCell label="No image">
+            <CardGrid
+              heading="" subheading="" source="manual" maxItems={1} columns={1 as 3} cardStyle="default"
+              cardColor={cardGridColor}
+              manualCards={[{ title: 'ACT Gruppledarutbildning', description: 'En tre dagar lång utbildning för terapeuter och gruppledare.', image: '', link: '#', badge: 'Utbildning' }]}
+              fullBadgeText="Fully booked" spotsAvailableText="Spots available" emptyManualText="" emptyDynamicText=""
+            />
+          </VariantCell>
+          <VariantCell label="No badge">
+            <CardGrid
+              heading="" subheading="" source="manual" maxItems={1} columns={1 as 3} cardStyle="default"
+              cardColor={cardGridColor}
+              manualCards={[{ title: 'ACT Gruppledarutbildning', description: 'En tre dagar lång utbildning för terapeuter och gruppledare.', image: sampleImage1, link: '#', badge: '' }]}
+              fullBadgeText="Fully booked" spotsAvailableText="Spots available" emptyManualText="" emptyDynamicText=""
+            />
+          </VariantCell>
+          <VariantCell label="Title only">
+            <CardGrid
+              heading="" subheading="" source="manual" maxItems={1} columns={1 as 3} cardStyle="default"
+              cardColor={cardGridColor}
+              manualCards={[{ title: 'ACT Gruppledarutbildning', description: '', image: '', link: '#', badge: '' }]}
+              fullBadgeText="Fully booked" spotsAvailableText="Spots available" emptyManualText="" emptyDynamicText=""
+            />
+          </VariantCell>
+          <VariantCell label="Dynamic: courses">
+            <CardGrid
+              heading="" subheading="" source="courses" maxItems={1} columns={1 as 3} cardStyle="default"
+              cardColor={cardGridColor} manualCards={[]}
+              fullBadgeText="Fully booked" spotsAvailableText="Spots available" emptyManualText="" emptyDynamicText="No courses"
+            />
+          </VariantCell>
+          <VariantCell label="Dynamic: posts">
+            <CardGrid
+              heading="" subheading="" source="posts" maxItems={1} columns={1 as 3} cardStyle="default"
+              cardColor={cardGridColor} manualCards={[]}
+              fullBadgeText="Fully booked" spotsAvailableText="Spots available" emptyManualText="" emptyDynamicText="No posts"
+            />
+          </VariantCell>
+          <VariantCell label="Dynamic: products">
+            <CardGrid
+              heading="" subheading="" source="products" maxItems={1} columns={1 as 3} cardStyle="default"
+              cardColor={cardGridColor} manualCards={[]}
+              fullBadgeText="Fully booked" spotsAvailableText="Spots available" emptyManualText="" emptyDynamicText="No products"
+            />
+          </VariantCell>
+        </VariantGrid>
+      </Section>
+
+      <Section title="PostGrid">
+        <p className="text-sm text-stone-600 mb-6">Dynamic grid of latest posts. Toggles: showImage, showDate, showExcerpt. Live data.</p>
+        <CardColorPicker value={postGridColor} onChange={setPostGridColor} />
+        <ColumnPicker value={postGridCols} onChange={setPostGridCols} options={[2, 3, 4]} />
+
+        <VariantGrid cols={postGridCols}>
+          <VariantCell label="Full — image + date + excerpt">
+            <PostGrid heading="" subheading="" count={1} columns={1 as 3} showImage showExcerpt showDate emptyText="No posts in database" cardColor={postGridColor} />
+          </VariantCell>
+          <VariantCell label="No image">
+            <PostGrid heading="" subheading="" count={1} columns={1 as 3} showImage={false} showExcerpt showDate emptyText="No posts in database" cardColor={postGridColor} />
+          </VariantCell>
+          <VariantCell label="No date">
+            <PostGrid heading="" subheading="" count={1} columns={1 as 3} showImage showExcerpt showDate={false} emptyText="No posts in database" cardColor={postGridColor} />
+          </VariantCell>
+          <VariantCell label="No excerpt">
+            <PostGrid heading="" subheading="" count={1} columns={1 as 3} showImage showExcerpt={false} showDate emptyText="No posts in database" cardColor={postGridColor} />
+          </VariantCell>
+          <VariantCell label="Title only">
+            <PostGrid heading="" subheading="" count={1} columns={1 as 3} showImage={false} showExcerpt={false} showDate={false} emptyText="No posts in database" cardColor={postGridColor} />
+          </VariantCell>
+        </VariantGrid>
+      </Section>
+
+      <Section title="PageCards">
+        <p className="text-sm text-stone-600 mb-6">Page list with three styles: card, list, minimal.</p>
+        <CardColorPicker value={pageCardsColor} onChange={setPageCardsColor} />
+        <ColumnPicker value={pageCardsCols} onChange={setPageCardsCols} options={[2, 3, 4]} />
+
+        <VariantGrid cols={pageCardsCols}>
+          <VariantCell label="Card — with description">
+            <PageCards
+              heading="" parentSlug=""
+              manualPages={[{ title: 'Vad är ACT', description: 'En introduktion till Acceptance and Commitment Therapy.', slug: 'act', icon: '' }]}
+              columns={1 as 3} showDescription style="card" emptyText="" emptyManualText="" cardColor={pageCardsColor}
+            />
+          </VariantCell>
+          <VariantCell label="Card — no description">
+            <PageCards
+              heading="" parentSlug=""
+              manualPages={[{ title: 'Vad är ACT', description: '', slug: 'act', icon: '' }]}
+              columns={1 as 3} showDescription={false} style="card" emptyText="" emptyManualText="" cardColor={pageCardsColor}
+            />
+          </VariantCell>
+          <VariantCell label="List — with description">
+            <PageCards
+              heading="" parentSlug=""
+              manualPages={[
+                { title: 'Vad är ACT', description: 'En introduktion till metoden.', slug: 'act', icon: '' },
+                { title: 'Mindfulness', description: 'Övningar och vetenskap bakom mindfulness.', slug: 'mindfulness', icon: '' },
+                { title: 'Forskning', description: 'Aktuell forskning på metoden.', slug: 'forskning-pa-metoden', icon: '' },
+              ]}
+              columns={1 as 3} showDescription style="list" emptyText="" emptyManualText="" cardColor={pageCardsColor}
+            />
+          </VariantCell>
+          <VariantCell label="List — no description">
+            <PageCards
+              heading="" parentSlug=""
+              manualPages={[
+                { title: 'Vad är ACT', description: '', slug: 'act', icon: '' },
+                { title: 'Mindfulness', description: '', slug: 'mindfulness', icon: '' },
+                { title: 'Forskning', description: '', slug: 'forskning-pa-metoden', icon: '' },
+              ]}
+              columns={1 as 3} showDescription={false} style="list" emptyText="" emptyManualText="" cardColor={pageCardsColor}
+            />
+          </VariantCell>
+          <VariantCell label="Minimal">
+            <PageCards
+              heading="" parentSlug=""
+              manualPages={[
+                { title: 'Vad är ACT', description: '', slug: 'act', icon: '' },
+                { title: 'Mindfulness', description: '', slug: 'mindfulness', icon: '' },
+                { title: 'Forskning', description: '', slug: 'forskning-pa-metoden', icon: '' },
+                { title: 'Kontakt', description: '', slug: 'kontakt', icon: '' },
+              ]}
+              columns={1 as 3} showDescription={false} style="minimal" emptyText="" emptyManualText="" cardColor={pageCardsColor}
+            />
+          </VariantCell>
+        </VariantGrid>
+      </Section>
+
+      <Section title="CourseList">
+        <p className="text-sm text-stone-600 mb-6">Dynamic course cards with status, location, date, price. Live data. Production default is 2 columns.</p>
+        <CardColorPicker value={courseListColor} onChange={setCourseListColor} />
+        <ColumnPicker value={courseListCols} onChange={setCourseListCols} options={[2, 3]} />
+
+        <VariantGrid cols={courseListCols}>
+          <VariantCell label="Full — location + date + price + read more">
+            <CourseList heading="" maxItems={1} columns={1 as 2} compactMode={false} showLocation showPrice readMoreText="View course" bookButtonText="Book" fullLabel="Fully booked" spotsText="spots left" emptyText="No courses in database" cardColor={courseListColor} />
+          </VariantCell>
+          <VariantCell label="Compact mode">
+            <CourseList heading="" maxItems={1} columns={1 as 2} compactMode showLocation showPrice readMoreText="View course" bookButtonText="Book" fullLabel="Fully booked" spotsText="spots left" emptyText="No courses in database" cardColor={courseListColor} />
+          </VariantCell>
+          <VariantCell label="Without price">
+            <CourseList heading="" maxItems={1} columns={1 as 2} compactMode={false} showLocation showPrice={false} readMoreText="View course" bookButtonText="Book" fullLabel="Fully booked" spotsText="spots left" emptyText="No courses in database" cardColor={courseListColor} />
+          </VariantCell>
+          <VariantCell label="Without location">
+            <CourseList heading="" maxItems={1} columns={1 as 2} compactMode={false} showLocation={false} showPrice readMoreText="View course" bookButtonText="Book" fullLabel="Fully booked" spotsText="spots left" emptyText="No courses in database" cardColor={courseListColor} />
+          </VariantCell>
+          <VariantCell label="Compact + no price">
+            <CourseList heading="" maxItems={1} columns={1 as 2} compactMode showLocation showPrice={false} readMoreText="View course" bookButtonText="Book" fullLabel="Fully booked" spotsText="spots left" emptyText="No courses in database" cardColor={courseListColor} />
+          </VariantCell>
+        </VariantGrid>
+      </Section>
+
+      <Section title="ProductList">
+        <p className="text-sm text-stone-600 mb-6">Dynamic product cards with type, price, buy button. Live data.</p>
+        <CardColorPicker value={productListColor} onChange={setProductListColor} />
+        <ColumnPicker value={productListCols} onChange={setProductListCols} options={[2, 3]} />
+
+        <VariantGrid cols={productListCols}>
+          <VariantCell label="Full — image + price + buy button">
+            <ProductList heading="" filterType="" columns={1 as 3} maxItems={1} showImage showPrice buyButtonText="Buy" freeLabel="Free" outOfStockLabel="Out of stock" emptyText="No products in database" typeLabels={{ book: 'Books', cd: 'CDs', cards: 'Cards', app: 'Apps', download: 'Downloads', manual: 'Manuals' }} cardColor={productListColor} />
+          </VariantCell>
+          <VariantCell label="No image">
+            <ProductList heading="" filterType="" columns={1 as 3} maxItems={1} showImage={false} showPrice buyButtonText="Buy" freeLabel="Free" outOfStockLabel="Out of stock" emptyText="No products in database" typeLabels={{ book: 'Books', cd: 'CDs', cards: 'Cards', app: 'Apps', download: 'Downloads', manual: 'Manuals' }} cardColor={productListColor} />
+          </VariantCell>
+          <VariantCell label="No price">
+            <ProductList heading="" filterType="" columns={1 as 3} maxItems={1} showImage showPrice={false} buyButtonText="Buy" freeLabel="Free" outOfStockLabel="Out of stock" emptyText="No products in database" typeLabels={{ book: 'Books', cd: 'CDs', cards: 'Cards', app: 'Apps', download: 'Downloads', manual: 'Manuals' }} cardColor={productListColor} />
+          </VariantCell>
+        </VariantGrid>
+      </Section>
+
+      <Section title="CTABanner">
+        <p className="text-sm text-stone-600 mb-6">Full-width banner with heading, description, and button(s). Pick background, width, and padding — each variant below demos a composition change.</p>
+        <CTABannerBgPicker value={ctaBannerBg} onChange={setCtaBannerBg} />
+        <SegmentedPicker label="Width" value={ctaBannerWidth} onChange={setCtaBannerWidth} options={[{ value: 'full', label: 'Full' }, { value: 'contained', label: 'Contained' }, { value: 'narrow', label: 'Narrow' }]} />
+        <SegmentedPicker label="Padding" value={ctaBannerPadding} onChange={setCtaBannerPadding} options={[{ value: 'small', label: 'Small' }, { value: 'medium', label: 'Medium' }, { value: 'large', label: 'Large' }]} />
+
+        <div className="space-y-12 mt-8">
+          <VariantCell label="Center — 1 button">
+            <CTABanner heading="Ready to get started?" description="Join our upcoming ACT training and transform your practice." buttonText="Book now" buttonLink="#" backgroundColor={ctaBannerBg} alignment="center" width={ctaBannerWidth} padding={ctaBannerPadding} />
+          </VariantCell>
+          <VariantCell label="Left align — 2 buttons">
+            <CTABanner heading="Ready to get started?" description="Join our upcoming ACT training and transform your practice." buttonText="" buttonLink="" buttons={[{ text: 'Book now', link: '#', variant: 'primary' }, { text: 'Learn more', link: '#', variant: 'outline' }]} backgroundColor={ctaBannerBg} alignment="left" width={ctaBannerWidth} padding={ctaBannerPadding} />
+          </VariantCell>
+          <VariantCell label="Right align">
+            <CTABanner heading="Ready to get started?" description="Join our upcoming ACT training." buttonText="Book now" buttonLink="#" backgroundColor={ctaBannerBg} alignment="right" width={ctaBannerWidth} padding={ctaBannerPadding} />
+          </VariantCell>
+          <VariantCell label="No description">
+            <CTABanner heading="Ready to get started?" description="" buttonText="Book now" buttonLink="#" backgroundColor={ctaBannerBg} alignment="center" width={ctaBannerWidth} padding={ctaBannerPadding} />
+          </VariantCell>
+        </div>
+      </Section>
+
+      <Section title="Testimonial">
+        <p className="text-sm text-stone-600 mb-6">Quote blocks with author + avatar. Three display modes × three styles. Stacked full-width to match production layout.</p>
+
+        <div className="space-y-16">
+          <VariantCell label="Single — card style">
+            <Testimonial items={[sampleTestimonials[0]]} style="card" displayMode="single" showQuoteIcon />
+          </VariantCell>
+          <VariantCell label="Single — minimal style">
+            <Testimonial items={[sampleTestimonials[0]]} style="minimal" displayMode="single" showQuoteIcon />
+          </VariantCell>
+          <VariantCell label="Single — featured style">
+            <Testimonial items={[sampleTestimonials[0]]} style="featured" displayMode="single" showQuoteIcon />
+          </VariantCell>
+          <VariantCell label="Single — no quote icon">
+            <Testimonial items={[sampleTestimonials[0]]} style="card" displayMode="single" showQuoteIcon={false} />
+          </VariantCell>
+          <VariantCell label="Grid — 3 items">
+            <Testimonial items={sampleTestimonials} style="card" displayMode="grid" showQuoteIcon />
+          </VariantCell>
+          <VariantCell label="Carousel — infinite marquee">
+            <div className="overflow-hidden">
+              <Testimonial items={sampleTestimonials} style="card" displayMode="carousel" showQuoteIcon autoPlaySpeed={30} />
             </div>
-            <div className="rounded-[16px] overflow-hidden" style={{ background: '#C7DDDC' }}>
-              <div className="h-[200px] bg-forest-300" />
-              <div className="p-6 flex flex-col">
-                <span className="text-xs font-medium text-forest-800/50 uppercase tracking-wider mb-2">Material</span>
-                <h3 className="text-[22px] font-semibold text-forest-800 leading-tight mb-2">ACT Samtalskort</h3>
-                <p className="text-sm text-forest-800/70 mb-4">Verktyg för terapeuter och gruppledare</p>
-                <div className="flex gap-3">
-                  <Button variant="default" size="sm">Köp nu</Button>
-                  <Button variant="ghost" size="sm" className="text-forest-800">Detaljer</Button>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[16px] overflow-hidden bg-forest-800">
-              <div className="h-[200px] bg-forest-400" />
-              <div className="p-6 flex flex-col">
-                <span className="text-xs font-medium text-amber-300/50 uppercase tracking-wider mb-2">Nyhet</span>
-                <h3 className="text-[22px] font-semibold text-amber-300 leading-tight mb-2">Ny forskning om ACT</h3>
-                <p className="text-sm text-amber-300/70 mb-4">Publicerad mars 2026</p>
-                <Button variant="secondary" size="sm" className="w-fit">Läs artikeln</Button>
-              </div>
-            </div>
-          </div>
+          </VariantCell>
+        </div>
+      </Section>
+
+      <Section title="FeatureGrid">
+        <p className="text-sm text-stone-600 mb-6">Icon feature grid. Styles: cards, minimal. Icon sizes: small/medium/large. Stacked full-width to match production 3-col layout.</p>
+        <CardColorPicker value={featureGridColor} onChange={setFeatureGridColor} />
+
+        <div className="space-y-16">
+          <VariantCell label="Cards style — 3 items, medium icons">
+            <FeatureGrid heading="" subheading="" columns={3} items={sampleFeatureItems} style="cards" iconSize="medium" padding="medium" cardColor={featureGridColor} />
+          </VariantCell>
+          <VariantCell label="Cards style — small icons">
+            <FeatureGrid heading="" subheading="" columns={3} items={sampleFeatureItems} style="cards" iconSize="small" padding="medium" cardColor={featureGridColor} />
+          </VariantCell>
+          <VariantCell label="Cards style — large icons">
+            <FeatureGrid heading="" subheading="" columns={3} items={sampleFeatureItems} style="cards" iconSize="large" padding="medium" cardColor={featureGridColor} />
+          </VariantCell>
+          <VariantCell label="Minimal style">
+            <FeatureGrid heading="" subheading="" columns={3} items={sampleFeatureItems} style="minimal" iconSize="medium" padding="medium" cardColor={featureGridColor} />
+          </VariantCell>
+          <VariantCell label="2 columns">
+            <FeatureGrid heading="" subheading="" columns={2} items={sampleFeatureItems.slice(0, 2)} style="cards" iconSize="medium" padding="medium" cardColor={featureGridColor} />
+          </VariantCell>
+        </div>
+      </Section>
+
+      <Section title="PersonCard">
+        <p className="text-sm text-stone-600 mb-6">Author / person card with avatar, title, bio, contact info. Styles: card, horizontal.</p>
+
+        <VariantGrid>
+          <VariantCell label="Card — with bio">
+            <PersonCard name="Fredrik Livheim" title="Legitimerad psykolog" bio="Fredrik har utvecklat gruppformatet av ACT och forskat inom området i över 15 år." image={sampleImage1} email="" phone="" style="card" imageSize="medium" />
+          </VariantCell>
+          <VariantCell label="Card — with contact info">
+            <PersonCard name="Fredrik Livheim" title="Legitimerad psykolog" bio="Fredrik har utvecklat gruppformatet av ACT och forskat inom området." image={sampleImage1} email="fredrik@livskompass.se" phone="+46 70 123 45 67" style="card" imageSize="medium" />
+          </VariantCell>
+          <VariantCell label="Card — no bio">
+            <PersonCard name="Fredrik Livheim" title="Legitimerad psykolog" bio="" image={sampleImage1} email="" phone="" style="card" imageSize="medium" />
+          </VariantCell>
+          <VariantCell label="Card — small image">
+            <PersonCard name="Fredrik Livheim" title="Legitimerad psykolog" bio="Fredrik har utvecklat gruppformatet av ACT och forskat inom området." image={sampleImage1} email="" phone="" style="card" imageSize="small" />
+          </VariantCell>
+          <VariantCell label="Horizontal — with bio">
+            <PersonCard name="Fredrik Livheim" title="Legitimerad psykolog" bio="Fredrik har utvecklat gruppformatet av ACT och forskat inom området i över 15 år." image={sampleImage1} email="" phone="" style="horizontal" imageSize="small" />
+          </VariantCell>
+          <VariantCell label="Horizontal — with contact">
+            <PersonCard name="Fredrik Livheim" title="Legitimerad psykolog" bio="Fredrik har utvecklat gruppformatet av ACT." image={sampleImage1} email="fredrik@livskompass.se" phone="+46 70 123 45 67" style="horizontal" imageSize="small" />
+          </VariantCell>
+        </VariantGrid>
+      </Section>
+
+      <Section title="PricingTable">
+        <p className="text-sm text-stone-600 mb-6">Pricing tiers with features, CTA, and optional highlighted tier. Stacked full-width to match production layout.</p>
+
+        <div className="space-y-16">
+          <VariantCell label="3 tiers — middle highlighted">
+            <PricingTable heading="" items={samplePricingTiers} columns={3} highlightLabel="Most popular" emptyText="" showCurrency />
+          </VariantCell>
+          <VariantCell label="2 tiers — one highlighted">
+            <PricingTable heading="" items={samplePricingTiers.slice(0, 2)} columns={2} highlightLabel="Recommended" emptyText="" showCurrency />
+          </VariantCell>
+          <VariantCell label="Single tier — no highlight">
+            <PricingTable heading="" items={[{ ...samplePricingTiers[0], highlighted: false }]} columns={2} highlightLabel="" emptyText="" showCurrency />
+          </VariantCell>
+          <VariantCell label="Single tier — highlighted">
+            <PricingTable heading="" items={[{ ...samplePricingTiers[1], highlighted: true }]} columns={2} highlightLabel="Recommended" emptyText="" showCurrency />
+          </VariantCell>
+          <VariantCell label="No currency">
+            <PricingTable heading="" items={samplePricingTiers.slice(0, 2)} columns={2} highlightLabel="Recommended" emptyText="" showCurrency={false} />
+          </VariantCell>
         </div>
       </Section>
 

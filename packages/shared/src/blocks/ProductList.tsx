@@ -10,6 +10,7 @@ export interface ProductListProps {
   heading: string
   filterType: string
   columns: 2 | 3
+  maxItems?: number
   showImage?: boolean
   showPrice?: boolean
   buyButtonText: string
@@ -40,7 +41,7 @@ const defaultTypeLabels: Record<string, string> = {
   download: 'Downloads',
 }
 
-const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
+const colMap: Record<number, string> = { 1: '', 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -53,6 +54,7 @@ export function ProductList({
   heading = '',
   filterType = '',
   columns = 3,
+  maxItems = 0,
   showImage = true,
   showPrice = true,
   buyButtonText = 'Buy',
@@ -84,7 +86,8 @@ export function ProductList({
 
   const { data, loading } = useFetchJson<{ products: Product[] }>('/products')
   const allProducts = data?.products || []
-  const products = filterType ? allProducts.filter((p) => p.type === filterType) : allProducts
+  const filtered = filterType ? allProducts.filter((p) => p.type === filterType) : allProducts
+  const products = maxItems > 0 ? filtered.slice(0, maxItems) : filtered
 
   // Group products by type
   const grouped = new Map<string, Product[]>()
@@ -102,7 +105,7 @@ export function ProductList({
         <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
-        <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
+        <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[3])}>
           {Array.from({ length: Math.min(columns, 3) }).map((_, i) => (
             <div key={i} className="rounded-xl border border-default bg-surface-elevated overflow-hidden animate-pulse">
               <div className="aspect-[4/3] bg-surface-alt" />
@@ -123,7 +126,7 @@ export function ProductList({
                   {typeLabels[type]}
                 </h3>
               )}
-              <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
+              <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[3])}>
                 {typeProducts.map((product) => (
                   <div key={product.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col', colors.bg)}>
                     <EditItemBadge cmsRoute="products" entityId={product.id} label="Edit product" />

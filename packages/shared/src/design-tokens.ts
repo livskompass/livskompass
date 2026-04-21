@@ -46,9 +46,9 @@ export const colors = {
 } as const
 
 export const fonts = {
-  display: "'Instrument Serif', Georgia, 'Times New Roman', serif",
+  display: "'Rubik', system-ui, -apple-system, sans-serif",
   body: "'Inter', system-ui, -apple-system, sans-serif",
 } as const
 
 export const fontUrl =
-  'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,400..600&display=swap'
+  'https://fonts.googleapis.com/css2?family=Rubik:wght@300..700&family=Inter:opsz,wght@14..32,400..700&display=swap'

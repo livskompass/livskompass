@@ -293,7 +293,7 @@ export default function Settings() {
   }, [data])
 
   useEffect(() => {
-    if (siteData) {
+    if (siteData && !siteSettingsLoaded) {
       if (siteData.header) setHeader(siteData.header)
       if (siteData.footer) setFooter(siteData.footer)
       setSiteSettingsLoaded(true)
@@ -330,7 +330,6 @@ export default function Settings() {
   const saveSiteMutation = useMutation({
     mutationFn: updateSiteSettings,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-site-settings'] })
       setSiteSaved(true)
       setSiteDirty(false)
       setTimeout(() => setSiteSaved(false), 3000)

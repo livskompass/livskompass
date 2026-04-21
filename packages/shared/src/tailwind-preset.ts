@@ -177,7 +177,7 @@ const preset: Partial<Config> = {
             fontSize: '1.0625rem',
             lineHeight: '1.65',
             'h1, h2': {
-              fontFamily: "'Instrument Serif', Georgia, 'Times New Roman', serif",
+              fontFamily: "'Rubik', system-ui, -apple-system, sans-serif",
               fontWeight: '400',
             },
             h1: {

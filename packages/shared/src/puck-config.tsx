@@ -778,11 +778,12 @@ export const puckConfig: Config = {
     },
     ProductList: {
       label: 'Product List',
-      defaultProps: { sectionBg: 'transparent', heading: '', filterType: '', columns: 3, showImage: true, showPrice: true, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.', cardColor: 'mist' },
+      defaultProps: { sectionBg: 'transparent', heading: '', filterType: '', columns: 3, maxItems: 0, showImage: true, showPrice: true, buyButtonText: 'Köp', freeLabel: 'Gratis', outOfStockLabel: 'Slut i lager', emptyText: 'Inga produkter hittades.', cardColor: 'mist' },
       fields: {
         sectionBg: sectionBgField,
         filterType: { type: 'select', label: 'Filter by type', options: [{ label: 'All', value: '' }, { label: 'Books', value: 'book' }, { label: 'CDs', value: 'cd' }, { label: 'Cards', value: 'cards' }, { label: 'Apps', value: 'app' }, { label: 'Downloads', value: 'download' }] },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
+        maxItems: { type: 'number', label: 'Max items (0 = all)', min: 0 },
         showImage: { type: 'radio', label: 'Show image', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showPrice: { type: 'radio', label: 'Show price', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         cardColor: { type: 'select', label: 'Card color', options: [{ label: 'White', value: 'white' }, { label: 'Yellow', value: 'yellow' }, { label: 'Mist', value: 'mist' }, { label: 'Dark green', value: 'dark' }] },

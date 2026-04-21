@@ -19,7 +19,7 @@ export interface PageCardsProps {
   cardColor?: string
 }
 
-const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
+const colMap: Record<number, string> = { 1: '', 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -84,7 +84,7 @@ export function PageCards({
   if (loading && parentSlug) {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4`}>
+        <div className={`grid grid-cols-1 ${colMap[columns] ?? colMap[3]} gap-4`}>
           {Array.from({ length: Math.min(columns, 3) }).map((_, i) => (
             <div key={i} className="rounded-xl border border-default bg-surface-elevated overflow-hidden animate-pulse">
               <div className="p-5 space-y-3">
@@ -139,7 +139,7 @@ export function PageCards({
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
       <ArrayDragProvider fieldName="manualPages">
-      <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-4 reveal`}>
+      <div className={`grid grid-cols-1 ${colMap[columns] ?? colMap[3]} gap-4 reveal`}>
         {pages.map((page, i) => (
           <ArrayItemControls key={i} fieldName="manualPages" itemIndex={i} totalItems={pages.length}>
           <div className={cn('relative group rounded-lg p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>

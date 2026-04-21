@@ -43,7 +43,7 @@ export function injectPreviewCSS(iframeDoc: Document) {
   iframeDoc.body.style.fontFamily = fonts.body
   iframeDoc.body.style.color = colors.stone[800]
 
-  // Load Instrument Serif + Inter fonts
+  // Load Rubik + Inter fonts
   const fontsLink = iframeDoc.createElement('link')
   fontsLink.rel = 'stylesheet'
   fontsLink.href = fontUrl

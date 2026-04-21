@@ -35,7 +35,7 @@ interface Course {
   status: string
 }
 
-const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
+const colMap: Record<number, string> = { 1: '', 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -97,7 +97,7 @@ export function CourseList({
         <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
-        <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[2])}>
+        <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[2])}>
           {[1, 2].map((i) => (
             <div key={i} className="rounded-xl border border-default bg-surface-elevated p-6 animate-pulse">
               <div className="h-5 bg-surface-alt rounded w-1/4 mb-3" />
@@ -108,7 +108,7 @@ export function CourseList({
           ))}
         </div>
       ) : displayed.length > 0 ? (
-        <div className={cn('grid grid-cols-1 gap-6 reveal', colMap[columns] || colMap[2])}>
+        <div className={cn('grid grid-cols-1 gap-6 reveal', colMap[columns] ?? colMap[2])}>
           {displayed.map((course) => {
             const isFull = course.status === 'full'
             const hasCapacity = course.max_participants != null

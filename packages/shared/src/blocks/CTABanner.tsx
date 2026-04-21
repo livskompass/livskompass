@@ -108,7 +108,7 @@ export function CTABanner({
   const alignClass = alignment === 'center' ? 'text-center items-center' : alignment === 'right' ? 'text-right items-end' : 'text-left items-start'
 
   return (
-    <div className="mx-auto" style={{ maxWidth: width === 'full' ? 'var(--width-content)' : width === 'narrow' ? '640px' : '960px', paddingInline: width === 'full' ? undefined : 'var(--container-px)' }}>
+    <div className="mx-auto" style={{ maxWidth: width === 'full' ? 'var(--width-content)' : width === 'narrow' ? '640px' : '960px', paddingInline: 'var(--container-px)' }}>
     <section
       className={cn('relative overflow-hidden', bg, widthMap[width] || widthMap.contained)}
       style={{

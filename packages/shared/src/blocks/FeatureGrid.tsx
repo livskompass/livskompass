@@ -40,7 +40,7 @@ const iconMap: Record<string, LucideIcon> = {
   sparkles: Sparkles,
 }
 
-const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
+const colMap: Record<number, string> = { 1: '', 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -141,7 +141,7 @@ export function FeatureGrid({
         </div>
       )}
       <ArrayDragProvider fieldName="items">
-      <div className={cn('grid grid-cols-1 gap-6', colMap[columns] || colMap[3])}>
+      <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[3])}>
         {items.map((item, i) => (
           <FeatureItem key={i} item={item} index={i} style={style} iconSize={iconSize} totalItems={items.length} cardColor={cardColor} />
         ))}

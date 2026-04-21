@@ -16,7 +16,7 @@ export interface PostGridProps {
   cardColor?: string
 }
 
-const colMap = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
+const colMap: Record<number, string> = { 1: '', 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -73,7 +73,7 @@ export function PostGrid({
         </div>
       )}
       {loading ? (
-        <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
+        <div className={`grid grid-cols-1 ${colMap[columns] ?? colMap[3]} gap-6`}>
           {Array.from({ length: Math.min(limit, 3) }).map((_, i) => (
             <div key={i} className="rounded-xl border border-default bg-surface-elevated overflow-hidden animate-pulse">
               {showImage && <div className="aspect-video bg-surface-alt" />}
@@ -86,7 +86,7 @@ export function PostGrid({
           ))}
         </div>
       ) : posts.length > 0 ? (
-        <div className={`grid grid-cols-1 ${colMap[columns] || colMap[3]} gap-6`}>
+        <div className={`grid grid-cols-1 ${colMap[columns] ?? colMap[3]} gap-6`}>
           {posts.map((post) => (
             <div key={post.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
               <EditItemBadge cmsRoute="posts" entityId={post.id} label="Edit post" />
