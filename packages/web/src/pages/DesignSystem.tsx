@@ -168,7 +168,6 @@ function VariantGrid({ children, cols = 3 }: { children: React.ReactNode; cols?:
 const sampleImage1 = 'https://picsum.photos/seed/livs1/800/450'
 const sampleImage2 = 'https://picsum.photos/seed/livs2/800/450'
 const sampleImage3 = 'https://picsum.photos/seed/livs3/800/450'
-const sampleImage4 = 'https://picsum.photos/seed/livs4/800/450'
 
 const sampleTestimonials = [
   { quote: 'Den här utbildningen har förändrat hur jag arbetar med klienter. Otroligt givande.', author: 'Anna Lindqvist', role: 'Legitimerad psykolog', avatar: sampleImage1 },
