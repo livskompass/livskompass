@@ -118,7 +118,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { setEntity, state, dispatch, unpublish } = useEditor()
+  const { setEntity, state, dispatch, unpublish, cancelPendingSave } = useEditor()
   const [user, setUser] = useState<{ name: string; avatar_url: string; role: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -306,6 +306,10 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
     if (!isNew && !state.puckData) return
     const puckData = state.puckData || { content: [], root: { props: {} }, zones: {} }
 
+    // Cancel any debounced draft save so it doesn't race with the PUT and
+    // re-create a draft immediately after we clear it.
+    cancelPendingSave()
+
     const route = CONTENT_TYPE_ROUTES[contentType]
 
     try {
@@ -362,15 +366,27 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         throw new Error(errBody.error || `Publish failed (${res.status})`)
       }
 
-      // Refresh entity
+      // Refresh entity. Use forceReload so the reducer re-derives everything
+      // from server columns (draft cleared, status='published', etc.) instead
+      // of taking the "metadata-only update" branch and keeping the stale
+      // hasDraftChanges flag.
       const updated = await fetch(`${API_BASE}/admin/${route}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((r) => r.json()) as Record<string, any>
 
       const entity = updated.page || updated.post || updated.course || updated.product
       if (entity) {
-        setEntity(entity, contentType)
+        dispatch({ type: 'SET_ENTITY', entity, contentType, forceReload: true })
       }
+
+      // A slug change may have cascaded into site_header / site_footer /
+      // other content blocks on the server. Bust the caches so the next page
+      // that reads them sees the updated data.
+      queryClient.invalidateQueries({ queryKey: ['admin-site-settings'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-pages'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] })
     } catch (err) {
       console.error('Publish failed:', err)
       showToast('Publish failed. Please try again.', 'error')

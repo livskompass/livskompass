@@ -62,6 +62,30 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
         }
       }
 
+      // Draft JSON now stores { content, root, zones, metadata? }. Extract the
+      // metadata overlay so the admin UI shows draft metadata (e.g. an
+      // auto-saved slug rename) instead of the last-published column values.
+      const parseDraftMeta = (json: string | null | undefined): Record<string, any> | null => {
+        if (!json) return null
+        try {
+          const parsed = JSON.parse(json)
+          return parsed && typeof parsed.metadata === 'object' ? parsed.metadata : null
+        } catch {
+          return null
+        }
+      }
+      const draftHasNonEmpty = (json: string | null | undefined): boolean => {
+        if (!json) return false
+        try {
+          const parsed = JSON.parse(json)
+          const hasContent = Array.isArray(parsed?.content) && parsed.content.length > 0
+          const hasMeta = parsed?.metadata && typeof parsed.metadata === 'object' && Object.keys(parsed.metadata).length > 0
+          return hasContent || hasMeta
+        } catch {
+          return false
+        }
+      }
+
       // If we already have puckData in state and the entity ID hasn't changed,
       // this is a metadata-only update (e.g. title, slug, settings) — preserve current blocks
       // Unless forceReload is set (discard draft, version restore, unpublish)
@@ -70,11 +94,18 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
         action.contentType === state.contentType
 
       let puckData: Data | null
+      let resolvedEntity: ContentEntity = action.entity
 
       if (isMetadataUpdate) {
         // Keep the in-memory blocks — don't re-derive from content_blocks
         puckData = state.puckData
       } else {
+        // Fresh entity load — overlay any draft.metadata on the entity fields
+        const draftMeta = parseDraftMeta(action.entity.draft)
+        if (draftMeta) {
+          resolvedEntity = { ...action.entity, ...draftMeta } as ContentEntity
+        }
+
         // Fresh entity load — parse from stored data
         // Prefer draft if it has actual content, otherwise fall back to content_blocks
         const draftData = safeParse(action.entity.draft)
@@ -102,12 +133,12 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
         }
       }
 
-      const hasDraft = isMetadataUpdate ? state.hasDraftChanges : safeParse(action.entity.draft) !== null
+      const hasDraft = isMetadataUpdate ? state.hasDraftChanges : draftHasNonEmpty(action.entity.draft)
       const hasDraftChanges = isMetadataUpdate ? (state.isDirty || state.hasDraftChanges) : (hasDraft && isPublished)
 
       return {
         ...state,
-        entity: action.entity,
+        entity: resolvedEntity,
         contentType: action.contentType,
         puckData,
         isDirty: isMetadataUpdate ? state.isDirty : false,
@@ -186,6 +217,11 @@ interface EditorContextValue {
   setEntity: (entity: ContentEntity, contentType: ContentType) => void
   /** Update Puck data (triggers auto-save to draft) */
   updateData: (data: Data) => void
+  /** Patch entity metadata (slug, title, etc.) — auto-saves into draft */
+  updateEntityMeta: (patch: Partial<ContentEntity>) => void
+  /** Cancel a pending debounced draft save (call before Publish to prevent
+   *  a stale PATCH from re-creating a draft right after the PUT clears it). */
+  cancelPendingSave: () => void
   /** Hover a block */
   hoverBlock: (blockId: string | null) => void
   /** Select a block */
@@ -232,6 +268,32 @@ const CONTENT_TYPE_ROUTES: Record<ContentType, string> = {
   product: 'products',
 }
 
+/** Metadata fields mirrored into draft JSON so slug/title/etc. auto-save
+ *  behind the "Unpublished changes" state until the user clicks Publish.
+ *  Keep in sync with columns accepted by the server PUT handlers. */
+const METADATA_KEYS_BY_TYPE: Record<ContentType, string[]> = {
+  page: ['slug', 'title', 'meta_description', 'parent_slug', 'sort_order'],
+  post: ['slug', 'title', 'excerpt', 'featured_image', 'published_at'],
+  course: [
+    'slug', 'title', 'description', 'location',
+    'start_date', 'end_date', 'price_sek', 'max_participants',
+    'registration_deadline',
+  ],
+  product: [
+    'slug', 'title', 'description', 'type',
+    'price_sek', 'external_url', 'image_url', 'in_stock',
+  ],
+}
+
+function buildMetadataSnapshot(entity: ContentEntity, contentType: ContentType): Record<string, any> {
+  const e = entity as Record<string, any>
+  const out: Record<string, any> = {}
+  for (const key of METADATA_KEYS_BY_TYPE[contentType]) {
+    if (key in e) out[key] = e[key]
+  }
+  return out
+}
+
 export function EditorProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(editorReducer, initialState)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>()
@@ -249,12 +311,22 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   // Track whether we're currently creating a new entity (prevent double-create)
   const creatingRef = useRef(false)
 
-  // Auto-save: debounced PATCH to /draft endpoint (never touches published content)
-  // For new entities (no ID): auto-creates via POST first, then switches to PATCH
-  const autoSave = useCallback((data: Data, entity: ContentEntity, contentType: ContentType) => {
+  // Use a ref to track latest state for auto-save
+  const stateRef = useRef(state)
+  stateRef.current = state
+
+  // Auto-save: debounced PATCH to /draft endpoint (never touches published content).
+  // Reads from stateRef so both content edits (updateData) and metadata edits
+  // (updateEntityMeta) trigger the same flow. Draft JSON shape:
+  //   { content, root, zones, metadata: { slug, title, ... } }
+  // For new entities (no ID): auto-creates via POST first, then switches to PATCH.
+  const autoSave = useCallback(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
 
     saveTimerRef.current = setTimeout(async () => {
+      const { entity, contentType, puckData } = stateRef.current
+      if (!entity) return
+
       const token = localStorage.getItem('admin_token')
       if (!token) return
 
@@ -269,18 +341,21 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
       try {
         const route = CONTENT_TYPE_ROUTES[contentType]
+        const data: Data = puckData || { content: [], root: { props: {} }, zones: {} }
 
-        // New entity — create it first
+        // New entity — create it first. Prefer any slug the user typed in the
+        // settings drawer over an auto-generated one.
         if (!entity.id) {
           if (creatingRef.current) return // Already creating
           creatingRef.current = true
 
-          const slug = (entity.title || 'untitled')
+          const generatedSlug = (entity.title || 'untitled')
             .toLowerCase()
             .replace(/[åä]/g, 'a').replace(/ö/g, 'o')
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-|-$/g, '')
             || `untitled-${Date.now().toString(36)}`
+          const slug = entity.slug || generatedSlug
 
           const res = await fetch(`${API_BASE}/admin/${route}`, {
             method: 'POST',
@@ -323,7 +398,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           return
         }
 
-        // Existing entity — save draft via PATCH
+        // Existing entity — save draft via PATCH with metadata snapshot
+        const metadata = buildMetadataSnapshot(entity, contentType)
         const res = await fetch(`${API_BASE}/admin/${route}/${entity.id}/draft`, {
           method: 'PATCH',
           headers: {
@@ -334,6 +410,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
             content: data.content,
             root: data.root,
             zones: data.zones,
+            metadata,
           }),
           signal: controller.signal,
         })
@@ -344,7 +421,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'MARK_CLEAN' })
 
         // Mark that there are now draft changes (if entity is published)
-        if (entity.status === 'published') {
+        if (entity.status === 'published' || entity.status === 'full') {
           dispatch({ type: 'SET_DRAFT_STATE', hasDraftChanges: true })
         }
 
@@ -366,18 +443,33 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }, 1000) // 1s debounce
   }, [])
 
-  // Use a ref to track latest state for auto-save
-  const stateRef = useRef(state)
-  stateRef.current = state
-
   const updateDataWithSave = useCallback((data: Data) => {
     pushHistory(data)
     dispatch({ type: 'SET_PUCK_DATA', data })
-    const { entity, contentType } = stateRef.current
-    if (entity) {
-      autoSave(data, entity, contentType)
+    if (stateRef.current.entity) {
+      autoSave()
     }
   }, [autoSave])
+
+  const updateEntityMeta = useCallback((patch: Partial<ContentEntity>) => {
+    const { entity, contentType } = stateRef.current
+    if (!entity) return
+    const updated = { ...entity, ...patch }
+    dispatch({ type: 'SET_ENTITY', entity: updated as ContentEntity, contentType })
+    dispatch({ type: 'MARK_DIRTY' })
+    autoSave()
+  }, [autoSave])
+
+  const cancelPendingSave = useCallback(() => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current)
+      saveTimerRef.current = undefined
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+  }, [])
 
   const hoverBlock = useCallback((blockId: string | null) => {
     dispatch({ type: 'SET_HOVERED', blockId })
@@ -399,9 +491,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'UNDO' })
     // Trigger auto-save for the restored state
     setTimeout(() => {
-      const { entity, contentType, puckData } = stateRef.current
+      const { entity, puckData } = stateRef.current
       if (entity && entity.id && puckData) {
-        autoSave(puckData, entity, contentType)
+        autoSave()
       }
     }, 0)
   }, [autoSave])
@@ -409,9 +501,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const redo = useCallback(() => {
     dispatch({ type: 'REDO' })
     setTimeout(() => {
-      const { entity, contentType, puckData } = stateRef.current
+      const { entity, puckData } = stateRef.current
       if (entity && entity.id && puckData) {
-        autoSave(puckData, entity, contentType)
+        autoSave()
       }
     }, 0)
   }, [autoSave])
@@ -544,6 +636,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     dispatch,
     setEntity,
     updateData: updateDataWithSave,
+    updateEntityMeta,
+    cancelPendingSave,
     hoverBlock,
     selectBlock,
     enterEdit,

@@ -275,6 +275,11 @@ export default function Settings() {
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [siteDirty, setSiteDirty] = useState(false)
   const siteAutoSaveTimer = useRef<ReturnType<typeof setTimeout>>()
+  // Skip exactly one auto-save run after the initial server data is copied
+  // into header/footer state. Without this guard the first setHeader(siteData)
+  // triggers the debounced save and writes stale values back over any
+  // server-side update (e.g. the slug-rename cascade).
+  const skipNextAutoSaveRef = useRef(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-settings'],
@@ -298,12 +303,19 @@ export default function Settings() {
       if (siteData.footer) setFooter(siteData.footer)
       setSiteSettingsLoaded(true)
       setSiteDirty(false)
+      skipNextAutoSaveRef.current = true
     }
   }, [siteData])
 
   // Auto-save site settings with debounce
   useEffect(() => {
     if (!siteSettingsLoaded) return // Don't save on initial load
+    if (skipNextAutoSaveRef.current) {
+      // First state change after load is the setHeader(siteData) above —
+      // don't treat it as a user edit.
+      skipNextAutoSaveRef.current = false
+      return
+    }
     setSiteDirty(true)
     clearTimeout(siteAutoSaveTimer.current)
     siteAutoSaveTimer.current = setTimeout(() => {

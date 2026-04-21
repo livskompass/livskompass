@@ -11,6 +11,106 @@ type Variables = {
 
 export const adminRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
+/**
+ * Public URL prefix per content type. The empty prefix for pages means a page
+ * with slug "about" lives at `/about`; posts at `/nyhet/<slug>`, etc.
+ */
+const URL_PREFIX: Record<'page' | 'post' | 'course' | 'product', string> = {
+  page: '',
+  post: '/nyhet',
+  course: '/utbildningar',
+  product: '/material',
+}
+
+/**
+ * When a slug changes, rewrite every reference to the old URL in stored
+ * block JSON and in known settings. Matches `/old-url` inside JSON strings
+ * bounded by `"`, `\`, `/`, `?`, `#`, so we don't maul free text.
+ */
+async function cascadeSlugRename(
+  db: any,
+  contentType: 'page' | 'post' | 'course' | 'product',
+  oldSlug: string,
+  newSlug: string,
+) {
+  if (!oldSlug || !newSlug || oldSlug === newSlug) return
+
+  const prefix = URL_PREFIX[contentType]
+  const oldUrl = `${prefix}/${oldSlug}`
+  const newUrl = `${prefix}/${newSlug}`
+
+  const escaped = oldUrl.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+  // Preceded by `"` or `\` (JSON string / HTML-escaped href); followed by a
+  // URL terminator so `/old` doesn't match `/old-other`.
+  const re = new RegExp(`(?<=["\\\\])${escaped}(?=["/?#\\\\])`, 'g')
+
+  const rewrite = (text: string | null): string | null => {
+    if (!text) return null
+    const replaced = text.replace(re, newUrl)
+    return replaced !== text ? replaced : null
+  }
+
+  const statements: any[] = []
+  const likePattern = `%${oldUrl}%`
+
+  for (const table of ['pages', 'posts', 'courses', 'products'] as const) {
+    const rows = await db.prepare(
+      `SELECT id, content_blocks, draft FROM ${table} WHERE content_blocks LIKE ? OR draft LIKE ?`,
+    ).bind(likePattern, likePattern).all()
+
+    for (const row of rows.results || []) {
+      const r = row as { id: string; content_blocks: string | null; draft: string | null }
+      const newCB = rewrite(r.content_blocks)
+      const newDraft = rewrite(r.draft)
+
+      if (newCB !== null && newDraft !== null) {
+        statements.push(
+          db.prepare(`UPDATE ${table} SET content_blocks = ?, draft = ? WHERE id = ?`).bind(newCB, newDraft, r.id),
+        )
+      } else if (newCB !== null) {
+        statements.push(
+          db.prepare(`UPDATE ${table} SET content_blocks = ? WHERE id = ?`).bind(newCB, r.id),
+        )
+      } else if (newDraft !== null) {
+        statements.push(
+          db.prepare(`UPDATE ${table} SET draft = ? WHERE id = ?`).bind(newDraft, r.id),
+        )
+      }
+    }
+  }
+
+  // Page-only: parent_slug column and homepage_slug setting store bare slugs
+  if (contentType === 'page') {
+    statements.push(
+      db.prepare(`UPDATE pages SET parent_slug = ? WHERE parent_slug = ?`).bind(newSlug, oldSlug),
+    )
+    const hp = await db.prepare(`SELECT value FROM settings WHERE key = 'homepage_slug'`).first() as { value: string } | null
+    if (hp && hp.value === oldSlug) {
+      statements.push(
+        db.prepare(`UPDATE settings SET value = ? WHERE key = 'homepage_slug'`).bind(newSlug),
+      )
+    }
+  }
+
+  // Site-wide settings that store JSON with links (site_header, site_footer, etc.)
+  const settingRows = await db.prepare(
+    `SELECT key, value FROM settings WHERE value LIKE ?`,
+  ).bind(likePattern).all()
+  for (const row of settingRows.results || []) {
+    const r = row as { key: string; value: string }
+    const newValue = rewrite(r.value)
+    if (newValue !== null) {
+      statements.push(
+        db.prepare(`UPDATE settings SET value = ? WHERE key = ?`).bind(newValue, r.key),
+      )
+    }
+  }
+
+  if (statements.length > 0) {
+    await db.batch(statements)
+  }
+}
+
 /** Snapshot the current state of a content entity before overwriting (publish) */
 async function snapshotBeforePublish(
   db: any,
@@ -128,6 +228,8 @@ adminRoutes.put('/pages/:id', async (c) => {
       return c.json({ error: 'Missing required fields: slug and title' }, 400)
     }
 
+    const previous = await c.env.DB.prepare(`SELECT slug FROM pages WHERE id = ?`).bind(id).first() as { slug: string } | null
+
     // Auto-snapshot before publish
     await snapshotBeforePublish(c.env.DB, 'pages', 'page', id, c.get('userId'))
 
@@ -137,6 +239,10 @@ adminRoutes.put('/pages/:id', async (c) => {
           meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, draft = NULL, updated_at = datetime('now')
       WHERE id = ?
     `).bind(slug || '', title || '', content || null, contentBlocks || null, editorVersion || 'legacy', metaDescription || null, parentSlug || null, sortOrder || 0, status || 'published', id).run()
+
+    if (previous && previous.slug && previous.slug !== slug) {
+      await cascadeSlugRename(c.env.DB, 'page', previous.slug, slug)
+    }
 
     return c.json({ success: true })
   } catch (err: any) {
@@ -265,6 +371,8 @@ adminRoutes.put('/posts/:id', async (c) => {
   const featuredImage = body.featuredImage ?? body.featured_image
   const publishedAt = body.publishedAt ?? body.published_at
 
+  const previous = await c.env.DB.prepare(`SELECT slug FROM posts WHERE id = ?`).bind(id).first() as { slug: string } | null
+
   // Auto-snapshot before publish
   await snapshotBeforePublish(c.env.DB, 'posts', 'post', id, c.get('userId'))
 
@@ -274,6 +382,10 @@ adminRoutes.put('/posts/:id', async (c) => {
         excerpt = ?, featured_image = ?, status = ?, published_at = ?, draft = NULL, updated_at = datetime('now')
     WHERE id = ?
   `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', excerpt || null, featuredImage || null, status, publishedAt || null, id).run()
+
+  if (previous && previous.slug && previous.slug !== slug) {
+    await cascadeSlugRename(c.env.DB, 'post', previous.slug, slug)
+  }
 
   return c.json({ success: true })
 })
@@ -381,6 +493,8 @@ adminRoutes.put('/courses/:id', async (c) => {
   const maxParticipants = body.maxParticipants ?? body.max_participants
   const registrationDeadline = body.registrationDeadline ?? body.registration_deadline
 
+  const previous = await c.env.DB.prepare(`SELECT slug FROM courses WHERE id = ?`).bind(id).first() as { slug: string } | null
+
   // Auto-snapshot before publish
   await snapshotBeforePublish(c.env.DB, 'courses', 'course', id, c.get('userId'))
 
@@ -394,6 +508,10 @@ adminRoutes.put('/courses/:id', async (c) => {
           editorVersion || 'legacy', location || null, startDate || null, endDate || null,
           priceSek || null, maxParticipants || null, registrationDeadline || null,
           status, id).run()
+
+  if (previous && previous.slug && previous.slug !== slug) {
+    await cascadeSlugRename(c.env.DB, 'course', previous.slug, slug)
+  }
 
   return c.json({ success: true })
 })
@@ -611,6 +729,8 @@ adminRoutes.put('/products/:id', async (c) => {
   const imageUrl = body.imageUrl ?? body.image_url
   const inStock = body.inStock ?? body.in_stock
 
+  const previous = await c.env.DB.prepare(`SELECT slug FROM products WHERE id = ?`).bind(id).first() as { slug: string } | null
+
   // Auto-snapshot before publish
   await snapshotBeforePublish(c.env.DB, 'products', 'product', id, c.get('userId'))
 
@@ -621,6 +741,10 @@ adminRoutes.put('/products/:id', async (c) => {
     WHERE id = ?
   `).bind(slug, title, description, contentBlocks || null, editorVersion || 'legacy',
           type, priceSek, externalUrl, imageUrl, inStock, status, id).run()
+
+  if (previous && previous.slug && previous.slug !== slug) {
+    await cascadeSlugRename(c.env.DB, 'product', previous.slug, slug)
+  }
 
   return c.json({ success: true })
 })

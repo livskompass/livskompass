@@ -15,21 +15,21 @@ interface FieldDef {
 }
 
 const PAGE_FIELDS: FieldDef[] = [
-  { key: 'slug', label: 'Slug', type: 'text' },
+  { key: 'slug', label: 'URL slug', type: 'text' },
   { key: 'meta_description', label: 'Meta description', type: 'textarea' },
   { key: 'parent_slug', label: 'Parent slug', type: 'text' },
   { key: 'sort_order', label: 'Sort order', type: 'number' },
 ]
 
 const POST_FIELDS: FieldDef[] = [
-  { key: 'slug', label: 'Slug', type: 'text' },
+  { key: 'slug', label: 'URL slug', type: 'text' },
   { key: 'excerpt', label: 'Excerpt', type: 'textarea' },
   { key: 'featured_image', label: 'Featured image', type: 'image' },
   { key: 'published_at', label: 'Published date', type: 'date' },
 ]
 
 const COURSE_FIELDS: FieldDef[] = [
-  { key: 'slug', label: 'Slug', type: 'text' },
+  { key: 'slug', label: 'URL slug', type: 'text' },
   { key: 'status', label: 'Status', type: 'select', options: [
     { label: 'Draft', value: 'draft' },
     { label: 'Published', value: 'published' },
@@ -47,7 +47,7 @@ const COURSE_FIELDS: FieldDef[] = [
 ]
 
 const PRODUCT_FIELDS: FieldDef[] = [
-  { key: 'slug', label: 'Slug', type: 'text' },
+  { key: 'slug', label: 'URL slug', type: 'text' },
   { key: 'status', label: 'Status', type: 'select', options: [
     { label: 'Draft', value: 'draft' },
     { label: 'Published', value: 'published' },
@@ -167,17 +167,15 @@ interface EntitySettingsDrawerProps {
 }
 
 export function EntitySettingsDrawer({ open, onClose, contentType }: EntitySettingsDrawerProps) {
-  const { state, dispatch } = useEditor()
+  const { state, updateEntityMeta } = useEditor()
   const drawerRef = useRef<HTMLDivElement>(null)
   const entity = state.entity as Record<string, any> | null
   const fields = FIELDS_BY_TYPE[contentType]
 
   const updateField = useCallback((key: string, value: any) => {
     if (!entity) return
-    const updated = { ...entity, [key]: value }
-    dispatch({ type: 'SET_ENTITY', entity: updated as any, contentType })
-    dispatch({ type: 'MARK_DIRTY' })
-  }, [entity, contentType, dispatch])
+    updateEntityMeta({ [key]: value } as any)
+  }, [entity, updateEntityMeta])
 
   // Close on ESC
   useEffect(() => {
@@ -283,6 +281,7 @@ export function EntitySettingsDrawer({ open, onClose, contentType }: EntitySetti
               field={field}
               value={entity[field.key]}
               onChange={(v) => updateField(field.key, v)}
+              contentType={contentType}
             />
           ))}
         </div>
@@ -327,7 +326,48 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-function EntityField({ field, value, onChange }: { field: FieldDef; value: any; onChange: (v: any) => void }) {
+// URL prefix per content type — must mirror the API-side URL_PREFIX in admin.ts
+// and the web routes in packages/web/src/App.tsx. Products have no detail page
+// today, so no live preview link is shown.
+const URL_PREFIX_BY_TYPE: Record<ContentType, string> = {
+  page: '',
+  post: '/nyhet',
+  course: '/utbildningar',
+  product: '/material',
+}
+
+const WEB_URL = (import.meta.env.VITE_WEB_URL || window.location.origin).replace(/\/$/, '')
+
+function SlugField({ field, value, onChange, contentType }: { field: FieldDef; value: any; onChange: (v: any) => void; contentType: ContentType }) {
+  const slug = (value || '').toString()
+  const prefix = URL_PREFIX_BY_TYPE[contentType]
+  const fullUrl = slug ? `${WEB_URL}${prefix}/${slug}` : ''
+
+  return (
+    <div>
+      <FieldLabel label={field.label} />
+      <input
+        type="text"
+        className={INPUT_CLASS}
+        value={slug}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {fullUrl && (
+        <div className="mt-1.5 text-[11px] font-mono truncate" style={{ color: 'var(--editor-text-subtle, #71717a)' }} title={fullUrl}>
+          {fullUrl}
+        </div>
+      )}
+      <p className="mt-1 text-[11px]" style={{ color: 'var(--editor-text-subtle, #71717a)' }}>
+        Changing the slug rewrites existing links on other pages automatically.
+      </p>
+    </div>
+  )
+}
+
+function EntityField({ field, value, onChange, contentType }: { field: FieldDef; value: any; onChange: (v: any) => void; contentType: ContentType }) {
+  if (field.key === 'slug') {
+    return <SlugField field={field} value={value} onChange={onChange} contentType={contentType} />
+  }
   switch (field.type) {
     case 'text':
       return (
