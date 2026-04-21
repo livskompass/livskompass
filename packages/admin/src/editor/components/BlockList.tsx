@@ -406,6 +406,23 @@ export function BlockList() {
     }
   }, [state.contentType, state.entity])
 
+  // Wrap content with data context providers for data-bound blocks.
+  // MUST be declared before any early return — adding a block flips items.length
+  // from 0 to 1, which would otherwise change the hook count and crash React
+  // ("Rendered more hooks than during the previous render") → white screen.
+  const DataProviders = useMemo(() => {
+    return ({ children }: { children: React.ReactNode }) => {
+      let wrapped = <>{children}</>
+      if (courseContextValue) {
+        wrapped = <CourseContext.Provider value={courseContextValue}>{wrapped}</CourseContext.Provider>
+      }
+      if (postContextValue) {
+        wrapped = <PostContext.Provider value={postContextValue}>{wrapped}</PostContext.Provider>
+      }
+      return wrapped
+    }
+  }, [courseContextValue, postContextValue])
+
   // ── Empty state — also a drop target ──
 
   if (items.length === 0) {
@@ -441,20 +458,6 @@ export function BlockList() {
       </div>
     )
   }
-
-  // Wrap content with data context providers for data-bound blocks
-  const DataProviders = useMemo(() => {
-    return ({ children }: { children: React.ReactNode }) => {
-      let wrapped = <>{children}</>
-      if (courseContextValue) {
-        wrapped = <CourseContext.Provider value={courseContextValue}>{wrapped}</CourseContext.Provider>
-      }
-      if (postContextValue) {
-        wrapped = <PostContext.Provider value={postContextValue}>{wrapped}</PostContext.Provider>
-      }
-      return wrapped
-    }
-  }, [courseContextValue, postContextValue])
 
   return (
     <DataProviders>

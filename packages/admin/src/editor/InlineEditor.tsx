@@ -297,9 +297,14 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
   }, [id, contentType, setEntity, isNew, dispatch])
 
   const handlePublish = async () => {
-    if (!state.puckData) return
     const token = localStorage.getItem('admin_token')
     if (!token) return
+
+    // For existing entities we require in-memory puckData. For new entities we
+    // accept an empty page — the user may want to create the record first and
+    // add blocks after.
+    if (!isNew && !state.puckData) return
+    const puckData = state.puckData || { content: [], root: { props: {} }, zones: {} }
 
     const route = CONTENT_TYPE_ROUTES[contentType]
 
@@ -321,7 +326,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
           body: JSON.stringify({
             title: state.entity?.title || CONTENT_TYPE_LABELS[contentType],
             slug,
-            content_blocks: JSON.stringify(state.puckData),
+            content_blocks: JSON.stringify(puckData),
             editor_version: 'puck',
             status: 'draft',
           }),
@@ -345,7 +350,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         },
         body: JSON.stringify({
           ...state.entity,
-          content_blocks: JSON.stringify(state.puckData),
+          content_blocks: JSON.stringify(puckData),
           editor_version: 'puck',
           status: 'published',
         }),
