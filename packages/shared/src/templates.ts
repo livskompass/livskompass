@@ -146,3 +146,12 @@ export const defaultPostTemplate = JSON.stringify({
   root: { props: {} },
   zones: {},
 })
+
+export const defaultProductTemplate = JSON.stringify({
+  content: [
+    { type: 'PageHeader', props: { id: 'product-header', heading: '__PRODUCT_TITLE__', backLinkText: 'Allt material', backLinkUrl: '/material' } },
+    { type: 'RichText', props: { id: 'content', content: '__LEGACY_CONTENT__', maxWidth: 'medium' } },
+  ],
+  root: { props: {} },
+  zones: {},
+})

@@ -12,7 +12,9 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/media/': {
-        target: process.env.API_TARGET || 'https://livskompass-api.livskompass-config.workers.dev',
+        // Media often needs to point at prod R2 even when API points at localhost
+        // (local R2 is empty unless you've also seeded it). Override with MEDIA_TARGET.
+        target: process.env.MEDIA_TARGET || process.env.API_TARGET || 'https://livskompass-api.livskompass-config.workers.dev',
         changeOrigin: true,
         rewrite: (path: string) => path,
       },

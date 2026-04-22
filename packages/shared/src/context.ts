@@ -27,8 +27,22 @@ export interface PostContextValue {
   content: string
 }
 
+export interface ProductContextValue {
+  id: string
+  slug: string
+  title: string
+  description: string
+  type: string
+  price_sek: number | null
+  external_url: string | null
+  image_url: string | null
+  in_stock: boolean
+  content: string
+}
+
 export const CourseContext = createContext<CourseContextValue | null>(null)
 export const PostContext = createContext<PostContextValue | null>(null)
+export const ProductContext = createContext<ProductContextValue | null>(null)
 
 export function useCourseData(): CourseContextValue | null {
   return useContext(CourseContext)
@@ -36,6 +50,10 @@ export function useCourseData(): CourseContextValue | null {
 
 export function usePostData(): PostContextValue | null {
   return useContext(PostContext)
+}
+
+export function useProductData(): ProductContextValue | null {
+  return useContext(ProductContext)
 }
 
 // ── Inline editing context ──

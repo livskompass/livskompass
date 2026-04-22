@@ -33,4 +33,4 @@ export type { ContactFormProps } from './blocks/ContactForm'
 export type { BookingFormProps } from './blocks/BookingForm'
 
 // Context types
-export type { CourseContextValue, PostContextValue } from './context'
+export type { CourseContextValue, PostContextValue, ProductContextValue } from './context'

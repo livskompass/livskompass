@@ -2,6 +2,27 @@
 # Format: old-path new-path status-code
 # Cloudflare Pages _redirects file — processed before SPA fallback
 
+# Legacy WP slugs that became typed content (course or product).
+# Keep in sync with LEGACY_REDIRECTS in packages/web/src/App.tsx.
+/forelasningar /utbildningar/forelasningar 301
+/forelasningar/ /utbildningar/forelasningar 301
+/norge /utbildningar/norge 301
+/norge/ /utbildningar/norge 301
+/act-grupp-for-ungdomar-13-19-ar /utbildningar/act-grupp-for-ungdomar-13-19-ar 301
+/act-grupp-for-ungdomar-13-19-ar/ /utbildningar/act-grupp-for-ungdomar-13-19-ar 301
+/stockholm-varen /utbildningar/stockholm-varen 301
+/stockholm-varen/ /utbildningar/stockholm-varen 301
+/cd-medveten-narvaro /material/cd-medveten-narvaro 301
+/cd-medveten-narvaro/ /material/cd-medveten-narvaro 301
+/act-samtalskort /material/act-samtalskort 301
+/act-samtalskort/ /material/act-samtalskort 301
+/act-samtalskort-norska /material/act-samtalskort-norska 301
+/act-samtalskort-norska/ /material/act-samtalskort-norska 301
+/bestallning-av-cd-medveten-narvaro /bestallning-av-cd-medveten-narvaro-2 301
+/bestallning-av-cd-medveten-narvaro/ /bestallning-av-cd-medveten-narvaro-2 301
+/rekryteringsmaterial-infor-gruppledarutbildning /rekryteringsmaterial 301
+/rekryteringsmaterial-infor-gruppledarutbildning/ /rekryteringsmaterial 301
+
 # Trailing slash normalization (WordPress used trailing slashes)
 /act/ /act 301
 /forskning-pa-metoden/ /forskning-pa-metoden 301
@@ -10,17 +31,13 @@
 /utbildningar/ /utbildningar 301
 /kontakt/ /kontakt 301
 /nyhet/ /nyhet 301
-/norge/ /norge 301
 /om-fredrik-livheim/ /om-fredrik-livheim 301
 /pressbilder/ /pressbilder 301
 
 # ACT section
 /om-detta-gruppformat-av-act/ /om-detta-gruppformat-av-act 301
 /vad-ar-act/ /vad-ar-act 301
-/act-grupp-for-ungdomar-13-19-ar/ /act-grupp-for-ungdomar-13-19-ar 301
 /act-pa-norska/ /act-pa-norska 301
-/act-samtalskort/ /act-samtalskort 301
-/act-samtalskort-norska/ /act-samtalskort-norska 301
 /actonline/ /actonline 301
 
 # Research section
@@ -34,7 +51,6 @@
 /allman-information-om-gruppledarutbildningen/ /allman-information-om-gruppledarutbildningen 301
 /anmalningsblankett-att-leva-livet-fullt-ut/ /anmalningsblankett-att-leva-livet-fullt-ut 301
 /for-dig-som-gar-gruppledarutbildning/ /for-dig-som-gar-gruppledarutbildning 301
-/forelasningar/ /forelasningar 301
 /prosocial-ledarskapsutbildning/ /prosocial-ledarskapsutbildning 301
 /act-inom-sis-och-bup/ /act-inom-sis-och-bup 301
 /infor-gruppledarutbildning-malmo/ /infor-gruppledarutbildning-malmo 301
@@ -71,7 +87,6 @@
 
 # Mindfulness section
 /cd-skivor-medveten-narvaro-skivor-ovningar/ /cd-skivor-medveten-narvaro-skivor-ovningar 301
-/cd-medveten-narvaro/ /cd-medveten-narvaro 301
 /bestallning-av-cd-medveten-narvaro-2/ /bestallning-av-cd-medveten-narvaro-2 301
 /cd-nar-det-gor-ont-medveten-narvaro-yin-yoga/ /cd-nar-det-gor-ont-medveten-narvaro-yin-yoga 301
 /bestallning-av-cd-nar-det-gor-ont/ /bestallning-av-cd-nar-det-gor-ont 301
@@ -84,9 +99,7 @@
 /vad-ar-medveten-narvaro/ /vad-ar-medveten-narvaro 301
 
 # Misc pages
-/stockholm-varen/ /stockholm-varen 301
 /anmalningsblankett-stockholm-varen/ /anmalningsblankett-stockholm-varen 301
-/bestallning-av-cd-medveten-narvaro/ /bestallning-av-cd-medveten-narvaro 301
 /booster/ /booster 301
 
 # Blog posts (WordPress /nyhet/slug/ → /nyhet/slug)
