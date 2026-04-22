@@ -100,7 +100,7 @@ export default function PostsList() {
                 <TableRow key={post.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
-                      to={`/posts/${post.id}`}
+                      to={`/posts/${post.slug}`}
                       className="font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
                     >
                       {post.title}
@@ -124,7 +124,7 @@ export default function PostsList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/posts/${post.id}`}>
+                        <Link to={`/posts/${post.slug}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>

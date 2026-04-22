@@ -102,7 +102,7 @@ export default function CoursesList() {
                 <TableRow key={course.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
-                      to={`/courses/${course.id}`}
+                      to={`/courses/${course.slug}`}
                       className="font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
                     >
                       {course.title}
@@ -127,7 +127,7 @@ export default function CoursesList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/courses/${course.id}`}>
+                        <Link to={`/courses/${course.slug}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>

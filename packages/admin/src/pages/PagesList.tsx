@@ -110,7 +110,7 @@ export default function PagesList() {
                 <TableRow key={page.id} className="hover:bg-zinc-50 transition-colors">
                   <TableCell>
                     <Link
-                      to={`/pages/${page.id}`}
+                      to={`/pages/${page.slug}`}
                       className="font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
                     >
                       {page.title}
@@ -137,7 +137,7 @@ export default function PagesList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/pages/${page.id}`}>
+                        <Link to={`/pages/${page.slug}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>

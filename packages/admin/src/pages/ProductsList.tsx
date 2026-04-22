@@ -87,7 +87,7 @@ export default function ProductsList() {
                         />
                       )}
                       <Link
-                        to={`/products/${product.id}`}
+                        to={`/products/${product.slug}`}
                         className="font-medium text-zinc-900 hover:text-zinc-600 transition-colors"
                       >
                         {product.title}
@@ -112,7 +112,7 @@ export default function ProductsList() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to={`/products/${product.id}`}>
+                        <Link to={`/products/${product.slug}`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>

@@ -129,7 +129,7 @@ export function ProductList({
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[3])}>
                 {typeProducts.map((product) => (
                   <div key={product.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col', colors.bg)}>
-                    <EditItemBadge cmsRoute="products" entityId={product.id} label="Edit product" />
+                    <EditItemBadge cmsRoute="products" entityId={product.id} slug={product.slug} label="Edit product" />
                     {showImage !== false && product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img

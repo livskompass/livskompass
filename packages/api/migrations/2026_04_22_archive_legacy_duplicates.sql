@@ -17,7 +17,8 @@
 --   /bestallning-av-cd-medveten-narvaro -> /bestallning-av-cd-medveten-narvaro-2
 --   /rekryteringsmaterial-infor-gruppledarutbildning -> /rekryteringsmaterial
 
-BEGIN TRANSACTION;
+-- D1 doesn't accept `BEGIN TRANSACTION` in SQL — multi-statement files are
+-- already wrapped atomically by the runtime. Just list the statements.
 
 -- 1) Archive 4 page-course duplicates (course is canonical, has booking + dates).
 UPDATE pages SET status = 'archived', updated_at = datetime('now')
@@ -48,5 +49,3 @@ WHERE parent_slug = 'cd-medveten-narvaro';
 UPDATE pages SET status = 'archived', updated_at = datetime('now')
 WHERE slug IN ('bestallning-av-cd-medveten-narvaro', 'rekryteringsmaterial-infor-gruppledarutbildning')
   AND status != 'archived';
-
-COMMIT;

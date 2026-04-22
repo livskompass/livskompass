@@ -339,14 +339,17 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         if (!res.ok) throw new Error('Create failed')
         const result = await res.json() as Record<string, any>
         const newEntity = result.page || result.post || result.course || result.product
-        if (newEntity?.id) {
-          navigate(`${ADMIN_LIST_ROUTES[contentType]}/${newEntity.id}`, { replace: true })
+        if (newEntity?.slug) {
+          // Admin URLs mirror public URLs by using slug (admin API accepts either).
+          navigate(`${ADMIN_LIST_ROUTES[contentType]}/${newEntity.slug}`, { replace: true })
         }
         return
       }
 
-      // Update existing entity
-      const res = await fetch(`${API_BASE}/admin/${route}/${id}`, {
+      // Update existing entity. Use entity.id from state (immutable) rather than
+      // the URL param, which may be a slug that's about to change in this PUT.
+      const entityId = state.entity?.id || id
+      const res = await fetch(`${API_BASE}/admin/${route}/${entityId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -370,13 +373,18 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
       // from server columns (draft cleared, status='published', etc.) instead
       // of taking the "metadata-only update" branch and keeping the stale
       // hasDraftChanges flag.
-      const updated = await fetch(`${API_BASE}/admin/${route}/${id}`, {
+      const updated = await fetch(`${API_BASE}/admin/${route}/${entityId}`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((r) => r.json()) as Record<string, any>
 
       const entity = updated.page || updated.post || updated.course || updated.product
       if (entity) {
         dispatch({ type: 'SET_ENTITY', entity, contentType, forceReload: true })
+        // Slug may have changed during publish — keep the URL in sync so
+        // subsequent navigations and shares use the new slug.
+        if (entity.slug && entity.slug !== id) {
+          navigate(`${ADMIN_LIST_ROUTES[contentType]}/${entity.slug}`, { replace: true })
+        }
       }
 
       // A slug change may have cascaded into site_header / site_footer /

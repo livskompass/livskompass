@@ -299,7 +299,10 @@ adminRoutes.get('/posts', async (c) => {
 // Get single post
 adminRoutes.get('/posts/:id', async (c) => {
   const id = c.req.param('id')
-  const result = await c.env.DB.prepare(`SELECT * FROM posts WHERE id = ?`).bind(id).first()
+  let result = await c.env.DB.prepare(`SELECT * FROM posts WHERE id = ?`).bind(id).first()
+  if (!result) {
+    result = await c.env.DB.prepare(`SELECT * FROM posts WHERE slug = ?`).bind(id).first()
+  }
   if (!result) {
     return c.json({ error: 'Post not found' }, 404)
   }
@@ -407,10 +410,13 @@ adminRoutes.get('/courses', async (c) => {
   return c.json({ courses: result.results })
 })
 
-// Get single course
+// Get single course (accepts ID or slug — admin URLs use slug, internal refs use ID)
 adminRoutes.get('/courses/:id', async (c) => {
   const id = c.req.param('id')
-  const result = await c.env.DB.prepare(`SELECT * FROM courses WHERE id = ?`).bind(id).first()
+  let result = await c.env.DB.prepare(`SELECT * FROM courses WHERE id = ?`).bind(id).first()
+  if (!result) {
+    result = await c.env.DB.prepare(`SELECT * FROM courses WHERE slug = ?`).bind(id).first()
+  }
   if (!result) {
     return c.json({ error: 'Course not found' }, 404)
   }
@@ -650,10 +656,13 @@ adminRoutes.get('/products', async (c) => {
   return c.json({ products: result.results })
 })
 
-// Get single product
+// Get single product (accepts ID or slug — admin URLs use slug, internal refs use ID)
 adminRoutes.get('/products/:id', async (c) => {
   const id = c.req.param('id')
-  const result = await c.env.DB.prepare(`SELECT * FROM products WHERE id = ?`).bind(id).first()
+  let result = await c.env.DB.prepare(`SELECT * FROM products WHERE id = ?`).bind(id).first()
+  if (!result) {
+    result = await c.env.DB.prepare(`SELECT * FROM products WHERE slug = ?`).bind(id).first()
+  }
   if (!result) {
     return c.json({ error: 'Product not found' }, 404)
   }
