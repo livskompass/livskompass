@@ -7,27 +7,31 @@ import { MediaPickerField } from '../../components/MediaPickerField'
 
 // ── Field definitions per content type ──
 
+type FieldBadge = 'Card' | 'SEO'
+
 interface FieldDef {
   key: string
   label: string
   type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'image'
   options?: { label: string; value: string }[]
-  /** One-line help text shown under the input. Use it to make non-obvious card/listing behavior explicit. */
+  /** Pill shown next to the label. "Card" = visible on listing cards, "SEO" = used by search engines. */
+  badge?: FieldBadge
+  /** One-line help text shown under the input. Use it to explain non-obvious card/listing behavior. */
   hint?: string
 }
 
 const PAGE_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'URL slug', type: 'text' },
-  { key: 'meta_description', label: 'Meta description', type: 'textarea', hint: 'Used by Google in search results. Aim for 120–155 characters.' },
+  { key: 'meta_description', label: 'Meta description', type: 'textarea', badge: 'SEO', hint: 'Used by Google in search results. Aim for 120–155 characters.' },
   { key: 'parent_slug', label: 'Section', type: 'text', hint: 'Slug of another page. Used for breadcrumbs and PageCards listings — does not change the URL.' },
   { key: 'sort_order', label: 'Sort order', type: 'number', hint: 'Lower numbers appear first in PageCards listings of sibling pages.' },
 ]
 
 const POST_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'URL slug', type: 'text' },
-  { key: 'excerpt', label: 'Excerpt', type: 'textarea', hint: 'Shown on post cards (PostGrid). HTML stripped, clamped to 3 lines.' },
-  { key: 'featured_image', label: 'Featured image', type: 'image', hint: 'Shown on post cards. Square or 16:9 works best.' },
-  { key: 'published_at', label: 'Published date', type: 'date', hint: 'Shown on cards. Posts are sorted newest first.' },
+  { key: 'excerpt', label: 'Excerpt', type: 'textarea', badge: 'Card', hint: 'HTML stripped, clamped to 3 lines.' },
+  { key: 'featured_image', label: 'Featured image', type: 'image', badge: 'Card', hint: 'Square or 16:9 works best.' },
+  { key: 'published_at', label: 'Published date', type: 'date', badge: 'Card', hint: 'Posts are sorted newest first.' },
 ]
 
 const COURSE_FIELDS: FieldDef[] = [
@@ -39,13 +43,13 @@ const COURSE_FIELDS: FieldDef[] = [
     { label: 'Completed', value: 'completed' },
     { label: 'Cancelled', value: 'cancelled' },
   ], hint: '"Full" shows a "Fullbokat" badge on cards and disables booking.' },
-  { key: 'description', label: 'Short description', type: 'textarea', hint: 'Shown on course cards. Plain text only — HTML is stripped, clamped to 2 lines (~140 chars).' },
-  { key: 'location', label: 'Location', type: 'text', hint: 'Shown on cards with a pin icon.' },
-  { key: 'start_date', label: 'Start date', type: 'date', hint: 'Shown on cards with a calendar icon. Courses with a date list before undated ones.' },
-  { key: 'end_date', label: 'End date', type: 'date', hint: 'If set, the card date shows a range ("16 mar – 27 apr").' },
+  { key: 'description', label: 'Short description', type: 'textarea', badge: 'Card', hint: 'Plain text only — HTML is stripped, clamped to 2 lines (~140 chars).' },
+  { key: 'location', label: 'Location', type: 'text', badge: 'Card', hint: 'Shown with a pin icon.' },
+  { key: 'start_date', label: 'Start date', type: 'date', badge: 'Card', hint: 'Shown with a calendar icon. Dated courses list before undated ones.' },
+  { key: 'end_date', label: 'End date', type: 'date', badge: 'Card', hint: 'If set, the card date shows a range ("16 mar – 27 apr").' },
   { key: 'registration_deadline', label: 'Registration deadline', type: 'date', hint: 'Shown in the CourseInfo block on the detail page, not on cards.' },
-  { key: 'price_sek', label: 'Price (SEK)', type: 'number', hint: 'Shown on cards as "X kr". Leave blank to hide price.' },
-  { key: 'max_participants', label: 'Max participants', type: 'number', hint: 'When set, cards show "N platser kvar". Leave blank to hide the badge.' },
+  { key: 'price_sek', label: 'Price (SEK)', type: 'number', badge: 'Card', hint: 'Shown as "X kr". Leave blank to hide price.' },
+  { key: 'max_participants', label: 'Max participants', type: 'number', badge: 'Card', hint: 'When set, cards show "N platser kvar". Leave blank to hide the badge.' },
 ]
 
 const PRODUCT_FIELDS: FieldDef[] = [
@@ -54,7 +58,7 @@ const PRODUCT_FIELDS: FieldDef[] = [
     { label: 'Draft', value: 'draft' },
     { label: 'Published', value: 'published' },
   ]},
-  { key: 'description', label: 'Short description', type: 'textarea', hint: 'Shown on product cards and on the detail page header. Plain text recommended.' },
+  { key: 'description', label: 'Short description', type: 'textarea', badge: 'Card', hint: 'Also shown on the detail page header. Plain text recommended.' },
   { key: 'type', label: 'Type', type: 'select', options: [
     { label: 'Book', value: 'book' },
     { label: 'CD', value: 'cd' },
@@ -62,13 +66,13 @@ const PRODUCT_FIELDS: FieldDef[] = [
     { label: 'App', value: 'app' },
     { label: 'Download', value: 'download' },
   ], hint: 'Used by ProductList "Filter by type". Not visible on cards.' },
-  { key: 'price_sek', label: 'Price (SEK)', type: 'number', hint: 'Shown on cards. Leave blank for "Gratis" label.' },
-  { key: 'external_url', label: 'External URL', type: 'text', hint: 'Where the "Köp" button on the card sends visitors (typically a retailer page).' },
-  { key: 'image_url', label: 'Product image', type: 'image', hint: 'Shown on cards (when "Show image" is enabled in ProductList).' },
+  { key: 'price_sek', label: 'Price (SEK)', type: 'number', badge: 'Card', hint: 'Leave blank for "Gratis" label.' },
+  { key: 'external_url', label: 'External URL', type: 'text', badge: 'Card', hint: 'Where the "Köp" button on the card sends visitors (typically a retailer page).' },
+  { key: 'image_url', label: 'Product image', type: 'image', badge: 'Card', hint: 'Shown when "Show image" is enabled in ProductList.' },
   { key: 'in_stock', label: 'In stock', type: 'select', options: [
     { label: 'Yes', value: '1' },
     { label: 'No', value: '0' },
-  ], hint: 'When "No", cards show "Slut i lager" and the buy button is disabled.' },
+  ], badge: 'Card', hint: 'When "No", cards show "Slut i lager" and the buy button is disabled.' },
 ]
 
 const FIELDS_BY_TYPE: Record<ContentType, FieldDef[]> = {
@@ -299,11 +303,25 @@ const INPUT_CLASS =
   'w-full text-sm px-2.5 py-1.5 rounded-md border bg-white outline-none focus:ring-1 transition-colors'
     + ' border-zinc-200 text-zinc-800 focus:border-blue-400 focus:ring-blue-400/30 placeholder:text-zinc-300'
 
-function FieldLabel({ label }: { label: string }) {
+const BADGE_STYLE: Record<FieldBadge, { bg: string; text: string; title: string }> = {
+  Card: { bg: '#dbeafe', text: '#1e40af', title: 'Visible on listing cards (CourseList, ProductList, PostGrid).' },
+  SEO: { bg: '#fef3c7', text: '#92400e', title: 'Used by search engines.' },
+}
+
+function FieldLabel({ label, badge }: { label: string; badge?: FieldBadge }) {
   return (
-    <label className="block text-[11px] font-medium text-zinc-500 mb-1">
-      {label}
-    </label>
+    <div className="flex items-center gap-1.5 mb-1">
+      <label className="block text-[11px] font-medium text-zinc-500">{label}</label>
+      {badge && (
+        <span
+          className="inline-flex items-center px-1.5 py-px rounded text-[9px] font-semibold uppercase tracking-wide leading-none"
+          style={{ background: BADGE_STYLE[badge].bg, color: BADGE_STYLE[badge].text }}
+          title={BADGE_STYLE[badge].title}
+        >
+          {badge}
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -356,7 +374,7 @@ function SlugField({ field, value, onChange, contentType }: { field: FieldDef; v
 
   return (
     <div>
-      <FieldLabel label={field.label} />
+      <FieldLabel label={field.label} badge={field.badge} />
       <input
         type="text"
         className={INPUT_CLASS}
@@ -383,7 +401,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
     case 'text':
       return (
         <div>
-          <FieldLabel label={field.label} />
+          <FieldLabel label={field.label} badge={field.badge} />
           <input type="text" className={INPUT_CLASS} value={value || ''} onChange={(e) => onChange(e.target.value)} />
           <FieldHint hint={field.hint} />
         </div>
@@ -391,7 +409,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
     case 'textarea':
       return (
         <div>
-          <FieldLabel label={field.label} />
+          <FieldLabel label={field.label} badge={field.badge} />
           <textarea className={INPUT_CLASS + ' resize-y min-h-[60px]'} rows={3} value={value || ''} onChange={(e) => onChange(e.target.value)} />
           <FieldHint hint={field.hint} />
         </div>
@@ -399,7 +417,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
     case 'number':
       return (
         <div>
-          <FieldLabel label={field.label} />
+          <FieldLabel label={field.label} badge={field.badge} />
           <input type="number" className={INPUT_CLASS + ' w-32'} value={value ?? ''} onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)} />
           <FieldHint hint={field.hint} />
         </div>
@@ -407,7 +425,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
     case 'date':
       return (
         <div>
-          <FieldLabel label={field.label} />
+          <FieldLabel label={field.label} badge={field.badge} />
           <input type="date" className={INPUT_CLASS + ' w-44'} value={value ? String(value).slice(0, 10) : ''} onChange={(e) => onChange(e.target.value || null)} />
           <FieldHint hint={field.hint} />
         </div>
@@ -415,7 +433,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
     case 'select':
       return (
         <div>
-          <FieldLabel label={field.label} />
+          <FieldLabel label={field.label} badge={field.badge} />
           <select className={INPUT_CLASS + ' appearance-none cursor-pointer'} value={String(value ?? '')} onChange={(e) => onChange(e.target.value)}>
             <option value="">—</option>
             {field.options?.map((opt) => (
@@ -428,7 +446,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
     case 'image':
       return (
         <div>
-          <FieldLabel label={field.label} />
+          <FieldLabel label={field.label} badge={field.badge} />
           <MediaPickerField value={value || ''} onChange={onChange} />
           <FieldHint hint={field.hint} />
         </div>
