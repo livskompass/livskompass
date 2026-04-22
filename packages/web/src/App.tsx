@@ -12,8 +12,24 @@ const CourseDetail = React.lazy(() => import('./pages/CourseDetail'))
 // BookingPage removed — booking form is now inline on course detail page
 const BookingConfirmation = React.lazy(() => import('./pages/BookingConfirmation'))
 const PostDetail = React.lazy(() => import('./pages/PostDetail'))
+const ProductDetail = React.lazy(() => import('./pages/ProductDetail'))
 const NotFound = React.lazy(() => import('./pages/NotFound'))
 const DesignSystem = React.lazy(() => import('./pages/DesignSystem'))
+
+/**
+ * Legacy slugs from the WordPress migration that now live as typed content
+ * (course or product). Source of truth for both dev <Navigate> redirects below
+ * and the production _redirects file. Keep in sync.
+ */
+const LEGACY_REDIRECTS: Record<string, string> = {
+  forelasningar: '/utbildningar/forelasningar',
+  norge: '/utbildningar/norge',
+  'act-grupp-for-ungdomar-13-19-ar': '/utbildningar/act-grupp-for-ungdomar-13-19-ar',
+  'stockholm-varen': '/utbildningar/stockholm-varen',
+  'cd-medveten-narvaro': '/material/cd-medveten-narvaro',
+  'act-samtalskort-norska': '/material/act-samtalskort-norska',
+  'act-samtalskort': '/material/act-samtalskort',
+}
 
 /** Redirect old /utbildningar/:slug/boka to /utbildningar/:slug#boka */
 function BookingRedirect() {
@@ -89,6 +105,14 @@ function App() {
 
           {/* Blog detail */}
           <Route path="nyhet/:slug" element={<Suspense fallback={<PageLoader />}><PostDetail /></Suspense>} />
+
+          {/* Material (product) detail */}
+          <Route path="material/:slug" element={<Suspense fallback={<PageLoader />}><ProductDetail /></Suspense>} />
+
+          {/* Legacy WP slugs that became typed content — mirrors prod _redirects for dev */}
+          {Object.entries(LEGACY_REDIRECTS).map(([from, to]) => (
+            <Route key={from} path={from} element={<Navigate to={to} replace />} />
+          ))}
 
           {/* Catch-all: generic page by slug */}
           <Route path=":slug" element={<Suspense fallback={<PageLoader />}><UniversalPage /></Suspense>} />

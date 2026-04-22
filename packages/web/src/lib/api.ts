@@ -72,6 +72,7 @@ export const getCourse = (slug: string) => fetchApi<{ course: Course }>(`/course
 // Products
 export const getProducts = (type?: string) =>
   fetchApi<{ products: Product[] }>(`/products${type ? `?type=${type}` : ''}`)
+export const getProduct = (slug: string) => fetchApi<{ product: Product }>(`/products/${slug}`)
 
 // Bookings
 export const createBooking = (data: CreateBookingData) =>
@@ -150,6 +151,10 @@ export interface Product {
   external_url: string | null
   image_url: string | null
   in_stock: number
+  content_blocks?: string | null
+  editor_version?: string
+  status?: string
+  created_at?: string
 }
 
 export interface Booking {
