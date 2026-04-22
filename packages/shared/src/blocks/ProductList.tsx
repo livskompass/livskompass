@@ -144,7 +144,7 @@ export function ProductList({
                       <span className={cn('text-caption font-medium uppercase tracking-wide', cardColor === 'dark' ? 'text-amber-300/80' : 'text-highlight')}>
                         {typeLabels[product.type] || product.type}
                       </span>
-                      <h4 className={cn('font-semibold mt-1 mb-2', colors.text)}>{product.title}</h4>
+                      <h4 className={cn('text-h3 break-words hyphens-auto text-balance mt-1 mb-2', colors.text)}>{product.title}</h4>
                       {product.description && (
                         <p className={cn('text-body-sm line-clamp-3 mb-4', colors.textMuted)}>{product.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                       )}
@@ -155,7 +155,7 @@ export function ProductList({
                               {product.price_sek.toLocaleString('sv-SE')} <span className={cn('text-body-sm font-normal', colors.textMuted)}>kr</span>
                             </span>
                           ) : (
-                            <span className={cn('text-body-sm font-medium px-2 py-1 rounded', colors.badge)}>
+                            <span className={cn('text-caption font-semibold px-2.5 py-1 rounded-full', colors.badge)}>
                               <span {...editHandlers(freeLabelEdit)} className={freeLabelEdit?.className}>{freeLabel}</span>
                             </span>
                           )

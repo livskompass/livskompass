@@ -110,7 +110,7 @@ export function PageCards({
               <EditItemBadge cmsRoute="pages" entityId={page.id} slug={page.slug} label="Edit page" />
               <a href={`/${page.slug}`} className="flex items-center justify-between flex-1">
                 <div>
-                  <h3 className="font-medium text-foreground group-hover:text-accent transition-colors">{page.title}</h3>
+                  <h3 className="text-h3 break-words hyphens-auto text-balance text-foreground group-hover:text-accent transition-colors">{page.title}</h3>
                   {showDescription && page.description && <p className="text-body-sm text-muted mt-0.5">{page.description}</p>}
                 </div>
                 <svg className="w-5 h-5 text-faint group-hover:text-accent transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -147,7 +147,7 @@ export function PageCards({
           <div className={cn('relative group rounded-lg p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
             <EditItemBadge cmsRoute="pages" entityId={page.id} label="Edit page" slug={page.slug} />
             <a href={`/${page.slug}`} className="block">
-              <h3 className={cn('font-semibold transition-colors mb-1', colors.text)}>{page.title}</h3>
+              <h3 className={cn('text-h3 break-words hyphens-auto text-balance transition-colors mb-1', colors.text)}>{page.title}</h3>
               {showDescription && page.description && <p className={cn('text-body-sm line-clamp-2', colors.textMuted)}>{page.description}</p>}
             </a>
           </div>

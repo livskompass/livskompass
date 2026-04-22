@@ -102,7 +102,7 @@ export function PostGrid({
                     {new Date(post.published_at).toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
                 )}
-                <h3 className={cn('text-h4 transition-colors mb-1', colors.text)}>{post.title}</h3>
+                <h3 className={cn('text-h3 break-words hyphens-auto text-balance transition-colors mb-1', colors.text)}>{post.title}</h3>
                 {showExcerpt && post.excerpt && (
                   <p className={cn('text-body-sm line-clamp-2', colors.textMuted)}>{post.excerpt}</p>
                 )}
