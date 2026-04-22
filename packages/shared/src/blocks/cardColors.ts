@@ -18,7 +18,7 @@ export const cardColorStyles: Record<CardColor, {
   btnVariant: 'default' | 'secondary' | 'outline'
 }> = {
   white: {
-    bg: 'bg-surface-elevated border border-default',
+    bg: 'bg-surface-elevated',
     text: 'text-brand',
     textMuted: 'text-muted',
     border: 'border-default',

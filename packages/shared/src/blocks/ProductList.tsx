@@ -5,6 +5,7 @@ import { ExternalLink } from 'lucide-react'
 import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { getCardColors } from './cardColors'
 import { getButtonStyle } from './buttonUtils'
+import { Price } from './Price'
 
 export interface ProductListProps {
   heading: string
@@ -102,7 +103,7 @@ export function ProductList({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-8 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[3])}>
@@ -128,7 +129,7 @@ export function ProductList({
               )}
               <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[3])}>
                 {typeProducts.map((product) => (
-                  <div key={product.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col', colors.bg)}>
+                  <div key={product.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300 flex flex-col', colors.bg)}>
                     <EditItemBadge cmsRoute="products" entityId={product.id} slug={product.slug} label="Edit product" />
                     {showImage !== false && product.image_url && (
                       <div className="aspect-[4/3] overflow-hidden">
@@ -136,7 +137,7 @@ export function ProductList({
                           src={resolveMediaUrl(product.image_url)}
                           alt={product.title}
                           loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     )}
@@ -151,9 +152,7 @@ export function ProductList({
                       <div className="flex items-center justify-between mt-auto pt-2">
                         {showPrice !== false ? (
                           product.price_sek ? (
-                            <span className={cn('font-display text-h4', colors.text)}>
-                              {product.price_sek.toLocaleString('sv-SE')} <span className={cn('text-body-sm font-normal', colors.textMuted)}>kr</span>
-                            </span>
+                            <Price value={product.price_sek} size="lg" colorClass={colors.text} />
                           ) : (
                             <span className={cn('text-caption font-semibold px-2.5 py-1 rounded-full', colors.badge)}>
                               <span {...editHandlers(freeLabelEdit)} className={freeLabelEdit?.className}>{freeLabel}</span>

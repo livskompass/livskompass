@@ -202,26 +202,32 @@ body {
 
 /* ==================== Typography Utilities ==================== */
 @layer utilities {
+  /* Heading colour follows the surrounding section. SectionBgWrap (dark variants)
+     sets `--heading-color: white` via the .text-white class. Light sections use brand. */
+  .text-display, .text-h1, .text-h2, .text-h3, .text-h4 {
+    color: var(--heading-color, rgb(var(--brand)));
+  }
+  .text-white { --heading-color: white; }
   .text-display {
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: var(--type-display);
     line-height: var(--leading-display);
     letter-spacing: var(--tracking-display);
-    font-weight: 400;
+    font-weight: 600;
   }
   .text-h1 {
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: var(--type-h1);
     line-height: var(--leading-h1);
     letter-spacing: var(--tracking-h1);
-    font-weight: 400;
+    font-weight: 600;
   }
   .text-h2 {
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: var(--type-h2);
     line-height: var(--leading-h2);
     letter-spacing: var(--tracking-h2);
-    font-weight: 400;
+    font-weight: 600;
   }
   .text-h3 {
     font-family: var(--font-body);

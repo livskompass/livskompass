@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { getCourse, createBooking, startCheckout } from '../lib/api'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
-import { useUIStrings } from '@livskompass/shared'
+import { useUIStrings, formatSwedishDate } from '@livskompass/shared'
 import { CourseContext } from '../lib/context'
 import NotFound from './NotFound'
 import BlockRenderer from '../components/BlockRenderer'
@@ -152,7 +152,7 @@ export default function BookingPage() {
             {course.start_date && (
               <div className="flex items-center gap-2 text-secondary">
                 <Calendar className="h-4 w-4 text-faint" />
-                <span>{new Date(course.start_date).toLocaleDateString('sv-SE')}</span>
+                <span>{formatSwedishDate(course.start_date)}</span>
               </div>
             )}
             {course.location && (

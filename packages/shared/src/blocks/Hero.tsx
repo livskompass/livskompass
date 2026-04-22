@@ -443,7 +443,7 @@ export function Hero({
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
             ) : ctaPrimaryText && ctaPrimaryLink ? (
               <div className={cn('flex flex-col sm:flex-row gap-4 mt-8 md:mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
                 </a>
@@ -573,7 +573,7 @@ export function Hero({
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
             ) : ctaPrimaryText && ctaPrimaryLink ? (
               <div className={cn('flex flex-col sm:flex-row gap-4 mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
                 </a>
@@ -624,7 +624,7 @@ export function Hero({
               <HeroButtons buttons={buttons} variantClasses={variantClasses} />
             ) : ctaPrimaryText && ctaPrimaryLink ? (
               <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 shadow-lg hover:shadow-xl hover:-translate-y-px transition-all', btnPrimary)}>
+                <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
                 </a>
@@ -692,7 +692,7 @@ export function Hero({
         ) : hasLegacyButtons ? (
           <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
             {ctaPrimaryText && ctaPrimaryLink && (
-              <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 bg-brand text-white shadow-lg hover:shadow-xl hover:-translate-y-px transition-all">
+              <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 bg-brand text-white transition-all">
                 <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                 {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
               </a>

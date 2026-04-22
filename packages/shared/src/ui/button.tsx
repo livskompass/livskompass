@@ -8,13 +8,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-forest-600 text-white shadow-[--shadow-btn-forest] hover:bg-forest-500 hover:shadow-[--shadow-btn-forest-hover] hover:-translate-y-px active:bg-forest-700 active:shadow-xs active:translate-y-0",
+          "bg-forest-600 text-white hover:bg-forest-500 active:bg-forest-700",
         secondary:
           "border-[1.5px] border-stone-300 bg-transparent text-forest-950 hover:bg-stone-100 hover:border-stone-400 active:bg-stone-200",
         ghost:
           "text-forest-600 hover:bg-forest-50 hover:text-forest-700 active:bg-forest-100",
         accent:
-          "bg-amber-600 text-white shadow-amber hover:bg-amber-500 hover:shadow-[--shadow-btn-amber-hover] hover:-translate-y-px active:bg-amber-600 active:translate-y-0",
+          "bg-amber-600 text-white hover:bg-amber-500 active:bg-amber-600",
         destructive: "bg-red-600 text-white hover:bg-red-700",
         link: "text-forest-600 underline-offset-4 hover:underline",
         outline:

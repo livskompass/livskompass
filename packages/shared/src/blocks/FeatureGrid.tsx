@@ -61,10 +61,10 @@ function FeatureItem({ item, index, style, iconSize = 'medium', totalItems, card
   return (
     <ArrayItemControls fieldName="items" itemIndex={index} totalItems={totalItems}>
     {style === 'cards' ? (
-    <div className={cn('group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg, stagger)}>
+    <div className={cn('group rounded-lg overflow-hidden hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300', colors.bg, stagger)}>
       {hasImage && (
         <div className="h-[180px] overflow-hidden">
-          <img src={resolveMediaUrl(item.image!)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={resolveMediaUrl(item.image!)} alt={item.title} className="w-full h-full object-cover" />
         </div>
       )}
       <div className="p-6">
@@ -81,7 +81,7 @@ function FeatureItem({ item, index, style, iconSize = 'medium', totalItems, card
     <div className={cn('text-center group', stagger)}>
       {hasImage ? (
         <div className="h-[160px] rounded-md overflow-hidden mb-4 mx-auto">
-          <img src={resolveMediaUrl(item.image!)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={resolveMediaUrl(item.image!)} alt={item.title} className="w-full h-full object-cover" />
         </div>
       ) : item.icon && IconComponent ? (
         <div className={cn(iSize.container, 'rounded-full flex items-center justify-center mx-auto mb-4 transition-colors duration-300', cardColor === 'dark' ? 'bg-amber-300/20 group-hover:bg-amber-300/30' : 'bg-accent-soft group-hover:bg-surface-alt')}>
@@ -136,7 +136,7 @@ export function FeatureGrid({
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: blockPadding }}>
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="text-center mb-12 reveal">
-          {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-3', headingEdit?.className)}>{heading}</h2>}
+          {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-3', headingEdit?.className)}>{heading}</h2>}
           {(subheading || subheadingEdit) && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-secondary max-w-2xl mx-auto', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}

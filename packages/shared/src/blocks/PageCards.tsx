@@ -103,7 +103,7 @@ export function PageCards({
   if (style === 'list') {
     return (
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
+        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="divide-y divide-stone-100 border border-default rounded-xl overflow-hidden">
           {pages.map((page, i) => (
             <div key={i} className="relative group flex items-center justify-between p-4 bg-surface-elevated hover:bg-surface transition-colors">
@@ -125,7 +125,7 @@ export function PageCards({
   if (style === 'minimal') {
     return (
       <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
+        {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-4 reveal', headingEdit?.className)}>{heading}</h2>}
         <div className="flex flex-wrap gap-3">
           {pages.map((page, i) => (
             <a key={i} href={`/${page.slug}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-default bg-surface-elevated text-body-sm font-medium text-foreground hover:border-accent hover:text-accent transition-colors">
@@ -139,12 +139,12 @@ export function PageCards({
 
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
+      {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-6 reveal', headingEdit?.className)}>{heading}</h2>}
       <ArrayDragProvider fieldName="manualPages">
       <div className={`grid grid-cols-1 ${colMap[columns] ?? colMap[3]} gap-4 reveal`}>
         {pages.map((page, i) => (
           <ArrayItemControls key={i} fieldName="manualPages" itemIndex={i} totalItems={pages.length}>
-          <div className={cn('relative group rounded-lg p-5 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
+          <div className={cn('relative group rounded-lg p-5 hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
             <EditItemBadge cmsRoute="pages" entityId={page.id} label="Edit page" slug={page.slug} />
             <a href={`/${page.slug}`} className="block">
               <h3 className={cn('text-h3 break-words hyphens-auto text-balance transition-colors mb-1', colors.text)}>{page.title}</h3>

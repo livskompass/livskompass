@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useCourseData, useEditableText, useInlineEditBlock } from '../context'
-import { getApiBase } from '../helpers'
+import { getApiBase, formatSwedishDateRange } from '../helpers'
 import { Calendar, MapPin, CreditCard, AlertCircle, ArrowRight } from 'lucide-react'
 import { cn } from '../ui/utils'
 import { UI_STRINGS } from '../ui-strings'
 import { getButtonStyle } from './buttonUtils'
+import { Price } from './Price'
 
 export interface BookingFormProps {
   showOrganization: boolean
@@ -38,10 +39,6 @@ function Placeholder() {
       </div>
     </div>
   )
-}
-
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 export function BookingForm({
@@ -155,7 +152,7 @@ export function BookingForm({
           {course.start_date && (
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-faint" />
-              {formatDate(course.start_date)}{course.end_date && course.end_date !== course.start_date ? ` – ${formatDate(course.end_date)}` : ''}
+              {formatSwedishDateRange(course.start_date, course.end_date)}
             </span>
           )}
           {course.location && (
@@ -166,7 +163,7 @@ export function BookingForm({
           {course.price_sek != null && (
           <span className="inline-flex items-center gap-1.5">
             <CreditCard className="h-4 w-4 text-faint" />
-            {course.price_sek.toLocaleString('sv-SE')} {priceSuffix}
+            <Price value={course.price_sek} currency={priceSuffix} size="sm" colorClass="text-secondary" />
           </span>
           )}
         </div>
@@ -274,9 +271,7 @@ export function BookingForm({
             <span className="text-secondary font-medium">
               <span {...editHandlers(totalLabelEdit)} className={totalLabelEdit?.className}>{totalLabel}</span>
             </span>
-            <span className="font-display text-h3 text-foreground">
-              {totalPrice.toLocaleString('sv-SE')} kr
-            </span>
+            <Price value={totalPrice} size="lg" colorClass="text-foreground" />
           </div>
 
           <button

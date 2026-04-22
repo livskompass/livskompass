@@ -1,4 +1,4 @@
-import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
+import { useFetchJson, resolveMediaUrl, useScrollReveal, formatSwedishDate } from '../helpers'
 import { EditItemBadge } from './EditItemBadge'
 import { useInlineEdit, useEditableText } from '../context'
 import { cn } from '../ui/utils'
@@ -68,7 +68,7 @@ export function PostGrid({
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="mb-8 reveal">
-          {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-2', headingEdit?.className)}>{heading}</h2>}
+          {(heading || headingEdit) && <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-2', headingEdit?.className)}>{heading}</h2>}
           {subheading && <p {...editHandlers(subheadingEdit)} className={cn('text-body-lg text-secondary', subheadingEdit?.className)}>{subheading}</p>}
         </div>
       )}
@@ -88,18 +88,18 @@ export function PostGrid({
       ) : posts.length > 0 ? (
         <div className={`grid grid-cols-1 ${colMap[columns] ?? colMap[3]} gap-6`}>
           {posts.map((post) => (
-            <div key={post.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
+            <div key={post.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
               <EditItemBadge cmsRoute="posts" entityId={post.id} slug={post.slug} label="Edit post" />
               <a href={`/nyhet/${post.slug}`} className="block">
               {showImage && post.featured_image && (
                 <div className="aspect-video overflow-hidden">
-                  <img src={resolveMediaUrl(post.featured_image)} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={resolveMediaUrl(post.featured_image)} alt={post.title} loading="lazy" className="w-full h-full object-cover" />
                 </div>
               )}
               <div className="p-5">
                 {showDate && post.published_at && (
                   <span className={cn('text-caption font-medium mb-1 block', colors.textMuted)}>
-                    {new Date(post.published_at).toLocaleDateString('sv-SE', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {formatSwedishDate(post.published_at)}
                   </span>
                 )}
                 <h3 className={cn('text-h3 break-words hyphens-auto text-balance transition-colors mb-1', colors.text)}>{post.title}</h3>

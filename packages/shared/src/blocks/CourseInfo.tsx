@@ -1,6 +1,7 @@
 import { cn } from '../ui/utils'
 import { useCourseData, useEditableText } from '../context'
 import { MapPin, Calendar, CreditCard, Users, Clock } from 'lucide-react'
+import { formatSwedishDate, formatSwedishDateRange } from '../helpers'
 
 export interface CourseInfoProps {
   showDeadline: boolean
@@ -14,10 +15,6 @@ export interface CourseInfoProps {
   fullLabel: string
   spotsOfText: string
   spotsRemainingText: string
-}
-
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function Placeholder() {
@@ -73,11 +70,7 @@ export function CourseInfo({
   const hasCapacity = course.max_participants != null
   const spotsLeft = hasCapacity ? course.max_participants! - course.current_participants : null
 
-  const dateValue = course.start_date
-    ? course.end_date && course.end_date !== course.start_date
-      ? `${formatDate(course.start_date)} – ${formatDate(course.end_date)}`
-      : formatDate(course.start_date)
-    : ''
+  const dateValue = formatSwedishDateRange(course.start_date, course.end_date)
 
   const spotsValue = isFull
     ? fullLabel
@@ -88,12 +81,12 @@ export function CourseInfo({
   const items = [
     { icon: MapPin, label: locationLabel, value: course.location, labelEdit: locationLabelEdit },
     { icon: Calendar, label: dateLabel, value: dateValue, labelEdit: dateLabelEdit },
-    { icon: CreditCard, label: priceLabel, value: course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '', labelEdit: priceLabelEdit },
+    { icon: CreditCard, label: priceLabel, value: course.price_sek != null ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '', labelEdit: priceLabelEdit },
     ...(spotsValue ? [{ icon: Users, label: spotsLabel, value: spotsValue, labelEdit: spotsLabelEdit }] : []),
   ]
 
   if (showDeadline && course.registration_deadline) {
-    items.push({ icon: Clock, label: deadlineLabel, value: formatDate(course.registration_deadline), labelEdit: deadlineLabelEdit })
+    items.push({ icon: Clock, label: deadlineLabel, value: formatSwedishDate(course.registration_deadline), labelEdit: deadlineLabelEdit })
   }
 
   const visibleItems = showEmpty ? items : items.filter(i => i.value)

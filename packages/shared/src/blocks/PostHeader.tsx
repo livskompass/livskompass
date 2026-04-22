@@ -1,5 +1,5 @@
 import { usePostData, useEditableText } from '../context'
-import { resolveMediaUrl } from '../helpers'
+import { resolveMediaUrl, formatSwedishDate } from '../helpers'
 import { ArrowLeft } from 'lucide-react'
 
 export interface PostHeaderProps {
@@ -48,11 +48,7 @@ export function PostHeader({
       )}
       {post.published_at && (
         <span className="block text-body-sm text-faint mb-2">
-          {new Date(post.published_at).toLocaleDateString('sv-SE', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          {formatSwedishDate(post.published_at)}
         </span>
       )}
       <h1 className="text-h1 text-heading mb-6">
