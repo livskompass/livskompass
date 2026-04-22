@@ -242,6 +242,28 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
+function TypographyRow({ tailwind, token, sample }: {
+  tailwind: string
+  token: string
+  sample: string
+  /** legacy props ignored — the utility class controls font-family/weight */
+  display?: boolean
+  overline?: boolean
+}) {
+  // Render via the actual Tailwind class so what's shown matches what
+  // editors get when they apply the class. Fonts/weights come from the
+  // utility's CSS rule, not hardcoded here.
+  return (
+    <div>
+      <div className="flex items-baseline gap-3 mb-1">
+        <code className="text-xs font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-700">{tailwind}</code>
+        <span className="text-xs text-stone-400 font-mono">{token}</span>
+      </div>
+      <p className={cn('text-forest-800', tailwind)}>{sample}</p>
+    </div>
+  )
+}
+
 const tabs = ['Foundations', 'Components'] as const
 type Tab = typeof tabs[number]
 
@@ -443,14 +465,14 @@ function ComponentsTab() {
           <VariantCell label="Card — with description">
             <PageCards
               heading="" parentSlug=""
-              manualPages={[{ title: 'Vad är ACT', description: 'En introduktion till Acceptance and Commitment Therapy.', slug: 'act', icon: '' }]}
+              manualPages={[{ title: '', description: '', slug: 'vad-ar-act', icon: '' }]}
               columns={1 as 3} showDescription style="card" emptyText="" emptyManualText="" cardColor={pageCardsColor}
             />
           </VariantCell>
           <VariantCell label="Card — no description">
             <PageCards
               heading="" parentSlug=""
-              manualPages={[{ title: 'Vad är ACT', description: '', slug: 'act', icon: '' }]}
+              manualPages={[{ title: '', description: '', slug: 'vad-ar-act', icon: '' }]}
               columns={1 as 3} showDescription={false} style="card" emptyText="" emptyManualText="" cardColor={pageCardsColor}
             />
           </VariantCell>
@@ -458,9 +480,9 @@ function ComponentsTab() {
             <PageCards
               heading="" parentSlug=""
               manualPages={[
-                { title: 'Vad är ACT', description: 'En introduktion till metoden.', slug: 'act', icon: '' },
-                { title: 'Mindfulness', description: 'Övningar och vetenskap bakom mindfulness.', slug: 'mindfulness', icon: '' },
-                { title: 'Forskning', description: 'Aktuell forskning på metoden.', slug: 'forskning-pa-metoden', icon: '' },
+                { title: '', description: '', slug: 'vad-ar-act', icon: '' },
+                { title: '', description: '', slug: 'tips-nar-du-ovar-medveten-narvaro', icon: '' },
+                { title: '', description: '', slug: 'rekryteringsmaterial', icon: '' },
               ]}
               columns={1 as 3} showDescription style="list" emptyText="" emptyManualText="" cardColor={pageCardsColor}
             />
@@ -831,46 +853,16 @@ function FoundationsTab() {
       {/* Typography */}
       <Section title="Typography">
         <div className="space-y-6">
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-display / Outfit</span>
-            <p className="font-display text-forest-800" style={{ fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)' }}>Display Heading</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-h1</span>
-            <p className="font-display text-forest-800" style={{ fontSize: 'var(--type-h1)', lineHeight: 'var(--leading-h1)' }}>Heading One</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-h2</span>
-            <p className="font-display text-forest-800" style={{ fontSize: 'var(--type-h2)', lineHeight: 'var(--leading-h2)' }}>Heading Two</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-h3</span>
-            <p className="font-display text-forest-800" style={{ fontSize: 'var(--type-h3)', lineHeight: 'var(--leading-h3)' }}>Heading Three</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-h4</span>
-            <p className="font-display text-forest-800" style={{ fontSize: 'var(--type-h4)', lineHeight: 'var(--leading-h4)' }}>Heading Four</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-body-lg / Inter</span>
-            <p style={{ fontSize: 'var(--type-body-lg)', lineHeight: 'var(--leading-body)' }}>Body large — Övningar, appar och material för att träna medveten närvaro i vardagen. En central del av ACT.</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-body</span>
-            <p style={{ fontSize: 'var(--type-body)', lineHeight: 'var(--leading-body)' }}>Body — Övningar, appar och material för att träna medveten närvaro i vardagen. En central del av ACT.</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-body-sm</span>
-            <p style={{ fontSize: 'var(--type-body-sm)', lineHeight: 'var(--leading-body-sm)' }}>Body small — Övningar, appar och material för att träna medveten närvaro i vardagen.</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-caption</span>
-            <p style={{ fontSize: 'var(--type-caption)', lineHeight: 'var(--leading-caption)' }}>Caption text</p>
-          </div>
-          <div>
-            <span className="text-xs text-stone-400 font-mono block mb-1">--type-overline</span>
-            <p className="uppercase tracking-widest font-semibold" style={{ fontSize: 'var(--type-overline)' }}>Overline text</p>
-          </div>
+          <TypographyRow tailwind="text-display" token="--type-display" sample="Display Heading" display />
+          <TypographyRow tailwind="text-h1" token="--type-h1" sample="Heading One" display />
+          <TypographyRow tailwind="text-h2" token="--type-h2" sample="Heading Two" display />
+          <TypographyRow tailwind="text-h3" token="--type-h3" sample="Heading Three" display />
+          <TypographyRow tailwind="text-h4" token="--type-h4" sample="Heading Four" display />
+          <TypographyRow tailwind="text-body-lg" token="--type-body-lg" sample="Body large — Övningar, appar och material för att träna medveten närvaro i vardagen. En central del av ACT." />
+          <TypographyRow tailwind="text-body" token="--type-body" sample="Body — Övningar, appar och material för att träna medveten närvaro i vardagen. En central del av ACT." />
+          <TypographyRow tailwind="text-body-sm" token="--type-body-sm" sample="Body small — Övningar, appar och material för att träna medveten närvaro i vardagen." />
+          <TypographyRow tailwind="text-caption" token="--type-caption" sample="Caption text" />
+          <TypographyRow tailwind="text-overline" token="--type-overline" sample="Overline text" overline />
         </div>
       </Section>
 

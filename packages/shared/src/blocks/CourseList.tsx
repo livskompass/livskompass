@@ -129,7 +129,7 @@ export function CourseList({
                     </span>
                   </div>
                   )}
-                  <h3 className={cn('text-h4 mb-2', colors.text)}>{course.title}</h3>
+                  <h3 className={cn('text-h3 break-words hyphens-auto text-balance mb-2', colors.text)}>{course.title}</h3>
                   {!compactMode && course.description && (
                     <p className={cn('text-body-sm line-clamp-2 mb-4', colors.textMuted)}>{course.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
                   )}

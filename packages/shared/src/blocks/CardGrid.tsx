@@ -73,7 +73,7 @@ function ManualCardItem({ card, index, totalItems, cardColor }: { card: ManualCa
               <span {...editHandlers(badgeEdit)} className={badgeEdit?.className}>{card.badge}</span>
             </Badge>
           )}
-          <h3 {...editHandlers(titleEdit)} className={cn('text-h4 transition-colors', colors.text, titleEdit?.className)}>
+          <h3 {...editHandlers(titleEdit)} className={cn('text-h3 break-words hyphens-auto text-balance transition-colors', colors.text, titleEdit?.className)}>
             {card.title}
           </h3>
           {(card.description || descEdit) && (
@@ -189,18 +189,18 @@ export function CardGrid({
             <div className="p-5">
               {source === 'courses' && item.status && (
                 <Badge
-                  variant={item.status === 'full' ? 'destructive' : 'success'}
-                  className="w-fit mb-1"
+                  variant="default"
+                  className={cn('w-fit mb-1', item.status === 'full' ? 'bg-amber-50 text-highlight' : colors.badge)}
                 >
                   {item.status === 'full' ? fullBadgeText : spotsAvailableText}
                 </Badge>
               )}
               {source === 'posts' && item.published_at && (
-                <Badge variant="secondary" className="w-fit mb-1">
+                <Badge variant="default" className={cn('w-fit mb-1', colors.badge)}>
                   {new Date(item.published_at).toLocaleDateString('sv-SE')}
                 </Badge>
               )}
-              <h3 className={cn('text-h4 transition-colors', colors.text)}>
+              <h3 className={cn('text-h3 break-words hyphens-auto text-balance transition-colors', colors.text)}>
                 {item.title}
               </h3>
               {description && (

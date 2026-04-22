@@ -73,7 +73,7 @@ function FeatureItem({ item, index, style, iconSize = 'medium', totalItems, card
           <IconComponent className={cn(iSize.icon, cardColor === 'dark' ? 'text-highlight-soft' : 'text-accent')} />
         </div>
         )}
-        <h3 {...editHandlers(titleEdit)} className={cn('font-semibold mb-2 transition-colors', colors.text, titleEdit?.className)}>{item.title}</h3>
+        <h3 {...editHandlers(titleEdit)} className={cn('text-h3 break-words hyphens-auto text-balance mb-2 transition-colors', colors.text, titleEdit?.className)}>{item.title}</h3>
         <p {...editHandlers(descEdit)} className={cn('text-body-sm leading-relaxed', colors.textMuted, descEdit?.className)}>{item.description}</p>
       </div>
     </div>
@@ -88,7 +88,7 @@ function FeatureItem({ item, index, style, iconSize = 'medium', totalItems, card
           <IconComponent className={cn(iSize.icon, cardColor === 'dark' ? 'text-highlight-soft' : 'text-accent')} />
         </div>
       ) : null}
-      <h3 {...editHandlers(titleEdit)} className={cn('font-semibold mb-2 transition-colors', colors.text, titleEdit?.className)}>{item.title}</h3>
+      <h3 {...editHandlers(titleEdit)} className={cn('text-h3 break-words hyphens-auto text-balance mb-2 transition-colors', colors.text, titleEdit?.className)}>{item.title}</h3>
       <p {...editHandlers(descEdit)} className={cn('text-body-sm leading-relaxed', colors.textMuted, descEdit?.className)}>{item.description}</p>
     </div>
   )}
