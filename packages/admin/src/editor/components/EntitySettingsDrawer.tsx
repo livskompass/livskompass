@@ -14,15 +14,17 @@ interface FieldDef {
   label: string
   type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'image'
   options?: { label: string; value: string }[]
-  /** Pill shown next to the label. "Card" = visible on listing cards, "SEO" = used by search engines. */
-  badge?: FieldBadge
+  /** Pills shown next to the label. "Card" = visible on listing cards, "SEO" = used by search engines.
+   *  Use an array when a field plays multiple roles (e.g. page meta_description is shown on PageCards
+   *  AND in Google results). */
+  badge?: FieldBadge | FieldBadge[]
   /** One-line help text shown under the input. Use it to explain non-obvious card/listing behavior. */
   hint?: string
 }
 
 const PAGE_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'URL slug', type: 'text' },
-  { key: 'meta_description', label: 'Meta description', type: 'textarea', badge: 'SEO', hint: 'Used by Google in search results. Aim for 120–155 characters.' },
+  { key: 'meta_description', label: 'Meta description', type: 'textarea', badge: ['Card', 'SEO'], hint: 'Shown on PageCards listings and in Google search results. Aim for 120–155 characters.' },
   { key: 'parent_slug', label: 'Section', type: 'text', hint: 'Slug of another page. Used for breadcrumbs and PageCards listings — does not change the URL.' },
   { key: 'sort_order', label: 'Sort order', type: 'number', hint: 'Lower numbers appear first in PageCards listings of sibling pages.' },
 ]
@@ -308,19 +310,21 @@ const BADGE_STYLE: Record<FieldBadge, { bg: string; text: string; title: string 
   SEO: { bg: '#fef3c7', text: '#92400e', title: 'Used by search engines.' },
 }
 
-function FieldLabel({ label, badge }: { label: string; badge?: FieldBadge }) {
+function FieldLabel({ label, badge }: { label: string; badge?: FieldBadge | FieldBadge[] }) {
+  const badges = badge ? (Array.isArray(badge) ? badge : [badge]) : []
   return (
     <div className="flex items-center gap-1.5 mb-1">
       <label className="block text-[11px] font-medium text-zinc-500">{label}</label>
-      {badge && (
+      {badges.map((b) => (
         <span
+          key={b}
           className="inline-flex items-center px-1.5 py-px rounded text-[9px] font-semibold uppercase tracking-wide leading-none"
-          style={{ background: BADGE_STYLE[badge].bg, color: BADGE_STYLE[badge].text }}
-          title={BADGE_STYLE[badge].title}
+          style={{ background: BADGE_STYLE[b].bg, color: BADGE_STYLE[b].text }}
+          title={BADGE_STYLE[b].title}
         >
-          {badge}
+          {b}
         </span>
-      )}
+      ))}
     </div>
   )
 }
