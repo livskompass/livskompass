@@ -400,7 +400,9 @@ adminRoutes.delete('/posts/:id', async (c) => {
 
 adminRoutes.get('/courses', async (c) => {
   const result = await c.env.DB.prepare(`
-    SELECT * FROM courses WHERE status != 'archived' ORDER BY start_date DESC
+    SELECT * FROM courses WHERE status != 'archived'
+    -- Dated courses first by start date (newest at top), then undated by title.
+    ORDER BY (start_date IS NULL) ASC, start_date DESC, title ASC
   `).all()
   return c.json({ courses: result.results })
 })

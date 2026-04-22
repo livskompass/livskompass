@@ -14,6 +14,8 @@
 --   /cd-medveten-narvaro -> /material/cd-medveten-narvaro
 --   /act-samtalskort -> /material/act-samtalskort
 --   /act-samtalskort-norska -> /material/act-samtalskort-norska
+--   /bestallning-av-cd-medveten-narvaro -> /bestallning-av-cd-medveten-narvaro-2
+--   /rekryteringsmaterial-infor-gruppledarutbildning -> /rekryteringsmaterial
 
 BEGIN TRANSACTION;
 
@@ -37,5 +39,14 @@ WHERE parent_slug IN ('utbildningar', 'nyhet', 'material');
 -- bestallning-av-cd-medveten-narvaro-2 had parent=cd-medveten-narvaro which is being archived.
 UPDATE pages SET parent_slug = NULL, updated_at = datetime('now')
 WHERE parent_slug = 'cd-medveten-narvaro';
+
+-- 5) Archive 2 page-page duplicates (same title, different slugs — WP migration leftovers).
+--   - 'bestallning-av-cd-medveten-narvaro' is the 2012 sparse stub (141c).
+--     'bestallning-av-cd-medveten-narvaro-2' is the 2013 richer rewrite (700c+). Keep -2.
+--   - 'rekryteringsmaterial-infor-gruppledarutbildning' is byte-identical to 'rekryteringsmaterial'.
+--     Keep the shorter cleaner slug.
+UPDATE pages SET status = 'archived', updated_at = datetime('now')
+WHERE slug IN ('bestallning-av-cd-medveten-narvaro', 'rekryteringsmaterial-infor-gruppledarutbildning')
+  AND status != 'archived';
 
 COMMIT;

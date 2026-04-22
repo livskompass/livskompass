@@ -29,6 +29,8 @@ const LEGACY_REDIRECTS: Record<string, string> = {
   'cd-medveten-narvaro': '/material/cd-medveten-narvaro',
   'act-samtalskort-norska': '/material/act-samtalskort-norska',
   'act-samtalskort': '/material/act-samtalskort',
+  'bestallning-av-cd-medveten-narvaro': '/bestallning-av-cd-medveten-narvaro-2',
+  'rekryteringsmaterial-infor-gruppledarutbildning': '/rekryteringsmaterial',
 }
 
 /** Redirect old /utbildningar/:slug/boka to /utbildningar/:slug#boka */

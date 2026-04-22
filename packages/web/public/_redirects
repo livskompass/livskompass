@@ -18,6 +18,10 @@
 /act-samtalskort/ /material/act-samtalskort 301
 /act-samtalskort-norska /material/act-samtalskort-norska 301
 /act-samtalskort-norska/ /material/act-samtalskort-norska 301
+/bestallning-av-cd-medveten-narvaro /bestallning-av-cd-medveten-narvaro-2 301
+/bestallning-av-cd-medveten-narvaro/ /bestallning-av-cd-medveten-narvaro-2 301
+/rekryteringsmaterial-infor-gruppledarutbildning /rekryteringsmaterial 301
+/rekryteringsmaterial-infor-gruppledarutbildning/ /rekryteringsmaterial 301
 
 # Trailing slash normalization (WordPress used trailing slashes)
 /act/ /act 301
@@ -96,7 +100,6 @@
 
 # Misc pages
 /anmalningsblankett-stockholm-varen/ /anmalningsblankett-stockholm-varen 301
-/bestallning-av-cd-medveten-narvaro/ /bestallning-av-cd-medveten-narvaro 301
 /booster/ /booster 301
 
 # Blog posts (WordPress /nyhet/slug/ → /nyhet/slug)
