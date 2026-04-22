@@ -12,20 +12,22 @@ interface FieldDef {
   label: string
   type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'image'
   options?: { label: string; value: string }[]
+  /** One-line help text shown under the input. Use it to make non-obvious card/listing behavior explicit. */
+  hint?: string
 }
 
 const PAGE_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'URL slug', type: 'text' },
-  { key: 'meta_description', label: 'Meta description', type: 'textarea' },
-  { key: 'parent_slug', label: 'Parent slug', type: 'text' },
-  { key: 'sort_order', label: 'Sort order', type: 'number' },
+  { key: 'meta_description', label: 'Meta description', type: 'textarea', hint: 'Used by Google in search results. Aim for 120–155 characters.' },
+  { key: 'parent_slug', label: 'Section', type: 'text', hint: 'Slug of another page. Used for breadcrumbs and PageCards listings — does not change the URL.' },
+  { key: 'sort_order', label: 'Sort order', type: 'number', hint: 'Lower numbers appear first in PageCards listings of sibling pages.' },
 ]
 
 const POST_FIELDS: FieldDef[] = [
   { key: 'slug', label: 'URL slug', type: 'text' },
-  { key: 'excerpt', label: 'Excerpt', type: 'textarea' },
-  { key: 'featured_image', label: 'Featured image', type: 'image' },
-  { key: 'published_at', label: 'Published date', type: 'date' },
+  { key: 'excerpt', label: 'Excerpt', type: 'textarea', hint: 'Shown on post cards (PostGrid). HTML stripped, clamped to 3 lines.' },
+  { key: 'featured_image', label: 'Featured image', type: 'image', hint: 'Shown on post cards. Square or 16:9 works best.' },
+  { key: 'published_at', label: 'Published date', type: 'date', hint: 'Shown on cards. Posts are sorted newest first.' },
 ]
 
 const COURSE_FIELDS: FieldDef[] = [
@@ -36,14 +38,14 @@ const COURSE_FIELDS: FieldDef[] = [
     { label: 'Full', value: 'full' },
     { label: 'Completed', value: 'completed' },
     { label: 'Cancelled', value: 'cancelled' },
-  ]},
-  { key: 'description', label: 'Short description', type: 'textarea' },
-  { key: 'location', label: 'Location', type: 'text' },
-  { key: 'start_date', label: 'Start date', type: 'date' },
-  { key: 'end_date', label: 'End date', type: 'date' },
-  { key: 'registration_deadline', label: 'Registration deadline', type: 'date' },
-  { key: 'price_sek', label: 'Price (SEK)', type: 'number' },
-  { key: 'max_participants', label: 'Max participants', type: 'number' },
+  ], hint: '"Full" shows a "Fullbokat" badge on cards and disables booking.' },
+  { key: 'description', label: 'Short description', type: 'textarea', hint: 'Shown on course cards. Plain text only — HTML is stripped, clamped to 2 lines (~140 chars).' },
+  { key: 'location', label: 'Location', type: 'text', hint: 'Shown on cards with a pin icon.' },
+  { key: 'start_date', label: 'Start date', type: 'date', hint: 'Shown on cards with a calendar icon. Courses with a date list before undated ones.' },
+  { key: 'end_date', label: 'End date', type: 'date', hint: 'If set, the card date shows a range ("16 mar – 27 apr").' },
+  { key: 'registration_deadline', label: 'Registration deadline', type: 'date', hint: 'Shown in the CourseInfo block on the detail page, not on cards.' },
+  { key: 'price_sek', label: 'Price (SEK)', type: 'number', hint: 'Shown on cards as "X kr". Leave blank to hide price.' },
+  { key: 'max_participants', label: 'Max participants', type: 'number', hint: 'When set, cards show "N platser kvar". Leave blank to hide the badge.' },
 ]
 
 const PRODUCT_FIELDS: FieldDef[] = [
@@ -52,21 +54,21 @@ const PRODUCT_FIELDS: FieldDef[] = [
     { label: 'Draft', value: 'draft' },
     { label: 'Published', value: 'published' },
   ]},
-  { key: 'description', label: 'Short description', type: 'textarea' },
+  { key: 'description', label: 'Short description', type: 'textarea', hint: 'Shown on product cards and on the detail page header. Plain text recommended.' },
   { key: 'type', label: 'Type', type: 'select', options: [
     { label: 'Book', value: 'book' },
     { label: 'CD', value: 'cd' },
     { label: 'Cards', value: 'cards' },
     { label: 'App', value: 'app' },
     { label: 'Download', value: 'download' },
-  ]},
-  { key: 'price_sek', label: 'Price (SEK)', type: 'number' },
-  { key: 'external_url', label: 'External URL', type: 'text' },
-  { key: 'image_url', label: 'Product image', type: 'image' },
+  ], hint: 'Used by ProductList "Filter by type". Not visible on cards.' },
+  { key: 'price_sek', label: 'Price (SEK)', type: 'number', hint: 'Shown on cards. Leave blank for "Gratis" label.' },
+  { key: 'external_url', label: 'External URL', type: 'text', hint: 'Where the "Köp" button on the card sends visitors (typically a retailer page).' },
+  { key: 'image_url', label: 'Product image', type: 'image', hint: 'Shown on cards (when "Show image" is enabled in ProductList).' },
   { key: 'in_stock', label: 'In stock', type: 'select', options: [
     { label: 'Yes', value: '1' },
     { label: 'No', value: '0' },
-  ]},
+  ], hint: 'When "No", cards show "Slut i lager" and the buy button is disabled.' },
 ]
 
 const FIELDS_BY_TYPE: Record<ContentType, FieldDef[]> = {
@@ -305,6 +307,15 @@ function FieldLabel({ label }: { label: string }) {
   )
 }
 
+function FieldHint({ hint }: { hint?: string }) {
+  if (!hint) return null
+  return (
+    <p className="mt-1 text-[11px] leading-snug" style={{ color: 'var(--editor-text-subtle, #71717a)' }}>
+      {hint}
+    </p>
+  )
+}
+
 function StatusBadge({ status }: { status: string }) {
   const colorMap: Record<string, { bg: string; text: string }> = {
     draft: { bg: 'var(--editor-status-draft-bg, #fef3c7)', text: 'var(--editor-status-draft-text, #92400e)' },
@@ -374,6 +385,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
         <div>
           <FieldLabel label={field.label} />
           <input type="text" className={INPUT_CLASS} value={value || ''} onChange={(e) => onChange(e.target.value)} />
+          <FieldHint hint={field.hint} />
         </div>
       )
     case 'textarea':
@@ -381,6 +393,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
         <div>
           <FieldLabel label={field.label} />
           <textarea className={INPUT_CLASS + ' resize-y min-h-[60px]'} rows={3} value={value || ''} onChange={(e) => onChange(e.target.value)} />
+          <FieldHint hint={field.hint} />
         </div>
       )
     case 'number':
@@ -388,6 +401,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
         <div>
           <FieldLabel label={field.label} />
           <input type="number" className={INPUT_CLASS + ' w-32'} value={value ?? ''} onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)} />
+          <FieldHint hint={field.hint} />
         </div>
       )
     case 'date':
@@ -395,6 +409,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
         <div>
           <FieldLabel label={field.label} />
           <input type="date" className={INPUT_CLASS + ' w-44'} value={value ? String(value).slice(0, 10) : ''} onChange={(e) => onChange(e.target.value || null)} />
+          <FieldHint hint={field.hint} />
         </div>
       )
     case 'select':
@@ -407,6 +422,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
+          <FieldHint hint={field.hint} />
         </div>
       )
     case 'image':
@@ -414,6 +430,7 @@ function EntityField({ field, value, onChange, contentType }: { field: FieldDef;
         <div>
           <FieldLabel label={field.label} />
           <MediaPickerField value={value || ''} onChange={onChange} />
+          <FieldHint hint={field.hint} />
         </div>
       )
     default:
