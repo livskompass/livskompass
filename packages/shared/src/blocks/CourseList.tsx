@@ -115,7 +115,7 @@ export function CourseList({
             const spotsLeft = hasCapacity ? course.max_participants - course.current_participants : null
             return (
               <a key={course.slug} href={`/utbildningar/${course.slug}`} className={cn('relative group block rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
-                <EditItemBadge cmsRoute="courses" entityId={course.id} label="Edit course" />
+                <EditItemBadge cmsRoute="courses" entityId={course.id} slug={course.slug} label="Edit course" />
                 <div className="p-6 flex flex-col h-full">
                   {(isFull || hasCapacity) && (
                   <div className="flex items-center gap-2 mb-3">

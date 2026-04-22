@@ -382,8 +382,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
             const updatedEntity = { ...entity, id: created.id, slug: created.slug || slug }
             dispatch({ type: 'SET_ENTITY', entity: updatedEntity as ContentEntity, contentType })
 
-            // Replace URL from /pages/new to /pages/:id without triggering re-load
-            const newPath = `/${route}/${created.id}`
+            // Replace URL from /pages/new to /pages/:slug — admin URLs mirror public URLs.
+            const newPath = `/${route}/${created.slug || slug}`
             window.history.replaceState(null, '', newPath)
           }
 

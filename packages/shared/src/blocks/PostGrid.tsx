@@ -89,7 +89,7 @@ export function PostGrid({
         <div className={`grid grid-cols-1 ${colMap[columns] ?? colMap[3]} gap-6`}>
           {posts.map((post) => (
             <div key={post.slug} className={cn('relative group rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2', colors.bg)}>
-              <EditItemBadge cmsRoute="posts" entityId={post.id} label="Edit post" />
+              <EditItemBadge cmsRoute="posts" entityId={post.id} slug={post.slug} label="Edit post" />
               <a href={`/nyhet/${post.slug}`} className="block">
               {showImage && post.featured_image && (
                 <div className="aspect-video overflow-hidden">

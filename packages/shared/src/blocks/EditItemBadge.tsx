@@ -40,8 +40,9 @@ function getAdminEditUrl(cmsRoute: string, entityId: string): string {
  * Only renders inside the admin/inline edit context.
  */
 export function EditItemBadge({ cmsRoute, entityId, slug, label = 'Edit' }: EditItemBadgeProps) {
-  // Use entityId if available, otherwise fall back to slug for lookup
-  const linkId = entityId || slug || ''
+  // Prefer slug so admin URLs match public URLs (e.g. /courses/norge, not
+  // /courses/course-norge-online-2026). Admin API accepts either.
+  const linkId = slug || entityId || ''
   if (!linkId) return null
   const editCtx = useInlineEditBlock()
   // Only show on admin sites — never on public site for regular visitors
