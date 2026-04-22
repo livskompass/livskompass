@@ -70,12 +70,14 @@ export function PageCards({
   const pages = parentSlug && data?.children
     ? data.children.map((p) => ({ id: p.id, title: p.title, description: p.meta_description || '', slug: p.slug, icon: '' }))
     : manualPages.map((p) => {
-        // Look up page data from the pages list
+        // Look up page data from the pages list — page is the source of truth.
+        // Manual `description` field on the block item is no longer used; edit
+        // the target page's Meta description instead.
         const pageData = allPages?.pages?.find((pg) => pg.slug === p.slug)
         return {
           id: pageData?.id || '',
           title: pageData?.title || p.title || p.slug || '',
-          description: pageData?.meta_description || p.description || '',
+          description: pageData?.meta_description || '',
           slug: p.slug,
           icon: p.icon || '',
         }
