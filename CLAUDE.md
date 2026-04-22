@@ -107,6 +107,154 @@ Both frontends use **shadcn/ui** as the UI component library foundation:
 
 ---
 
+## SESSION HANDOFF - 2026-04-21 — Slug cascade, draft auto-save for metadata, editor crash fixes
+
+### What was done this session
+
+#### 1. P0 — White screen on first block add (fixed)
+`BlockList.tsx` had a Rules-of-Hooks violation: the `DataProviders` `useMemo` sat
+after the `items.length === 0` early return. Adding the first block flipped the
+hook count from N to N+1, React threw "Rendered more hooks than during the
+previous render", and with no error boundary anywhere in admin the entire
+editor blanked. Hoisted the useMemo above the early return.
+- `packages/admin/src/editor/components/BlockList.tsx` — DataProviders moved up
+
+#### 2. P0 — Dead Create button on new pages (fixed)
+`handlePublish` early-returned when `state.puckData` was null, which is always
+the case for a fresh page because the reducer's `safeParse` rejects empty
+`content: []`. Button looked dead. Fall back to an empty puck shape so the
+first save works with no blocks.
+- `packages/admin/src/editor/InlineEditor.tsx:handlePublish`
+
+Same class of bug hit panel drag-drop on empty page (`handleDrop` also bailed on
+null puckData). Fixed the same way.
+- `packages/admin/src/editor/components/BlockList.tsx:handleDrop`
+
+#### 3. Slug rename cascade (new feature)
+Renaming a page/post/course/product slug now rewrites every reference elsewhere
+in one atomic D1 batch. Runs on PUT (publish), never on draft save.
+
+Scans:
+- `pages/posts/courses/products.content_blocks` and `.draft` JSON
+- `settings` table (covers `site_header`, `site_footer`, any other JSON settings)
+- `pages.parent_slug` column
+- `settings.homepage_slug` setting
+
+Match boundary: `(?<=["\\])/old-url(?=["/?#\\])` — matches inside JSON prop strings
+(`"/old"`) and HTML-escaped hrefs (`\"/old\"`), does not touch `/old-other`.
+
+URL prefixes per content type:
+- page: `/<slug>`
+- post: `/nyhet/<slug>`
+- course: `/utbildningar/<slug>`
+- product: `/material/<slug>` (hypothetical — no detail route on web yet)
+
+Admin UI:
+- Slug field label renamed from "Slug" to "URL slug"
+- Live URL preview under the input (`${VITE_WEB_URL}<prefix>/<slug>`) — swap one env
+  value when the real domain goes live
+- Hint text: "Changing the slug rewrites existing links on other pages automatically"
+
+Files:
+- `packages/api/src/routes/admin.ts` — `cascadeSlugRename()` helper + wired into
+  all 4 PUT handlers (pages, posts, courses, products) + URL_PREFIX map
+- `packages/admin/src/editor/components/EntitySettingsDrawer.tsx` — SlugField +
+  URL_PREFIX_BY_TYPE mirror of server map
+
+#### 4. Draft auto-save for metadata (new behaviour)
+Previously only content_blocks auto-saved to draft; slug/title/meta edits only
+lived in memory until Publish. Now metadata flows through the same draft model
+so it survives reload, shows "Draft saved", and flips the badge to "Unpublished
+changes" on published entities.
+
+Draft JSON shape extended:
+```
+{ content, root, zones, metadata: { slug, title, ... } }
+```
+Old drafts (without `metadata` key) still load — `parseDraftMeta` returns null
+and the overlay is skipped.
+
+Reducer `SET_ENTITY` now overlays `draft.metadata` onto the loaded entity (in
+the non-`isMetadataUpdate`, non-`forceReload` branch) so the editor shows draft
+values instead of stale column values. `draftHasNonEmpty` recognises metadata-
+only drafts.
+
+Context changes:
+- `autoSave` is now zero-arg, reads from `stateRef` so content edits and metadata
+  edits share one debounce/abort
+- New `updateEntityMeta(patch)` → dispatch + autoSave
+- New `cancelPendingSave()` — call from `handlePublish` before PUT so a stale
+  debounced PATCH can't re-create a draft after the server clears it
+- `handlePublish` now dispatches `SET_ENTITY` with `forceReload: true` on the
+  refetch so the reducer re-derives from fresh server columns instead of taking
+  the "metadata-only update" branch (which kept a stale `hasDraftChanges=true`
+  and left the badge on "Unpublished changes" after publish)
+
+Files:
+- `packages/admin/src/editor/context.tsx` — METADATA_KEYS_BY_TYPE, buildMetadataSnapshot,
+  reducer overlay, autoSave rewrite, updateEntityMeta, cancelPendingSave
+- `packages/admin/src/editor/components/EntitySettingsDrawer.tsx` — updateField
+  now uses updateEntityMeta
+- `packages/admin/src/editor/InlineEditor.tsx` — cancelPendingSave + forceReload +
+  cache invalidation after publish
+
+#### 5. Settings page stomping cascade (fixed)
+`pages/Settings.tsx` auto-saved site_header 1.5s after the initial
+`setHeader(siteData.header)` fired. That first save wrote cached stale data
+back over whatever the cascade had just updated server-side. Added a
+`skipNextAutoSaveRef` so the very first state change after load is ignored.
+
+Also `handlePublish` now invalidates React Query caches for
+`admin-site-settings` and the four content-list keys so the next mount reads
+fresh post-cascade data.
+
+Files:
+- `packages/admin/src/pages/Settings.tsx`
+- `packages/admin/src/editor/InlineEditor.tsx`
+
+### Key architecture notes surfaced this session
+
+**Admin dev proxy points at prod API.** `packages/admin/vite.config.ts` default
+proxy target is the production Workers URL, not `localhost:8787`. Local API
+changes don't take effect for admin edits unless you:
+- `API_TARGET=http://localhost:8787 npm run dev:admin` (local API), or
+- deploy to prod
+
+Spent about an hour this session diagnosing why the cascade "wasn't running" —
+it was running on local wrangler, but admin was talking to prod.
+
+**No error boundary anywhere in admin.** Any unhandled render error → blank
+screen forever. A future pass should wrap InlineEditor at minimum.
+
+### DB state cleanup done this session
+Page `VT-P7DN6Q2ibynpzcmKZ9` had drift from a pre-cascade `mindfulness →
+mindfulnesss` rename. Realigned `pages.slug = 'mindfulness'` to match
+`site_header.navItems[0].href = /mindfulness` via direct D1 SQL so cascade could
+be tested cleanly.
+
+### Open threads / TODO
+
+- **Pre-cascade drift audit** — other pages may have stale nav/link references
+  from renames that happened before the cascade existed. Needs a scan of
+  `site_header.navItems` vs actual page slugs, plus internal hrefs in
+  content_blocks vs existing routes. Not auto-fixable — would report mismatches
+  for manual review.
+- **Broken-link warning in Site Settings** — show a visual warning if a nav
+  href doesn't resolve to a published page. Would've caught the
+  `/mindfulness` vs `mindfulnesss` drift on sight.
+- **Error boundary around InlineEditor** — prevents any future render throw
+  from blanking the editor.
+- **Self-link rewrite in current entity** — cascade currently rewrites the
+  edited entity's own content_blocks on the server, but if the admin has the
+  user's in-memory content without cascade applied, the next Publish can
+  overwrite the cascade's work. Edge case (user with self-links inside the
+  page being renamed); not addressed today.
+- **Cascade excludes products from real URL** — `/material/<slug>` is used as
+  the assumed prefix but products have no detail route on web yet. If/when a
+  product detail route is added, verify prefix still matches.
+
+---
+
 ## SESSION HANDOFF - 2026-03-09 — InlineEditor UX Overhaul (Strict Build Take 1)
 
 ### What was done this session
