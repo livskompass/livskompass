@@ -17,8 +17,13 @@ export const cardColorStyles: Record<CardColor, {
   badge: string
   btnVariant: 'default' | 'secondary' | 'outline'
 }> = {
+  // `heading-on-light` / `heading-on-dark` (defined in index.css) reset the
+  // inherited --heading-color on each card so child text-h3/h4 elements
+  // (card titles, Price) render against the card's own surface, not the
+  // surrounding section's. Without this, a white card inside a dark section
+  // inherits --heading-color: white and titles/prices become invisible.
   white: {
-    bg: 'bg-surface-elevated',
+    bg: 'bg-surface-elevated heading-on-light',
     text: 'text-brand',
     textMuted: 'text-muted',
     border: 'border-default',
@@ -26,7 +31,7 @@ export const cardColorStyles: Record<CardColor, {
     btnVariant: 'default',
   },
   yellow: {
-    bg: 'bg-highlight-soft',
+    bg: 'bg-highlight-soft heading-on-light',
     text: 'text-brand',
     textMuted: 'text-brand/60',
     border: 'border-transparent',
@@ -34,7 +39,7 @@ export const cardColorStyles: Record<CardColor, {
     btnVariant: 'default',
   },
   mist: {
-    bg: 'bg-mist',
+    bg: 'bg-mist heading-on-light',
     text: 'text-brand',
     textMuted: 'text-brand/60',
     border: 'border-transparent',
@@ -42,7 +47,7 @@ export const cardColorStyles: Record<CardColor, {
     btnVariant: 'default',
   },
   dark: {
-    bg: 'bg-brand',
+    bg: 'bg-brand heading-on-dark',
     text: 'text-highlight-soft',
     textMuted: 'text-highlight-soft/60',
     border: 'border-transparent',

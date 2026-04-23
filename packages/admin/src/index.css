@@ -344,31 +344,36 @@ body {
 /* ==================== Typography Utilities (shared with web) ==================== */
 @layer utilities {
   /* Heading colour follows the surrounding section. SectionBgWrap (dark variants)
-     sets `--heading-color: white` via the .text-white class. Light sections use brand. */
+     sets `--heading-color: white` via the .text-white class. Light sections use brand.
+     Card surfaces (cardColors.ts) RESET --heading-color via .heading-on-light /
+     .heading-on-dark so a white card inside a dark section renders its title in
+     brand, not the inherited white. */
   .text-display, .text-h1, .text-h2, .text-h3, .text-h4 {
     color: var(--heading-color, rgb(var(--brand)));
   }
   .text-white { --heading-color: white; }
+  .heading-on-light { --heading-color: rgb(var(--brand)); }
+  .heading-on-dark  { --heading-color: rgb(var(--highlight-soft)); }
   .text-display {
-    font-family: var(--font-body);
+    font-family: var(--font-display);
     font-size: var(--type-display);
     line-height: var(--leading-display);
     letter-spacing: var(--tracking-display);
-    font-weight: 600;
+    font-weight: 400;
   }
   .text-h1 {
-    font-family: var(--font-body);
+    font-family: var(--font-display);
     font-size: var(--type-h1);
     line-height: var(--leading-h1);
     letter-spacing: var(--tracking-h1);
-    font-weight: 600;
+    font-weight: 400;
   }
   .text-h2 {
-    font-family: var(--font-body);
+    font-family: var(--font-display);
     font-size: var(--type-h2);
     line-height: var(--leading-h2);
     letter-spacing: var(--tracking-h2);
-    font-weight: 600;
+    font-weight: 400;
   }
   .text-h3 {
     font-family: var(--font-body);
