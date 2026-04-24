@@ -950,10 +950,9 @@ export const puckConfig: Config = {
     },
     CourseHeader: {
       label: 'Course Header',
-      defaultProps: { sectionBg: 'transparent', subtitle: '' },
+      defaultProps: { sectionBg: 'transparent' },
       fields: {
         sectionBg: sectionBgField,
-        subtitle: { type: 'text', label: 'Subtitle (optional)' },
       },
       render: (props: any) => <SectionBgWrap bg={props.sectionBg}><CourseHeader {...props} /></SectionBgWrap>,
     },

@@ -25,6 +25,27 @@ export function resolveMediaUrl(url: string): string {
   return url
 }
 
+/** Pull the course's banner image out of its Puck `content_blocks` JSON.
+ *  The course template places a canonical ImageBlock with `id: 'course-image'`
+ *  at the top — we look for that first, then fall back to the first
+ *  ImageBlock with a non-empty `src`. Returns null if nothing usable is
+ *  found or the JSON is malformed. Safe to call on every card render. */
+export function extractCourseImage(contentBlocks: string | null | undefined): string | null {
+  if (!contentBlocks) return null
+  try {
+    const data = JSON.parse(contentBlocks)
+    const blocks = Array.isArray(data?.content) ? data.content : []
+    const canonical = blocks.find(
+      (b: any) => b?.type === 'ImageBlock' && b?.props?.id === 'course-image' && b?.props?.src,
+    )
+    if (canonical?.props?.src) return canonical.props.src as string
+    const fallback = blocks.find((b: any) => b?.type === 'ImageBlock' && b?.props?.src)
+    return fallback?.props?.src ?? null
+  } catch {
+    return null
+  }
+}
+
 /** Rewrite relative /media/ URLs inside HTML strings to absolute URLs */
 export function rewriteHtmlMediaUrls(html: string): string {
   if (!html) return html

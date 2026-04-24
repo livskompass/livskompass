@@ -49,7 +49,7 @@ export const defaultCourseTemplate = JSON.stringify({
   root: { props: {} },
   zones: {
     'course-layout:column-1': [
-      { type: 'CourseHeader', props: { id: 'course-header', sectionBg: 'transparent', subtitle: '' } },
+      { type: 'CourseHeader', props: { id: 'course-header', sectionBg: 'transparent' } },
       { type: 'RichText', props: { id: 'course-content', sectionBg: 'transparent', content: '__LEGACY_CONTENT__', maxWidth: 'full' } },
       { type: 'CourseInfo', props: { id: 'course-info', sectionBg: 'transparent', showDeadline: true, showEmpty: true, layout: 'stacked' } },
     ],

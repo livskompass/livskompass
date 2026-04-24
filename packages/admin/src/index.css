@@ -347,8 +347,10 @@ body {
      sets `--heading-color: white` via the .text-white class. Light sections use brand.
      Card surfaces (cardColors.ts) RESET --heading-color via .heading-on-light /
      .heading-on-dark so a white card inside a dark section renders its title in
-     brand, not the inherited white. */
-  .text-display, .text-h1, .text-h2, .text-h3, .text-h4 {
+     brand, not the inherited white.
+     `:where()` keeps this rule at specificity 0 so any explicit Tailwind text
+     colour utility (from the inline text-style picker) still wins. */
+  :where(.text-display, .text-h1, .text-h2, .text-h3, .text-h4) {
     color: var(--heading-color, rgb(var(--brand)));
   }
   .text-white { --heading-color: white; }

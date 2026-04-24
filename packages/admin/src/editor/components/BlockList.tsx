@@ -285,7 +285,7 @@ export function BlockList() {
         )
       }
       return (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-4">
           {zoneItems.map((zItem, zIdx) => {
             const zComp = components[zItem.type]
             if (!zComp?.render) return null

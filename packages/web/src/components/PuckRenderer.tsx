@@ -99,7 +99,7 @@ export default function PuckRenderer({ data }: { data: PuckData }) {
     (zoneId: string): React.ReactNode => {
       const zoneItems = data.zones?.[zoneId] || []
       if (zoneItems.length === 0) return null
-      return <div className="flex flex-col gap-8">{renderItems(zoneItems)}</div>
+      return <div className="flex flex-col gap-4">{renderItems(zoneItems)}</div>
     },
     [data.zones],
   )
