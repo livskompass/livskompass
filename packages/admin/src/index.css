@@ -529,6 +529,17 @@ body {
   border-radius: 4px;
 }
 
+/* Generic placeholder for any empty editable/clickable element that carries
+ * `data-placeholder`. Used for CourseHeader subtitle (contenteditable <p>),
+ * RichText empty state (click-to-edit <div>), etc. */
+[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--editor-placeholder-color);
+  opacity: 0.6;
+  font-style: italic;
+  pointer-events: none;
+}
+
 /* ===== Inline Editor Accessibility ===== */
 
 /* Focus-visible ring for all editor interactive elements */

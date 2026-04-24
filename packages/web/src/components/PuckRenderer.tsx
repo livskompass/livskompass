@@ -93,12 +93,13 @@ export default function PuckRenderer({ data }: { data: PuckData }) {
     | React.FC<any>
     | undefined
 
-  // Zone renderer: resolves zone content from data.zones
+  // Zone renderer: resolves zone content from data.zones. Stacks nested blocks
+  // with vertical spacing so they don't run into each other.
   const renderZone = React.useCallback(
     (zoneId: string): React.ReactNode => {
       const zoneItems = data.zones?.[zoneId] || []
       if (zoneItems.length === 0) return null
-      return <>{renderItems(zoneItems)}</>
+      return <div className="flex flex-col gap-8">{renderItems(zoneItems)}</div>
     },
     [data.zones],
   )

@@ -13,6 +13,17 @@ function sanitizeEmbed(html: string): string {
   })
 }
 
+/** Only permit http(s) iframe sources — blocks javascript:, data:, file:, etc. */
+function isSafeEmbedUrl(url: string): boolean {
+  if (!url) return false
+  try {
+    const parsed = new URL(url, typeof window !== 'undefined' ? window.location.href : 'https://example.com')
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 export interface EmbedBlockProps {
   url: string
   html: string
@@ -63,7 +74,10 @@ export function EmbedBlock({
   const ratio = ratioMap[aspectRatio] || ''
   const provider = getEmbedProvider(url)
 
+  const urlDraftInvalid = inputMode === 'url' && urlDraft.trim().length > 0 && !isSafeEmbedUrl(urlDraft.trim())
+
   const handleSave = () => {
+    if (urlDraftInvalid) return
     if (editCtx) {
       if (inputMode === 'url') {
         editCtx.saveBlockProp(editCtx.blockIndex, 'url', urlDraft)
@@ -84,7 +98,7 @@ export function EmbedBlock({
         className={cn('w-full overflow-hidden rounded-xl', ratio)}
         dangerouslySetInnerHTML={{ __html: sanitizeEmbed(html) }}
       />
-    ) : url ? (
+    ) : url && isSafeEmbedUrl(url) ? (
       <div className={cn('w-full overflow-hidden rounded-xl', ratio || 'aspect-video')}>
         <iframe
           src={url}
@@ -148,6 +162,7 @@ export function EmbedBlock({
               urlValue={urlDraft}
               htmlValue={htmlDraft}
               mode={inputMode}
+              urlInvalid={urlDraftInvalid}
               onModeChange={setInputMode}
               onUrlChange={setUrlDraft}
               onHtmlChange={setHtmlDraft}
@@ -182,6 +197,7 @@ function EmbedInput({
   urlValue,
   htmlValue,
   mode,
+  urlInvalid,
   onModeChange,
   onUrlChange,
   onHtmlChange,
@@ -192,6 +208,7 @@ function EmbedInput({
   urlValue: string
   htmlValue: string
   mode: 'url' | 'html'
+  urlInvalid: boolean
   onModeChange: (m: 'url' | 'html') => void
   onUrlChange: (v: string) => void
   onHtmlChange: (v: string) => void
@@ -281,7 +298,14 @@ function EmbedInput({
           </div>
         )}
 
-        {urlValue && getEmbedProvider(urlValue) && mode === 'url' && (
+        {mode === 'url' && urlInvalid && (
+          <div className="text-caption text-red-300 flex items-center gap-1">
+            <X className="h-3 w-3" />
+            Only http:// or https:// URLs are allowed.
+          </div>
+        )}
+
+        {urlValue && !urlInvalid && getEmbedProvider(urlValue) && mode === 'url' && (
           <div className="text-caption text-white/50 flex items-center gap-1">
             <ExternalLink className="h-3 w-3" />
             Detected: {getEmbedProvider(urlValue)}

@@ -73,11 +73,17 @@ export function TextSizePicker({ puckData, saveBlockProp }: Props) {
     }
   }, [])
 
-  // Position above focused element
+  // Position above the focused element, flipping below when there isn't
+  // enough room above (e.g. the element sits near the top of the viewport
+  // or just below a large image). The toolbar is ~44px tall.
+  const TOOLBAR_H = 44
   const updatePos = useCallback(() => {
     if (!activeField) { setPos(null); return }
     const r = activeField.el.getBoundingClientRect()
-    setPos({ x: r.left + r.width / 2, y: r.top - 44 })
+    const above = r.top - TOOLBAR_H
+    const flipped = above < 16
+    const y = flipped ? r.bottom + 8 : above
+    setPos({ x: r.left + r.width / 2, y })
   }, [activeField])
 
   useEffect(() => {

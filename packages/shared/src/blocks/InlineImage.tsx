@@ -65,11 +65,19 @@ export function InlineImage({
 
   // Edit mode — render with overlay
   return (
-    <div className="relative group/inline-img" style={style}>
+    <div className="relative group/inline-img w-full" style={style}>
       {resolvedSrc ? (
         <img src={resolvedSrc} alt={alt} loading={loading} className={className} />
       ) : (
-        <div className={cn('flex flex-col items-center justify-center bg-surface-alt border-2 border-dashed border-strong rounded-xl', className)} style={{ minHeight: 200, aspectRatio: style?.aspectRatio || '4 / 3' }}>
+        <div
+          className={cn('flex flex-col items-center justify-center bg-surface-alt border-2 border-dashed border-strong rounded-xl w-full', className)}
+          style={{
+            minHeight: style?.maxHeight ? undefined : 200,
+            aspectRatio: style?.aspectRatio || (style?.maxHeight ? undefined : '4 / 3'),
+            height: style?.maxHeight || undefined,
+            maxHeight: style?.maxHeight || undefined,
+          }}
+        >
           <Camera className="h-10 w-10 text-faint mb-2" />
           <span className="text-body-sm font-medium text-faint">Click to add image</span>
         </div>

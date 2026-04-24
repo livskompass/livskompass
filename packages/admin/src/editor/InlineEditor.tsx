@@ -10,7 +10,7 @@ import { SlashMenu } from './components/SlashMenu'
 import { SelectedBlockArrayControls } from './components/InlineArrayControls'
 import { VersionHistoryPanel } from './components/VersionHistoryPanel'
 import { EntitySettingsDrawer } from './components/EntitySettingsDrawer'
-import { puckConfig } from '@livskompass/shared'
+import { puckConfig, defaultCourseTemplate, defaultPostTemplate, defaultProductTemplate } from '@livskompass/shared'
 import type { ContentType, ContentEntity } from './types'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
@@ -40,42 +40,26 @@ const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   product: 'New product',
 }
 
-/** Default block templates per content type */
-function getDefaultTemplate(contentType: ContentType) {
-  const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-
-  switch (contentType) {
-    case 'course':
-      return {
-        content: [
-          { type: 'CourseInfo', props: { id: `CourseInfo-${uid()}`, sectionBg: 'transparent', showDeadline: true, showEmpty: false, layout: 'grid' } },
-          { type: 'RichText', props: { id: `RichText-${uid()}`, content: '<h2>Om kursen</h2><p>Beskriv kursen här...</p>', maxWidth: 'medium', position: 'center', alignment: 'left', fontSize: 'normal', textColor: 'default' } },
-          { type: 'BookingForm', props: { id: `BookingForm-${uid()}`, sectionBg: 'transparent', showOrganization: true, showNotes: true } },
-        ],
-        root: { props: {} },
-        zones: {},
-      }
-    case 'post':
-      return {
-        content: [
-          { type: 'PostHeader', props: { id: `PostHeader-${uid()}`, sectionBg: 'transparent', showBackLink: true, backLinkText: 'Tillbaka till nyheter', backLinkUrl: '/nyheter' } },
-          { type: 'RichText', props: { id: `RichText-${uid()}`, content: '<p>Skriv ditt inlägg här...</p>', maxWidth: 'medium', position: 'center', alignment: 'left', fontSize: 'normal', textColor: 'default' } },
-        ],
-        root: { props: {} },
-        zones: {},
-      }
-    case 'product':
-      return {
-        content: [
-          { type: 'PageHeader', props: { id: `PageHeader-${uid()}`, sectionBg: 'transparent', alignment: 'left', size: 'large', showDivider: true } },
-          { type: 'RichText', props: { id: `RichText-${uid()}`, content: '<p>Beskriv produkten här...</p>', maxWidth: 'medium', position: 'center', alignment: 'left', fontSize: 'normal', textColor: 'default' } },
-        ],
-        root: { props: {} },
-        zones: {},
-      }
-    case 'page':
-    default:
-      return { content: [], root: { props: {} }, zones: {} }
+/** Default block templates per content type.
+ *  Reads from the shared `defaultCourseTemplate` / `defaultPostTemplate` etc.
+ *  in `packages/shared/src/templates.ts` — single source of truth so the admin
+ *  editor and the public fallback renderer stay in lockstep.
+ *
+ *  `legacyHtml` is injected into the template's RichText via the __LEGACY_CONTENT__
+ *  placeholder, so migrated courses preserve their WordPress description inside
+ *  the new layout instead of losing it.
+ */
+function getDefaultTemplate(contentType: ContentType, legacyHtml: string = '') {
+  const safe = legacyHtml ? JSON.stringify(legacyHtml).slice(1, -1) : ''
+  let tpl: string | null = null
+  if (contentType === 'course') tpl = defaultCourseTemplate
+  else if (contentType === 'post') tpl = defaultPostTemplate
+  else if (contentType === 'product') tpl = defaultProductTemplate
+  if (!tpl) return { content: [], root: { props: {} }, zones: {} }
+  try {
+    return JSON.parse(tpl.replace('__LEGACY_CONTENT__', safe))
+  } catch {
+    return { content: [], root: { props: {} }, zones: {} }
   }
 }
 
@@ -94,24 +78,27 @@ function getLegacyHtml(entity: Record<string, any>, contentType: ContentType): s
 }
 
 /**
- * Convert legacy HTML content to a Puck data structure with a RichText block.
- * Called when content_blocks is null but HTML content exists.
+ * Convert legacy HTML content to a Puck data structure using the content type's
+ * default template, substituting the legacy HTML into the template's RichText
+ * block via __LEGACY_CONTENT__. Falls back to a bare RichText for content types
+ * without a template (pages).
  */
-function legacyHtmlToPuckData(html: string): string {
-  return JSON.stringify({
-    content: [
-      {
-        type: 'RichText',
-        props: {
-          id: `RichText-migrated-${Date.now()}`,
-          content: html,
-          maxWidth: 'medium',
+function legacyHtmlToPuckData(html: string, contentType: ContentType): string {
+  const tpl = getDefaultTemplate(contentType, html)
+  // If the template has no content (e.g. 'page'), fall back to a bare RichText
+  if (!tpl.content || tpl.content.length === 0) {
+    return JSON.stringify({
+      content: [
+        {
+          type: 'RichText',
+          props: { id: `RichText-migrated-${Date.now()}`, content: html, maxWidth: 'medium' },
         },
-      },
-    ],
-    root: { props: {} },
-    zones: {},
-  })
+      ],
+      root: { props: {} },
+      zones: {},
+    })
+  }
+  return JSON.stringify(tpl)
 }
 
 function InlineEditorInner({ contentType }: InlineEditorPageProps) {
@@ -269,7 +256,7 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
         if (!hasValidBlocks) {
           const legacyHtml = getLegacyHtml(entity, contentType)
           if (legacyHtml) {
-            entity.content_blocks = legacyHtmlToPuckData(legacyHtml)
+            entity.content_blocks = legacyHtmlToPuckData(legacyHtml, contentType)
             entity.editor_version = 'puck'
             setLegacyConverted(true)
           }
@@ -333,6 +320,25 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
             content_blocks: JSON.stringify(puckData),
             editor_version: 'puck',
             status: 'draft',
+            // Explicit nulls — server INSERT binds these without `|| null`
+            // defaults so D1 throws on undefined.
+            description: null,
+            content: null,
+            excerpt: null,
+            featured_image: null,
+            meta_description: null,
+            parent_slug: null,
+            sort_order: null,
+            location: null,
+            start_date: null,
+            end_date: null,
+            price_sek: null,
+            max_participants: null,
+            registration_deadline: null,
+            type: null,
+            external_url: null,
+            image_url: null,
+            in_stock: null,
           }),
         })
 
@@ -349,18 +355,42 @@ function InlineEditorInner({ contentType }: InlineEditorPageProps) {
       // Update existing entity. Use entity.id from state (immutable) rather than
       // the URL param, which may be a slug that's about to change in this PUT.
       const entityId = state.entity?.id || id
+      // Server PUT handlers bind some nullable columns (like `description`)
+      // without a `|| null` default — D1 throws on undefined. Ensure every
+      // nullable column we might spread has at least an explicit null so the
+      // bindings never see `undefined`.
+      const e = (state.entity || {}) as Record<string, any>
+      const nullableDefaults: Record<string, null> = {
+        description: null,
+        content: null,
+        excerpt: null,
+        featured_image: null,
+        meta_description: null,
+        parent_slug: null,
+        sort_order: null,
+        location: null,
+        start_date: null,
+        end_date: null,
+        price_sek: null,
+        max_participants: null,
+        registration_deadline: null,
+        type: null,
+        external_url: null,
+        image_url: null,
+        in_stock: null,
+      }
+      const safeBody: Record<string, any> = { ...nullableDefaults, ...e }
+      // Overwrite with the values we're actually publishing.
+      safeBody.content_blocks = JSON.stringify(puckData)
+      safeBody.editor_version = 'puck'
+      safeBody.status = 'published'
       const res = await fetch(`${API_BASE}/admin/${route}/${entityId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...state.entity,
-          content_blocks: JSON.stringify(puckData),
-          editor_version: 'puck',
-          status: 'published',
-        }),
+        body: JSON.stringify(safeBody),
       })
 
       if (!res.ok) {

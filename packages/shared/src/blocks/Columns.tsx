@@ -35,6 +35,17 @@ const layoutGridMap: Record<string, string> = {
  */
 export const ZoneRenderContext = createContext<((zoneId: string) => React.ReactNode) | null>(null)
 
+/**
+ * Signal that a block is being rendered inside a column. Blocks use this to
+ * skip their own full-width / max-width / section-padding wrappers, since the
+ * parent Columns component already provides container-level layout.
+ */
+export const InColumnContext = createContext<boolean>(false)
+
+export function useInColumn(): boolean {
+  return useContext(InColumnContext)
+}
+
 export function Columns({
   layout = '50-50',
   gap = 'medium',
@@ -45,26 +56,31 @@ export function Columns({
   const threeCol = layout === '33-33-33'
 
   return (
-    <div
-      className={cn(
-        'grid grid-cols-1 mx-auto',
-        layoutGridMap[layout] || layoutGridMap['50-50'],
-        gapMap[gap],
-        verticalAlignMap[verticalAlignment]
-      )}
-      style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
-    >
-      <div className="min-h-[60px]">
-        {renderZone?.(`${id}:column-1`)}
-      </div>
-      <div className="min-h-[60px]">
-        {renderZone?.(`${id}:column-2`)}
-      </div>
-      {threeCol && (
+    <InColumnContext.Provider value={true}>
+      <div
+        className={cn(
+          'grid grid-cols-1 mx-auto',
+          layoutGridMap[layout] || layoutGridMap['50-50'],
+          gapMap[gap],
+          verticalAlignMap[verticalAlignment]
+        )}
+        style={{
+          maxWidth: 'var(--width-content)',
+          paddingInline: 'var(--container-px)',
+        }}
+      >
         <div className="min-h-[60px]">
-          {renderZone?.(`${id}:column-3`)}
+          {renderZone?.(`${id}:column-1`)}
         </div>
-      )}
-    </div>
+        <div className="min-h-[60px]">
+          {renderZone?.(`${id}:column-2`)}
+        </div>
+        {threeCol && (
+          <div className="min-h-[60px]">
+            {renderZone?.(`${id}:column-3`)}
+          </div>
+        )}
+      </div>
+    </InColumnContext.Provider>
   )
 }

@@ -13,6 +13,10 @@ export interface ImageBlockProps {
   link: string
   shadow?: 'none' | 'small' | 'large'
   border?: 'none' | 'thin'
+  /** Optional aspect-ratio hint for the empty-state placeholder. */
+  aspectRatio?: 'auto' | '21/9' | '16/9' | '4/3' | '1/1'
+  /** Hard ceiling on the rendered height. Accepts any CSS length (`25vh`, `280px`, etc.). */
+  maxHeight?: string
 }
 
 const sizeMap = {
@@ -61,6 +65,8 @@ export function ImageBlock({
   link = '',
   shadow = 'none',
   border = 'none',
+  aspectRatio = 'auto',
+  maxHeight,
   id,
 }: ImageBlockProps & { puck?: { isEditing: boolean }; id?: string }) {
   // Puck editor inline editing (via postMessage)
@@ -83,32 +89,67 @@ export function ImageBlock({
     )
   }
 
+  // When maxHeight or aspectRatio is set, the image fills its wrapper with object-cover.
+  // Pass the constraint as `style` to InlineImage — its own wrapper applies it
+  // so the inner <img> can fill reliably via h-full.
+  const constrained = Boolean(maxHeight) || (aspectRatio && aspectRatio !== 'auto')
+  const constraintStyle: React.CSSProperties = {}
+  if (aspectRatio && aspectRatio !== 'auto') constraintStyle.aspectRatio = aspectRatio.replace('/', ' / ')
+  if (maxHeight) constraintStyle.maxHeight = maxHeight
+  const imgClassName = cn(
+    'w-full',
+    constrained ? 'h-full object-cover' : 'h-auto',
+    roundedMap[rounded],
+    shadowMap[shadow || 'none'],
+    borderMap[border || 'none'],
+  )
   const img = (
     <InlineImage
       src={src}
       propName="src"
       alt={alt}
-      className={cn('w-full h-auto', roundedMap[rounded], shadowMap[shadow || 'none'], borderMap[border || 'none'])}
+      className={imgClassName}
+      style={constrained ? constraintStyle : undefined}
     />
   )
 
   const wrappedImg = link && !editCtx ? (
-    <a href={link} target="_blank" rel="noopener noreferrer">
+    <a href={link} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
       {img}
     </a>
   ) : (
     img
   )
 
+  // Only render the figcaption when there's actual caption text. Rendering
+  // it in admin with an empty string leaves a blank clickable line below the
+  // image that admins mistake for an unknown text block. Captions can still
+  // be added via the settings popover if needed.
+  const captionBlock = caption ? (
+    <figcaption {...editHandlers(captionEdit)} className={cn('mt-2 text-body-sm text-muted text-center', captionEdit?.className)}>
+      {caption}
+    </figcaption>
+  ) : null
+
+  // In banner mode (maxHeight or aspectRatio set), render at full content
+  // width (not viewport) — no vertical padding here; Spacer blocks own the
+  // section spacing between this block and siblings.
+  if (constrained) {
+    return (
+      <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
+        <figure className={cn('w-full', alignmentMap[alignment])}>
+          {wrappedImg}
+          {captionBlock}
+        </figure>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto px-4 sm:px-6" style={{ maxWidth: 'var(--width-content)' }}>
       <figure className={cn(sizeMap[size], alignmentMap[alignment])}>
         {wrappedImg}
-        {(caption || captionEdit) && (
-          <figcaption {...editHandlers(captionEdit)} className={cn('mt-2 text-body-sm text-muted text-center', captionEdit?.className)}>
-            {caption}
-          </figcaption>
-        )}
+        {captionBlock}
       </figure>
     </div>
   )

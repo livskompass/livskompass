@@ -5,6 +5,7 @@ import { Search, X, GripVertical, Columns, Type, Image, BarChart3, Layout, Messa
   ExternalLink
 } from 'lucide-react'
 import { puckConfig, getEditingSurface } from '@livskompass/shared'
+import { useEditor } from '../context'
 
 // Drag data type — used to identify panel drops vs other drag sources
 export const PANEL_DRAG_TYPE = 'application/x-block-type'
@@ -71,7 +72,21 @@ interface BlockPanelProps {
   onToggleCollapsed: () => void
 }
 
+/** Data-bound blocks that only make sense on specific content types.
+ *  Filtered out of the block panel for other types — admins shouldn't see
+ *  blocks that can't work where they're editing.
+ */
+const BLOCK_CONTENT_TYPE_SCOPE: Record<string, ('page' | 'post' | 'course' | 'product')[]> = {
+  CourseHeader: ['course'],
+  CourseInfo: ['course'],
+  BookingCTA: ['course'],
+  BookingForm: ['course'],
+  PostHeader: ['post'],
+}
+
 export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
+  const { state } = useEditor()
+  const contentType = state.contentType
   const [search, setSearch] = useState('')
   const [draggingBlock, setDraggingBlock] = useState<string | null>(null)
   const [collapsedCats, setCollapsedCats] = useState<Record<string, boolean>>({})
@@ -90,13 +105,16 @@ export function BlockPanel({ collapsed, onToggleCollapsed }: BlockPanelProps) {
     setDraggingBlock(null)
   }, [])
 
-  // Filter blocks by search
+  // Filter blocks by (1) content-type scope and (2) search
   const searchLower = search.toLowerCase()
   const filteredCategories = Object.entries(categories)
     .map(([key, cat]) => ({
       key,
       title: cat.title,
       components: cat.components.filter((name) => {
+        // Hide blocks that don't apply to the current content type
+        const scope = BLOCK_CONTENT_TYPE_SCOPE[name]
+        if (scope && !scope.includes(contentType)) return false
         const label = components[name]?.label || name
         return (
           label.toLowerCase().includes(searchLower) ||
