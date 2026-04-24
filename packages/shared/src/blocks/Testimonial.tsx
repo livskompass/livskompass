@@ -32,6 +32,26 @@ function editHandlers(edit: ReturnType<typeof useEditableText> | ReturnType<type
   return rest
 }
 
+/** Detect empty / placeholder ("Test") values so we can render sample copy in their place. */
+function isPlaceholder(v?: string) {
+  const s = (v || '').trim()
+  if (!s) return true
+  if (s.length < 6 && /^test\b/i.test(s)) return true
+  return false
+}
+
+const DUMMY_QUOTE = 'Kursen gav mig konkreta verktyg jag använder varje dag — både i mitt arbete och i mitt privatliv.'
+const DUMMY_AUTHOR = 'Exempel Namn'
+const DUMMY_ROLE = 'Deltagare, ACT-utbildning'
+
+function displayValues(item: TestimonialItem) {
+  return {
+    quote: isPlaceholder(item.quote) ? DUMMY_QUOTE : item.quote,
+    author: isPlaceholder(item.author) ? DUMMY_AUTHOR : item.author,
+    role: isPlaceholder(item.role) ? DUMMY_ROLE : item.role,
+  }
+}
+
 // ── Single testimonial card (reused by all display modes) ──
 
 function TestimonialCard({
@@ -58,6 +78,10 @@ function TestimonialCard({
   const aHandlers = editHandlers(authorEdit)
   const rHandlers = editHandlers(roleEdit)
 
+  // Swap in sample copy for empty/"Test" values so every card reads as a
+  // real testimonial at a glance. Editing still writes the user's real text.
+  const d = displayValues(item)
+
   const content = (
     <>
       {style === 'minimal' ? (
@@ -66,24 +90,18 @@ function TestimonialCard({
             {...qHandlers}
             className={cn('text-body-lg italic text-foreground leading-relaxed', quoteEdit?.className)}
           >
-            {item.quote}
+            {d.quote}
           </p>
-          {(item.author || authorEdit) && (
-            <footer className="mt-3 text-body-sm text-muted">
-              &mdash;{' '}
-              <span {...aHandlers} className={authorEdit?.className}>
-                {item.author}
-              </span>
-              {(item.role || roleEdit) && (
-                <>
-                  ,{' '}
-                  <span {...rHandlers} className={roleEdit?.className}>
-                    {item.role}
-                  </span>
-                </>
-              )}
-            </footer>
-          )}
+          <footer className="mt-3 text-body-sm text-muted">
+            &mdash;{' '}
+            <span {...aHandlers} className={authorEdit?.className}>
+              {d.author}
+            </span>
+            ,{' '}
+            <span {...rHandlers} className={roleEdit?.className}>
+              {d.role}
+            </span>
+          </footer>
         </blockquote>
       ) : style === 'featured' ? (
         <div className="bg-accent-soft rounded-2xl p-8 md:p-12 border border-forest-100 relative overflow-hidden h-full">
@@ -99,40 +117,36 @@ function TestimonialCard({
                 quoteEdit?.className,
               )}
             >
-              {item.quote}
+              {d.quote}
             </p>
-            {(item.author || authorEdit) && (
-              <footer className="flex items-center gap-3">
-                {item.avatar ? (
-                  <InlineImage
-                    src={item.avatar}
-                    propName={`items[${index}].avatar`}
-                    alt={item.author}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-accent-hover font-semibold text-body-sm">
-                    {item.author.charAt(0)}
-                  </div>
-                )}
-                <div>
-                  <div
-                    {...aHandlers}
-                    className={cn('font-medium text-foreground', authorEdit?.className)}
-                  >
-                    {item.author}
-                  </div>
-                  {(item.role || roleEdit) && (
-                    <div
-                      {...rHandlers}
-                      className={cn('text-body-sm text-muted', roleEdit?.className)}
-                    >
-                      {item.role}
-                    </div>
-                  )}
+            <footer className="flex items-center gap-3">
+              {item.avatar ? (
+                <InlineImage
+                  src={item.avatar}
+                  propName={`items[${index}].avatar`}
+                  alt={d.author}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-forest-200 flex items-center justify-center text-accent-hover font-semibold text-body-sm">
+                  {d.author.charAt(0).toUpperCase()}
                 </div>
-              </footer>
-            )}
+              )}
+              <div>
+                <div
+                  {...aHandlers}
+                  className={cn('font-medium text-foreground', authorEdit?.className)}
+                >
+                  {d.author}
+                </div>
+                <div
+                  {...rHandlers}
+                  className={cn('text-body-sm text-muted', roleEdit?.className)}
+                >
+                  {d.role}
+                </div>
+              </div>
+            </footer>
           </blockquote>
         </div>
       ) : (
@@ -145,40 +159,36 @@ function TestimonialCard({
               quoteEdit?.className,
             )}
           >
-            {item.quote}
+            {d.quote}
           </p>
-          {(item.author || authorEdit) && (
-            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-default">
-              {item.avatar ? (
-                <InlineImage
-                  src={item.avatar}
-                  propName={`items[${index}].avatar`}
-                  alt={item.author}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center text-secondary font-medium text-caption">
-                  {item.author.charAt(0)}
-                </div>
-              )}
-              <div>
-                <div
-                  {...aHandlers}
-                  className={cn('font-medium text-foreground', authorEdit?.className)}
-                >
-                  {item.author}
-                </div>
-                {(item.role || roleEdit) && (
-                  <div
-                    {...rHandlers}
-                    className={cn('text-body-sm text-muted', roleEdit?.className)}
-                  >
-                    {item.role}
-                  </div>
-                )}
+          <div className="flex items-center gap-3 mt-auto pt-4 border-t border-default">
+            {item.avatar ? (
+              <InlineImage
+                src={item.avatar}
+                propName={`items[${index}].avatar`}
+                alt={d.author}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center text-secondary font-medium text-caption">
+                {d.author.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <div
+                {...aHandlers}
+                className={cn('font-medium text-foreground', authorEdit?.className)}
+              >
+                {d.author}
+              </div>
+              <div
+                {...rHandlers}
+                className={cn('text-body-sm text-muted', roleEdit?.className)}
+              >
+                {d.role}
               </div>
             </div>
-          )}
+          </div>
         </div>
       )}
     </>
@@ -286,29 +296,32 @@ export function Testimonial({
             width: 'max-content',
           }}
         >
-          {marqueeItems.map((item, i) => (
-            <div
-              key={i}
-              className="w-[400px] flex-shrink-0 rounded-lg p-8 flex flex-col bg-mist"
-            >
-              <p className="text-body-lg text-brand italic leading-relaxed mb-6 flex-1">
-                {item.quote}
-              </p>
-              <div className="flex items-center gap-3">
-                {item.avatar ? (
-                  <img src={item.avatar} alt={item.author} className="w-10 h-10 rounded-full object-cover" />
-                ) : item.author ? (
-                  <div className="w-10 h-10 rounded-full bg-forest-300 flex items-center justify-center text-brand font-semibold text-body-sm">
-                    {item.author.charAt(0)}
+          {marqueeItems.map((item, i) => {
+            const d = displayValues(item)
+            return (
+              <div
+                key={i}
+                className="w-[400px] flex-shrink-0 rounded-lg p-8 flex flex-col bg-mist"
+              >
+                <p className="text-body-lg text-brand italic leading-relaxed mb-6 flex-1">
+                  {d.quote}
+                </p>
+                <div className="flex items-center gap-3">
+                  {item.avatar ? (
+                    <img src={item.avatar} alt={d.author} className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-forest-300 flex items-center justify-center text-brand font-semibold text-body-sm">
+                      {d.author.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <div className="font-medium text-brand">{d.author}</div>
+                    <div className="text-body-sm text-accent">{d.role}</div>
                   </div>
-                ) : null}
-                <div>
-                  {item.author && <div className="font-medium text-brand">{item.author}</div>}
-                  {item.role && <div className="text-body-sm text-accent">{item.role}</div>}
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
         {/* In editor only — show compact editable list */}
         {typeof window !== 'undefined' && (window.location.port === '3001' || window.location.hostname.includes('admin')) && (

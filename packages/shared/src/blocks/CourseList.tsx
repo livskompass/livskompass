@@ -103,58 +103,95 @@ export function CourseList({
             // card thumbnail — single source of truth, no duplicate upload.
             const thumbSrc = extractCourseImage(course.content_blocks)
             return (
-              <a key={course.slug} href={`/utbildningar/${course.slug}`} className={cn('relative group block rounded-lg overflow-hidden hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300', colors.bg)}>
+              <a
+                key={course.slug}
+                href={`/utbildningar/${course.slug}`}
+                className={cn(
+                  // Horizontal card: image flush-left, content column fills
+                  // the remaining space. Common on list-style course pages
+                  // (Coursera, LinkedIn Learning, Eventbrite's list view).
+                  'relative group grid rounded-2xl overflow-hidden',
+                  'transition-[transform,box-shadow] duration-300 ease-out',
+                  'hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.18)]',
+                  colors.bg,
+                  // When there's an image, reserve ~42% of the card for it
+                  // (min 220px so it stays substantial on narrow layouts).
+                  // Without an image, the card is a single content column.
+                  thumbSrc ? 'grid-cols-[minmax(220px,_42%)_1fr]' : 'grid-cols-1',
+                )}
+              >
                 <EditItemBadge cmsRoute="courses" entityId={course.id} slug={course.slug} label="Edit course" />
-                <div className="p-6 flex gap-5 sm:gap-6 h-full">
-                  {thumbSrc && (
-                    <div className="shrink-0 self-start">
-                      <img
-                        src={resolveMediaUrl(thumbSrc)}
-                        alt=""
-                        loading="lazy"
-                        className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-xl"
-                      />
-                    </div>
-                  )}
-                  <div className="flex flex-col flex-1 min-w-0">
-                    {(isFull || hasCapacity) && (
-                    <div className="flex items-center gap-2 mb-3">
+
+                {/* Image column — stretches to match the content column's
+                    height. `absolute inset-0` + `object-cover` crops gracefully
+                    for any aspect ratio the admin uploads. */}
+                {thumbSrc && (
+                  <div className="relative overflow-hidden min-h-[160px]">
+                    <img
+                      src={resolveMediaUrl(thumbSrc)}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                )}
+
+                {/* Content column — tightened padding + footer spacing so
+                    the overall card height is compact while the image gets
+                    more visual weight. */}
+                <div className="flex flex-col p-4 sm:p-5 relative min-w-0">
+                  {/* Spots / full badge — top-right of the content column so
+                      it stays on a readable background regardless of the
+                      image tone. */}
+                  {(isFull || hasCapacity) && (
+                    <div className="absolute top-4 right-4 sm:top-5 sm:right-5">
                       <span className={cn(
                         'text-caption font-semibold px-2.5 py-1 rounded-full',
-                        isFull
-                          ? 'bg-amber-50 text-highlight'
-                          : colors.badge
+                        isFull ? 'bg-amber-50 text-highlight' : colors.badge,
                       )}>
-                        {isFull ? <span {...editHandlers(fullLabelEdit)} className={fullLabelEdit?.className}>{fullLabel}</span> : `${spotsLeft} ${spotsText}`}
+                        {isFull
+                          ? <span {...editHandlers(fullLabelEdit)} className={fullLabelEdit?.className}>{fullLabel}</span>
+                          : `${spotsLeft} ${spotsText}`}
                       </span>
                     </div>
-                    )}
-                    <h3 className={cn('text-h3 break-words hyphens-auto text-balance mb-2', colors.text)}>{course.title}</h3>
-                    {!compactMode && course.description && (
-                      <p className={cn('text-body-sm line-clamp-2 mb-4', colors.textMuted)}>{course.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}</p>
-                    )}
-                    <div className={cn('flex flex-wrap gap-4 text-body-sm', colors.textMuted, compactMode ? 'mb-3' : 'mb-5')}>
+                  )}
+
+                  {/* Meta row — editorial caption style above the title. */}
+                  {(course.location || course.start_date) && (
+                    <div className={cn('flex flex-wrap items-center gap-x-3 gap-y-1 text-caption uppercase tracking-wide mb-1.5', colors.textMuted)}>
                       {showLocation !== false && course.location && (
                         <span className="inline-flex items-center gap-1.5">
-                          <MapPin className="h-4 w-4" />{course.location}
+                          <MapPin className="h-3.5 w-3.5 shrink-0" />{course.location}
                         </span>
                       )}
+                      {course.location && course.start_date && <span aria-hidden className="text-faint">·</span>}
                       {course.start_date && (
                         <span className="inline-flex items-center gap-1.5">
-                          <Calendar className="h-4 w-4" />
+                          <Calendar className="h-3.5 w-3.5 shrink-0" />
                           {formatSwedishDateRange(course.start_date, course.end_date)}
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-wrap items-center justify-between gap-3 mt-auto">
-                      {showPrice !== false && course.price_sek != null ? (
-                        <Price value={course.price_sek} size="lg" colorClass={colors.text} />
-                      ) : <span />}
-                      <span className={cn('inline-flex items-center gap-1.5 text-body-sm font-medium', cardColor === 'dark' ? 'text-highlight-soft' : 'text-accent group-hover:text-accent-hover')}>
-                        <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText || 'View course'}</span>
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                      </span>
-                    </div>
+                  )}
+
+                  <h3 className={cn('text-h4 font-display break-words text-balance mb-1.5 pr-20', colors.text)}>{course.title}</h3>
+
+                  {!compactMode && course.description && (
+                    <p className={cn('text-body-sm line-clamp-2', colors.textMuted)}>
+                      {course.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}
+                    </p>
+                  )}
+
+                  {/* Footer pinned to the bottom — aligned price rows across
+                      siblings in the same grid, even if titles wrap differently. */}
+                  <div className="flex items-center justify-between gap-3 mt-auto pt-4">
+                    {showPrice !== false && course.price_sek != null ? (
+                      <Price value={course.price_sek} size="md" colorClass={colors.text} />
+                    ) : <span />}
+                    <span className={cn('inline-flex items-center gap-1.5 text-body-sm font-medium', cardColor === 'dark' ? 'text-highlight-soft' : 'text-accent group-hover:text-accent-hover')}>
+                      <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText || 'View course'}</span>
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
                   </div>
                 </div>
               </a>
