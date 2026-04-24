@@ -1,12 +1,18 @@
 import { useState } from 'react'
 import { useCourseData, useEditableText, useInlineEditBlock } from '../context'
-import { getApiBase } from '../helpers'
+import { getApiBase, formatSwedishDateRange } from '../helpers'
 import { Calendar, MapPin, CreditCard, AlertCircle, ArrowRight } from 'lucide-react'
 import { cn } from '../ui/utils'
 import { UI_STRINGS } from '../ui-strings'
 import { getButtonStyle } from './buttonUtils'
+import { Price } from './Price'
+import { useInColumn } from './Columns'
 
 export interface BookingFormProps {
+  /** Show the course summary card (title, date, location, price) above the form.
+   *  Disable when the form is placed next to a CourseHeader/CourseInfo to avoid
+   *  duplicating the same data. */
+  showSummary?: boolean
   showOrganization: boolean
   showNotes: boolean
   submitButtonText: string
@@ -40,11 +46,8 @@ function Placeholder() {
   )
 }
 
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
 export function BookingForm({
+  showSummary = true,
   showOrganization = true,
   showNotes = true,
   submitButtonText = 'Proceed to payment',
@@ -96,16 +99,25 @@ export function BookingForm({
   const hasCapacity = course.max_participants != null
   const spotsLeft = hasCapacity ? course.max_participants! - course.current_participants : 10
   const totalPrice = (course.price_sek || 0) * formData.participants
+  const inColumn = useInColumn()
+  // Inside a column, skip the section wrapper — parent Columns provides container.
+  const SectionWrap: React.FC<{ children: React.ReactNode; id?: string }> = inColumn
+    ? ({ children, id: _ignored }) => <>{children}</>
+    : ({ children, id }) => (
+        <div id={id} className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
+          {children}
+        </div>
+      )
 
   if (isFull || isCompleted) {
     return (
-      <div className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
+      <SectionWrap>
         <div className="bg-surface-alt rounded-xl p-8 text-center">
           <p className="text-muted">
             {isFull ? fullMessage : completedMessage}
           </p>
         </div>
-      </div>
+      </SectionWrap>
     )
   }
 
@@ -147,30 +159,32 @@ export function BookingForm({
   }
 
   return (
-    <div id="boka" className="mx-auto" style={{ maxWidth: 'var(--width-narrow)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {/* Course summary */}
-      <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-5 mb-6">
-        <h3 className="text-h4 text-foreground mb-3">{course.title}</h3>
-        <div className="flex flex-wrap gap-4 text-body-sm text-muted">
-          {course.start_date && (
+    <SectionWrap id="boka">
+      {/* Course summary — hidden when the block sits next to a CourseHeader/CourseInfo */}
+      {showSummary && (
+        <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-5 mb-6">
+          <h3 className="text-h4 text-foreground mb-3">{course.title}</h3>
+          <div className="flex flex-wrap gap-4 text-body-sm text-muted">
+            {course.start_date && (
+              <span className="inline-flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 text-faint" />
+                {formatSwedishDateRange(course.start_date, course.end_date)}
+              </span>
+            )}
+            {course.location && (
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="h-4 w-4 text-faint" />{course.location}
+              </span>
+            )}
+            {course.price_sek != null && (
             <span className="inline-flex items-center gap-1.5">
-              <Calendar className="h-4 w-4 text-faint" />
-              {formatDate(course.start_date)}{course.end_date && course.end_date !== course.start_date ? ` – ${formatDate(course.end_date)}` : ''}
+              <CreditCard className="h-4 w-4 text-faint" />
+              <Price value={course.price_sek} currency={priceSuffix} size="sm" colorClass="text-secondary" />
             </span>
-          )}
-          {course.location && (
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-faint" />{course.location}
-            </span>
-          )}
-          {course.price_sek != null && (
-          <span className="inline-flex items-center gap-1.5">
-            <CreditCard className="h-4 w-4 text-faint" />
-            {course.price_sek.toLocaleString('sv-SE')} {priceSuffix}
-          </span>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Booking form */}
       <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
@@ -274,9 +288,7 @@ export function BookingForm({
             <span className="text-secondary font-medium">
               <span {...editHandlers(totalLabelEdit)} className={totalLabelEdit?.className}>{totalLabel}</span>
             </span>
-            <span className="font-display text-h3 text-foreground">
-              {totalPrice.toLocaleString('sv-SE')} kr
-            </span>
+            <Price value={totalPrice} size="lg" colorClass="text-foreground" />
           </div>
 
           <button
@@ -291,6 +303,6 @@ export function BookingForm({
           </button>
         </form>
       </div>
-    </div>
+    </SectionWrap>
   )
 }

@@ -1,6 +1,9 @@
 import { cn } from '../ui/utils'
 import { useCourseData, useEditableText } from '../context'
 import { MapPin, Calendar, CreditCard, Users, Clock } from 'lucide-react'
+import { formatSwedishDate, formatSwedishDateRange } from '../helpers'
+import { Price } from './Price'
+import { useInColumn } from './Columns'
 
 export interface CourseInfoProps {
   showDeadline: boolean
@@ -16,27 +19,8 @@ export interface CourseInfoProps {
   spotsRemainingText: string
 }
 
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function Placeholder() {
-  return (
-    <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-      <div className="bg-surface rounded-xl border border-dashed border-strong p-8 text-center">
-        <p className="text-faint text-body-sm">Course details are shown when a course is selected.</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          {['Location', 'Date', 'Price', 'Spots'].map((label) => (
-            <div key={label} className="bg-surface-elevated rounded-lg border border-default p-3">
-              <div className="h-4 bg-surface-alt rounded w-1/2 mx-auto mb-2" />
-              <div className="text-caption text-faint">{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
+// CourseInfo is filtered out of non-course block panels, so the "no context"
+// case shouldn't appear in normal admin flow. Return null rather than chrome.
 
 /** Extract event handlers from editable props (everything except className) */
 function editHandlers(edit: ReturnType<typeof useEditableText>) {
@@ -67,17 +51,13 @@ export function CourseInfo({
   const spotsLabelEdit = useEditableText('spotsLabel', spotsLabel)
   const deadlineLabelEdit = useEditableText('deadlineLabel', deadlineLabel)
 
-  if (!course) return <Placeholder />
+  if (!course) return null
 
   const isFull = course.status === 'full'
   const hasCapacity = course.max_participants != null
   const spotsLeft = hasCapacity ? course.max_participants! - course.current_participants : null
 
-  const dateValue = course.start_date
-    ? course.end_date && course.end_date !== course.start_date
-      ? `${formatDate(course.start_date)} – ${formatDate(course.end_date)}`
-      : formatDate(course.start_date)
-    : ''
+  const dateValue = formatSwedishDateRange(course.start_date, course.end_date)
 
   const spotsValue = isFull
     ? fullLabel
@@ -85,22 +65,50 @@ export function CourseInfo({
       ? `${spotsLeft} ${spotsOfText} ${course.max_participants} ${spotsRemainingText}`
       : ''
 
-  const items = [
-    { icon: MapPin, label: locationLabel, value: course.location, labelEdit: locationLabelEdit },
-    { icon: Calendar, label: dateLabel, value: dateValue, labelEdit: dateLabelEdit },
-    { icon: CreditCard, label: priceLabel, value: course.price_sek ? `${course.price_sek.toLocaleString('sv-SE')} kr` : '', labelEdit: priceLabelEdit },
-    ...(spotsValue ? [{ icon: Users, label: spotsLabel, value: spotsValue, labelEdit: spotsLabelEdit }] : []),
+  // In admin (any label edit context is non-null), show contextual placeholder
+  // text for missing values so the admin sees which fields aren't filled in yet.
+  // `useEditableText` returns null on the public site, so visitors still see "—".
+  const isAdmin = Boolean(locationLabelEdit || dateLabelEdit || priceLabelEdit)
+  const adminPlaceholders: Record<string, string> = {
+    [locationLabel]: 'Ange plats',
+    [dateLabel]: 'Ange datum',
+    [priceLabel]: 'Ange pris',
+    [spotsLabel]: 'Ange max antal',
+    [deadlineLabel]: 'Ange sista anmälan',
+  }
+  const placeholderFor = (labelKey: string) => (isAdmin ? (adminPlaceholders[labelKey] || 'Ange värde') : '—')
+
+  // Price gets a React node so it matches the CourseList card's Price component
+  const priceNode = course.price_sek != null
+    ? <Price value={course.price_sek} size="sm" colorClass="text-foreground" />
+    : null
+
+  const items: Array<{ icon: any; label: string; value: string; node?: React.ReactNode; labelEdit: any; placeholder: string }> = [
+    { icon: MapPin, label: locationLabel, value: course.location, labelEdit: locationLabelEdit, placeholder: placeholderFor(locationLabel) },
+    { icon: Calendar, label: dateLabel, value: dateValue, labelEdit: dateLabelEdit, placeholder: placeholderFor(dateLabel) },
+    { icon: CreditCard, label: priceLabel, value: course.price_sek != null ? String(course.price_sek) : '', node: priceNode, labelEdit: priceLabelEdit, placeholder: placeholderFor(priceLabel) },
+    ...(spotsValue || isAdmin ? [{ icon: Users, label: spotsLabel, value: spotsValue, labelEdit: spotsLabelEdit, placeholder: placeholderFor(spotsLabel) }] : []),
   ]
 
-  if (showDeadline && course.registration_deadline) {
-    items.push({ icon: Clock, label: deadlineLabel, value: formatDate(course.registration_deadline), labelEdit: deadlineLabelEdit })
+  if (showDeadline && (course.registration_deadline || isAdmin)) {
+    items.push({ icon: Clock, label: deadlineLabel, value: course.registration_deadline ? formatSwedishDate(course.registration_deadline) : '', labelEdit: deadlineLabelEdit, placeholder: placeholderFor(deadlineLabel) })
   }
 
-  const visibleItems = showEmpty ? items : items.filter(i => i.value)
+  const visibleItems = showEmpty || isAdmin ? items : items.filter(i => i.value)
+  const inColumn = useInColumn()
+  // Inside a column, skip the full-bleed section wrapper — the parent Columns
+  // already provides container max-width and padding.
+  const SectionWrap: React.FC<{ children: React.ReactNode }> = inColumn
+    ? ({ children }) => <>{children}</>
+    : ({ children }) => (
+        <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
+          {children}
+        </div>
+      )
 
   if (layout === 'stacked') {
     return (
-      <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
+      <SectionWrap>
         <div className="bg-surface-elevated rounded-xl border border-default shadow-sm divide-y divide-stone-100">
           {visibleItems.map((item, idx) => (
             <div key={idx} className="flex items-center gap-4 px-6 py-4">
@@ -109,17 +117,17 @@ export function CourseInfo({
                 <div className="text-caption text-faint uppercase tracking-wide">
                   <span {...editHandlers(item.labelEdit)} className={item.labelEdit?.className}>{item.label}</span>
                 </div>
-                <div className="text-foreground font-medium">{item.value || <span className="text-faint">—</span>}</div>
+                <div className="text-foreground font-medium">{item.node || item.value || <span className="text-faint italic">{item.placeholder}</span>}</div>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </SectionWrap>
     )
   }
 
   return (
-    <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
+    <SectionWrap>
       <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
         <div className={cn(
           'grid gap-6',
@@ -134,11 +142,11 @@ export function CourseInfo({
               <div className={cn(
                 'font-medium',
                 item.label === spotsLabel && isFull ? 'text-highlight' : 'text-foreground'
-              )}>{item.value || <span className="text-faint">—</span>}</div>
+              )}>{item.node || item.value || <span className="text-faint italic">{item.placeholder}</span>}</div>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </SectionWrap>
   )
 }

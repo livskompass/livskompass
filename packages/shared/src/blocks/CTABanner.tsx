@@ -50,10 +50,10 @@ function getButtonClass(bgColor: string, variant: string): string {
   }
   // primary
   const btnStyleMap: Record<string, string> = {
-    primary: 'bg-white text-accent-hover hover:bg-accent-soft shadow-lg hover:shadow-xl',
-    dark: 'bg-white text-foreground-strong hover:bg-surface-alt shadow-lg hover:shadow-xl',
-    light: 'bg-forest-500 text-white hover:bg-forest-600 shadow-md hover:shadow-lg',
-    gradient: 'bg-white text-accent-hover hover:bg-accent-soft shadow-lg hover:shadow-xl',
+    primary: 'bg-white text-accent-hover hover:bg-accent-soft',
+    dark: 'bg-white text-foreground-strong hover:bg-surface-alt',
+    light: 'bg-forest-500 text-white hover:bg-forest-600',
+    gradient: 'bg-white text-accent-hover hover:bg-accent-soft',
   }
   return btnStyleMap[bgColor] || btnStyleMap.primary
 }
@@ -133,7 +133,7 @@ export function CTABanner({
               <a
                 href={btn.link || '#'}
                 className={cn(
-                  'inline-flex items-center justify-center h-12 px-8 font-semibold rounded-lg transition-all hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
+                  'inline-flex items-center justify-center h-12 px-8 font-semibold rounded-lg transition-colors',
                   btnStyles ? btnPrimaryClass : getButtonClass(backgroundColor, btn.variant || 'primary')
                 )}
               >

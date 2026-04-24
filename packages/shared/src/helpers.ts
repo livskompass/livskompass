@@ -92,3 +92,34 @@ export function useFetchJson<T>(endpoint: string): { data: T | null; loading: bo
   })
   return { data: data ?? null, loading: isLoading && !!endpoint }
 }
+
+// ── Date formatting ──
+//
+// One Swedish format used everywhere visitors see a date. Short month names so
+// it stays compact on cards. Year only when needed for ranges spanning years.
+//
+//   formatSwedishDate('2026-03-16')                     → '16 mars 2026'
+//   formatSwedishDateRange('2026-03-16', '2026-04-27')  → '16 mars – 27 apr. 2026'
+//   formatSwedishDateRange('2026-12-30', '2027-01-05')  → '30 dec. 2026 – 5 jan. 2027'
+//   formatSwedishDateRange('2026-03-16', null)          → '16 mars 2026'
+
+const DATE_OPTS: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }
+
+export function formatSwedishDate(date: string | null | undefined): string {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('sv-SE', { ...DATE_OPTS, year: 'numeric' })
+}
+
+export function formatSwedishDateRange(start: string | null | undefined, end: string | null | undefined): string {
+  if (!start) return ''
+  const s = new Date(start)
+  if (!end) return s.toLocaleDateString('sv-SE', { ...DATE_OPTS, year: 'numeric' })
+  const e = new Date(end)
+  if (s.getFullYear() !== e.getFullYear()) {
+    return `${s.toLocaleDateString('sv-SE', { ...DATE_OPTS, year: 'numeric' })} – ${e.toLocaleDateString('sv-SE', { ...DATE_OPTS, year: 'numeric' })}`
+  }
+  if (s.getTime() === e.getTime()) {
+    return s.toLocaleDateString('sv-SE', { ...DATE_OPTS, year: 'numeric' })
+  }
+  return `${s.toLocaleDateString('sv-SE', DATE_OPTS)} – ${e.toLocaleDateString('sv-SE', { ...DATE_OPTS, year: 'numeric' })}`
+}

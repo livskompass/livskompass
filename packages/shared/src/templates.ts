@@ -1,16 +1,71 @@
 // Default block templates for content types that don't have custom content_blocks.
 // These provide a sensible starting layout.
 
+// Course template layout:
+//   1. Spacer — gap between site menu and banner image
+//   2. Banner image (21:9 aspect, content-width, 25vh max — no internal padding,
+//      spacing comes from Spacer blocks around it)
+//   3. Spacer — gap between image and course info
+//   4. Columns 50/50 (stacks on mobile):
+//      Left:  CourseHeader → RichText → CourseInfo
+//      Right: BookingForm
+//   5. Spacer — breathing room below content before footer
+// RichText keeps __LEGACY_CONTENT__ so migrated courses retain their description.
 export const defaultCourseTemplate = JSON.stringify({
   content: [
-    { type: 'CourseInfo', props: { id: 'course-info', showDeadline: true, layout: 'grid' } },
-    { type: 'SeparatorBlock', props: { id: 'sep-1', variant: 'space-only', spacing: 'small', lineColor: 'light', maxWidth: 'full' } },
-    { type: 'RichText', props: { id: 'content', content: '__LEGACY_CONTENT__', maxWidth: 'medium' } },
-    { type: 'SeparatorBlock', props: { id: 'sep-2', variant: 'space-only', spacing: 'medium', lineColor: 'light', maxWidth: 'full' } },
-    { type: 'BookingForm', props: { id: 'booking-form', showOrganization: true, showNotes: true } },
+    { type: 'Spacer', props: { id: 'course-spacer-header', sectionBg: 'transparent', size: 'large' } },
+    {
+      type: 'ImageBlock',
+      props: {
+        id: 'course-image',
+        sectionBg: 'transparent',
+        src: '',
+        alt: '',
+        caption: '',
+        size: 'full',
+        alignment: 'center',
+        rounded: 'large',
+        shadow: 'none',
+        border: 'none',
+        link: '',
+        aspectRatio: '21/9',
+        maxHeight: '25vh',
+      },
+    },
+    { type: 'Spacer', props: { id: 'course-spacer-top', sectionBg: 'transparent', size: 'small' } },
+    {
+      type: 'Columns',
+      props: {
+        id: 'course-layout',
+        sectionBg: 'transparent',
+        layout: '50-50',
+        gap: 'large',
+        verticalAlignment: 'top',
+        stackOnMobile: true,
+      },
+    },
+    { type: 'Spacer', props: { id: 'course-spacer-bottom', sectionBg: 'transparent', size: 'medium' } },
   ],
   root: { props: {} },
-  zones: {},
+  zones: {
+    'course-layout:column-1': [
+      { type: 'CourseHeader', props: { id: 'course-header', sectionBg: 'transparent', subtitle: '' } },
+      { type: 'RichText', props: { id: 'course-content', sectionBg: 'transparent', content: '__LEGACY_CONTENT__', maxWidth: 'full' } },
+      { type: 'CourseInfo', props: { id: 'course-info', sectionBg: 'transparent', showDeadline: true, showEmpty: true, layout: 'stacked' } },
+    ],
+    'course-layout:column-2': [
+      {
+        type: 'BookingForm',
+        props: {
+          id: 'course-booking-form',
+          sectionBg: 'transparent',
+          showSummary: false,
+          showOrganization: true,
+          showNotes: true,
+        },
+      },
+    ],
+  },
 })
 
 export const defaultHomeTemplate = JSON.stringify({

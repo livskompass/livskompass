@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
-import { puckConfig, InlineEditBlockContext, CourseContext, PostContext } from '@livskompass/shared'
+import { puckConfig, InlineEditBlockContext, CourseContext, PostContext, ZoneRenderContext } from '@livskompass/shared'
 import type { Data } from '../types'
 import { useEditor } from '../context'
 import { useEditorSelection } from '../hooks/useEditorSelection'
@@ -246,6 +246,79 @@ export function BlockList() {
     [puckData, updateData],
   )
 
+  // saveZoneBlockProp: update a prop on a block nested inside a Columns zone.
+  // Zones live at puckData.zones[`${columnsId}:column-N`] — separate from content[].
+  const saveZoneBlockProp = useCallback(
+    (zoneKey: string, blockIndex: number, propName: string, value: any) => {
+      if (!puckData) return
+      const zones: Record<string, PuckItem[]> = { ...((puckData.zones as Record<string, PuckItem[]>) || {}) }
+      const zoneItems: PuckItem[] = [...(zones[zoneKey] || [])]
+      if (blockIndex < 0 || blockIndex >= zoneItems.length) return
+      const block = zoneItems[blockIndex]
+      if (!block) return
+      if (typeof value === 'object' && value !== null) {
+        zoneItems[blockIndex] = { ...block, props: { ...(block.props || {}), [propName]: value } }
+      } else {
+        zoneItems[blockIndex] = { ...block, props: setNestedProp(block.props || {}, propName, value) }
+      }
+      zones[zoneKey] = zoneItems
+      updateData({ ...puckData, zones } as Data)
+    },
+    [puckData, updateData],
+  )
+
+  // renderZone: resolves a Columns zone's nested blocks for editing in the admin.
+  // Wraps each nested block in EditableBlock + InlineEditBlockContext so inline
+  // edits and the settings popover work the same way as top-level blocks.
+  const renderZone = useCallback(
+    (zoneKey: string): React.ReactNode => {
+      const zoneItems: PuckItem[] = (puckData?.zones as Record<string, PuckItem[]> | undefined)?.[zoneKey] || []
+      if (zoneItems.length === 0) {
+        return (
+          <div className="py-6 px-4 text-center text-xs rounded-lg" style={{
+            color: 'var(--editor-text-subtle)',
+            border: '1px dashed var(--editor-border-input)',
+            background: 'var(--editor-surface-muted)',
+          }}>
+            Empty column
+          </div>
+        )
+      }
+      return (
+        <div className="flex flex-col gap-8">
+          {zoneItems.map((zItem, zIdx) => {
+            const zComp = components[zItem.type]
+            if (!zComp?.render) return null
+            const ZFn = zComp.render
+            const zBlockId = zItem.props?.id || `${zoneKey}-${zItem.type}-${zIdx}`
+            const zLabel = zComp.label || zItem.type
+            return (
+              <EditableBlock
+                key={zBlockId}
+                blockId={zBlockId}
+                blockType={zItem.type}
+                blockLabel={zLabel}
+                blockIndex={zIdx}
+              >
+                <InlineEditBlockContext.Provider
+                  value={{
+                    isAdmin: true,
+                    blockIndex: zIdx,
+                    blockProps: zItem.props,
+                    saveBlockProp: (bi, name, val) => saveZoneBlockProp(zoneKey, bi, name, val),
+                  }}
+                >
+                  <ZFn {...zItem.props} />
+                </InlineEditBlockContext.Provider>
+              </EditableBlock>
+            )
+          })}
+        </div>
+      )
+    },
+    [puckData, saveZoneBlockProp],
+  )
+
   // Drag-and-drop reorder (existing blocks)
   const handleReorder = useCallback(
     (fromIndex: number, toIndex: number) => {
@@ -410,22 +483,11 @@ export function BlockList() {
     }
   }, [state.contentType, state.entity])
 
-  // Wrap content with data context providers for data-bound blocks.
-  // MUST be declared before any early return — adding a block flips items.length
-  // from 0 to 1, which would otherwise change the hook count and crash React
-  // ("Rendered more hooks than during the previous render") → white screen.
-  const DataProviders = useMemo(() => {
-    return ({ children }: { children: React.ReactNode }) => {
-      let wrapped = <>{children}</>
-      if (courseContextValue) {
-        wrapped = <CourseContext.Provider value={courseContextValue}>{wrapped}</CourseContext.Provider>
-      }
-      if (postContextValue) {
-        wrapped = <PostContext.Provider value={postContextValue}>{wrapped}</PostContext.Provider>
-      }
-      return wrapped
-    }
-  }, [courseContextValue, postContextValue])
+  // (Context providers are rendered inline in the returned JSX below so
+  // that only their `value` changes on publish — the component tree stays
+  // stable and children aren't unmounted/remounted. Previous approach wrapped
+  // them in a memoized component, which re-created on every entity update
+  // and caused a visible glitch where all content briefly disappeared.)
 
   // ── Empty state — also a drop target ──
 
@@ -464,7 +526,9 @@ export function BlockList() {
   }
 
   return (
-    <DataProviders>
+    <CourseContext.Provider value={courseContextValue}>
+    <PostContext.Provider value={postContextValue}>
+    <ZoneRenderContext.Provider value={renderZone}>
     <InlineImagePickerProvider>
     <InlineMediaPickerProvider>
     <InlineRichTextProvider>
@@ -541,7 +605,9 @@ export function BlockList() {
     </InlineRichTextProvider>
     </InlineMediaPickerProvider>
     </InlineImagePickerProvider>
-    </DataProviders>
+    </ZoneRenderContext.Provider>
+    </PostContext.Provider>
+    </CourseContext.Provider>
   )
 }
 

@@ -1,9 +1,10 @@
 import { cn } from '../ui/utils'
-import { useFetchJson, useScrollReveal } from '../helpers'
+import { useFetchJson, useScrollReveal, formatSwedishDateRange } from '../helpers'
 import { EditItemBadge } from './EditItemBadge'
 import { MapPin, Calendar, ArrowRight } from 'lucide-react'
 import { useInlineEdit, useEditableText } from '../context'
 import { getCardColors } from './cardColors'
+import { Price } from './Price'
 
 export interface CourseListProps {
   heading: string
@@ -44,22 +45,6 @@ function editHandlers(edit: ReturnType<typeof useEditableText>) {
   return rest
 }
 
-function formatDateRange(start: string, end: string | null): string {
-  const s = new Date(start)
-  const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }
-  if (!end) {
-    return s.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })
-  }
-  const e = new Date(end)
-  if (s.getFullYear() !== e.getFullYear()) {
-    return `${s.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })} – ${e.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })}`
-  }
-  if (s.getTime() === e.getTime()) {
-    return s.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })
-  }
-  return `${s.toLocaleDateString('sv-SE', opts)} – ${e.toLocaleDateString('sv-SE', { ...opts, year: 'numeric' })}`
-}
-
 export function CourseList({
   heading = '',
   maxItems = 0,
@@ -94,7 +79,7 @@ export function CourseList({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-8 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-8 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       {loading ? (
         <div className={cn('grid grid-cols-1 gap-6', colMap[columns] ?? colMap[2])}>
@@ -114,7 +99,7 @@ export function CourseList({
             const hasCapacity = course.max_participants != null
             const spotsLeft = hasCapacity ? course.max_participants - course.current_participants : null
             return (
-              <a key={course.slug} href={`/utbildningar/${course.slug}`} className={cn('relative group block rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
+              <a key={course.slug} href={`/utbildningar/${course.slug}`} className={cn('relative group block rounded-lg overflow-hidden hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300', colors.bg)}>
                 <EditItemBadge cmsRoute="courses" entityId={course.id} slug={course.slug} label="Edit course" />
                 <div className="p-6 flex flex-col h-full">
                   {(isFull || hasCapacity) && (
@@ -142,15 +127,13 @@ export function CourseList({
                     {course.start_date && (
                       <span className="inline-flex items-center gap-1.5">
                         <Calendar className="h-4 w-4" />
-                        {formatDateRange(course.start_date, course.end_date)}
+                        {formatSwedishDateRange(course.start_date, course.end_date)}
                       </span>
                     )}
                   </div>
                   <div className="flex flex-wrap items-center justify-between gap-3 mt-auto">
                     {showPrice !== false && course.price_sek != null ? (
-                    <span className={cn('font-display text-h3', colors.text)}>
-                      {course.price_sek.toLocaleString('sv-SE')} <span className={cn('font-normal', colors.textMuted)}>kr</span>
-                    </span>
+                      <Price value={course.price_sek} size="lg" colorClass={colors.text} />
                     ) : <span />}
                     <span className={cn('inline-flex items-center gap-1.5 text-body-sm font-medium', cardColor === 'dark' ? 'text-highlight-soft' : 'text-accent group-hover:text-accent-hover')}>
                       <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText || 'View course'}</span>

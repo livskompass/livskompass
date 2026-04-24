@@ -46,10 +46,10 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
     <ArrayItemControls fieldName="items" itemIndex={index} totalItems={totalItems}>
     <div
       className={cn(
-        'rounded-xl p-8 flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-1',
+        'rounded-xl p-8 flex flex-col relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)]',
         item.highlighted
-          ? 'bg-surface-elevated border-2 border-amber-400 shadow-lg hover:shadow-xl'
-          : 'bg-surface-elevated border border-default shadow-sm hover:shadow-md'
+          ? 'bg-surface-elevated border-2 border-amber-400'
+          : 'bg-surface-elevated border border-default'
       )}
     >
       {item.highlighted && (
@@ -60,9 +60,9 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
       )}
       <h3 {...editHandlers(nameEdit)} className={cn('text-h4 text-foreground', nameEdit?.className)}>{item.name}</h3>
       <div className="mt-4 mb-2">
-        <span {...editHandlers(priceEdit)} className={cn('font-display text-h2 text-foreground-strong', priceEdit?.className)}>{item.price}</span>
+        <span {...editHandlers(priceEdit)} className={cn('font-display text-h3-strong', priceEdit?.className)}>{item.price}</span>
         {showCurrency !== false && item.price && !item.price.toLowerCase().includes('gratis') && (
-          <span className="text-muted ml-1">kr</span>
+          <span className="font-display text-h3-strong ml-1">kr</span>
         )}
       </div>
       {(item.description || descEdit) && (
@@ -130,7 +130,7 @@ export function PricingTable({
   return (
     <div ref={revealRef} className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground text-center mb-10 reveal', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-center mb-10 reveal', headingEdit?.className)}>{heading}</h2>
       )}
       <ArrayDragProvider fieldName="items">
       <div className={cn('grid grid-cols-1 gap-6 items-start reveal', colMap[columns] || colMap[2])}>

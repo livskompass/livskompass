@@ -1,5 +1,5 @@
 import { useCourseData, useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
-import { ArrowRight, AlertCircle, CheckCircle } from 'lucide-react'
+import { ArrowRight, AlertCircle, CheckCircle, CalendarCheck, Info } from 'lucide-react'
 import { cn } from '../ui/utils'
 import { getButtonStyle } from './buttonUtils'
 
@@ -16,8 +16,22 @@ export interface BookingCTAProps {
 function Placeholder() {
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-sm)' }}>
-      <div className="bg-surface rounded-xl border border-dashed border-strong p-8 text-center">
-        <p className="text-faint text-body-sm">Booking CTA is shown when a course is selected.</p>
+      <div className="bg-surface rounded-xl border-2 border-dashed border-default p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="rounded-lg bg-accent-soft p-2 flex-shrink-0">
+            <CalendarCheck className="h-5 w-5 text-accent" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-body-sm font-medium text-foreground">Booking CTA</div>
+            <div className="text-caption text-muted mt-0.5">Links to the booking form, and automatically hides or swaps to a "full" / "completed" state based on course status.</div>
+          </div>
+        </div>
+        <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 p-3">
+          <Info className="h-4 w-4 text-amber-700 flex-shrink-0 mt-0.5" />
+          <div className="text-caption text-amber-900">
+            <strong>This block only works on course pages.</strong> Add it to a course so it can read availability and link to the booking form.
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -349,14 +349,25 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           if (creatingRef.current) return // Already creating
           creatingRef.current = true
 
-          const generatedSlug = (entity.title || 'untitled')
+          // Auto-generate a unique slug from the title. Always append a short
+          // timestamp suffix when the admin hasn't typed a slug, so the first
+          // auto-save of a new entity (which defaults `title` to "New course"
+          // etc.) doesn't collide with any existing slug — the schema has
+          // `slug TEXT UNIQUE NOT NULL`, so a collision returns a 500 and the
+          // draft is never persisted. Admin can rename the slug from Course details.
+          const baseSlug = (entity.title || 'untitled')
             .toLowerCase()
             .replace(/[åä]/g, 'a').replace(/ö/g, 'o')
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-|-$/g, '')
-            || `untitled-${Date.now().toString(36)}`
-          const slug = entity.slug || generatedSlug
+            || 'untitled'
+          const slug = entity.slug || `${baseSlug}-${Date.now().toString(36)}`
 
+          // Include explicit nulls for every nullable column accepted by the
+          // server POST handler. The server's INSERT binds some fields (like
+          // `description`) without `|| null` defaults, so D1 throws on
+          // undefined and returns a 500 — the auto-save then never persists.
+          const metaSnapshot = buildMetadataSnapshot(entity, contentType)
           const res = await fetch(`${API_BASE}/admin/${route}`, {
             method: 'POST',
             headers: {
@@ -369,17 +380,50 @@ export function EditorProvider({ children }: { children: ReactNode }) {
               content_blocks: JSON.stringify(data),
               editor_version: 'puck',
               status: 'draft',
+              // Nullable columns the server may reference — guaranteed to be
+              // at least null so bindings never see `undefined`.
+              description: (metaSnapshot as any).description ?? null,
+              content: null,
+              location: (metaSnapshot as any).location ?? null,
+              start_date: (metaSnapshot as any).start_date ?? null,
+              end_date: (metaSnapshot as any).end_date ?? null,
+              price_sek: (metaSnapshot as any).price_sek ?? null,
+              max_participants: (metaSnapshot as any).max_participants ?? null,
+              registration_deadline: (metaSnapshot as any).registration_deadline ?? null,
+              excerpt: (metaSnapshot as any).excerpt ?? null,
+              featured_image: (metaSnapshot as any).featured_image ?? null,
+              meta_description: (metaSnapshot as any).meta_description ?? null,
+              parent_slug: (metaSnapshot as any).parent_slug ?? null,
+              sort_order: (metaSnapshot as any).sort_order ?? null,
+              type: (metaSnapshot as any).type ?? null,
+              external_url: (metaSnapshot as any).external_url ?? null,
+              image_url: (metaSnapshot as any).image_url ?? null,
+              in_stock: (metaSnapshot as any).in_stock ?? null,
             }),
             signal: controller.signal,
           })
 
-          if (!res.ok) throw new Error('Create failed')
+          if (!res.ok) {
+            const errBody = await res.json().catch(() => null) as { error?: string; message?: string } | null
+            console.error('[autoSave] Create failed', res.status, errBody)
+            throw new Error(`Create failed (${res.status}): ${errBody?.error || errBody?.message || res.statusText}`)
+          }
           const result = await res.json() as Record<string, any>
           const created = result.page || result.post || result.course || result.product
 
           if (created?.id) {
-            // Update entity in state with the new ID
-            const updatedEntity = { ...entity, id: created.id, slug: created.slug || slug }
+            // Update entity with the new id/slug. Crucially, also update
+            // `content_blocks` to reflect what we just saved — the blank
+            // entity carries the initial template JSON, and SET_ENTITY will
+            // re-parse it and overwrite the in-memory puckData (including any
+            // edits the user made right before this save fired, like setting
+            // an image). Mirroring the data here prevents the flicker/loss.
+            const updatedEntity = {
+              ...entity,
+              id: created.id,
+              slug: created.slug || slug,
+              content_blocks: JSON.stringify(data),
+            }
             dispatch({ type: 'SET_ENTITY', entity: updatedEntity as ContentEntity, contentType })
 
             // Replace URL from /pages/new to /pages/:slug — admin URLs mirror public URLs.
@@ -415,7 +459,11 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           signal: controller.signal,
         })
 
-        if (!res.ok) throw new Error('Save failed')
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => null) as { error?: string; message?: string } | null
+          console.error('[autoSave] Draft PATCH failed', res.status, errBody, 'entityId=', entity.id)
+          throw new Error(`Draft save failed (${res.status}): ${errBody?.error || errBody?.message || res.statusText}`)
+        }
 
         dispatch({ type: 'SET_SAVE_STATUS', status: 'saved' })
         dispatch({ type: 'MARK_CLEAN' })

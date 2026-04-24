@@ -3,7 +3,7 @@ import { cn } from '../ui/utils'
 // Card UI components no longer used directly — cardColors handles styling
 import { Badge } from '../ui/badge'
 import { Calendar, MapPin } from 'lucide-react'
-import { getApiBase, useScrollReveal } from '../helpers'
+import { getApiBase, useScrollReveal, formatSwedishDate } from '../helpers'
 import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { InlineImage } from './InlineImage'
 import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
@@ -56,14 +56,14 @@ function ManualCardItem({ card, index, totalItems, cardColor }: { card: ManualCa
   return (
     <ArrayItemControls fieldName="manualCards" itemIndex={index} totalItems={totalItems}>
     <a href={card.link || '#'} className="block group rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2" onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}>
-      <div className={cn('rounded-lg overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
+      <div className={cn('rounded-lg overflow-hidden h-full hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300', colors.bg)}>
         {(card.image || editCtx) && (
           <div className="aspect-video overflow-hidden rounded-t-lg">
             <InlineImage
               src={card.image}
               propName={`manualCards[${index}].image`}
               alt={card.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover"
             />
           </div>
         )}
@@ -175,14 +175,14 @@ export function CardGrid({
 
       return (
         <a key={item.id} href={`${linkBase}${item.slug}`} className="block group rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2">
-          <div className={cn('rounded-lg overflow-hidden h-full hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300', colors.bg)}>
+          <div className={cn('rounded-lg overflow-hidden h-full hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300', colors.bg)}>
             {image && (
               <div className="aspect-video overflow-hidden rounded-t-lg">
                 <img
                   src={image}
                   alt={item.title}
                   loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}
@@ -197,7 +197,7 @@ export function CardGrid({
               )}
               {source === 'posts' && item.published_at && (
                 <Badge variant="default" className={cn('w-fit mb-1', colors.badge)}>
-                  {new Date(item.published_at).toLocaleDateString('sv-SE')}
+                  {formatSwedishDate(item.published_at)}
                 </Badge>
               )}
               <h3 className={cn('text-h3 break-words hyphens-auto text-balance transition-colors', colors.text)}>
@@ -222,7 +222,7 @@ export function CardGrid({
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       <span>
-                        {new Date(item.start_date).toLocaleDateString('sv-SE')}
+                        {formatSwedishDate(item.start_date)}
                       </span>
                     </div>
                   )}
@@ -242,7 +242,7 @@ export function CardGrid({
       {(heading || subheading || headingEdit || subheadingEdit) && (
         <div className="text-center mb-10 reveal">
           {(heading || headingEdit) && (
-            <h2 {...editHandlers(headingEdit)} className={cn('text-h2 text-foreground mb-3', headingEdit?.className)}>{heading}</h2>
+            <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-3', headingEdit?.className)}>{heading}</h2>
           )}
           {(subheading || subheadingEdit) && (
             <p {...editHandlers(subheadingEdit)} className={cn('text-secondary text-body-lg', subheadingEdit?.className)}>{subheading}</p>

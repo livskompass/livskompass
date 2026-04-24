@@ -63,6 +63,8 @@ export function RichText({
 
   const baseClass = cn(
     'prose prose-headings:font-display prose-headings:tracking-tight prose-a:text-accent prose-neutral',
+    // Break long unbroken strings instead of overflowing the container.
+    'break-words [overflow-wrap:anywhere]',
     fontSizeMap[fontSize] || fontSizeMap.normal,
     maxWidthMap[maxWidth],
     // Column position within section

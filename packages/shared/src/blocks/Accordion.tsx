@@ -137,7 +137,7 @@ export function Accordion({
   return (
     <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
       {(heading || headingEdit) && (
-        <h2 {...editHandlers(headingEdit)} className={cn('text-h3 text-foreground mb-6', headingEdit?.className)}>{heading}</h2>
+        <h2 {...editHandlers(headingEdit)} className={cn('text-h3 mb-6', headingEdit?.className)}>{heading}</h2>
       )}
       <div
         className={cn(

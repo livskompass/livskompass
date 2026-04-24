@@ -1,5 +1,9 @@
 // Block components — re-export all block definitions
 
+// Shared primitives
+export { Price } from './Price'
+export type { PriceSize } from './Price'
+
 // Layout
 export { Columns, ZoneRenderContext } from './Columns'
 export type { ColumnsProps } from './Columns'

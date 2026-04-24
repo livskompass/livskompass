@@ -76,6 +76,7 @@ const INLINE_FIELDS: Record<string, Set<string>> = {
   CourseInfo: new Set(['locationLabel', 'dateLabel', 'priceLabel', 'spotsLabel', 'deadlineLabel']),
   PricingTable: new Set(['heading']),
   PostHeader: new Set(['backLinkText']),
+  CourseHeader: new Set(['subtitle']),
 }
 
 /** Check if a block type has any settings fields (not inline) */

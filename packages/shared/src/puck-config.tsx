@@ -6,7 +6,7 @@ import { Hero } from './blocks/Hero'
 import { RichText } from './blocks/RichText'
 import { ImageBlock } from './blocks/ImageBlock'
 import { Accordion } from './blocks/Accordion'
-import { Columns } from './blocks/Columns'
+import { Columns, useInColumn } from './blocks/Columns'
 import { SeparatorBlock } from './blocks/SeparatorBlock'
 import { Spacer } from './blocks/Spacer'
 import { CTABanner } from './blocks/CTABanner'
@@ -29,6 +29,7 @@ import { BookingForm } from './blocks/BookingForm'
 import { CourseInfo } from './blocks/CourseInfo'
 import { BookingCTA } from './blocks/BookingCTA'
 import { PostHeader } from './blocks/PostHeader'
+import { CourseHeader } from './blocks/CourseHeader'
 import { PageHeader } from './blocks/PageHeader'
 import { PersonCard } from './blocks/PersonCard'
 import { FeatureGrid } from './blocks/FeatureGrid'
@@ -43,6 +44,18 @@ function SectionBgWrap({ bg, children }: { bg?: string; children: React.ReactNod
   const textCls = sectionTextClass(bg)
   return (
     <div className={[cls, textCls].filter(Boolean).join(' ')} style={style}>
+      {children}
+    </div>
+  )
+}
+
+/** Centered/padded container for RichText — dropped when the block sits inside
+ *  a Columns block so the column's own padding handles layout. */
+function RichTextSectionWrap({ children }: { children: React.ReactNode }) {
+  const inColumn = useInColumn()
+  if (inColumn) return <>{children}</>
+  return (
+    <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
       {children}
     </div>
   )
@@ -198,7 +211,7 @@ export const puckConfig: Config = {
     media: { title: 'Media', components: ['ImageGallery', 'VideoEmbed', 'AudioEmbed', 'FileEmbed', 'EmbedBlock'] },
     dynamic: { title: 'Dynamic', components: ['CourseList', 'ProductList', 'PostGrid', 'PageCards', 'NavigationMenu'] },
     interactive: { title: 'Interactive', components: ['ContactForm', 'BookingForm'] },
-    data: { title: 'Data-bound', components: ['CourseInfo', 'BookingCTA', 'PostHeader'] },
+    data: { title: 'Data-bound', components: ['CourseHeader', 'CourseInfo', 'BookingCTA', 'PostHeader'] },
   },
 
   components: {
@@ -482,9 +495,9 @@ export const puckConfig: Config = {
       },
       render: ({ sectionBg, content, maxWidth, position, alignment, fontSize, textColor, id }: any) => (
         <SectionBgWrap bg={sectionBg}>
-          <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+          <RichTextSectionWrap>
             <RichText content={content} maxWidth={maxWidth} position={position} alignment={alignment} fontSize={fontSize} textColor={textColor} id={id} />
-          </div>
+          </RichTextSectionWrap>
         </SectionBgWrap>
       ),
     },
@@ -501,13 +514,19 @@ export const puckConfig: Config = {
         border: { type: 'radio', label: 'Border', options: [{ label: 'None', value: 'none' }, { label: 'Thin', value: 'thin' }] },
         link: { type: 'text', label: 'Link URL', metadata: { isPagePicker: true } },
       },
-      render: ({ sectionBg, src, alt, caption, size, alignment, rounded, link, shadow, border, id }: any) => (
-        <SectionBgWrap bg={sectionBg}>
-          <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
-            <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} shadow={shadow} border={border} link={link} id={id} />
-          </div>
-        </SectionBgWrap>
-      ),
+      render: ({ sectionBg, src, alt, caption, size, alignment, rounded, link, shadow, border, aspectRatio, maxHeight, id }: any) => {
+        const isBanner = Boolean(maxHeight) || (aspectRatio && aspectRatio !== 'auto')
+        const inner = <ImageBlock src={src} alt={alt} caption={caption} size={size} alignment={alignment} rounded={rounded} shadow={shadow} border={border} link={link} aspectRatio={aspectRatio} maxHeight={maxHeight} id={id} />
+        return (
+          <SectionBgWrap bg={sectionBg}>
+            {isBanner ? inner : (
+              <div className="max-w-4xl mx-auto" style={{ paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-xs)' }}>
+                {inner}
+              </div>
+            )}
+          </SectionBgWrap>
+        )
+      },
     },
     Accordion: {
       label: 'Accordion / FAQ',
@@ -862,9 +881,10 @@ export const puckConfig: Config = {
     },
     BookingForm: {
       label: 'Booking Form',
-      defaultProps: { sectionBg: 'transparent', showOrganization: true, showNotes: true, submitButtonText: 'Go to payment', processingText: 'Processing...', fullMessage: 'This course is fully booked.', completedMessage: 'This course has been completed.', totalLabel: 'Total', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', organizationLabel: 'Organization', participantsLabel: 'Number of participants *', notesLabel: 'Notes', priceSuffix: 'kr/person' },
+      defaultProps: { sectionBg: 'transparent', showSummary: true, showOrganization: true, showNotes: true, submitButtonText: 'Go to payment', processingText: 'Processing...', fullMessage: 'This course is fully booked.', completedMessage: 'This course has been completed.', totalLabel: 'Total', nameLabel: 'Name *', emailLabel: 'Email *', phoneLabel: 'Phone', organizationLabel: 'Organization', participantsLabel: 'Number of participants *', notesLabel: 'Notes', priceSuffix: 'kr/person' },
       fields: {
         sectionBg: sectionBgField,
+        showSummary: { type: 'radio', label: 'Show course summary card', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showOrganization: { type: 'radio', label: 'Show organization field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         showNotes: { type: 'radio', label: 'Show notes field', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
         submitButtonText: { type: 'text', label: 'Submit button text' },
@@ -927,6 +947,15 @@ export const puckConfig: Config = {
         backLinkText: { type: 'text', label: 'Back link text' }, backLinkUrl: { type: 'text', label: 'Back link URL', metadata: { isPagePicker: true } },
       },
       render: (props: any) => <SectionBgWrap bg={props.sectionBg}><PostHeader {...props} /></SectionBgWrap>,
+    },
+    CourseHeader: {
+      label: 'Course Header',
+      defaultProps: { sectionBg: 'transparent', subtitle: '' },
+      fields: {
+        sectionBg: sectionBgField,
+        subtitle: { type: 'text', label: 'Subtitle (optional)' },
+      },
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><CourseHeader {...props} /></SectionBgWrap>,
     },
   },
 }

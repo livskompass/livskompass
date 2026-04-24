@@ -215,7 +215,7 @@ export function ContactForm({
   if (layout === 'split') {
     return (
       <div className="mx-auto" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-        {heading && <h2 {...hHandlers} className={cn('text-h2 text-foreground mb-2', headingEdit?.className)}>{heading}</h2>}
+        {heading && <h2 {...hHandlers} className={cn('text-h3 mb-2', headingEdit?.className)}>{heading}</h2>}
         {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-secondary mb-8', descriptionEdit?.className)}>{description}</p>}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-12">
           <div className="space-y-4">
@@ -253,7 +253,7 @@ export function ContactForm({
 
   return (
     <div className="mx-auto" style={{ maxWidth: '42rem', paddingInline: 'var(--container-px)', paddingBlock: 'var(--section-md)' }}>
-      {heading && <h2 {...hHandlers} className={cn('text-h2 text-foreground mb-2', headingEdit?.className)}>{heading}</h2>}
+      {heading && <h2 {...hHandlers} className={cn('text-h3 mb-2', headingEdit?.className)}>{heading}</h2>}
       {(description || descriptionEdit) && <p {...dHandlers} className={cn('text-secondary mb-6', descriptionEdit?.className)}>{description}</p>}
       <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-6">
         {status === 'error' && (
