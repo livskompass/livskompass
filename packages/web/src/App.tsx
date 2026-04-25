@@ -40,13 +40,23 @@ function BookingRedirect() {
 }
 
 function PageLoader() {
+  // Hero-shaped placeholder so swapping in the real hero doesn't shift layout.
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
-      <div className="animate-pulse space-y-4">
-        <div className="h-10 bg-stone-100 rounded w-3/4" />
-        <div className="h-4 bg-stone-100 rounded w-full" />
-        <div className="h-4 bg-stone-100 rounded w-5/6" />
-        <div className="h-4 bg-stone-100 rounded w-4/6" />
+    <div>
+      <div
+        className="relative w-full overflow-hidden animate-warm-pulse"
+        style={{
+          height: 'max(70vh, 560px)',
+          backgroundColor: 'rgb(var(--mist) / 0.5)',
+        }}
+      >
+        <div
+          className="relative h-full mx-auto flex flex-col justify-end pb-[10vh] md:pb-[14vh]"
+          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
+        >
+          <div className="h-10 md:h-14 w-2/3 max-w-xl mb-4 rounded bg-stone-200/60" />
+          <div className="h-4 md:h-5 w-1/2 max-w-md rounded bg-stone-200/60" />
+        </div>
       </div>
     </div>
   )

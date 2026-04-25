@@ -304,6 +304,30 @@ body {
 .reveal-stagger-4 { transition-delay: 320ms; }
 .reveal-stagger-5 { transition-delay: 400ms; }
 
+/* ==================== Below-hero page-content fade-in ==================== */
+/* When the first block is a Hero, PuckRenderer wraps everything below it in
+   .page-content-fade-in. The <section> elements themselves stay opaque (so
+   the big background colors / images for each section show from frame 1).
+   Their direct children fade in — that hides cards, text, images, every
+   bit of inner structure until the hero's blur cascade is partway through. */
+.page-content-fade-in section > *:not(section) {
+  opacity: 0;
+  transition: opacity 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity;
+}
+.page-content-fade-in.is-active section > *:not(section) {
+  opacity: 1;
+}
+/* Top-level non-section blocks (rare) — fade those too so they aren't the only
+   thing visible during the hero animation. */
+.page-content-fade-in > *:not(section):not(.page-content-fade-in) > *:not(section) {
+  opacity: 0;
+  transition: opacity 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.page-content-fade-in.is-active > *:not(section):not(.page-content-fade-in) > *:not(section) {
+  opacity: 1;
+}
+
 /* ==================== Reduced Motion ==================== */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -320,6 +344,12 @@ body {
     transform: none !important;
     transition-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .page-content-fade-in section > *:not(section),
+  .page-content-fade-in > *:not(section):not(.page-content-fade-in) > *:not(section) {
+    opacity: 1 !important;
+    transition: none !important;
   }
 }
 

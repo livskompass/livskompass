@@ -358,7 +358,19 @@ export function SiteHeader({ onSearchOpen, staticPosition = false }: SiteHeaderP
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [dynamicColor, setDynamicColor] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const location = useLocation()
+
+  // Track mobile viewport so the non-compact pill can match the compact
+  // footprint on small screens (avoids the snap at the end of the morph).
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
 
   // Track scroll distance so the header can morph into a floating frosted
   // pill. Low threshold (20px) — the transition starts as soon as the user
@@ -480,9 +492,15 @@ export function SiteHeader({ onSearchOpen, staticPosition = false }: SiteHeaderP
   //   - dark nav  → light pill (stone/cream)
   // No border — it was the main source of transition glitchiness. Shadow
   // alone gives enough depth for the floating effect.
+  // On mobile, both states share the same horizontal footprint so the morph
+  // doesn't end with a sudden width snap (max-width interpolates 1280→328
+  // but visually only changes in the last ~5%). On desktop we keep the
+  // original behaviour: full content width when at top, narrower pill once
+  // scrolled — that visible shrink is the part the user wants to keep.
+  const compactMaxWidth = 'min(var(--width-content), 960px, calc(100% - var(--container-px) * 2))'
   const pillStyle: React.CSSProperties = compact
     ? {
-        maxWidth: 'min(var(--width-content), 960px)',
+        maxWidth: compactMaxWidth,
         marginInline: 'auto',
         marginBlock: '10px',
         paddingInline: 'clamp(12px, 2vw, 20px)',
@@ -497,7 +515,9 @@ export function SiteHeader({ onSearchOpen, staticPosition = false }: SiteHeaderP
           : '0 8px 32px rgba(28,46,33,0.10), 0 2px 6px rgba(28,46,33,0.06)',
       }
     : {
-        maxWidth: 'var(--width-content)',
+        // On mobile match the compact footprint so width doesn't snap;
+        // on desktop use the full content width like before.
+        maxWidth: isMobile ? compactMaxWidth : 'var(--width-content)',
         marginInline: 'auto',
         paddingInline: 'var(--container-px)',
       }
@@ -517,14 +537,14 @@ export function SiteHeader({ onSearchOpen, staticPosition = false }: SiteHeaderP
         style={{
           ...pillStyle,
           // Only transition the properties that actually morph between states.
-          // `all` was animating phantom properties and made the edge flicker.
+          // Unified easing + duration so everything finishes together.
           transition: [
-            'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            'margin 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            'padding 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            'border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            'background-color 0.35s ease',
-            'box-shadow 0.5s ease',
+            'max-width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            'margin 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            'padding 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            'border-radius 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            'background-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            'box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           ].join(', '),
         }}
       >

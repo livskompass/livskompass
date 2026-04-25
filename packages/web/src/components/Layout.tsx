@@ -21,7 +21,12 @@ export default function Layout() {
 
       <SiteHeader onSearchOpen={() => setSearchOpen(true)} />
 
-      <main id="main-content" className="flex-1">
+      {/* key on pathname forces a full unmount of the previous page tree on
+          navigation. Without it, React Router reuses component instances when
+          two routes render the same component type (UniversalPage on both
+          /mindfulness via the catch-all and /material via an explicit Route),
+          which can leave a stale Hero from the previous page in the DOM. */}
+      <main id="main-content" className="flex-1" key={location.pathname}>
         <Outlet />
       </main>
 

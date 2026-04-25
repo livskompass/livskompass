@@ -114,19 +114,22 @@ export function CourseList({
                   'transition-[transform,box-shadow] duration-300 ease-out',
                   'hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.18)]',
                   colors.bg,
-                  // When there's an image, reserve ~42% of the card for it
-                  // (min 220px so it stays substantial on narrow layouts).
-                  // Without an image, the card is a single content column.
-                  thumbSrc ? 'grid-cols-[minmax(220px,_42%)_1fr]' : 'grid-cols-1',
+                  // Mobile: stack vertically (image on top, content below).
+                  // sm+: horizontal — reserve ~42% of the card for the image
+                  // (min 220px so it stays substantial). Without an image,
+                  // single content column at all sizes.
+                  thumbSrc ? 'grid-cols-1 sm:grid-cols-[minmax(220px,_42%)_1fr]' : 'grid-cols-1',
                 )}
               >
                 <EditItemBadge cmsRoute="courses" entityId={course.id} slug={course.slug} label="Edit course" />
 
-                {/* Image column — stretches to match the content column's
-                    height. `absolute inset-0` + `object-cover` crops gracefully
-                    for any aspect ratio the admin uploads. */}
+                {/* Image column — on mobile (stacked) the container needs an
+                    explicit aspect ratio because the grid row would otherwise
+                    collapse to 0 (no intrinsic height from absolute children).
+                    On sm+ (horizontal) it stretches to match the content
+                    column via min-h. */}
                 {thumbSrc && (
-                  <div className="relative overflow-hidden min-h-[160px]">
+                  <div className="relative overflow-hidden aspect-[16/9] sm:aspect-auto sm:min-h-[160px]">
                     <img
                       src={resolveMediaUrl(thumbSrc)}
                       alt=""
@@ -174,7 +177,7 @@ export function CourseList({
                     </div>
                   )}
 
-                  <h3 className={cn('text-h4 font-display break-words text-balance mb-1.5 pr-20', colors.text)}>{course.title}</h3>
+                  <h3 className={cn('text-h4 font-display break-words text-balance mb-1.5', colors.text)}>{course.title}</h3>
 
                   {!compactMode && course.description && (
                     <p className={cn('text-body-sm line-clamp-2', colors.textMuted)}>

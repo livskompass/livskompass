@@ -863,10 +863,10 @@ function ComponentsTab() {
         <p className="text-sm text-stone-600 mb-6">Top-of-page hero. Six presets (centered / split-left / split-right / full-image / minimal / fullscreen) × three bg styles (gradient / forest / stone).</p>
         <div className="space-y-12">
           <VariantCell label="Centered — gradient, dual CTA">
-            <Hero preset="centered" heading="Tillsammans tränar vi medveten närvaro" subheading="ACT-baserade gruppledarutbildningar för terapeuter och yrkesverksamma." bgStyle="gradient" ctaPrimaryText="Boka utbildning" ctaPrimaryLink="#" ctaSecondaryText="Läs mer" ctaSecondaryLink="#" image="" backgroundImage="" backgroundVideo="" overlayDarkness="medium" contentPosition="center" showScrollIndicator={false} textAlignment="center" showHeading showSubheading />
+            <Hero preset="centered" heading="Tillsammans tränar vi medveten närvaro" subheading="ACT-baserade gruppledarutbildningar för terapeuter och yrkesverksamma." bgStyle="gradient" ctaPrimaryText="Boka utbildning" ctaPrimaryLink="#" ctaSecondaryText="Läs mer" ctaSecondaryLink="#" image="" backgroundImage="" backgroundVideo="" overlayDarkness="dark-2" contentPosition="center" showScrollIndicator={false} textAlignment="center" showHeading showSubheading />
           </VariantCell>
           <VariantCell label="Full image — single CTA, dark overlay">
-            <Hero preset="full-image" heading="Forskningsbaserade verktyg" subheading="Praktisk tillämpning av ACT i ditt dagliga arbete." bgStyle="forest" ctaPrimaryText="Kom igång" ctaPrimaryLink="#" ctaSecondaryText="" ctaSecondaryLink="" image="" backgroundImage={sampleImage1} backgroundVideo="" overlayDarkness="heavy" contentPosition="center" showScrollIndicator={false} textAlignment="center" showHeading showSubheading />
+            <Hero preset="full-image" heading="Forskningsbaserade verktyg" subheading="Praktisk tillämpning av ACT i ditt dagliga arbete." bgStyle="forest" ctaPrimaryText="Kom igång" ctaPrimaryLink="#" ctaSecondaryText="" ctaSecondaryLink="" image="" backgroundImage={sampleImage1} backgroundVideo="" overlayDarkness="dark-3" contentPosition="center" showScrollIndicator={false} textAlignment="center" showHeading showSubheading />
           </VariantCell>
         </div>
       </Section>

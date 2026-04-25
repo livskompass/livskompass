@@ -5,11 +5,25 @@ import { useEditableText, useInlineEdit, useInlineEditBlock, InlineImagePickerCo
 import { InlineImage } from './InlineImage'
 import { resolveMediaUrl } from '../helpers'
 import { resolveButtonIcon, buttonVariantClasses } from './buttonUtils'
+import { BlurRevealText, BlurRevealWrap } from './BlurReveal'
+
+const BLUR_DELAY_HEADING = 0
+const BLUR_DELAY_SUBHEADING = 0.7
+const BLUR_DELAY_CTAS = 1.4
 
 export type HeroPreset = 'centered' | 'split-right' | 'split-left' | 'full-image' | 'minimal' | 'fullscreen'
 export type HeroBgStyle = 'gradient' | 'forest' | 'stone'
-export type HeroOverlay = 'light' | 'medium' | 'heavy'
-export type HeroContentPosition = 'center' | 'center-left' | 'center-right' | 'top-left' | 'top-center' | 'bottom-left' | 'bottom-center'
+export type HeroOverlay = 'dark-3' | 'dark-2' | 'dark-1' | 'light-1' | 'light-2' | 'light-3'
+
+// Migrate old values ('light' | 'medium' | 'heavy') to the new 6-step scale.
+function normalizeOverlay(v: string | undefined): HeroOverlay {
+  if (!v) return 'dark-2'
+  if (v === 'light') return 'dark-1'
+  if (v === 'medium') return 'dark-2'
+  if (v === 'heavy') return 'dark-3'
+  return v as HeroOverlay
+}
+export type HeroContentPosition = 'center' | 'center-left' | 'center-right' | 'top-left' | 'top-center' | 'lower-left' | 'bottom-left' | 'bottom-center'
 export type HeroTextAlign = 'left' | 'center'
 
 export type HeroTopOverlay = 'none' | 'dark' | 'light'
@@ -55,10 +69,13 @@ const bgInlineStyles: Record<HeroBgStyle, React.CSSProperties> = {
   stone: { background: 'var(--gradient-hero)' },
 }
 
-const overlayOpacity: Record<HeroOverlay, string> = {
-  light: '0.35',
-  medium: '0.55',
-  heavy: '0.75',
+const overlayPeak: Record<HeroOverlay, number> = {
+  'dark-1': 0.30,
+  'dark-2': 0.55,
+  'dark-3': 0.80,
+  'light-1': 0.30,
+  'light-2': 0.55,
+  'light-3': 0.80,
 }
 
 /**
@@ -153,30 +170,35 @@ function BottomOverlay({ type }: { type?: string }) {
 
 /** Build the main hero overlay gradient (covers full area, bottom-heavy).
  *  Single gradient from top to bottom with eased curve:
- *  top = moderate darkness → middle = lightest → bottom = peak darkness */
+ *  top = moderate tint → middle = lightest → bottom = peak tint.
+ *  Dark variants tint with --forest-950 (use for dark-on-light text contrast pulled UP
+ *  toward dark text); light variants tint with white (use for dark-on-light text contrast
+ *  needed against a busy/medium image). */
 function heroOverlayGradient(overlayDarkness: HeroOverlay): string {
-  const peak = parseFloat(overlayOpacity[overlayDarkness])
+  const peak = overlayPeak[overlayDarkness]
+  const isLight = overlayDarkness.startsWith('light')
   const top = peak * 0.55
   const mid = peak * 0.2
   const stops = 16
   const points: string[] = []
   for (let i = 0; i <= stops; i++) {
     const t = i / stops
-    // Custom curve: starts at `top`, dips to `mid` around 40%, rises to `peak` at bottom
     let alpha: number
     if (t <= 0.4) {
-      // Top → mid: ease out
       const p = t / 0.4
       const eased = 1 - Math.pow(1 - p, 2)
       alpha = top + (mid - top) * eased
     } else {
-      // Mid → bottom: ease in (stays lighter, accelerates to dark)
       const p = (t - 0.4) / 0.6
       const eased = Math.pow(p, 2.5)
       alpha = mid + (peak - mid) * eased
     }
     const pct = Math.round(t * 100)
-    points.push(`rgb(var(--forest-950) / ${alpha.toFixed(3)}) ${pct}%`)
+    if (isLight) {
+      points.push(`rgba(255, 255, 255, ${alpha.toFixed(3)}) ${pct}%`)
+    } else {
+      points.push(`rgb(var(--forest-950) / ${alpha.toFixed(3)}) ${pct}%`)
+    }
   }
   return `linear-gradient(to bottom, ${points.join(', ')})`
 }
@@ -234,7 +256,7 @@ function HeroButtonItem({ btn, index, variantClasses }: { btn: { text: string; l
 function HeroButtons({ buttons, variantClasses }: { buttons: Array<{text: string; link: string; externalUrl?: string; variant?: string; showIcon?: boolean; icon?: string}>; variantClasses: Record<string, string> }) {
   if (!buttons.length) return null
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mt-8 md:mt-10 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+    <div className="flex flex-col sm:flex-row gap-4 mt-8 md:mt-10">
       {buttons.map((btn, i) => (
         <HeroButtonItem key={i} btn={btn} index={i} variantClasses={variantClasses} />
       ))}
@@ -244,11 +266,18 @@ function HeroButtons({ buttons, variantClasses }: { buttons: Array<{text: string
 
 function HeroSubheadingItem({ item, index, textClass, centered }: { item: { text: string }; index: number; textClass: string; centered?: boolean }) {
   const textEdit = useEditableText(`subheadings[${index}].text`, item.text)
+  const isAdmin = useInlineEditBlock()?.isAdmin ?? false
   const { className: _, ...editHandlers } = textEdit || { className: '' }
   return (
-    <p {...editHandlers} className={cn('text-body-lg mt-3 max-w-[540px] leading-relaxed animate-hero-enter', centered && 'mx-auto', textClass, textEdit?.className)} style={{ animationDelay: `${350 + index * 100}ms`, animationFillMode: 'both', ...textEdit?.style }}>
-      {item.text}
-    </p>
+    <BlurRevealText
+      as="p"
+      text={item.text}
+      startDelay={BLUR_DELAY_SUBHEADING + index * 0.25}
+      disabled={isAdmin}
+      editProps={editHandlers}
+      className={cn('text-body-lg mt-3 max-w-[540px] leading-relaxed', centered && 'mx-auto', textClass, textEdit?.className)}
+      style={textEdit?.style}
+    />
   )
 }
 
@@ -284,7 +313,7 @@ export function Hero({
   image = '',
   backgroundImage = '',
   backgroundVideo = '',
-  overlayDarkness = 'medium',
+  overlayDarkness = 'dark-2',
   contentPosition = 'center',
   showScrollIndicator = true,
   textAlignment = 'left',
@@ -308,8 +337,10 @@ export function Hero({
   const subheadings = (subheadingsRaw && subheadingsRaw.length > 0) ? subheadingsRaw : (subheading ? [{ text: subheading }] : [])
 
   // Determine nav theme: dark hero = light nav text, light hero = dark nav text
+  const overlay = normalizeOverlay(overlayDarkness)
+  const isLightSideOverlay = overlay.startsWith('light') || overlay === 'dark-1'
   const hasDarkBg = (backgroundImage || backgroundVideo)
-    ? overlayDarkness !== 'light' // image/video with medium+ overlay = dark
+    ? !isLightSideOverlay // image/video with dark-2/dark-3 overlay = dark bg
     : false // solid mist bg = light
   const navTheme = hasDarkBg ? 'dark' : 'light'
 
@@ -340,6 +371,7 @@ export function Hero({
 
   // Read button styles from block data (set by ButtonStylePicker)
   const editBlockCtx = useInlineEditBlock()
+  const isAdmin = editBlockCtx?.isAdmin ?? false
   const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
   const parseBtnStyle = (propName: string) => {
     try { return btnStyles?.[propName] ? JSON.parse(btnStyles[propName]) : null } catch { return null }
@@ -354,14 +386,14 @@ export function Hero({
   const SecondaryIcon = resolveButtonIcon(secondaryStyle?.icon ?? '')
   const headingStyle: React.CSSProperties = { fontFamily: "var(--font-display, 'Rubik', sans-serif)", fontSize: 'var(--type-display)', lineHeight: 'var(--leading-display)', letterSpacing: 'var(--tracking-display)', fontWeight: 460 }
 
-  // Sub-heading soft glow — uses box-shadow (not clipped by overflow-hidden)
-  const subGlowShadow = subBlur && subBlur !== 'none'
+  // Sub-heading shadows temporarily disabled — flip SUB_SHADOWS_ENABLED to restore.
+  const SUB_SHADOWS_ENABLED = false
+  const subGlowShadow = SUB_SHADOWS_ENABLED && subBlur && subBlur !== 'none'
     ? subBlur === 'light'
       ? '0 0 120px 160px rgba(255,255,255,0.12)'
       : '0 0 120px 160px rgba(0,0,0,0.15)'
     : undefined
-  // Tight text-shadow on subheading letters for extra readability
-  const subTextShadow = subBlur && subBlur !== 'none'
+  const subTextShadow = SUB_SHADOWS_ENABLED && subBlur && subBlur !== 'none'
     ? subBlur === 'light'
       ? '0 1px 4px rgba(255,255,255,1), 0 0 40px rgba(255,255,255,0.9), 0 0 80px rgba(255,255,255,0.5)'
       : '0 1px 4px rgba(0,0,0,1), 0 0 40px rgba(0,0,0,0.9), 0 0 80px rgba(0,0,0,0.5)'
@@ -375,6 +407,7 @@ export function Hero({
       'center-right': 'items-end justify-center text-right',
       'top-left': 'items-start justify-start text-left pt-24 md:pt-32',
       'top-center': 'items-center justify-start text-center pt-24 md:pt-32',
+      'lower-left': 'items-start justify-end text-left pb-[10vh] md:pb-[14vh]',
       'bottom-left': 'items-start justify-end text-left pb-16 md:pb-24',
       'bottom-center': 'items-center justify-end text-center pb-16 md:pb-24',
     }
@@ -407,32 +440,43 @@ export function Hero({
         )}
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
         {/* Overlay — smooth multi-stop eased gradient */}
-        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: heroOverlayGradient(overlayDarkness) }} />}
+        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: heroOverlayGradient(overlay) }} />}
         {/* Top gradient overlay for nav contrast */}
         <TopOverlay type={topOverlay} />
         {/* Bottom gradient overlay — melt into next section */}
         <BottomOverlay type={bottomOverlay} />
         {/* Content — aligned to page container, offset for nav height */}
         <div
-          className={cn('relative flex flex-col h-full mx-auto', positionClasses[contentPosition || 'center'])}
+          className={cn('relative z-20 flex flex-col h-full mx-auto', positionClasses[contentPosition || 'center'])}
           style={{ maxWidth: 'var(--width-content, 1440px)', paddingInline: 'var(--container-px, 1rem)', paddingTop: '72px' }}
         >
           <div className={cn('max-w-3xl', contentPosition === 'center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
-              <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
-                {heading}
-              </h1>
+              <BlurRevealText
+                as="h1"
+                text={heading}
+                startDelay={BLUR_DELAY_HEADING}
+                disabled={isAdmin}
+                editProps={hEdit}
+                className={cn('text-display max-w-[20ch]', textPrimary, hCls)}
+                style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, ...hEdit?.style }}
+              />
             )}
             {showSubheading !== false && (
-              <div className={cn('relative mt-6 animate-hero-enter', contentPosition === 'center' && 'mx-auto')} style={{ animationDelay: '300ms', animationFillMode: 'both', maxWidth: 540, isolation: 'isolate' }}>
+              <div className={cn('relative mt-6', contentPosition === 'center' && 'mx-auto')} style={{ maxWidth: 540, isolation: 'isolate' }}>
                 {subGlowShadow && (
                   <div className="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 pointer-events-none" style={{ height: 0, boxShadow: subGlowShadow, borderRadius: '50%', zIndex: -1 }} />
                 )}
                 <div className="relative" style={{ zIndex: 1, textShadow: subTextShadow }}>
                   {(!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-                    <p {...sEdit} className={cn('text-body-lg leading-relaxed', textSecondary, sCls)}>
-                      {subheading}
-                    </p>
+                    <BlurRevealText
+                      as="p"
+                      text={subheading}
+                      startDelay={BLUR_DELAY_SUBHEADING}
+                      disabled={isAdmin}
+                      editProps={sEdit}
+                      className={cn('text-body-lg leading-relaxed', textSecondary, sCls)}
+                    />
                   )}
                   {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center'} />}
                 </div>
@@ -440,9 +484,11 @@ export function Hero({
             )}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
-              <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+              <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin}>
+                <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+              </BlurRevealWrap>
             ) : ctaPrimaryText && ctaPrimaryLink ? (
-              <div className={cn('flex flex-col sm:flex-row gap-4 mt-8 md:mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+              <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin} className={cn('flex flex-col sm:flex-row gap-4 mt-8 md:mt-10', contentPosition === 'center' && 'justify-center')}>
                 <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
@@ -453,7 +499,7 @@ export function Hero({
                     {SecondaryIcon && <SecondaryIcon className="ml-2 h-4 w-4" />}
                   </a>
                 )}
-              </div>
+              </BlurRevealWrap>
             ) : null}
             {/* Email input */}
             {showInput && <HeroInput placeholder={inputPlaceholder || 'Din e-postadress'} buttonText={inputButtonText || 'Prenumerera'} />}
@@ -476,19 +522,33 @@ export function Hero({
         {bgStyle === 'gradient' && <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--gradient-glow)' }} />}
         <div className="relative" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           {showHeading !== false && (
-            <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
-              {heading}
-            </h1>
+            <BlurRevealText
+              as="h1"
+              text={heading}
+              startDelay={BLUR_DELAY_HEADING}
+              disabled={isAdmin}
+              editProps={hEdit}
+              className={cn('text-display max-w-[20ch]', textPrimary, hCls)}
+              style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, ...hEdit?.style }}
+            />
           )}
           {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-            <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both', ...sEdit?.style }}>
-              {subheading}
-            </p>
+            <BlurRevealText
+              as="p"
+              text={subheading}
+              startDelay={BLUR_DELAY_SUBHEADING}
+              disabled={isAdmin}
+              editProps={sEdit}
+              className={cn('text-body-lg mt-6 max-w-[540px] leading-relaxed', textSecondary, sCls)}
+              style={sEdit?.style}
+            />
           )}
           {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} />}
             {/* Buttons */}
           {buttons && buttons.length > 0 ? (
-            <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+            <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin}>
+              <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+            </BlurRevealWrap>
           ) : null}
           {/* Email input */}
           {showInput && <HeroInput placeholder={inputPlaceholder || 'Din e-postadress'} buttonText={inputButtonText || 'Prenumerera'} />}
@@ -504,6 +564,7 @@ export function Hero({
       'center':        { alignContent: 'center', textAlign: 'center' as const },
       'center-left':   { alignContent: 'center', textAlign: 'left' as const },
       'center-right':  { alignContent: 'center', textAlign: 'right' as const },
+      'lower-left':    { alignContent: 'end', textAlign: 'left' as const, paddingBottom: 'clamp(40px, 9vh, 120px)' },
       'bottom-left':   { alignContent: 'end', textAlign: 'left' as const },
       'bottom-center': { alignContent: 'end', textAlign: 'center' as const },
     }
@@ -537,32 +598,43 @@ export function Hero({
         )}
         <BgImageButton propName="backgroundImage" src={backgroundImage} />
         {/* Overlay — smooth multi-stop eased gradient */}
-        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: heroOverlayGradient(overlayDarkness) }} />}
+        {(backgroundImage || backgroundVideo) && <div className="absolute inset-0" style={{ background: heroOverlayGradient(overlay) }} />}
         {/* Top gradient overlay for nav contrast */}
         <TopOverlay type={topOverlay} />
         {/* Bottom gradient overlay — melt into next section */}
         <BottomOverlay type={bottomOverlay} />
         {/* Content — CSS grid on section handles all positioning */}
         <div
-          className="relative w-full mx-auto"
+          className="relative z-20 w-full mx-auto"
           style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
         >
           <div className={cn('max-w-3xl', contentPosition === 'center' || contentPosition === 'bottom-center' ? 'mx-auto text-center' : contentPosition?.includes('right') ? 'text-right' : 'text-left')}>
             {showHeading !== false && (
-              <h1 {...hEdit} className={cn('text-display max-w-[24ch] animate-hero-enter', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
-                {heading}
-              </h1>
+              <BlurRevealText
+                as="h1"
+                text={heading}
+                startDelay={BLUR_DELAY_HEADING}
+                disabled={isAdmin}
+                editProps={hEdit}
+                className={cn('text-display max-w-[24ch]', textPrimary, contentPosition === 'center' && 'mx-auto', hCls)}
+                style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, ...hEdit?.style }}
+              />
             )}
             {showSubheading !== false && (
-              <div className={cn('relative mt-6 animate-hero-enter', (contentPosition === 'center' || contentPosition === 'bottom-center') && 'mx-auto')} style={{ animationDelay: '300ms', animationFillMode: 'both', maxWidth: 540, isolation: 'isolate' }}>
+              <div className={cn('relative mt-6', (contentPosition === 'center' || contentPosition === 'bottom-center') && 'mx-auto')} style={{ maxWidth: 540, isolation: 'isolate' }}>
                 {subGlowShadow && (
                   <div className="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 pointer-events-none" style={{ height: 0, boxShadow: subGlowShadow, borderRadius: '50%', zIndex: -1 }} />
                 )}
                 <div className="relative" style={{ zIndex: 1, textShadow: subTextShadow }}>
                   {(!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-                    <p {...sEdit} className={cn('text-body-lg leading-relaxed', textSecondary, sCls)}>
-                      {subheading}
-                    </p>
+                    <BlurRevealText
+                      as="p"
+                      text={subheading}
+                      startDelay={BLUR_DELAY_SUBHEADING}
+                      disabled={isAdmin}
+                      editProps={sEdit}
+                      className={cn('text-body-lg leading-relaxed', textSecondary, sCls)}
+                    />
                   )}
                   {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={contentPosition === 'center' || contentPosition === 'bottom-center'} />}
                 </div>
@@ -570,9 +642,11 @@ export function Hero({
             )}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
-              <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+              <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin}>
+                <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+              </BlurRevealWrap>
             ) : ctaPrimaryText && ctaPrimaryLink ? (
-              <div className={cn('flex flex-col sm:flex-row gap-4 mt-10 animate-hero-enter', contentPosition === 'center' && 'justify-center')} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+              <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin} className={cn('flex flex-col sm:flex-row gap-4 mt-10', contentPosition === 'center' && 'justify-center')}>
                 <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
@@ -582,7 +656,7 @@ export function Hero({
                     <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
                   </a>
                 )}
-              </div>
+              </BlurRevealWrap>
             ) : null}
             {/* Email input */}
             {showInput && <HeroInput placeholder={inputPlaceholder || 'Din e-postadress'} buttonText={inputButtonText || 'Prenumerera'} />}
@@ -609,21 +683,35 @@ export function Hero({
         <div className="relative grid grid-cols-1 lg:grid-cols-[2fr_3fr] items-center gap-6 lg:gap-10" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
           <div className={cn('flex flex-col justify-center', imageFirst ? 'lg:order-2' : 'lg:order-1', textAlignment === 'center' ? 'items-center text-center' : 'items-start text-left')}>
             {showHeading !== false && (
-              <h1 {...hEdit} className={cn('text-display max-w-[20ch] animate-hero-enter', textPrimary, hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
-                {heading}
-              </h1>
+              <BlurRevealText
+                as="h1"
+                text={heading}
+                startDelay={BLUR_DELAY_HEADING}
+                disabled={isAdmin}
+                editProps={hEdit}
+                className={cn('text-display max-w-[20ch]', textPrimary, hCls)}
+                style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, ...hEdit?.style }}
+              />
             )}
             {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-              <p {...sEdit} className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed animate-hero-enter', textSecondary, sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both', ...sEdit?.style }}>
-                {subheading}
-              </p>
+              <BlurRevealText
+                as="p"
+                text={subheading}
+                startDelay={BLUR_DELAY_SUBHEADING}
+                disabled={isAdmin}
+                editProps={sEdit}
+                className={cn('text-body-lg mt-5 max-w-[480px] leading-relaxed', textSecondary, sCls)}
+                style={sEdit?.style}
+              />
             )}
             {showSubheading !== false && subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered={textAlignment === 'center'} />}
             {/* Buttons */}
             {buttons && buttons.length > 0 ? (
-              <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+              <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin}>
+                <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+              </BlurRevealWrap>
             ) : ctaPrimaryText && ctaPrimaryLink ? (
-              <div className="flex flex-col sm:flex-row gap-4 mt-8 animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+              <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin} className="flex flex-col sm:flex-row gap-4 mt-8">
                 <a href={ctaPrimaryLink} className={cn('inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 transition-all', btnPrimary)}>
                   <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
                   {PrimaryIcon && <PrimaryIcon className="ml-2 h-4 w-4" />}
@@ -634,7 +722,7 @@ export function Hero({
                     {SecondaryIcon && <SecondaryIcon className="ml-2 h-4 w-4" />}
                   </a>
                 )}
-              </div>
+              </BlurRevealWrap>
             ) : null}
             {/* Email input */}
             {showInput && <HeroInput placeholder={inputPlaceholder || 'Din e-postadress'} buttonText={inputButtonText || 'Prenumerera'} />}
@@ -676,21 +764,35 @@ export function Hero({
       )}
       <div className="relative flex flex-col items-center text-center" style={{ maxWidth: 'var(--width-content)', marginInline: 'auto', paddingInline: 'var(--container-px)' }}>
         {showHeading !== false && (
-          <h1 {...hEdit} className={cn('text-display max-w-[24ch] mx-auto animate-hero-enter', hCls)} style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, animationDelay: '100ms', animationFillMode: 'both', ...hEdit?.style }}>
-            {heading}
-          </h1>
+          <BlurRevealText
+            as="h1"
+            text={heading}
+            startDelay={BLUR_DELAY_HEADING}
+            disabled={isAdmin}
+            editProps={hEdit}
+            className={cn('text-display max-w-[24ch] mx-auto', hCls)}
+            style={{ ...headingStyle, position: 'relative' as const, zIndex: 2, ...hEdit?.style }}
+          />
         )}
         {showSubheading !== false && (!subheadings || subheadings.length === 0) && (subheading || subheadingEdit) && (
-          <p {...sEdit} className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed text-accent animate-hero-enter', sCls)} style={{ animationDelay: '300ms', animationFillMode: 'both', ...sEdit?.style }}>
-            {subheading}
-          </p>
+          <BlurRevealText
+            as="p"
+            text={subheading}
+            startDelay={BLUR_DELAY_SUBHEADING}
+            disabled={isAdmin}
+            editProps={sEdit}
+            className={cn('text-body-lg mt-6 max-w-[540px] mx-auto leading-relaxed text-accent', sCls)}
+            style={sEdit?.style}
+          />
         )}
         {subheadings && subheadings.length > 0 && <HeroSubheadings items={subheadings} textClass={textSecondary} centered />}
             {/* Buttons */}
         {buttons && buttons.length > 0 ? (
-          <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+          <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin}>
+            <HeroButtons buttons={buttons} variantClasses={variantClasses} />
+          </BlurRevealWrap>
         ) : hasLegacyButtons ? (
-          <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center animate-hero-enter" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+          <BlurRevealWrap startDelay={BLUR_DELAY_CTAS} disabled={isAdmin} className="flex flex-col sm:flex-row gap-4 mt-10 justify-center">
             {ctaPrimaryText && ctaPrimaryLink && (
               <a href={ctaPrimaryLink} className="inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium h-12 px-7 bg-brand text-white transition-all">
                 <span {...ctaPEdit} className={ctaPrimaryTextEdit?.className}>{ctaPrimaryText}</span>
@@ -702,7 +804,7 @@ export function Hero({
                 <span {...ctaSEdit} className={ctaSecondaryTextEdit?.className}>{ctaSecondaryText}</span>
               </a>
             )}
-          </div>
+          </BlurRevealWrap>
         ) : null}
         {/* Email input */}
         {showInput && <HeroInput placeholder={inputPlaceholder || 'Din e-postadress'} buttonText={inputButtonText || 'Prenumerera'} />}

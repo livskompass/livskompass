@@ -12,15 +12,29 @@ import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/c
 import { ChevronRight } from 'lucide-react'
 
 function PageSkeleton() {
+  // Hero-shaped placeholder: full-bleed, tall, soft pulsing surface so the
+  // real hero swaps in without a layout jump. Two faint bars hint at where
+  // the heading and subheading will land.
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
-      <Skeleton className="h-10 w-3/4 mb-8" />
-      <div className="space-y-4">
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-5/6" />
-        <Skeleton className="h-4 w-4/6" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
+    <div>
+      <div
+        className="relative w-full overflow-hidden"
+        style={{
+          height: 'max(70vh, 560px)',
+          backgroundColor: 'rgb(var(--mist) / 0.5)',
+        }}
+      >
+        <div
+          className="absolute inset-0 animate-warm-pulse"
+          style={{ backgroundColor: 'rgb(var(--mist) / 0.35)' }}
+        />
+        <div
+          className="relative h-full mx-auto flex flex-col justify-end pb-[10vh] md:pb-[14vh]"
+          style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}
+        >
+          <Skeleton className="h-10 md:h-14 w-2/3 max-w-xl mb-4" />
+          <Skeleton className="h-4 md:h-5 w-1/2 max-w-md" />
+        </div>
       </div>
     </div>
   )

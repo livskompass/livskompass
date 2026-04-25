@@ -1,7 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { puckConfig, InlineEditBlockContext, ZoneRenderContext, useScrollReveal } from '@livskompass/shared'
 import { useInlineEdit } from './InlineEditProvider'
 import EditableBlock from './EditableBlock'
+
+/**
+ * Fades the rest of the page in once the hero's blur cascade is partway through.
+ * Section backgrounds stay opaque — only text, images, buttons, and other content
+ * elements fade in (see `.page-content-fade-in` CSS in index.css).
+ * Keyed by hero id at the call site so it remounts on navigation.
+ */
+function PageContentFadeIn({ children }: { children: React.ReactNode }) {
+  const [active, setActive] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setActive(true), 1400)
+    return () => clearTimeout(t)
+  }, [])
+  return (
+    <div className={`page-content-fade-in ${active ? 'is-active' : ''}`}>
+      {children}
+    </div>
+  )
+}
 
 /**
  * Lightweight Puck data renderer that replaces @puckeditor/core's <Render>.
@@ -31,21 +50,36 @@ const components = puckConfig.components as Record<
 /** No-op save for public site — text sizes are read-only */
 const noopSave = () => {}
 
+function renderBlock(item: PuckItem, index: number) {
+  const comp = components[item.type]
+  if (!comp?.render) return null
+  const Fn = comp.render
+  return (
+    <InlineEditBlockContext.Provider
+      key={item.props?.id || `${item.type}-${index}`}
+      value={{ isAdmin: false, blockIndex: index, saveBlockProp: noopSave, blockProps: item.props }}
+    >
+      <Fn {...item.props} />
+    </InlineEditBlockContext.Provider>
+  )
+}
+
 function renderItems(items: PuckItem[]) {
-  return items.map((item, i) => {
-    const comp = components[item.type]
-    if (!comp?.render) return null
-    const Fn = comp.render
-    // Provide minimal context so useEditableText can read _textSizes
-    return (
-      <InlineEditBlockContext.Provider
-        key={item.props?.id || `${item.type}-${i}`}
-        value={{ isAdmin: false, blockIndex: i, saveBlockProp: noopSave, blockProps: item.props }}
-      >
-        <Fn {...item.props} />
-      </InlineEditBlockContext.Provider>
-    )
-  })
+  if (items[0]?.type !== 'Hero') {
+    return items.map((item, i) => renderBlock(item, i))
+  }
+  const [hero, ...rest] = items
+  const heroKey = hero.props?.id || `${hero.type}-0`
+  return (
+    <>
+      {renderBlock(hero, 0)}
+      {rest.length > 0 && (
+        <PageContentFadeIn key={heroKey}>
+          {rest.map((item, i) => renderBlock(item, i + 1))}
+        </PageContentFadeIn>
+      )}
+    </>
+  )
 }
 
 function RenderItemWithContext({
