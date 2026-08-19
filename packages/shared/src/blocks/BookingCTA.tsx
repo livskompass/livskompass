@@ -1,4 +1,4 @@
-import { useCourseData, useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { useCourseData, useInlineEdit, useEditableText, useBlockDisplayProps } from '../context'
 import { ArrowRight, AlertCircle, CheckCircle, CalendarCheck, Info } from 'lucide-react'
 import { cn } from '../ui/utils'
 import { getButtonStyle } from './buttonUtils'
@@ -76,8 +76,7 @@ export function BookingCTA({
   const bHandlers = editHandlers(buttonTextEdit)
 
   // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const btnStyles = useBlockDisplayProps()?._buttonStyles as Record<string, string> | undefined
   const { variantClass: btnClass, Icon: BtnIcon } = getButtonStyle(btnStyles, 'buttonText', 'primary', 'arrow-right')
 
   if (!course) return <Placeholder />

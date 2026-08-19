@@ -1,6 +1,6 @@
 import { cn } from '../ui/utils'
 import { ArrowRight } from 'lucide-react'
-import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { useInlineEdit, useEditableText, useBlockDisplayProps } from '../context'
 import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 import { getButtonStyle } from './buttonUtils'
 
@@ -93,8 +93,7 @@ export function CTABanner({
   const buttonTextEdit = buttonTextPuck || buttonTextEditCtx
 
   // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const btnStyles = useBlockDisplayProps()?._buttonStyles as Record<string, string> | undefined
   const { variantClass: btnPrimaryClass, Icon: BtnPrimaryIcon } = getButtonStyle(btnStyles, 'buttonText', 'primary', 'arrow-right')
 
   const bg = bgMap[backgroundColor] || bgMap.primary

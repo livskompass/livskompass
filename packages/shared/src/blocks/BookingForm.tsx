@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useCourseData, useEditableText, useInlineEditBlock } from '../context'
+import { useCourseData, useEditableText, useBlockDisplayProps } from '../context'
 import { getApiBase, formatSwedishDateRange } from '../helpers'
 import { Calendar, MapPin, CreditCard, AlertCircle, ArrowRight } from 'lucide-react'
 import { cn } from '../ui/utils'
@@ -77,8 +77,7 @@ export function BookingForm({
   const totalLabelEdit = useEditableText('totalLabel', totalLabel)
 
   // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const btnStyles = useBlockDisplayProps()?._buttonStyles as Record<string, string> | undefined
   const { variantClass: submitBtnClass, Icon: SubmitBtnIcon } = getButtonStyle(btnStyles, 'submitButtonText', 'primary', 'arrow-right')
 
   const [formData, setFormData] = useState({

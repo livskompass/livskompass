@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { getApiBase } from '../helpers'
 import { Send, CheckCircle, AlertCircle, Mail, Phone } from 'lucide-react'
-import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { useInlineEdit, useEditableText, useBlockDisplayProps } from '../context'
 import { cn } from '../ui/utils'
 import { UI_STRINGS } from '../ui-strings'
 import { getButtonStyle } from './buttonUtils'
@@ -87,8 +87,7 @@ export function ContactForm({
   const dHandlers = editHandlers(descriptionEdit)
 
   // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const btnStyles = useBlockDisplayProps()?._buttonStyles as Record<string, string> | undefined
   const { variantClass: submitBtnClass, Icon: SubmitBtnIcon } = getButtonStyle(btnStyles, 'submitButtonText', 'primary', '')
 
   // Detect if we're inside the Puck editor

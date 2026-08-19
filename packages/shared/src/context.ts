@@ -99,8 +99,21 @@ export interface InlineEditContextValue {
 
 export const InlineEditBlockContext = createContext<InlineEditContextValue | null>(null)
 
+/**
+ * Non-null ONLY when inline editing is active (verified admin). The public
+ * renderer also provides InlineEditBlockContext (with isAdmin: false) purely so
+ * display props like _textSizes/_buttonStyles reach the blocks — blocks gate
+ * every edit affordance (contentEditable, overlays, preventDefault) on this
+ * hook, so it must never surface that public context.
+ */
 export function useInlineEditBlock(): InlineEditContextValue | null {
-  return useContext(InlineEditBlockContext)
+  const ctx = useContext(InlineEditBlockContext)
+  return ctx && ctx.isAdmin ? ctx : null
+}
+
+/** Current block's props for display-only reads (_textSizes, _textColors, _buttonStyles) — available on the public site and in the editor. */
+export function useBlockDisplayProps(): Record<string, any> | undefined {
+  return useContext(InlineEditBlockContext)?.blockProps
 }
 
 // ── Inline image picker context ──
@@ -144,7 +157,9 @@ export const InlineRichTextContext = createContext<InlineRichTextContextValue | 
  * Returns null if inline editing is not available.
  */
 export function useEditableText(propName: string, currentValue: string) {
-  const ctx = useInlineEditBlock()
+  // Raw context (not useInlineEditBlock): the public site needs blockProps for
+  // text sizes/colors; editing below is gated on ctx.isAdmin.
+  const ctx = useContext(InlineEditBlockContext)
   const originalRef = useRef(currentValue)
 
   const handleBlur = useCallback(

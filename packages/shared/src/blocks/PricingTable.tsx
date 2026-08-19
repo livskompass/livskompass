@@ -1,7 +1,7 @@
 import { cn } from '../ui/utils'
 import { Check } from 'lucide-react'
 import { useScrollReveal } from '../helpers'
-import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { useInlineEdit, useEditableText, useBlockDisplayProps } from '../context'
 import { ArrayItemControls, ArrayDragProvider, AddItemButton } from './ArrayItemControls'
 import { getButtonStyle } from './buttonUtils'
 
@@ -38,8 +38,7 @@ function PricingTierItem({ item, index, highlightLabel, showCurrency = true, tot
   const ctaTextEdit = useEditableText(`items[${index}].ctaText`, item.ctaText)
 
   // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const btnStyles = useBlockDisplayProps()?._buttonStyles as Record<string, string> | undefined
   const { variantClass: ctaBtnClass, Icon: CtaBtnIcon } = getButtonStyle(btnStyles, 'ctaText', 'primary', '')
 
   return (

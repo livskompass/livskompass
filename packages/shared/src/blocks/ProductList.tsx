@@ -2,7 +2,7 @@ import { cn } from '../ui/utils'
 import { useFetchJson, resolveMediaUrl, useScrollReveal } from '../helpers'
 import { EditItemBadge } from './EditItemBadge'
 import { ExternalLink } from 'lucide-react'
-import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
+import { useInlineEdit, useEditableText, useBlockDisplayProps } from '../context'
 import { getCardColors } from './cardColors'
 import { getButtonStyle } from './buttonUtils'
 import { Price } from './Price'
@@ -81,8 +81,7 @@ export function ProductList({
   const emptyTextEdit = useEditableText('emptyText', emptyText)
 
   // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const btnStyles = useBlockDisplayProps()?._buttonStyles as Record<string, string> | undefined
   const { variantClass: buyBtnClass, Icon: BuyBtnIcon } = getButtonStyle(btnStyles, 'buyButtonText', 'primary', 'external-link')
 
   const { data, loading } = useFetchJson<{ products: Product[] }>('/products')

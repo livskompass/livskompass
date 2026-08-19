@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { cn } from '../ui/utils'
 import { ArrowRight, ChevronDown, Camera } from 'lucide-react'
-import { useEditableText, useInlineEdit, useInlineEditBlock, InlineImagePickerContext } from '../context'
+import { useEditableText, useInlineEdit, useInlineEditBlock, useBlockDisplayProps, InlineImagePickerContext } from '../context'
 import { InlineImage } from './InlineImage'
 import { resolveMediaUrl } from '../helpers'
 import { resolveButtonIcon, buttonVariantClasses } from './buttonUtils'
@@ -370,9 +370,8 @@ export function Hero({
   const textSecondary = 'text-accent'
 
   // Read button styles from block data (set by ButtonStylePicker)
-  const editBlockCtx = useInlineEditBlock()
-  const isAdmin = editBlockCtx?.isAdmin ?? false
-  const btnStyles = editBlockCtx?.blockProps?._buttonStyles as Record<string, string> | undefined
+  const isAdmin = useInlineEditBlock() !== null
+  const btnStyles = useBlockDisplayProps()?._buttonStyles as Record<string, string> | undefined
   const parseBtnStyle = (propName: string) => {
     try { return btnStyles?.[propName] ? JSON.parse(btnStyles[propName]) : null } catch { return null }
   }
