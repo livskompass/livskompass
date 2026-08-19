@@ -7,6 +7,8 @@ import {
   updateSiteSettings,
   uploadMedia,
   getMediaUrl,
+  getAuthToken,
+  API_BASE,
 } from '../lib/api'
 import { defaultHeader, defaultFooter, type SiteHeaderConfig, type SiteFooterConfig } from '@livskompass/shared'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
@@ -280,6 +282,11 @@ export default function Settings() {
   // triggers the debounced save and writes stale values back over any
   // server-side update (e.g. the slug-rename cascade).
   const skipNextAutoSaveRef = useRef(false)
+  const pendingSiteSaveRef = useRef(false)
+  const latestSiteRef = useRef<{ header: SiteHeaderConfig; footer: SiteFooterConfig }>({
+    header: defaultHeader,
+    footer: defaultFooter,
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-settings'],
@@ -298,13 +305,20 @@ export default function Settings() {
   }, [data])
 
   useEffect(() => {
-    if (siteData && !siteSettingsLoaded) {
-      if (siteData.header) setHeader(siteData.header)
-      if (siteData.footer) setFooter(siteData.footer)
-      setSiteSettingsLoaded(true)
-      setSiteDirty(false)
-      skipNextAutoSaveRef.current = true
-    }
+    if (!siteData) return
+    // Sync server data into local state whenever a fetch lands, but never
+    // clobber edits that haven't reached the server yet. Without this the
+    // first (cached, possibly stale) emission was locked in and the fresh
+    // refetch discarded — saved changes looked like they reverted.
+    if (siteDirty || saveSiteMutation.isPending) return
+    const headerChanged = !!siteData.header && siteData.header !== header
+    const footerChanged = !!siteData.footer && siteData.footer !== footer
+    if (headerChanged) setHeader(siteData.header!)
+    if (footerChanged) setFooter(siteData.footer!)
+    // Only arm the skip when state actually changes — a consumed-for-nothing
+    // flag would swallow the user's next real edit.
+    if (headerChanged || footerChanged) skipNextAutoSaveRef.current = true
+    setSiteSettingsLoaded(true)
   }, [siteData])
 
   // Auto-save site settings with debounce
@@ -317,13 +331,45 @@ export default function Settings() {
       return
     }
     setSiteDirty(true)
+    pendingSiteSaveRef.current = true
     clearTimeout(siteAutoSaveTimer.current)
     siteAutoSaveTimer.current = setTimeout(() => {
+      pendingSiteSaveRef.current = false
       setSiteError('')
       saveSiteMutation.mutate({ header, footer })
     }, 1500)
     return () => clearTimeout(siteAutoSaveTimer.current)
   }, [header, footer])
+
+  // Track latest values + whether a debounced save is still pending, so
+  // leaving the page can flush it — otherwise navigating away or reloading
+  // within the debounce window silently dropped the edit.
+  useEffect(() => {
+    latestSiteRef.current = { header, footer }
+  })
+  useEffect(() => {
+    // pagehide covers hard reload/tab close, where React cleanup never runs;
+    // keepalive lets the request survive the page unload.
+    const flush = () => {
+      if (!pendingSiteSaveRef.current) return
+      pendingSiteSaveRef.current = false
+      const token = getAuthToken()
+      fetch(`${API_BASE}/admin/site-settings`, {
+        method: 'PUT',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(latestSiteRef.current),
+      }).catch(() => {})
+    }
+    window.addEventListener('pagehide', flush)
+    return () => {
+      window.removeEventListener('pagehide', flush)
+      flush() // SPA unmount (in-app navigation)
+    }
+  }, [])
 
   // General settings save
   const saveMutation = useMutation({
@@ -341,7 +387,17 @@ export default function Settings() {
   // Site settings save
   const saveSiteMutation = useMutation({
     mutationFn: updateSiteSettings,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      // Write the saved values into the query cache — otherwise a remount
+      // serves the pre-save cache and the UI shows the old values again.
+      queryClient.setQueryData(
+        ['admin-site-settings'],
+        (old: { header: SiteHeaderConfig | null; footer: SiteFooterConfig | null } | undefined) => ({
+          ...(old ?? {}),
+          header: variables.header ?? old?.header ?? null,
+          footer: variables.footer ?? old?.footer ?? null,
+        }),
+      )
       setSiteSaved(true)
       setSiteDirty(false)
       setTimeout(() => setSiteSaved(false), 3000)
@@ -358,6 +414,8 @@ export default function Settings() {
   }
 
   const handleSiteSave = () => {
+    clearTimeout(siteAutoSaveTimer.current)
+    pendingSiteSaveRef.current = false
     setSiteError('')
     saveSiteMutation.mutate({ header, footer })
   }
