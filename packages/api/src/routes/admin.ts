@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { nanoid } from 'nanoid'
 import Stripe from 'stripe'
 import { verifySession } from './auth'
+import { withNewsletterTable } from './newsletter'
 import type { Bindings } from '../index'
 
 type Variables = {
@@ -790,9 +791,9 @@ adminRoutes.delete('/contacts/:id', async (c) => {
 // ============ NEWSLETTER SIGNUPS ============
 
 adminRoutes.get('/newsletter', async (c) => {
-  const result = await c.env.DB.prepare(`
-    SELECT * FROM newsletter_signups ORDER BY created_at DESC
-  `).all()
+  const result = await withNewsletterTable(c.env.DB, () =>
+    c.env.DB.prepare(`SELECT * FROM newsletter_signups ORDER BY created_at DESC`).all()
+  )
   return c.json({ signups: result.results })
 })
 
