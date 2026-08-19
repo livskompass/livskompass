@@ -10,7 +10,7 @@ import {
   getAuthToken,
   API_BASE,
 } from '../lib/api'
-import { defaultHeader, defaultFooter, type SiteHeaderConfig, type SiteFooterConfig } from '@livskompass/shared'
+import { defaultHeader, defaultFooter, defaultNewsletter, type SiteHeaderConfig, type SiteFooterConfig, type NewsletterConfig } from '@livskompass/shared'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -34,6 +34,7 @@ import {
   PanelTop,
   PanelBottom,
   Upload,
+  MailPlus,
 } from 'lucide-react'
 
 // ── Nav item editor sub-component ──
@@ -267,6 +268,11 @@ export default function Settings() {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
 
+  // Newsletter signup settings (popup + footer texts)
+  const [newsletter, setNewsletter] = useState<NewsletterConfig>(defaultNewsletter)
+  const [newsletterSaved, setNewsletterSaved] = useState(false)
+  const [newsletterError, setNewsletterError] = useState('')
+
   // Site settings (header/footer) state
   const [header, setHeader] = useState<SiteHeaderConfig>(defaultHeader)
   const [footer, setFooter] = useState<SiteFooterConfig>(defaultFooter)
@@ -301,6 +307,10 @@ export default function Settings() {
   useEffect(() => {
     if (data?.settings) {
       setFormData((prev) => ({ ...prev, ...data.settings }))
+      const raw = (data.settings as Record<string, string>).newsletter_settings
+      if (raw) {
+        try { setNewsletter({ ...defaultNewsletter, ...JSON.parse(raw) }) } catch { /* keep defaults */ }
+      }
     }
   }, [data])
 
@@ -407,10 +417,27 @@ export default function Settings() {
     },
   })
 
+  // Save the newsletter card's settings as one JSON value
+  const saveNewsletterMutation = useMutation({
+    mutationFn: () => updateSettings({ newsletter_settings: JSON.stringify(newsletter) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-settings'] })
+      setNewsletterSaved(true)
+      setTimeout(() => setNewsletterSaved(false), 3000)
+    },
+    onError: (err: Error) => {
+      setNewsletterError(err.message || 'Failed to save newsletter settings')
+    },
+  })
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    saveMutation.mutate(formData)
+    // Send only this form's own fields — formData also carries every other
+    // settings row (site_header, newsletter_settings, …) merged in on load,
+    // and writing those back would stomp values saved elsewhere.
+    const { site_name, site_description, contact_email, contact_phone, homepage_slug, stripe_publishable_key, google_analytics_id } = formData
+    saveMutation.mutate({ site_name, site_description, contact_email, contact_phone, homepage_slug, stripe_publishable_key, google_analytics_id })
   }
 
   const handleSiteSave = () => {
@@ -885,6 +912,104 @@ export default function Settings() {
           </Button>
         )}
       </div>
+
+      {/* ── Newsletter signup ── */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <MailPlus className="h-4 w-4 text-zinc-400" />
+            Newsletter Signup
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {newsletterSaved && (
+            <div className="flex items-center gap-2 bg-zinc-100 border border-zinc-200 text-zinc-700 px-4 py-3 rounded-lg text-sm">
+              <CheckCircle className="h-4 w-4 shrink-0" />
+              Newsletter settings saved!
+            </div>
+          )}
+          {newsletterError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {newsletterError}
+            </div>
+          )}
+
+          <label className="flex items-center gap-2.5 text-sm text-zinc-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={newsletter.popupEnabled}
+              onChange={(e) => setNewsletter({ ...newsletter, popupEnabled: e.target.checked })}
+              className="h-4 w-4 rounded border-zinc-300 accent-zinc-900"
+            />
+            Show signup popup to visitors
+            <span className="text-zinc-400 text-xs">(once per visitor — after 15 s or on scroll)</span>
+          </label>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Popup title</Label>
+              <Input
+                value={newsletter.popupTitle}
+                onChange={(e) => setNewsletter({ ...newsletter, popupTitle: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Footer section title</Label>
+              <Input
+                value={newsletter.footerTitle}
+                onChange={(e) => setNewsletter({ ...newsletter, footerTitle: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Popup text</Label>
+            <Textarea
+              rows={2}
+              value={newsletter.popupText}
+              onChange={(e) => setNewsletter({ ...newsletter, popupText: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Footer text</Label>
+            <Textarea
+              rows={2}
+              value={newsletter.footerText}
+              onChange={(e) => setNewsletter({ ...newsletter, footerText: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Consent line</Label>
+            <Textarea
+              rows={2}
+              value={newsletter.consentText}
+              onChange={(e) => setNewsletter({ ...newsletter, consentText: e.target.value })}
+            />
+            <p className="text-xs text-zinc-400">
+              Shown under the submit button in both forms (GDPR). Collected addresses appear
+              under Newsletter in the sidebar.
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            onClick={() => {
+              setNewsletterError('')
+              saveNewsletterMutation.mutate()
+            }}
+            disabled={saveNewsletterMutation.isPending}
+          >
+            {saveNewsletterMutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4 mr-1.5" />
+            )}
+            Save newsletter settings
+          </Button>
+        </CardContent>
+      </Card>
 
       <Separator className="my-2" />
 

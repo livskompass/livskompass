@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { SiteSearch } from './SiteSearch'
 import { SiteHeader } from './SiteHeader'
 import { SiteFooter } from './SiteFooter'
+import { NewsletterPopup } from './NewsletterPopup'
 
 export default function Layout() {
   const [searchOpen, setSearchOpen] = useState(false)
@@ -35,6 +36,7 @@ export default function Layout() {
       </div>
 
       <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <NewsletterPopup />
     </div>
   )
 }

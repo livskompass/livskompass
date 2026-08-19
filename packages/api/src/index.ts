@@ -9,6 +9,7 @@ import { coursesRoutes } from './routes/courses'
 import { bookingsRoutes } from './routes/bookings'
 import { productsRoutes } from './routes/products'
 import { contactRoutes } from './routes/contact'
+import { newsletterRoutes } from './routes/newsletter'
 import { authRoutes } from './routes/auth'
 import { adminRoutes } from './routes/admin'
 import { webhookRoutes } from './routes/webhooks'
@@ -98,7 +99,7 @@ app.get('/media/*', async (c) => {
 // Public site-settings endpoint (header/footer JSON, cached)
 app.get('/api/site-settings', async (c) => {
   const result = await c.env.DB.prepare(
-    `SELECT key, value FROM settings WHERE key IN ('site_header', 'site_footer', 'homepage_slug')`
+    `SELECT key, value FROM settings WHERE key IN ('site_header', 'site_footer', 'homepage_slug', 'newsletter_settings')`
   ).all()
 
   const settings: Record<string, any> = {}
@@ -111,6 +112,7 @@ app.get('/api/site-settings', async (c) => {
     header: settings.site_header || null,
     footer: settings.site_footer || null,
     homepage_slug: settings.homepage_slug || 'home-2',
+    newsletter: settings.newsletter_settings || null,
   })
 })
 
@@ -223,6 +225,7 @@ app.route('/api/courses', coursesRoutes)
 app.route('/api/bookings', bookingsRoutes)
 app.route('/api/products', productsRoutes)
 app.route('/api/contact', contactRoutes)
+app.route('/api/newsletter', newsletterRoutes)
 
 // Auth routes
 app.route('/api/auth', authRoutes)

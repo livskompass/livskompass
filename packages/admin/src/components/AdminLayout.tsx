@@ -12,6 +12,7 @@ import {
   Archive,
   Image,
   Mail,
+  MailPlus,
   Users,
   Settings,
   LogOut,
@@ -43,6 +44,7 @@ const navigation: NavItem[] = [
   { name: 'Archive', href: '/archive', icon: Archive, dividerAfter: true },
   { name: 'Media', href: '/media', icon: Image },
   { name: 'Messages', href: '/messages', icon: Mail },
+  { name: 'Newsletter', href: '/newsletter', icon: MailPlus },
   { name: 'Users', href: '/users', icon: Users, adminOnly: true },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]

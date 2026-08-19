@@ -73,3 +73,25 @@ export const defaultFooter: SiteFooterConfig = {
 
 // Default homepage slug — used by the router to resolve "/" to a page
 export const DEFAULT_HOMEPAGE_SLUG = 'home-2'
+
+// ── Newsletter signup (popup + footer form) ──
+
+export interface NewsletterConfig {
+  popupEnabled: boolean
+  popupTitle: string
+  popupText: string
+  footerTitle: string
+  footerText: string
+  consentText: string
+}
+
+export const defaultNewsletter: NewsletterConfig = {
+  popupEnabled: true,
+  popupTitle: 'Nyhetsbrev',
+  popupText:
+    'Få nyheter om utbildningar, material och forskning kring ACT och mindfulness — direkt till din inkorg.',
+  footerTitle: 'Nyhetsbrev',
+  footerText: 'Få nyheter om utbildningar och material direkt till din inkorg.',
+  consentText:
+    'Genom att anmäla dig samtycker du till att vi sparar din e-postadress för att skicka nyhetsbrev. Du kan avsluta prenumerationen när som helst.',
+}

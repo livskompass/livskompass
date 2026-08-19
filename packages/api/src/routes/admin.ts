@@ -787,6 +787,21 @@ adminRoutes.delete('/contacts/:id', async (c) => {
   return c.json({ success: true })
 })
 
+// ============ NEWSLETTER SIGNUPS ============
+
+adminRoutes.get('/newsletter', async (c) => {
+  const result = await c.env.DB.prepare(`
+    SELECT * FROM newsletter_signups ORDER BY created_at DESC
+  `).all()
+  return c.json({ signups: result.results })
+})
+
+adminRoutes.delete('/newsletter/:id', async (c) => {
+  const id = c.req.param('id')
+  await c.env.DB.prepare(`DELETE FROM newsletter_signups WHERE id = ?`).bind(id).run()
+  return c.json({ success: true })
+})
+
 // ============ MEDIA (Task 4 - moved from public routes, now auth-protected) ============
 
 // Upload media

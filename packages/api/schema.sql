@@ -184,3 +184,11 @@ CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
 CREATE INDEX IF NOT EXISTS idx_media_r2_key ON media(r2_key);
 CREATE INDEX IF NOT EXISTS idx_contacts_read ON contacts(read);
+
+-- Newsletter signups (collected for manual mailing-list updates; read in admin "Newsletter" page)
+CREATE TABLE IF NOT EXISTS newsletter_signups (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  source TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+);

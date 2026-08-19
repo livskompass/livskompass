@@ -50,11 +50,11 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 }
 
 // Site settings types — re-exported from shared
-import type { SiteHeaderConfig, SiteFooterConfig } from '@livskompass/shared'
-export type { SiteHeaderConfig, SiteFooterConfig }
+import type { SiteHeaderConfig, SiteFooterConfig, NewsletterConfig } from '@livskompass/shared'
+export type { SiteHeaderConfig, SiteFooterConfig, NewsletterConfig }
 
 export const getSiteSettings = () =>
-  fetchApi<{ header: SiteHeaderConfig | null; footer: SiteFooterConfig | null; homepage_slug?: string }>('/site-settings')
+  fetchApi<{ header: SiteHeaderConfig | null; footer: SiteFooterConfig | null; homepage_slug?: string; newsletter?: Partial<NewsletterConfig> | null }>('/site-settings')
 
 // Pages
 export const getPages = () => fetchApi<{ pages: Page[] }>('/pages')
@@ -96,6 +96,13 @@ export const submitContact = (data: ContactFormData) =>
   fetchApi<{ success: boolean; message: string }>('/contact', {
     method: 'POST',
     body: JSON.stringify(data),
+  })
+
+// Newsletter
+export const subscribeNewsletter = (email: string, source: string) =>
+  fetchApi<{ success: boolean; message: string }>('/newsletter', {
+    method: 'POST',
+    body: JSON.stringify({ email, source }),
   })
 
 

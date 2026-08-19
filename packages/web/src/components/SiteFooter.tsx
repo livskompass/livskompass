@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import { getSiteSettings, getMediaUrl } from '../lib/api'
-import { defaultFooter } from '@livskompass/shared'
+import { defaultFooter, defaultNewsletter } from '@livskompass/shared'
+import { NewsletterSignup } from './NewsletterSignup'
 
 interface SiteFooterProps {
   onSearchOpen?: () => void
@@ -16,6 +17,7 @@ export function SiteFooter({ onSearchOpen }: SiteFooterProps) {
   })
 
   const footerConfig = siteData?.footer || defaultFooter
+  const newsletterConfig = { ...defaultNewsletter, ...(siteData?.newsletter || {}) }
 
   return (
     <footer className="bg-stone-950 text-white" role="contentinfo">
@@ -91,6 +93,13 @@ export function SiteFooter({ onSearchOpen }: SiteFooterProps) {
             </button>
           </div>
         )}
+        <div className="mt-12 pt-8 border-t border-stone-800">
+          <div className="max-w-md">
+            <h3 className="text-h4 mb-2">{newsletterConfig.footerTitle}</h3>
+            <p className="text-faint text-body-sm mb-4">{newsletterConfig.footerText}</p>
+            <NewsletterSignup source="footer" consentText={newsletterConfig.consentText} />
+          </div>
+        </div>
         <div className="mt-12 pt-8 border-t border-stone-800 text-center text-muted text-caption">
           <p>{footerConfig.copyright.replace('{year}', String(new Date().getFullYear()))}</p>
         </div>

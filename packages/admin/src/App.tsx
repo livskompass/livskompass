@@ -16,6 +16,7 @@ import ProductsList from './pages/ProductsList'
 import ArchivePage from './pages/ArchivePage'
 import MediaLibrary from './pages/MediaLibrary'
 import ContactsList from './pages/ContactsList'
+import NewsletterList from './pages/NewsletterList'
 import UsersList from './pages/UsersList'
 import Settings from './pages/Settings'
 import InlineEditorPage from './editor/InlineEditor'
@@ -95,6 +96,7 @@ function App() {
           <Route path="archive" element={<ArchivePage />} />
           <Route path="media" element={<MediaLibrary />} />
           <Route path="messages" element={<ContactsList />} />
+          <Route path="newsletter" element={<NewsletterList />} />
           <Route path="users" element={<UsersList />} />
           <Route path="settings" element={<Settings />} />
         </Route>

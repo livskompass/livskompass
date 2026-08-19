@@ -320,6 +320,18 @@ export const markContactRead = (id: string) =>
 export const deleteContact = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/contacts/${id}`, { method: 'DELETE' })
 
+// Newsletter signups
+export interface NewsletterSignup {
+  id: string
+  email: string
+  source: string | null
+  created_at: string
+}
+export const getNewsletterSignups = () =>
+  fetchApi<{ signups: NewsletterSignup[] }>('/admin/newsletter')
+export const deleteNewsletterSignup = (id: string) =>
+  fetchApi<{ success: boolean }>(`/admin/newsletter/${id}`, { method: 'DELETE' })
+
 // Site settings types — re-exported from shared
 import type { SiteHeaderConfig, SiteFooterConfig } from '@livskompass/shared'
 export type { SiteHeaderConfig, SiteFooterConfig }
