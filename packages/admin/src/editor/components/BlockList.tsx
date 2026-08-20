@@ -218,13 +218,23 @@ export function BlockList() {
   const [isPanelDragOver, setIsPanelDragOver] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Blocks can save several props in one event handler (EmbedBlock writes
+  // `url` then `html` back-to-back). Closure state lags a render behind, so
+  // the second call would rebuild from data missing the first call's change
+  // and silently revert it. Consecutive saves must chain through this ref.
+  const latestDataRef = useRef<Data | null>(null)
+  useEffect(() => {
+    latestDataRef.current = puckData
+  }, [puckData])
+
   // saveBlockProp: update a block's prop and trigger auto-save
   const saveBlockProp = useCallback(
     (blockIndex: number, propName: string, value: any) => {
-      if (!puckData) return
-      if (blockIndex < 0 || blockIndex >= puckData.content.length) return
+      const base = latestDataRef.current ?? puckData
+      if (!base) return
+      if (blockIndex < 0 || blockIndex >= base.content.length) return
 
-      const content = [...puckData.content]
+      const content = [...base.content]
       const block = content[blockIndex]
       if (!block) return
 
@@ -241,7 +251,9 @@ export function BlockList() {
         }
       }
 
-      updateData({ ...puckData, content } as Data)
+      const next = { ...base, content } as Data
+      latestDataRef.current = next
+      updateData(next)
     },
     [puckData, updateData],
   )
@@ -250,8 +262,9 @@ export function BlockList() {
   // Zones live at puckData.zones[`${columnsId}:column-N`] — separate from content[].
   const saveZoneBlockProp = useCallback(
     (zoneKey: string, blockIndex: number, propName: string, value: any) => {
-      if (!puckData) return
-      const zones: Record<string, PuckItem[]> = { ...((puckData.zones as Record<string, PuckItem[]>) || {}) }
+      const base = latestDataRef.current ?? puckData
+      if (!base) return
+      const zones: Record<string, PuckItem[]> = { ...((base.zones as Record<string, PuckItem[]>) || {}) }
       const zoneItems: PuckItem[] = [...(zones[zoneKey] || [])]
       if (blockIndex < 0 || blockIndex >= zoneItems.length) return
       const block = zoneItems[blockIndex]
@@ -262,7 +275,9 @@ export function BlockList() {
         zoneItems[blockIndex] = { ...block, props: setNestedProp(block.props || {}, propName, value) }
       }
       zones[zoneKey] = zoneItems
-      updateData({ ...puckData, zones } as Data)
+      const next = { ...base, zones } as Data
+      latestDataRef.current = next
+      updateData(next)
     },
     [puckData, updateData],
   )

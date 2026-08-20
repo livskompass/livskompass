@@ -46,6 +46,13 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
   const [savingStatus, setSavingStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const savedTimerRef = useRef<ReturnType<typeof setTimeout>>()
   const tokenRef = useRef<string | null>(null)
+  // Consecutive saveBlockProp calls in one event handler (e.g. EmbedBlock
+  // writing url + html) must chain: closure state lags a render behind, so
+  // the second call would rebuild from JSON missing the first call's change.
+  const latestBlocksRef = useRef<string | null>(null)
+  useEffect(() => {
+    latestBlocksRef.current = pageData?.contentBlocks ?? null
+  }, [pageData])
 
   // Expose setter for external use (UniversalPage)
   useEffect(() => {
@@ -91,7 +98,7 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
       if (!pageData || !tokenRef.current) return
 
       try {
-        const parsed = JSON.parse(pageData.contentBlocks)
+        const parsed = JSON.parse(latestBlocksRef.current ?? pageData.contentBlocks)
         if (!parsed.content?.[blockIndex]) return
 
         // Sanitize HTML content before saving
@@ -109,6 +116,7 @@ export default function InlineEditProvider({ children }: { children: ReactNode }
           parsed.content[blockIndex].props[propName] = sanitizedValue
         }
         const newBlocks = JSON.stringify(parsed)
+        latestBlocksRef.current = newBlocks
 
         setPageData((prev) =>
           prev ? { ...prev, contentBlocks: newBlocks } : null,
