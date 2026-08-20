@@ -28,6 +28,11 @@ export type Bindings = {
   GOOGLE_CLIENT_ID: string
   GOOGLE_CLIENT_SECRET: string
   INITIAL_ADMIN_EMAIL: string
+  // Contact-form email notifications (Resend)
+  RESEND_API_KEY?: string
+  RESEND_API_URL?: string
+  CONTACT_NOTIFY_EMAIL?: string
+  CONTACT_FROM_EMAIL?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()

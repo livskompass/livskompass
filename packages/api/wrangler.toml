@@ -38,3 +38,11 @@ crons = ["*/15 * * * *"]
 # - GOOGLE_CLIENT_ID           : Google OAuth client ID
 # - GOOGLE_CLIENT_SECRET       : Google OAuth client secret
 # - INITIAL_ADMIN_EMAIL        : Email of the first admin user (e.g., livheim@gmail.com)
+#
+# Contact-form email notification (Resend):
+# - RESEND_API_KEY             : Resend API key (wrangler secret put RESEND_API_KEY).
+#                                Without it, submissions are stored but no email is sent.
+# Recipient = "Contact details" email in admin General Settings (settings.contact_email),
+# falling back to the optional CONTACT_NOTIFY_EMAIL var. Optional CONTACT_FROM_EMAIL
+# overrides the From address once a sending domain is verified in Resend
+# (until then the default onboarding@resend.dev sender is used).
