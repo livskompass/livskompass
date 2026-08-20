@@ -20,6 +20,16 @@ export interface CourseListProps {
   spotsText: string
   emptyText: string
   cardColor?: string
+  /** Slug of a course pinned to the front of this list ('' = follow course order) */
+  pinnedSlug?: string
+}
+
+// Course options for the block-settings "Show first" select. resolveFields is
+// synchronous, so the rendered block stashes its fetched courses here for the
+// settings popover to read.
+let _courseOptions: { label: string; value: string }[] = []
+export function getCourseSelectOptions(): { label: string; value: string }[] {
+  return _courseOptions
 }
 
 interface Course {
@@ -58,12 +68,20 @@ export function CourseList({
   spotsText = 'spots left',
   emptyText = 'There are no courses scheduled right now.',
   cardColor = 'mist',
+  pinnedSlug = '',
   id,
 }: CourseListProps & { puck?: { isEditing: boolean }; id?: string }) {
   const colors = getCardColors(cardColor)
   const { data, loading } = useFetchJson<{ courses: Course[] }>('/courses')
   const courses = data?.courses || []
-  const displayed = maxItems > 0 ? courses.slice(0, maxItems) : courses
+  if (courses.length) {
+    _courseOptions = courses.map((c) => ({ label: c.title, value: c.slug }))
+  }
+  // "Show first" pin: move the chosen course to the front, keep the rest in order
+  const ordered = pinnedSlug
+    ? [...courses].sort((a, b) => (a.slug === pinnedSlug ? -1 : b.slug === pinnedSlug ? 1 : 0))
+    : courses
+  const displayed = maxItems > 0 ? ordered.slice(0, maxItems) : ordered
   const revealRef = useScrollReveal()
   // Puck editor inline editing (via postMessage)
   const headingPuck = useInlineEdit('heading', heading, id || '')
