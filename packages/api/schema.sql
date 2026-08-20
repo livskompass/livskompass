@@ -192,3 +192,6 @@ CREATE TABLE IF NOT EXISTS newsletter_signups (
   source TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
+
+-- Manual course ordering (admin Courses list arrows); lower = shown first
+ALTER TABLE courses ADD COLUMN sort_order INTEGER DEFAULT 0;

@@ -405,10 +405,26 @@ adminRoutes.delete('/posts/:id', async (c) => {
 adminRoutes.get('/courses', async (c) => {
   const result = await c.env.DB.prepare(`
     SELECT * FROM courses WHERE status != 'archived'
-    -- Dated courses first by start date (newest at top), then undated by title.
-    ORDER BY (start_date IS NULL) ASC, start_date DESC, title ASC
+    -- Manual order first (admin arrows), then dated courses by start date, then undated by title.
+    ORDER BY sort_order ASC, (start_date IS NULL) ASC, start_date DESC, title ASC
   `).all()
   return c.json({ courses: result.results })
+})
+
+// Persist manual course order from the admin list arrows. Receives the full
+// ordered id list; sort_order is assigned in steps of 10.
+adminRoutes.put('/courses/reorder', async (c) => {
+  const body = await c.req.json()
+  const ids: string[] = Array.isArray(body.ids) ? body.ids.filter((v: unknown) => typeof v === 'string') : []
+  if (ids.length === 0) {
+    return c.json({ error: 'ids required' }, 400)
+  }
+  await c.env.DB.batch(
+    ids.map((id, i) =>
+      c.env.DB.prepare(`UPDATE courses SET sort_order = ? WHERE id = ?`).bind((i + 1) * 10, id)
+    )
+  )
+  return c.json({ success: true })
 })
 
 // Get single course (accepts ID or slug — admin URLs use slug, internal refs use ID)
@@ -448,11 +464,13 @@ adminRoutes.post('/courses', async (c) => {
 
   const id = nanoid()
 
+  // New courses go last in the manual sort_order (see /courses/reorder)
   await c.env.DB.prepare(`
     INSERT INTO courses (id, slug, title, description, content, content_blocks, editor_version,
                         location, start_date, end_date, price_sek, max_participants,
-                        registration_deadline, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        registration_deadline, status, sort_order)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            (SELECT COALESCE(MAX(sort_order), 0) + 10 FROM courses))
   `).bind(id, slug, title, description, content || null, contentBlocks || null,
           editorVersion || 'legacy', location || null, startDate || null, endDate || null,
           priceSek || null, maxParticipants || null, registrationDeadline || null,

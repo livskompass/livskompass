@@ -15,7 +15,7 @@ coursesRoutes.get('/', async (c) => {
     FROM courses
     WHERE status IN ('published', 'full')
     -- Dated courses first by date (soonest at top), undated at bottom alphabetically.
-    ORDER BY (start_date IS NULL) ASC, start_date ASC, title ASC
+    ORDER BY sort_order ASC, (start_date IS NULL) ASC, start_date ASC, title ASC
   `).all()
 
   c.header('Cache-Control', 'public, max-age=5, stale-while-revalidate=10')

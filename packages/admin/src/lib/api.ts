@@ -320,6 +320,12 @@ export const markContactRead = (id: string) =>
 export const deleteContact = (id: string) =>
   fetchApi<{ success: boolean }>(`/admin/contacts/${id}`, { method: 'DELETE' })
 
+export const reorderCourses = (ids: string[]) =>
+  fetchApi<{ success: boolean }>('/admin/courses/reorder', {
+    method: 'PUT',
+    body: JSON.stringify({ ids }),
+  })
+
 // Newsletter signups
 export interface NewsletterSignup {
   id: string
