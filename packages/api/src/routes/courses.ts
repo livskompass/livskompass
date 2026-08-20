@@ -11,7 +11,8 @@ coursesRoutes.get('/', async (c) => {
   // a better trade-off than N+1 fetches from the client.
   const result = await c.env.DB.prepare(`
     SELECT id, slug, title, description, content_blocks, location, start_date, end_date,
-           price_sek, max_participants, current_participants, registration_deadline, status
+           date_text, price_sek, price_note, max_participants, current_participants,
+           registration_deadline, status
     FROM courses
     WHERE status IN ('published', 'full')
     -- Dated courses first by date (soonest at top), undated at bottom alphabetically.
@@ -27,7 +28,7 @@ coursesRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
 
   const result = await c.env.DB.prepare(`
-    SELECT id, slug, title, description, content, content_blocks, editor_version, location, start_date, end_date, price_sek, max_participants, current_participants, registration_deadline, status, created_at
+    SELECT id, slug, title, description, content, content_blocks, editor_version, location, start_date, end_date, date_text, price_sek, price_note, max_participants, current_participants, registration_deadline, status, created_at
     FROM courses WHERE slug = ? AND status IN ('published', 'full')
   `).bind(slug).first()
 

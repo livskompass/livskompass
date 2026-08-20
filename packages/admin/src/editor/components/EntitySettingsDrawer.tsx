@@ -50,8 +50,10 @@ const COURSE_FIELDS: FieldDef[] = [
   { key: 'location', label: 'Location', type: 'text', badge: 'Card', hint: 'Shown with a pin icon.' },
   { key: 'start_date', label: 'Start date', type: 'date', badge: 'Card', hint: 'Shown with a calendar icon. Dated courses list before undated ones.' },
   { key: 'end_date', label: 'End date', type: 'date', badge: 'Card', hint: 'If set, the card date shows a range ("16 mar – 27 apr").' },
+  { key: 'date_text', label: 'Date text (free text)', type: 'text', badge: 'Card', hint: 'Shown INSTEAD of the dates when set — e.g. "4 utbildningsdagar: 12 sep, 3 okt…" or "Löpande start". Start date is still used for ordering.' },
   { key: 'registration_deadline', label: 'Registration deadline', type: 'date', hint: 'Shown in the CourseInfo block on the detail page, not on cards.' },
   { key: 'price_sek', label: 'Price (SEK)', type: 'number', badge: 'Card', hint: 'Shown as "X kr". Leave blank to hide price.' },
+  { key: 'price_note', label: 'Price note', type: 'text', badge: 'Card', hint: 'Short text after the price, e.g. "exkl. moms".' },
   { key: 'max_participants', label: 'Max participants', type: 'number', badge: 'Card', hint: 'When set, cards show "N platser kvar". Leave blank to hide the badge.' },
 ]
 

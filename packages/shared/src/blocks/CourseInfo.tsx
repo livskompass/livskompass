@@ -57,7 +57,8 @@ export function CourseInfo({
   const hasCapacity = course.max_participants != null
   const spotsLeft = hasCapacity ? course.max_participants! - course.current_participants : null
 
-  const dateValue = formatSwedishDateRange(course.start_date, course.end_date)
+  // Free-text date wins over the formatted start–end range when set
+  const dateValue = course.date_text || formatSwedishDateRange(course.start_date, course.end_date)
 
   const spotsValue = isFull
     ? fullLabel
@@ -80,7 +81,12 @@ export function CourseInfo({
 
   // Price gets a React node so it matches the CourseList card's Price component
   const priceNode = course.price_sek != null
-    ? <Price value={course.price_sek} size="sm" colorClass="text-foreground" />
+    ? (
+        <>
+          <Price value={course.price_sek} size="sm" colorClass="text-foreground" />
+          {course.price_note && <span className="text-body-sm text-muted"> {course.price_note}</span>}
+        </>
+      )
     : null
 
   const items: Array<{ icon: any; label: string; value: string; node?: React.ReactNode; labelEdit: any; placeholder: string }> = [

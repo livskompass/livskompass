@@ -276,8 +276,8 @@ const METADATA_KEYS_BY_TYPE: Record<ContentType, string[]> = {
   post: ['slug', 'title', 'excerpt', 'featured_image', 'published_at'],
   course: [
     'slug', 'title', 'description', 'location',
-    'start_date', 'end_date', 'price_sek', 'max_participants',
-    'registration_deadline',
+    'start_date', 'end_date', 'date_text', 'price_sek', 'price_note',
+    'max_participants', 'registration_deadline',
   ],
   product: [
     'slug', 'title', 'description', 'type',

@@ -204,3 +204,10 @@ CREATE TABLE IF NOT EXISTS newsletter_signups (
 
 -- Manual course ordering (admin Courses list arrows); lower = shown first
 ALTER TABLE courses ADD COLUMN sort_order INTEGER DEFAULT 0;
+
+-- Free-text course date + price note (editor request): date_text replaces the
+-- start–end range on display when set ("4 utbildningsdagar: …", "Löpande
+-- start") — start_date still drives ordering. price_note is a short suffix
+-- shown after the price ("exkl. moms").
+ALTER TABLE courses ADD COLUMN date_text TEXT;
+ALTER TABLE courses ADD COLUMN price_note TEXT;

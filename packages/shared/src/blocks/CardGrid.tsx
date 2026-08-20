@@ -99,6 +99,7 @@ interface DynamicItem {
   status?: string
   location?: string
   start_date?: string
+  date_text?: string | null
   published_at?: string
 }
 
@@ -209,7 +210,7 @@ export function CardGrid({
                 </p>
               )}
             </div>
-            {source === 'courses' && (item.location || item.start_date) && (
+            {source === 'courses' && (item.location || item.start_date || item.date_text) && (
               <div className="px-5 pb-5">
                 <div className={cn('flex flex-col gap-2 text-body-sm', colors.textMuted)}>
                   {item.location && (
@@ -218,11 +219,11 @@ export function CardGrid({
                       <span>{item.location}</span>
                     </div>
                   )}
-                  {item.start_date && (
+                  {(item.start_date || item.date_text) && (
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       <span>
-                        {formatSwedishDate(item.start_date)}
+                        {item.date_text || formatSwedishDate(item.start_date!)}
                       </span>
                     </div>
                   )}

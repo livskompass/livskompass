@@ -9,7 +9,11 @@ export interface CourseContextValue {
   location: string
   start_date: string | null
   end_date: string | null
+  /** Free-text date shown instead of the start–end range when set */
+  date_text?: string | null
   price_sek: number | null
+  /** Short suffix after the price, e.g. "exkl. moms" */
+  price_note?: string | null
   max_participants: number | null
   current_participants: number
   registration_deadline: string | null

@@ -164,10 +164,10 @@ export function BookingForm({
         <div className="bg-surface-elevated rounded-xl border border-default shadow-sm p-5 mb-6">
           <h3 className="text-h4 text-foreground mb-3">{course.title}</h3>
           <div className="flex flex-wrap gap-4 text-body-sm text-muted">
-            {course.start_date && (
+            {(course.start_date || course.date_text) && (
               <span className="inline-flex items-center gap-1.5">
                 <Calendar className="h-4 w-4 text-faint" />
-                {formatSwedishDateRange(course.start_date, course.end_date)}
+                {course.date_text || formatSwedishDateRange(course.start_date, course.end_date)}
               </span>
             )}
             {course.location && (
@@ -179,6 +179,7 @@ export function BookingForm({
             <span className="inline-flex items-center gap-1.5">
               <CreditCard className="h-4 w-4 text-faint" />
               <Price value={course.price_sek} currency={priceSuffix} size="sm" colorClass="text-secondary" />
+              {course.price_note && <span>{course.price_note}</span>}
             </span>
             )}
           </div>

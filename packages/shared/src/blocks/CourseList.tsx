@@ -32,7 +32,9 @@ interface Course {
   location: string
   start_date: string
   end_date: string
+  date_text?: string | null
   price_sek: number
+  price_note?: string | null
   max_participants: number
   current_participants: number
   status: string
@@ -180,18 +182,18 @@ export function CourseList({
                   )}
 
                   {/* Meta row — editorial caption style above the title. */}
-                  {(course.location || course.start_date) && (
+                  {(course.location || course.start_date || course.date_text) && (
                     <div className={cn('flex flex-wrap items-center gap-x-3 gap-y-1 text-caption uppercase tracking-wide mb-1.5', colors.textMuted)}>
                       {showLocation !== false && course.location && (
                         <span className="inline-flex items-center gap-1.5">
                           <MapPin className="h-3.5 w-3.5 shrink-0" />{course.location}
                         </span>
                       )}
-                      {course.location && course.start_date && <span aria-hidden className="text-faint">·</span>}
-                      {course.start_date && (
+                      {course.location && (course.start_date || course.date_text) && <span aria-hidden className="text-faint">·</span>}
+                      {(course.start_date || course.date_text) && (
                         <span className="inline-flex items-center gap-1.5">
                           <Calendar className="h-3.5 w-3.5 shrink-0" />
-                          {formatSwedishDateRange(course.start_date, course.end_date)}
+                          {course.date_text || formatSwedishDateRange(course.start_date, course.end_date)}
                         </span>
                       )}
                     </div>
@@ -209,7 +211,10 @@ export function CourseList({
                       siblings in the same grid, even if titles wrap differently. */}
                   <div className="flex items-center justify-between gap-3 mt-auto pt-4">
                     {showPrice !== false && course.price_sek != null ? (
-                      <Price value={course.price_sek} size="md" colorClass={colors.text} />
+                      <span className="inline-flex items-baseline gap-1.5">
+                        <Price value={course.price_sek} size="md" colorClass={colors.text} />
+                        {course.price_note && <span className={cn('text-body-sm', colors.textMuted)}>{course.price_note}</span>}
+                      </span>
                     ) : <span />}
                     <span className={cn('inline-flex items-center gap-1.5 text-body-sm font-medium', cardColor === 'dark' ? 'text-highlight-soft' : 'text-accent group-hover:text-accent-hover')}>
                       <span {...editHandlers(readMoreEdit)} className={readMoreEdit?.className}>{readMoreText || 'View course'}</span>

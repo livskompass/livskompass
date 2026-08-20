@@ -505,14 +505,15 @@ adminRoutes.post('/courses', async (c) => {
   // New courses go last in the manual sort_order (see /courses/reorder)
   await c.env.DB.prepare(`
     INSERT INTO courses (id, slug, title, description, content, content_blocks, editor_version,
-                        location, start_date, end_date, price_sek, max_participants,
-                        registration_deadline, status, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                        location, start_date, end_date, date_text, price_sek, price_note,
+                        max_participants, registration_deadline, status, sort_order)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             (SELECT COALESCE(MAX(sort_order), 0) + 10 FROM courses))
   `).bind(id, slug, title, description, content || null, contentBlocks || null,
           editorVersion || 'legacy', location || null, startDate || null, endDate || null,
-          priceSek || null, maxParticipants || null, registrationDeadline || null,
-          status || 'draft').run()
+          (body.dateText ?? body.date_text) || null, priceSek || null,
+          (body.priceNote ?? body.price_note) || null, maxParticipants || null,
+          registrationDeadline || null, status || 'draft').run()
 
   return c.json({ course: { id, slug, title } }, 201)
 })
@@ -554,7 +555,9 @@ adminRoutes.put('/courses/:id', async (c) => {
   const location = body.location
   const startDate = body.startDate ?? body.start_date
   const endDate = body.endDate ?? body.end_date
+  const dateText = body.dateText ?? body.date_text
   const priceSek = body.priceSek ?? body.price_sek
+  const priceNote = body.priceNote ?? body.price_note
   const maxParticipants = body.maxParticipants ?? body.max_participants
   const registrationDeadline = body.registrationDeadline ?? body.registration_deadline
 
@@ -571,12 +574,12 @@ adminRoutes.put('/courses/:id', async (c) => {
     await c.env.DB.prepare(`
       UPDATE courses
       SET slug = ?, title = ?, description = ?, content = ?, content_blocks = ?,
-          editor_version = ?, location = ?, start_date = ?, end_date = ?,
-          price_sek = ?, max_participants = ?, registration_deadline = ?, status = ?, draft = NULL
+          editor_version = ?, location = ?, start_date = ?, end_date = ?, date_text = ?,
+          price_sek = ?, price_note = ?, max_participants = ?, registration_deadline = ?, status = ?, draft = NULL
       WHERE id = ?
     `).bind(slug, title, description, content || null, contentBlocks || null,
-            editorVersion || 'legacy', location || null, startDate || null, endDate || null,
-            priceSek || null, maxParticipants || null, registrationDeadline || null,
+            editorVersion || 'legacy', location || null, startDate || null, endDate || null, dateText || null,
+            priceSek || null, priceNote || null, maxParticipants || null, registrationDeadline || null,
             status, id).run()
   } catch (err: any) {
     if (isUniqueSlugError(err)) {
