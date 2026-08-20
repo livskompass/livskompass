@@ -26,9 +26,13 @@ const ArrayDragCtx = createContext<ArrayDragContextValue | null>(null)
 export function ArrayDragProvider({
   children,
   fieldName,
+  onMove,
 }: {
   children: React.ReactNode
   fieldName: string
+  /** Custom move handler — used instead of InlineArrayOpsContext when the
+   *  items are not a block-local array (e.g. CourseList's live course cards). */
+  onMove?: (from: number, to: number) => void
 }) {
   const editCtx = useInlineEditBlock()
   const arrayOps = useContext(InlineArrayOpsContext)
@@ -43,7 +47,7 @@ export function ArrayDragProvider({
 
   const onPointerDown = useCallback(
     (itemIndex: number, e: React.PointerEvent) => {
-      if (!editCtx || !arrayOps) return
+      if (!editCtx || (!arrayOps && !onMove)) return
       e.preventDefault()
       e.stopPropagation()
 
@@ -116,11 +120,12 @@ export function ArrayDragProvider({
         sourceEl.style.transition = ''
         ghost.remove()
 
-        if (latestDrop >= 0 && editCtx && arrayOps) {
+        if (latestDrop >= 0 && editCtx) {
           let toIndex = latestDrop
           if (toIndex > itemIndex) toIndex -= 1
           if (toIndex !== itemIndex && toIndex >= 0) {
-            arrayOps.moveItem(editCtx.blockIndex, fieldName, itemIndex, toIndex)
+            if (onMove) onMove(itemIndex, toIndex)
+            else if (arrayOps) arrayOps.moveItem(editCtx.blockIndex, fieldName, itemIndex, toIndex)
           }
         }
 
@@ -131,10 +136,10 @@ export function ArrayDragProvider({
       document.addEventListener('pointermove', handleMoveWithDrop)
       document.addEventListener('pointerup', handleUpFinal)
     },
-    [editCtx, arrayOps, fieldName, dropTargetIndex],
+    [editCtx, arrayOps, onMove, fieldName, dropTargetIndex],
   )
 
-  if (!editCtx || !arrayOps) return <>{children}</>
+  if (!editCtx || (!arrayOps && !onMove)) return <>{children}</>
 
   return (
     <ArrayDragCtx.Provider value={{ fieldName, dragState, dropTargetIndex, onPointerDown, registerItem }}>
@@ -166,6 +171,9 @@ interface ArrayItemControlsProps {
   itemIndex: number
   /** Total number of items in the array */
   totalItems: number
+  /** Custom move handler — used instead of InlineArrayOpsContext when the
+   *  items are not a block-local array. Also hides the remove button. */
+  onMove?: (from: number, to: number) => void
   children: React.ReactNode
 }
 
@@ -173,17 +181,21 @@ interface ArrayItemControlsProps {
  * Wraps an array item with hover-to-reveal controls (drag handle, remove, move up/down).
  * Only shows controls in admin mode. On public site, renders children directly.
  */
-export function ArrayItemControls({ fieldName, itemIndex, totalItems, children }: ArrayItemControlsProps) {
+export function ArrayItemControls({ fieldName, itemIndex, totalItems, onMove, children }: ArrayItemControlsProps) {
   const editCtx = useInlineEditBlock()
   const arrayOps = useContext(InlineArrayOpsContext)
   const dragCtx = useContext(ArrayDragCtx)
 
   // On public site, just render children
-  if (!editCtx || !arrayOps) return <>{children}</>
+  if (!editCtx || (!arrayOps && !onMove)) return <>{children}</>
 
   const { blockIndex } = editCtx
   const canMoveUp = itemIndex > 0
   const canMoveDown = itemIndex < totalItems - 1
+  const moveItem = (from: number, to: number) => {
+    if (onMove) onMove(from, to)
+    else if (arrayOps) arrayOps.moveItem(blockIndex, fieldName, from, to)
+  }
 
   const isDragSource = dragCtx?.dragState?.sourceIndex === itemIndex && dragCtx?.fieldName === fieldName
   const showDropBefore = dragCtx?.dropTargetIndex === itemIndex
@@ -229,7 +241,7 @@ export function ArrayItemControls({ fieldName, itemIndex, totalItems, children }
         >
           {canMoveUp && (
             <button
-              onClick={() => arrayOps.moveItem(blockIndex, fieldName, itemIndex, itemIndex - 1)}
+              onClick={() => moveItem(itemIndex, itemIndex - 1)}
               className="flex items-center justify-center w-6 h-6 rounded-md bg-white border border-zinc-200 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 shadow-sm transition-colors"
               aria-label="Move up"
               title="Move up"
@@ -239,7 +251,7 @@ export function ArrayItemControls({ fieldName, itemIndex, totalItems, children }
           )}
           {canMoveDown && (
             <button
-              onClick={() => arrayOps.moveItem(blockIndex, fieldName, itemIndex, itemIndex + 1)}
+              onClick={() => moveItem(itemIndex, itemIndex + 1)}
               className="flex items-center justify-center w-6 h-6 rounded-md bg-white border border-zinc-200 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 shadow-sm transition-colors"
               aria-label="Move down"
               title="Move down"
@@ -247,14 +259,16 @@ export function ArrayItemControls({ fieldName, itemIndex, totalItems, children }
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
           )}
-          <button
-            onClick={() => arrayOps.removeItem(blockIndex, fieldName, itemIndex)}
-            className="flex items-center justify-center w-6 h-6 rounded-md bg-white border border-zinc-200 text-zinc-400 hover:text-red-500 hover:bg-red-50 hover:border-red-200 shadow-sm transition-colors"
-            aria-label={`Remove item ${itemIndex + 1}`}
-            title="Remove"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
+          {!onMove && arrayOps && (
+            <button
+              onClick={() => arrayOps.removeItem(blockIndex, fieldName, itemIndex)}
+              className="flex items-center justify-center w-6 h-6 rounded-md bg-white border border-zinc-200 text-zinc-400 hover:text-red-500 hover:bg-red-50 hover:border-red-200 shadow-sm transition-colors"
+              aria-label={`Remove item ${itemIndex + 1}`}
+              title="Remove"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
       {showDropAfter && <DropIndicator />}

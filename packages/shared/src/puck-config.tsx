@@ -22,7 +22,7 @@ import { EmbedBlock } from './blocks/EmbedBlock'
 import { PostGrid } from './blocks/PostGrid'
 import { PageCards } from './blocks/PageCards'
 import { NavigationMenu } from './blocks/NavigationMenu'
-import { CourseList, getCourseSelectOptions } from './blocks/CourseList'
+import { CourseList } from './blocks/CourseList'
 import { ProductList } from './blocks/ProductList'
 import { ContactForm } from './blocks/ContactForm'
 import { BookingForm } from './blocks/BookingForm'
@@ -791,10 +791,9 @@ export const puckConfig: Config = {
     // ── Dynamic ──
     CourseList: {
       label: 'Course List',
-      defaultProps: { sectionBg: 'transparent', heading: '', maxItems: 0, columns: 2, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Visa kurs', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.', cardColor: 'mist', pinnedSlug: '' },
+      defaultProps: { sectionBg: 'transparent', heading: '', maxItems: 0, columns: 2, compactMode: false, showLocation: true, showPrice: true, readMoreText: 'Visa kurs', fullLabel: 'Fullbokat', spotsText: 'platser kvar', emptyText: 'Inga utbildningar planerade just nu.', cardColor: 'mist' },
       fields: {
         sectionBg: sectionBgField,
-        pinnedSlug: { type: 'select', label: 'Show first', options: [{ label: 'Automatic (course order)', value: '' }] },
         maxItems: { type: 'number', label: 'Max items (0 = all)' },
         columns: { type: 'select', label: 'Columns', options: [{ label: '2', value: 2 }, { label: '3', value: 3 }] },
         compactMode: { type: 'radio', label: 'Compact mode', options: [{ label: 'Yes', value: true }, { label: 'No', value: false }] },
@@ -805,20 +804,6 @@ export const puckConfig: Config = {
         fullLabel: { type: 'text', label: 'Full label' },
         spotsText: { type: 'text', label: 'Spots remaining text' },
         emptyText: { type: 'text', label: 'Empty text' },
-      },
-      // Inject the fetched courses into the "Show first" select. The rendered
-      // block fills the options cache, so by the time the settings popover
-      // opens the titles are available.
-      resolveFields: (_data: any, { fields }: any = {}) => {
-        const base = (fields || (puckConfig.components as any).CourseList.fields) as Record<string, any>
-        return {
-          ...base,
-          pinnedSlug: {
-            type: 'select',
-            label: 'Show first',
-            options: [{ label: 'Automatic (course order)', value: '' }, ...getCourseSelectOptions()],
-          },
-        }
       },
       render: (props: any) => <SectionBgWrap bg={props.sectionBg}><CourseList {...props} /></SectionBgWrap>,
     },

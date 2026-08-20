@@ -95,6 +95,9 @@ export interface InlineEditContextValue {
   saveBlockProp: (blockIndex: number, propName: string, value: string) => void
   /** Current block props (for reading _textSizes etc.) */
   blockProps?: Record<string, any>
+  /** Persist a new global course order (provided by the admin editor; enables
+   *  drag-to-reorder on CourseList cards). */
+  reorderCourses?: (ids: string[]) => void
 }
 
 export const InlineEditBlockContext = createContext<InlineEditContextValue | null>(null)

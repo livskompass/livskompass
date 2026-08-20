@@ -2,9 +2,10 @@ import { cn } from '../ui/utils'
 import { useFetchJson, useScrollReveal, formatSwedishDateRange, extractCourseImage, resolveMediaUrl } from '../helpers'
 import { EditItemBadge } from './EditItemBadge'
 import { MapPin, Calendar, ArrowRight } from 'lucide-react'
-import { useInlineEdit, useEditableText } from '../context'
+import { useInlineEdit, useEditableText, useInlineEditBlock } from '../context'
 import { getCardColors } from './cardColors'
 import { Price } from './Price'
+import { ArrayDragProvider, ArrayItemControls } from './ArrayItemControls'
 
 export interface CourseListProps {
   heading: string
@@ -20,16 +21,6 @@ export interface CourseListProps {
   spotsText: string
   emptyText: string
   cardColor?: string
-  /** Slug of a course pinned to the front of this list ('' = follow course order) */
-  pinnedSlug?: string
-}
-
-// Course options for the block-settings "Show first" select. resolveFields is
-// synchronous, so the rendered block stashes its fetched courses here for the
-// settings popover to read.
-let _courseOptions: { label: string; value: string }[] = []
-export function getCourseSelectOptions(): { label: string; value: string }[] {
-  return _courseOptions
 }
 
 interface Course {
@@ -68,21 +59,25 @@ export function CourseList({
   spotsText = 'spots left',
   emptyText = 'There are no courses scheduled right now.',
   cardColor = 'mist',
-  pinnedSlug = '',
   id,
 }: CourseListProps & { puck?: { isEditing: boolean }; id?: string }) {
   const colors = getCardColors(cardColor)
   const { data, loading } = useFetchJson<{ courses: Course[] }>('/courses')
   const courses = data?.courses || []
-  if (courses.length) {
-    _courseOptions = courses.map((c) => ({ label: c.title, value: c.slug }))
-  }
-  // "Show first" pin: move the chosen course to the front, keep the rest in order
-  const ordered = pinnedSlug
-    ? [...courses].sort((a, b) => (a.slug === pinnedSlug ? -1 : b.slug === pinnedSlug ? 1 : 0))
-    : courses
-  const displayed = maxItems > 0 ? ordered.slice(0, maxItems) : ordered
+  const displayed = maxItems > 0 ? courses.slice(0, maxItems) : courses
   const revealRef = useScrollReveal()
+
+  // Admin editor: drag course cards to persist the global course order
+  // (same handles as array blocks; the editor provides reorderCourses).
+  const editCtx = useInlineEditBlock()
+  const onMoveCourse = editCtx?.reorderCourses
+    ? (from: number, to: number) => {
+        const ids = courses.map((c) => c.id)
+        const [moved] = ids.splice(from, 1)
+        ids.splice(to, 0, moved)
+        editCtx.reorderCourses!(ids)
+      }
+    : undefined
   // Puck editor inline editing (via postMessage)
   const headingPuck = useInlineEdit('heading', heading, id || '')
   // Public site admin editing (via InlineEditBlockContext)
@@ -112,8 +107,9 @@ export function CourseList({
           ))}
         </div>
       ) : displayed.length > 0 ? (
+        <ArrayDragProvider fieldName="__courses" onMove={onMoveCourse}>
         <div className={cn('grid grid-cols-1 gap-6 reveal', colMap[columns] ?? colMap[2])}>
-          {displayed.map((course) => {
+          {displayed.map((course, courseIndex) => {
             const isFull = course.status === 'full'
             const hasCapacity = course.max_participants != null
             const spotsLeft = hasCapacity ? course.max_participants - course.current_participants : null
@@ -121,8 +117,14 @@ export function CourseList({
             // card thumbnail — single source of truth, no duplicate upload.
             const thumbSrc = extractCourseImage(course.content_blocks)
             return (
-              <a
+              <ArrayItemControls
                 key={course.slug}
+                fieldName="__courses"
+                itemIndex={courseIndex}
+                totalItems={displayed.length}
+                onMove={onMoveCourse}
+              >
+              <a
                 href={`/utbildningar/${course.slug}`}
                 className={cn(
                   // Horizontal card: image flush-left, content column fills
@@ -216,9 +218,11 @@ export function CourseList({
                   </div>
                 </div>
               </a>
+              </ArrayItemControls>
             )
           })}
         </div>
+        </ArrayDragProvider>
       ) : (
         <div className="text-center py-16 text-faint border-2 border-dashed border-default rounded-xl">
           <span {...editHandlers(emptyTextEdit)} className={emptyTextEdit?.className}>{emptyText}</span>

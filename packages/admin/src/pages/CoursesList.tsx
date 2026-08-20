@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getCourses, deleteCourse, archiveItem, duplicateCourse, reorderCourses } from '../lib/api'
+import { getCourses, deleteCourse, archiveItem, duplicateCourse } from '../lib/api'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
 import { ConfirmDialog } from '../components/ui/confirm-dialog'
-import { Plus, Pencil, Trash2, Copy, GraduationCap, Archive, ChevronUp, ChevronDown } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, GraduationCap, Archive } from 'lucide-react'
 
 export default function CoursesList() {
   const queryClient = useQueryClient()
@@ -25,24 +25,6 @@ export default function CoursesList() {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
     },
   })
-
-  const reorderMutation = useMutation({
-    mutationFn: reorderCourses,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
-    },
-  })
-
-  // Swap a course with its neighbour and persist the full order.
-  // Course lists on the public site follow the same order.
-  const moveCourse = (index: number, dir: -1 | 1) => {
-    const courses = data?.courses ?? []
-    const target = index + dir
-    if (target < 0 || target >= courses.length) return
-    const ids = courses.map((c) => c.id)
-    ;[ids[index], ids[target]] = [ids[target], ids[index]]
-    reorderMutation.mutate(ids)
-  }
 
   const duplicateMutation = useMutation({
     mutationFn: duplicateCourse,
@@ -107,7 +89,6 @@ export default function CoursesList() {
           <Table>
             <TableHeader>
               <TableRow className="bg-zinc-100">
-                <TableHead className="w-12">Order</TableHead>
                 <TableHead>Course</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Location</TableHead>
@@ -117,30 +98,8 @@ export default function CoursesList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.courses.map((course, index) => (
+              {data.courses.map((course) => (
                 <TableRow key={course.id} className="hover:bg-zinc-50 transition-colors">
-                  <TableCell className="py-1">
-                    <div className="flex flex-col">
-                      <button
-                        type="button"
-                        onClick={() => moveCourse(index, -1)}
-                        disabled={index === 0 || reorderMutation.isPending}
-                        className="p-0.5 rounded text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 disabled:opacity-25 disabled:hover:bg-transparent transition-colors"
-                        title="Move up"
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveCourse(index, 1)}
-                        disabled={index === data.courses.length - 1 || reorderMutation.isPending}
-                        className="p-0.5 rounded text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 disabled:opacity-25 disabled:hover:bg-transparent transition-colors"
-                        title="Move down"
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </TableCell>
                   <TableCell>
                     <Link
                       to={`/courses/${course.slug}`}

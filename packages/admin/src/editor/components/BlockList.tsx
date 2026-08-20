@@ -1,5 +1,7 @@
 import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { puckConfig, InlineEditBlockContext, CourseContext, PostContext, ZoneRenderContext } from '@livskompass/shared'
+import { reorderCourses as reorderCoursesApi, API_BASE } from '../../lib/api'
 import type { Data } from '../types'
 import { useEditor } from '../context'
 import { useEditorSelection } from '../hooks/useEditorSelection'
@@ -218,6 +220,37 @@ export function BlockList() {
   const [isPanelDragOver, setIsPanelDragOver] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Persist a new global course order from CourseList card drag. Optimistic:
+  // reorder the cached /courses response so the cards move instantly, then
+  // sync with the server.
+  const queryClient = useQueryClient()
+  const reorderCourses = useCallback((ids: string[]) => {
+    queryClient.setQueryData(['puck-block', '/courses'], (old: any) => {
+      if (!old?.courses) return old
+      const byId = new Map(old.courses.map((c: any) => [c.id, c]))
+      const reordered = ids.map((id) => byId.get(id)).filter(Boolean)
+      const rest = old.courses.filter((c: any) => !ids.includes(c.id))
+      return { ...old, courses: [...reordered, ...rest] }
+    })
+    reorderCoursesApi(ids)
+      .then(async () => {
+        // Confirm with a cache-busted read. The public /courses response is
+        // HTTP-cached (max-age=5 + SWR), so a plain invalidate can be answered
+        // from the browser cache with the pre-reorder body and visibly undo
+        // the drag.
+        try {
+          const res = await fetch(`${API_BASE}/courses?fresh=${Date.now()}`, { cache: 'no-store' })
+          const freshData = await res.json()
+          if (freshData?.courses) queryClient.setQueryData(['puck-block', '/courses'], freshData)
+        } catch { /* keep the optimistic order */ }
+        queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
+      })
+      .catch(() => {
+        // Save failed — resync to server truth
+        queryClient.invalidateQueries({ queryKey: ['puck-block', '/courses'] })
+      })
+  }, [queryClient])
+
   // Blocks can save several props in one event handler (EmbedBlock writes
   // `url` then `html` back-to-back). Closure state lags a render behind, so
   // the second call would rebuild from data missing the first call's change
@@ -321,6 +354,7 @@ export function BlockList() {
                     blockIndex: zIdx,
                     blockProps: zItem.props,
                     saveBlockProp: (bi, name, val) => saveZoneBlockProp(zoneKey, bi, name, val),
+                    reorderCourses,
                   }}
                 >
                   <ZFn {...zItem.props} />
@@ -593,7 +627,7 @@ export function BlockList() {
                 isDragSource={dragState?.sourceIndex === index}
               >
                 <InlineEditBlockContext.Provider
-                  value={{ isAdmin: true, blockIndex: index, saveBlockProp, blockProps: item.props }}
+                  value={{ isAdmin: true, blockIndex: index, saveBlockProp, blockProps: item.props, reorderCourses }}
                 >
                   <Fn {...item.props} />
                 </InlineEditBlockContext.Provider>
