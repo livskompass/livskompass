@@ -243,6 +243,12 @@ app.notFound((c) => c.json({ error: 'Not found' }, 404))
 
 // Error handler
 app.onError((err, c) => {
+  // Hono's c.req.json() rejects with a SyntaxError when the body is not valid
+  // JSON. Map that to 400 instead of the generic 500. (`name` check rather than
+  // `instanceof` because the error may originate in a different V8 realm.)
+  if ((err as { name?: string }).name === 'SyntaxError') {
+    return c.json({ error: 'Invalid JSON' }, 400)
+  }
   console.error('Error:', err)
   return c.json({ error: 'Internal server error' }, 500)
 })

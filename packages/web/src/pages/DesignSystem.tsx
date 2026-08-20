@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { Button } from '../components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/card'
 import { SiteHeader } from '../components/SiteHeader'
@@ -279,6 +280,7 @@ const tabs = ['Foundations', 'Patterns', 'Components'] as const
 type Tab = typeof tabs[number]
 
 export default function DesignSystem() {
+  useDocumentTitle('Designsystem')
   const [activeTab, setActiveTab] = useState<Tab>('Foundations')
 
   return (

@@ -4,6 +4,7 @@ import { X, Settings, Home } from 'lucide-react'
 import { useEditor } from '../context'
 import type { ContentType } from '../types'
 import { MediaPickerField } from '../../components/MediaPickerField'
+import { generateSlug, liveSanitizeSlug } from '../../lib/utils'
 
 // ── Field definitions per content type ──
 
@@ -375,6 +376,25 @@ function SlugField({ field, value, onChange, contentType }: { field: FieldDef; v
   const slug = (value || '').toString()
   const prefix = URL_PREFIX_BY_TYPE[contentType]
   const fullUrl = slug ? `${WEB_URL}${prefix}/${slug}` : ''
+  // Helper text fires only when the live filter actually rewrites an illegal
+  // character (uppercase, diacritic, space, punctuation, emoji, etc.) —
+  // explicitly NOT on a benign trailing dash mid-edit. The blur pass below
+  // collapses double-dashes + trims edge dashes silently, so the user can
+  // still type "getting-started" letter-by-letter without losing the dash.
+  const [normalized, setNormalized] = useState(false)
+
+  const handleChange = useCallback((raw: string) => {
+    const sanitized = liveSanitizeSlug(raw)
+    setNormalized(sanitized !== raw)
+    onChange(sanitized)
+  }, [onChange])
+
+  const handleBlur = useCallback(() => {
+    const finalised = generateSlug(slug)
+    if (finalised !== slug) onChange(finalised)
+    // Field is finalised; clear the live banner regardless of what changed.
+    setNormalized(false)
+  }, [slug, onChange])
 
   return (
     <div>
@@ -383,12 +403,25 @@ function SlugField({ field, value, onChange, contentType }: { field: FieldDef; v
         type="text"
         className={INPUT_CLASS}
         value={slug}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => handleChange(e.target.value)}
+        onBlur={handleBlur}
+        // Pattern is informational only (browsers won't block onChange);
+        // the live + blur sanitizers above are the actual guards.
+        pattern="^[a-z0-9-]*$"
+        inputMode="url"
+        spellCheck={false}
+        autoCapitalize="off"
+        autoCorrect="off"
       />
       {fullUrl && (
         <div className="mt-1.5 text-[11px] font-mono truncate" style={{ color: 'var(--editor-text-subtle, #71717a)' }} title={fullUrl}>
           {fullUrl}
         </div>
+      )}
+      {normalized && (
+        <p className="mt-1 text-[11px]" style={{ color: 'var(--editor-status-draft-text, #92400e)' }}>
+          Normalized — slugs use only a–z, 0–9, dashes; å/ä → a, ö → o.
+        </p>
       )}
       <p className="mt-1 text-[11px]" style={{ color: 'var(--editor-text-subtle, #71717a)' }}>
         Changing the slug rewrites existing links on other pages automatically.

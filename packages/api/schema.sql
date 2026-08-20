@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS courses (
   current_participants INTEGER DEFAULT 0,
   registration_deadline TEXT,
   status TEXT DEFAULT 'active',
-  created_at TEXT DEFAULT (datetime('now'))
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
 );
 
 -- Course bookings
@@ -86,7 +87,8 @@ CREATE TABLE IF NOT EXISTS products (
   image_url TEXT,
   in_stock INTEGER DEFAULT 1,
   status TEXT DEFAULT 'active',
-  created_at TEXT DEFAULT (datetime('now'))
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
 );
 
 -- Media library
@@ -151,6 +153,13 @@ ALTER TABLE pages ADD COLUMN draft TEXT;
 ALTER TABLE posts ADD COLUMN draft TEXT;
 ALTER TABLE courses ADD COLUMN draft TEXT;
 ALTER TABLE products ADD COLUMN draft TEXT;
+
+-- Schema drift fix (audit L4.D03): courses + products write `updated_at` from
+-- multiple admin endpoints but the column was never declared. D1 rejects
+-- CURRENT_TIMESTAMP as an ADD COLUMN default ("non-constant default"), so the
+-- column is nullable — endpoints set datetime('now') on every update.
+ALTER TABLE courses ADD COLUMN updated_at TEXT;
+ALTER TABLE products ADD COLUMN updated_at TEXT;
 
 -- Content version history (auto-snapshots on publish)
 CREATE TABLE IF NOT EXISTS content_versions (

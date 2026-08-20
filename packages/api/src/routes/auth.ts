@@ -218,7 +218,10 @@ authRoutes.get('/users', async (c) => {
   const token = authHeader.substring(7)
   const session = await verifySession(c.env.DB, token)
 
-  if (!session || session.role !== 'admin') {
+  if (!session) {
+    return c.json({ error: 'Invalid session' }, 401)
+  }
+  if (session.role !== 'admin') {
     return c.json({ error: 'Forbidden' }, 403)
   }
 
@@ -239,7 +242,10 @@ authRoutes.post('/users', async (c) => {
   const token = authHeader.substring(7)
   const session = await verifySession(c.env.DB, token)
 
-  if (!session || session.role !== 'admin') {
+  if (!session) {
+    return c.json({ error: 'Invalid session' }, 401)
+  }
+  if (session.role !== 'admin') {
     return c.json({ error: 'Forbidden' }, 403)
   }
 
@@ -286,7 +292,10 @@ authRoutes.put('/users/:id', async (c) => {
   const token = authHeader.substring(7)
   const session = await verifySession(c.env.DB, token)
 
-  if (!session || session.role !== 'admin') {
+  if (!session) {
+    return c.json({ error: 'Invalid session' }, 401)
+  }
+  if (session.role !== 'admin') {
     return c.json({ error: 'Forbidden' }, 403)
   }
 
@@ -330,7 +339,10 @@ authRoutes.delete('/users/:id', async (c) => {
   const token = authHeader.substring(7)
   const session = await verifySession(c.env.DB, token)
 
-  if (!session || session.role !== 'admin') {
+  if (!session) {
+    return c.json({ error: 'Invalid session' }, 401)
+  }
+  if (session.role !== 'admin') {
     return c.json({ error: 'Forbidden' }, 403)
   }
 

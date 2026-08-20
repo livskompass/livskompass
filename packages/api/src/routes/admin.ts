@@ -24,6 +24,25 @@ const URL_PREFIX: Record<'page' | 'post' | 'course' | 'product', string> = {
 }
 
 /**
+ * Canonical kebab-case slug: lowercase ASCII alphanumerics with single hyphens
+ * between groups. No leading/trailing/consecutive hyphens, no other characters.
+ * Server-side guard for the L3.B03 cascade-corruption path; the admin UI also
+ * filters input but a malicious or scripted PUT can bypass that.
+ */
+const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
+/**
+ * Detect a D1 UNIQUE-constraint failure on the slug column. D1 surfaces the
+ * underlying SQLite error message verbatim (e.g.
+ * "D1_ERROR: UNIQUE constraint failed: pages.slug"). We don't want to leak
+ * that string to the client, but we do want to map it to a 409.
+ */
+function isUniqueSlugError(err: unknown): boolean {
+  const msg = (err as { message?: string } | null)?.message ?? ''
+  return msg.includes('UNIQUE constraint failed') && msg.includes('.slug')
+}
+
+/**
  * When a slug changes, rewrite every reference to the old URL in stored
  * block JSON and in known settings. Matches `/old-url` inside JSON strings
  * bounded by `"`, `\`, `/`, `?`, `#`, so we don't maul free text.
@@ -215,41 +234,48 @@ adminRoutes.post('/pages', async (c) => {
 
 // Update page
 adminRoutes.put('/pages/:id', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  const { slug, title, content, status } = body
+  const contentBlocks = body.contentBlocks ?? body.content_blocks
+  const editorVersion = body.editorVersion ?? body.editor_version
+  const metaDescription = body.metaDescription ?? body.meta_description
+  const parentSlug = body.parentSlug ?? body.parent_slug
+  const sortOrder = body.sortOrder ?? body.sort_order
+
+  if (!slug || !title) {
+    return c.json({ error: 'Missing required fields: slug and title' }, 400)
+  }
+
+  if (!SLUG_PATTERN.test(slug)) {
+    return c.json({ error: 'Invalid slug format' }, 400)
+  }
+
+  const previous = await c.env.DB.prepare(`SELECT slug FROM pages WHERE id = ?`).bind(id).first() as { slug: string } | null
+
+  // Auto-snapshot before publish
+  await snapshotBeforePublish(c.env.DB, 'pages', 'page', id, c.get('userId'))
+
   try {
-    const id = c.req.param('id')
-    const body = await c.req.json()
-    const { slug, title, content, status } = body
-    const contentBlocks = body.contentBlocks ?? body.content_blocks
-    const editorVersion = body.editorVersion ?? body.editor_version
-    const metaDescription = body.metaDescription ?? body.meta_description
-    const parentSlug = body.parentSlug ?? body.parent_slug
-    const sortOrder = body.sortOrder ?? body.sort_order
-
-    if (!slug || !title) {
-      return c.json({ error: 'Missing required fields: slug and title' }, 400)
-    }
-
-    const previous = await c.env.DB.prepare(`SELECT slug FROM pages WHERE id = ?`).bind(id).first() as { slug: string } | null
-
-    // Auto-snapshot before publish
-    await snapshotBeforePublish(c.env.DB, 'pages', 'page', id, c.get('userId'))
-
     await c.env.DB.prepare(`
       UPDATE pages
       SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
           meta_description = ?, parent_slug = ?, sort_order = ?, status = ?, draft = NULL, updated_at = datetime('now')
       WHERE id = ?
     `).bind(slug || '', title || '', content || null, contentBlocks || null, editorVersion || 'legacy', metaDescription || null, parentSlug || null, sortOrder || 0, status || 'published', id).run()
-
-    if (previous && previous.slug && previous.slug !== slug) {
-      await cascadeSlugRename(c.env.DB, 'page', previous.slug, slug)
-    }
-
-    return c.json({ success: true })
   } catch (err: any) {
-    console.error('Page publish error:', err?.message || err)
-    return c.json({ error: err?.message || 'Internal server error' }, 500)
+    if (isUniqueSlugError(err)) {
+      return c.json({ error: 'slug already exists' }, 409)
+    }
+    console.error('Page publish error:', err)
+    return c.json({ error: 'Internal server error' }, 500)
   }
+
+  if (previous && previous.slug && previous.slug !== slug) {
+    await cascadeSlugRename(c.env.DB, 'page', previous.slug, slug)
+  }
+
+  return c.json({ success: true })
 })
 
 // Partial update page (for inline editing)
@@ -375,17 +401,29 @@ adminRoutes.put('/posts/:id', async (c) => {
   const featuredImage = body.featuredImage ?? body.featured_image
   const publishedAt = body.publishedAt ?? body.published_at
 
+  if (slug && !SLUG_PATTERN.test(slug)) {
+    return c.json({ error: 'Invalid slug format' }, 400)
+  }
+
   const previous = await c.env.DB.prepare(`SELECT slug FROM posts WHERE id = ?`).bind(id).first() as { slug: string } | null
 
   // Auto-snapshot before publish
   await snapshotBeforePublish(c.env.DB, 'posts', 'post', id, c.get('userId'))
 
-  await c.env.DB.prepare(`
-    UPDATE posts
-    SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
-        excerpt = ?, featured_image = ?, status = ?, published_at = ?, draft = NULL, updated_at = datetime('now')
-    WHERE id = ?
-  `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', excerpt || null, featuredImage || null, status, publishedAt || null, id).run()
+  try {
+    await c.env.DB.prepare(`
+      UPDATE posts
+      SET slug = ?, title = ?, content = ?, content_blocks = ?, editor_version = ?,
+          excerpt = ?, featured_image = ?, status = ?, published_at = ?, draft = NULL, updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(slug, title, content || null, contentBlocks || null, editorVersion || 'legacy', excerpt || null, featuredImage || null, status, publishedAt || null, id).run()
+  } catch (err: any) {
+    if (isUniqueSlugError(err)) {
+      return c.json({ error: 'slug already exists' }, 409)
+    }
+    console.error('Post publish error:', err)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
 
   if (previous && previous.slug && previous.slug !== slug) {
     await cascadeSlugRename(c.env.DB, 'post', previous.slug, slug)
@@ -520,21 +558,33 @@ adminRoutes.put('/courses/:id', async (c) => {
   const maxParticipants = body.maxParticipants ?? body.max_participants
   const registrationDeadline = body.registrationDeadline ?? body.registration_deadline
 
+  if (slug && !SLUG_PATTERN.test(slug)) {
+    return c.json({ error: 'Invalid slug format' }, 400)
+  }
+
   const previous = await c.env.DB.prepare(`SELECT slug FROM courses WHERE id = ?`).bind(id).first() as { slug: string } | null
 
   // Auto-snapshot before publish
   await snapshotBeforePublish(c.env.DB, 'courses', 'course', id, c.get('userId'))
 
-  await c.env.DB.prepare(`
-    UPDATE courses
-    SET slug = ?, title = ?, description = ?, content = ?, content_blocks = ?,
-        editor_version = ?, location = ?, start_date = ?, end_date = ?,
-        price_sek = ?, max_participants = ?, registration_deadline = ?, status = ?, draft = NULL
-    WHERE id = ?
-  `).bind(slug, title, description, content || null, contentBlocks || null,
-          editorVersion || 'legacy', location || null, startDate || null, endDate || null,
-          priceSek || null, maxParticipants || null, registrationDeadline || null,
-          status, id).run()
+  try {
+    await c.env.DB.prepare(`
+      UPDATE courses
+      SET slug = ?, title = ?, description = ?, content = ?, content_blocks = ?,
+          editor_version = ?, location = ?, start_date = ?, end_date = ?,
+          price_sek = ?, max_participants = ?, registration_deadline = ?, status = ?, draft = NULL
+      WHERE id = ?
+    `).bind(slug, title, description, content || null, contentBlocks || null,
+            editorVersion || 'legacy', location || null, startDate || null, endDate || null,
+            priceSek || null, maxParticipants || null, registrationDeadline || null,
+            status, id).run()
+  } catch (err: any) {
+    if (isUniqueSlugError(err)) {
+      return c.json({ error: 'slug already exists' }, 409)
+    }
+    console.error('Course publish error:', err)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
 
   if (previous && previous.slug && previous.slug !== slug) {
     await cascadeSlugRename(c.env.DB, 'course', previous.slug, slug)
@@ -759,18 +809,30 @@ adminRoutes.put('/products/:id', async (c) => {
   const imageUrl = body.imageUrl ?? body.image_url
   const inStock = body.inStock ?? body.in_stock
 
+  if (slug && !SLUG_PATTERN.test(slug)) {
+    return c.json({ error: 'Invalid slug format' }, 400)
+  }
+
   const previous = await c.env.DB.prepare(`SELECT slug FROM products WHERE id = ?`).bind(id).first() as { slug: string } | null
 
   // Auto-snapshot before publish
   await snapshotBeforePublish(c.env.DB, 'products', 'product', id, c.get('userId'))
 
-  await c.env.DB.prepare(`
-    UPDATE products
-    SET slug = ?, title = ?, description = ?, content_blocks = ?, editor_version = ?,
-        type = ?, price_sek = ?, external_url = ?, image_url = ?, in_stock = ?, status = ?, draft = NULL
-    WHERE id = ?
-  `).bind(slug, title, description, contentBlocks || null, editorVersion || 'legacy',
-          type, priceSek, externalUrl, imageUrl, inStock, status, id).run()
+  try {
+    await c.env.DB.prepare(`
+      UPDATE products
+      SET slug = ?, title = ?, description = ?, content_blocks = ?, editor_version = ?,
+          type = ?, price_sek = ?, external_url = ?, image_url = ?, in_stock = ?, status = ?, draft = NULL
+      WHERE id = ?
+    `).bind(slug, title, description, contentBlocks || null, editorVersion || 'legacy',
+            type, priceSek, externalUrl, imageUrl, inStock, status, id).run()
+  } catch (err: any) {
+    if (isUniqueSlugError(err)) {
+      return c.json({ error: 'slug already exists' }, 409)
+    }
+    console.error('Product publish error:', err)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
 
   if (previous && previous.slug && previous.slug !== slug) {
     await cascadeSlugRename(c.env.DB, 'product', previous.slug, slug)

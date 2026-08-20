@@ -19,6 +19,7 @@ import ContactsList from './pages/ContactsList'
 import NewsletterList from './pages/NewsletterList'
 import UsersList from './pages/UsersList'
 import Settings from './pages/Settings'
+import NotFound from './pages/NotFound'
 import InlineEditorPage from './editor/InlineEditor'
 import HelpAssistant from './components/HelpAssistant'
 
@@ -99,6 +100,8 @@ function App() {
           <Route path="newsletter" element={<NewsletterList />} />
           <Route path="users" element={<UsersList />} />
           <Route path="settings" element={<Settings />} />
+          {/* 404 fallback under the protected admin layout — shows AdminLayout chrome with NotFound in the outlet */}
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

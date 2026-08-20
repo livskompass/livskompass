@@ -633,16 +633,18 @@ npm install
 # Run all packages in development
 npm run dev
 
-# Run specific package
-npm run dev --filter=@livskompass/web
-npm run dev --filter=@livskompass/admin
-npm run dev --filter=@livskompass/api
+# Run specific package (root-level scripts wired to npm workspaces)
+npm run dev:web
+npm run dev:admin
+npm run dev:api
 
 # Build all packages
 npm run build
 
-# Type check
-npm run typecheck
+# Type check (no aggregate script — run per package)
+npx tsc --noEmit -p packages/web
+npx tsc --noEmit -p packages/admin
+npx tsc --noEmit -p packages/api
 
 # Deploy API to Cloudflare
 cd packages/api && wrangler deploy

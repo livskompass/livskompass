@@ -49,6 +49,7 @@ const BLOCK_LABELS: Record<string, string> = {
   CourseInfo: 'Course Info',
   BookingCTA: 'Booking CTA',
   PostHeader: 'Post Header',
+  CourseHeader: 'Course Header',
 }
 
 // ── Config ──
