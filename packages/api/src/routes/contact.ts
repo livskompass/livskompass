@@ -2,37 +2,13 @@ import { Hono } from 'hono'
 import { nanoid } from 'nanoid'
 import type { Bindings } from '../index'
 import { rateLimit } from '../middleware/rate-limit'
+import { sendOwnerEmail } from '../lib/owner-email'
 
 export const contactRoutes = new Hono<{ Bindings: Bindings }>()
 
-/**
- * Email each contact submission to the site owner via Resend.
- *
- * Recipient: the "Contact details" email in admin General Settings
- * (settings.contact_email), falling back to the CONTACT_NOTIFY_EMAIL env var.
- * Requires the RESEND_API_KEY secret — without it, sending is skipped and
- * logged. Failures never affect the visitor's response: the submission is
- * already stored in D1 and shown in the admin Messages page.
- */
-async function sendContactNotification(
-  env: Bindings,
-  data: { name: string; email: string; phone?: string; subject?: string; message: string },
-) {
-  if (!env.RESEND_API_KEY) {
-    console.error('Contact email skipped: RESEND_API_KEY is not set')
-    return
-  }
-
-  const setting = await env.DB.prepare(
-    `SELECT value FROM settings WHERE key = 'contact_email'`
-  ).first<{ value: string }>().catch(() => null)
-  const to = setting?.value || env.CONTACT_NOTIFY_EMAIL
-  if (!to || !to.includes('@')) {
-    console.error('Contact email skipped: no recipient (set Contact details email in admin Settings, or CONTACT_NOTIFY_EMAIL)')
-    return
-  }
-
-  const subjectLine = data.subject
+/** Email a contact submission to the site owner. Reply-To is the visitor. */
+function contactNotification(data: { name: string; email: string; phone?: string; subject?: string; message: string }) {
+  const subject = data.subject
     ? `Nytt meddelande via livskompass.se: ${data.subject}`
     : `Nytt meddelande via livskompass.se från ${data.name}`
 
@@ -50,27 +26,7 @@ async function sendContactNotification(
     'Svara direkt på detta mail för att svara avsändaren.',
   ].filter((l) => l !== null).join('\n')
 
-  try {
-    const res = await fetch(env.RESEND_API_URL || 'https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: env.CONTACT_FROM_EMAIL || 'Livskompass kontaktformulär <onboarding@resend.dev>',
-        to: [to],
-        reply_to: [data.email],
-        subject: subjectLine,
-        text,
-      }),
-    })
-    if (!res.ok) {
-      console.error(`Contact email failed: ${res.status} ${await res.text().catch(() => '')}`)
-    }
-  } catch (err) {
-    console.error('Contact email failed:', err)
-  }
+  return { subject, text, replyTo: data.email }
 }
 
 // Submit contact form — rate limited to 5 per minute per IP
@@ -98,7 +54,7 @@ contactRoutes.post('/', rateLimit(60_000, 5), async (c) => {
   // Email notification runs after the response is sent — a mail outage must
   // never turn a stored submission into a visitor-facing error.
   c.executionCtx.waitUntil(
-    sendContactNotification(c.env, { name, email, phone, subject, message })
+    sendOwnerEmail(c.env, contactNotification({ name, email, phone, subject, message }))
   )
 
   return c.json({

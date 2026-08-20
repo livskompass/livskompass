@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { nanoid } from 'nanoid'
 import type { Bindings } from '../index'
 import { rateLimit } from '../middleware/rate-limit'
+import { sendOwnerEmail } from '../lib/owner-email'
 
 export const newsletterRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -50,11 +51,30 @@ newsletterRoutes.post('/', rateLimit(60_000, 5), async (c) => {
 
   // INSERT OR IGNORE keeps resubscribes idempotent and avoids leaking
   // whether an address is already on the list.
-  await withNewsletterTable(c.env.DB, () =>
+  const result = await withNewsletterTable(c.env.DB, () =>
     c.env.DB.prepare(
       `INSERT OR IGNORE INTO newsletter_signups (id, email, source) VALUES (?, ?, ?)`
     ).bind(nanoid(), email, source).run()
   )
+
+  // Notify the owner about genuinely new signups only (an ignored duplicate
+  // writes no rows), so the mailing list can be updated without checking admin.
+  const isNew = (result.meta?.changes ?? result.meta?.rows_written ?? 0) > 0
+  if (isNew) {
+    c.executionCtx.waitUntil(
+      sendOwnerEmail(c.env, {
+        subject: `Ny prenumerant på nyhetsbrevet: ${email}`,
+        text: [
+          `Ny anmälan till nyhetsbrevet via ${source === 'popup' ? 'popupen' : source === 'footer' ? 'sidfoten' : 'webbplatsen'}:`,
+          '',
+          email,
+          '',
+          '—',
+          'Hela listan finns i admin under Newsletter (med kopiera/exportera).',
+        ].join('\n'),
+      })
+    )
+  }
 
   return c.json({
     success: true,
