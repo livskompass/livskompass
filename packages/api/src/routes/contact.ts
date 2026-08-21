@@ -9,8 +9,8 @@ export const contactRoutes = new Hono<{ Bindings: Bindings }>()
 /** Email a contact submission to the site owner. Reply-To is the visitor. */
 function contactNotification(data: { name: string; email: string; phone?: string; subject?: string; message: string }) {
   const subject = data.subject
-    ? `Nytt meddelande via livskompass.se: ${data.subject}`
-    : `Nytt meddelande via livskompass.se från ${data.name}`
+    ? `Nytt meddelande via fredriklivheim.se: ${data.subject}`
+    : `Nytt meddelande via fredriklivheim.se från ${data.name}`
 
   const text = [
     `Namn: ${data.name}`,
@@ -22,7 +22,7 @@ function contactNotification(data: { name: string; email: string; phone?: string
     data.message,
     '',
     '—',
-    'Skickat via kontaktformuläret på livskompass.se.',
+    'Skickat via kontaktformuläret på fredriklivheim.se.',
     'Svara direkt på detta mail för att svara avsändaren.',
   ].filter((l) => l !== null).join('\n')
 

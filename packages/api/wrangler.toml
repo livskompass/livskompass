@@ -19,10 +19,10 @@ preview_bucket_name = "livskompass-media"
 remote = true
 
 [vars]
-SITE_URL = "https://livskompass-web.pages.dev"
-API_URL = "https://livskompass-api.livskompass-config.workers.dev"
+SITE_URL = "https://fredriklivheim.se"
+API_URL = "https://api.fredriklivheim.se"
 ADMIN_URL = "https://livskompass-admin.pages.dev"
-CORS_ORIGIN = "https://livskompass-web.pages.dev,https://livskompass-admin.pages.dev,http://localhost:3000,http://localhost:3001"
+CORS_ORIGIN = "https://fredriklivheim.se,https://www.fredriklivheim.se,https://livskompass-web.pages.dev,https://livskompass-admin.pages.dev,http://localhost:3000,http://localhost:3001"
 
 # Cron trigger — runs every 15 minutes to clean up abandoned bookings and expired sessions
 [triggers]
