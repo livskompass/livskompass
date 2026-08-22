@@ -16,6 +16,14 @@ export type HeroBgStyle = 'gradient' | 'forest' | 'stone'
 export type HeroOverlay = 'dark-3' | 'dark-2' | 'dark-1' | 'light-1' | 'light-2' | 'light-3'
 
 // Migrate old values ('light' | 'medium' | 'heavy') to the new 6-step scale.
+/** Mobile-only background focus classes; desktop always centers. Literal
+ *  strings so Tailwind's scanner generates the max-md variants. */
+const MOBILE_BG_FOCUS: Record<string, string> = {
+  center: 'bg-center',
+  left: 'bg-center max-md:bg-left',
+  right: 'bg-center max-md:bg-right',
+}
+
 function normalizeOverlay(v: string | undefined): HeroOverlay {
   if (!v) return 'dark-2'
   if (v === 'light') return 'dark-1'
@@ -40,6 +48,8 @@ export interface HeroProps {
   ctaSecondaryLink: string
   image: string
   backgroundImage: string
+  /** Where the background image anchors on small screens; desktop always centers */
+  mobileImageFocus?: 'center' | 'left' | 'right'
   backgroundVideo: string
   overlayDarkness: HeroOverlay
   contentPosition: HeroContentPosition
@@ -312,6 +322,7 @@ export function Hero({
   ctaSecondaryLink = '',
   image = '',
   backgroundImage = '',
+  mobileImageFocus = 'center',
   backgroundVideo = '',
   overlayDarkness = 'dark-2',
   contentPosition = 'center',
@@ -426,7 +437,7 @@ export function Hero({
         )}
         {/* Background image (fallback when no video) */}
         {!backgroundVideo && backgroundImage && (
-          <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+          <div className={cn('absolute inset-0 bg-cover', MOBILE_BG_FOCUS[mobileImageFocus] || 'bg-center')} style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})` }} />
         )}
         {/* Placeholder when no background media */}
         {!backgroundVideo && !backgroundImage && (
@@ -584,7 +595,7 @@ export function Hero({
         )}
         {/* Background image (fallback when no video) */}
         {!backgroundVideo && backgroundImage && (
-          <div className="absolute inset-0" style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+          <div className={cn('absolute inset-0 bg-cover', MOBILE_BG_FOCUS[mobileImageFocus] || 'bg-center')} style={{ backgroundImage: `url(${resolveMediaUrl(backgroundImage)})` }} />
         )}
         {/* Placeholder when no media */}
         {!backgroundVideo && !backgroundImage && (

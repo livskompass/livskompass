@@ -278,6 +278,7 @@ export const puckConfig: Config = {
         ctaSecondaryLink: '',
         image: '',
         backgroundImage: '',
+        mobileImageFocus: 'center',
         backgroundVideo: '',
         overlayDarkness: 'dark-2',
         contentPosition: 'center',
@@ -319,6 +320,15 @@ export const puckConfig: Config = {
         },
         image: { type: 'text', label: 'Image URL', metadata: { isImage: true } },
         backgroundImage: { type: 'text', label: 'Background image URL', metadata: { isImage: true } },
+        mobileImageFocus: {
+          type: 'select',
+          label: 'Image focus on mobile',
+          options: [
+            { label: 'Center (default)', value: 'center' },
+            { label: 'Left side of image', value: 'left' },
+            { label: 'Right side of image', value: 'right' },
+          ],
+        },
         backgroundVideo: { type: 'text', label: 'Background video URL', metadata: { isVideo: true } },
         overlayDarkness: {
           type: 'select',
