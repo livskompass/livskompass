@@ -80,6 +80,25 @@ function AuthBridge() {
     const token = searchParams.get('token')
     if (token) {
       localStorage.setItem('admin_token', token)
+    }
+
+    // Admin login bounces through here to hand the token to this origin;
+    // send the user straight back. Only the known admin origin is allowed —
+    // anything else falls through to the homepage (no open redirect).
+    const ret = searchParams.get('return')
+    const adminUrl = import.meta.env.VITE_ADMIN_URL || ''
+    if (token && ret && adminUrl) {
+      try {
+        if (new URL(ret).origin === new URL(adminUrl).origin) {
+          window.location.replace(ret)
+          return
+        }
+      } catch {
+        // malformed return URL — ignore
+      }
+    }
+
+    if (token) {
       navigate('/', { replace: true })
       window.location.reload()
     } else {

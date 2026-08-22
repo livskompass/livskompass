@@ -15,13 +15,14 @@ export default function AuthCallback() {
     if (token) {
       setAuthToken(token)
 
-      // Bridge token to the web frontend so inline editing works there too
+      // Bridge token to the web frontend so inline editing works there too.
+      // Must be a TOP-LEVEL navigation: a hidden iframe's localStorage write
+      // lands in Chrome's partitioned storage and the site never sees it.
+      // The site's /admin-auth stores the token and sends us straight back.
       if (WEB_URL) {
-        const iframe = document.createElement('iframe')
-        iframe.style.display = 'none'
-        iframe.src = `${WEB_URL}/admin-auth?token=${token}`
-        document.body.appendChild(iframe)
-        setTimeout(() => iframe.remove(), 3000)
+        const ret = `${window.location.origin}/dashboard`
+        window.location.replace(`${WEB_URL}/admin-auth?token=${token}&return=${encodeURIComponent(ret)}`)
+        return
       }
 
       navigate('/dashboard', { replace: true })
