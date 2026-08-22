@@ -583,13 +583,32 @@ function SelectedBlockToolbar() {
   if (!selectedBlockId || !puckData) return null
 
   const items = puckData.content || []
-  const blockIndex = items.findIndex(
+  let blockIndex = items.findIndex(
     (item: any, i: number) => (item.props?.id || `${item.type}-${i}`) === selectedBlockId,
   )
+  let item = items[blockIndex]
+  let totalBlocks = items.length
+  let zoneKey: string | undefined
 
-  if (blockIndex === -1) return null
+  // Not a top-level block — look inside Columns zones
+  if (blockIndex === -1) {
+    const zones = (puckData.zones || {}) as Record<string, any[]>
+    for (const [key, zoneItems] of Object.entries(zones)) {
+      const zIdx = (zoneItems || []).findIndex(
+        (z: any, i: number) => (z.props?.id || `${key}-${z.type}-${i}`) === selectedBlockId,
+      )
+      if (zIdx !== -1) {
+        blockIndex = zIdx
+        item = zoneItems[zIdx]
+        totalBlocks = zoneItems.length
+        zoneKey = key
+        break
+      }
+    }
+  }
 
-  const item = items[blockIndex]
+  if (blockIndex === -1 || !item) return null
+
   const blockLabel = components[item.type]?.label || item.type
 
   return (
@@ -598,7 +617,8 @@ function SelectedBlockToolbar() {
       blockType={item.type}
       blockLabel={blockLabel}
       blockIndex={blockIndex}
-      totalBlocks={items.length}
+      totalBlocks={totalBlocks}
+      zoneKey={zoneKey}
       onOpenEntitySettings={() => window.dispatchEvent(new CustomEvent('open-entity-settings'))}
     />
   )

@@ -16,12 +16,25 @@ export function useEditorSelection() {
     (item: any, i: number) => item.props?.id || `${item.type}-${i}`,
   )
 
-  // Auto-deselect if selected block was deleted (no longer in blockIds)
+  // Blocks nested inside Columns zones are selectable too, but excluded from
+  // Tab/Arrow cycling (blockIds) — they only count for the deselect check below
+  const zoneBlockIds = Object.entries(
+    (puckData?.zones as Record<string, any[]> | undefined) || {},
+  ).flatMap(([key, items]) =>
+    (items || []).map((item: any, i: number) => item.props?.id || `${key}-${item.type}-${i}`),
+  )
+
+  // Auto-deselect if selected block was deleted (no longer anywhere on the page)
   useEffect(() => {
-    if (selectedBlockId && blockIds.length > 0 && !blockIds.includes(selectedBlockId)) {
+    if (
+      selectedBlockId &&
+      blockIds.length > 0 &&
+      !blockIds.includes(selectedBlockId) &&
+      !zoneBlockIds.includes(selectedBlockId)
+    ) {
       selectBlock(null)
     }
-  }, [selectedBlockId, blockIds, selectBlock])
+  }, [selectedBlockId, blockIds, zoneBlockIds, selectBlock])
 
   const selectByIndex = useCallback(
     (index: number) => {

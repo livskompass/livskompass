@@ -12,6 +12,9 @@ interface FloatingToolbarProps {
   blockLabel?: string
   blockIndex: number
   totalBlocks: number
+  /** Set when the block lives inside a Columns zone — all operations then
+   *  target puckData.zones[zoneKey] instead of the top-level content list. */
+  zoneKey?: string
   onOpenEntitySettings?: () => void
 }
 
@@ -21,6 +24,7 @@ export function FloatingToolbar({
   blockLabel,
   blockIndex,
   totalBlocks,
+  zoneKey,
   onOpenEntitySettings,
 }: FloatingToolbarProps) {
   const displayName = blockLabel || blockType
@@ -38,11 +42,29 @@ export function FloatingToolbar({
     setShowSettings(false)
   }, [blockId])
 
+  // The block's sibling list: a Columns zone when zoneKey is set, else the page
+  const getSiblings = useCallback((): any[] | null => {
+    if (!puckData) return null
+    if (zoneKey) return ((puckData.zones as Record<string, any[]> | undefined)?.[zoneKey]) || null
+    return puckData.content
+  }, [puckData, zoneKey])
+
+  const writeSiblings = useCallback((items: any[]) => {
+    if (!puckData) return
+    if (zoneKey) {
+      const zones = { ...((puckData.zones as Record<string, any[]>) || {}), [zoneKey]: items }
+      updateData({ ...puckData, zones } as Data)
+    } else {
+      updateData({ ...puckData, content: items } as Data)
+    }
+  }, [puckData, zoneKey, updateData])
+
   const moveBlock = useCallback(
     (direction: -1 | 1) => {
-      if (!puckData) return
-      if (blockIndex < 0 || blockIndex >= puckData.content.length) return
-      const items = [...puckData.content]
+      const siblings = getSiblings()
+      if (!siblings) return
+      if (blockIndex < 0 || blockIndex >= siblings.length) return
+      const items = [...siblings]
       const newIndex = blockIndex + direction
       if (newIndex < 0 || newIndex >= items.length) return
 
@@ -51,15 +73,16 @@ export function FloatingToolbar({
       items[blockIndex] = items[newIndex]
       items[newIndex] = temp
 
-      updateData({ ...puckData, content: items } as Data)
+      writeSiblings(items)
     },
-    [puckData, blockIndex, updateData],
+    [getSiblings, writeSiblings, blockIndex],
   )
 
   const duplicateBlock = useCallback(() => {
-    if (!puckData) return
-    if (blockIndex < 0 || blockIndex >= puckData.content.length) return
-    const items = [...puckData.content]
+    const siblings = getSiblings()
+    if (!siblings) return
+    if (blockIndex < 0 || blockIndex >= siblings.length) return
+    const items = [...siblings]
     const original = items[blockIndex]
     const clone = JSON.parse(JSON.stringify(original))
     // Give clone a new ID
@@ -67,17 +90,18 @@ export function FloatingToolbar({
       clone.props.id = `${clone.props.id}-copy-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
     }
     items.splice(blockIndex + 1, 0, clone)
-    updateData({ ...puckData, content: items } as Data)
-  }, [puckData, blockIndex, updateData])
+    writeSiblings(items)
+  }, [getSiblings, writeSiblings, blockIndex])
 
   const deleteBlock = useCallback(() => {
-    if (!puckData) return
-    if (blockIndex < 0 || blockIndex >= puckData.content.length) return
-    const items = [...puckData.content]
+    const siblings = getSiblings()
+    if (!siblings) return
+    if (blockIndex < 0 || blockIndex >= siblings.length) return
+    const items = [...siblings]
     items.splice(blockIndex, 1)
-    updateData({ ...puckData, content: items } as Data)
+    writeSiblings(items)
     setConfirmDelete(false)
-  }, [puckData, blockIndex, updateData])
+  }, [getSiblings, writeSiblings, blockIndex])
 
   if (!position || !blockId) return null
 
@@ -200,6 +224,7 @@ export function FloatingToolbar({
           blockId={blockId}
           blockType={blockType}
           blockIndex={blockIndex}
+          zoneKey={zoneKey}
           anchorRect={settingsBtnRef.current?.getBoundingClientRect() ?? null}
           onClose={() => setShowSettings(false)}
           onOpenEntitySettings={onOpenEntitySettings}

@@ -97,6 +97,8 @@ interface SettingsPopoverProps {
   blockId: string
   blockType: string
   blockIndex: number
+  /** Set when the block lives inside a Columns zone */
+  zoneKey?: string
   anchorRect: DOMRect | null
   onClose: () => void
   onOpenEntitySettings?: () => void
@@ -118,6 +120,7 @@ const components = (puckConfig as any).components as Record<
 export function SettingsPopover({
   blockType,
   blockIndex,
+  zoneKey,
   anchorRect,
   onClose,
   onOpenEntitySettings,
@@ -127,7 +130,9 @@ export function SettingsPopover({
   const [expandedArrays, setExpandedArrays] = useState<Set<string>>(new Set())
 
   const puckData = state.puckData
-  const block = puckData?.content?.[blockIndex]
+  const block = zoneKey
+    ? (puckData?.zones as Record<string, any[]> | undefined)?.[zoneKey]?.[blockIndex]
+    : puckData?.content?.[blockIndex]
   const blockProps = block?.props || {}
   // Access fields from the raw puck config (bypass TypeScript Config type which may strip fields)
   const comp = (puckConfig as any).components?.[blockType]
@@ -149,6 +154,17 @@ export function SettingsPopover({
   const updateProp = useCallback(
     (propName: string, value: any) => {
       if (!puckData) return
+      if (zoneKey) {
+        const zones = (puckData.zones as Record<string, any[]> | undefined) || {}
+        const zoneItems = zones[zoneKey]
+        if (!zoneItems || blockIndex < 0 || blockIndex >= zoneItems.length) return
+        const items = [...zoneItems]
+        const b = items[blockIndex]
+        if (!b) return
+        items[blockIndex] = { ...b, props: { ...b.props, [propName]: value } }
+        updateData({ ...puckData, zones: { ...zones, [zoneKey]: items } } as Data)
+        return
+      }
       if (blockIndex < 0 || blockIndex >= puckData.content.length) return
       const content = [...puckData.content]
       const b = content[blockIndex]
@@ -156,7 +172,7 @@ export function SettingsPopover({
       content[blockIndex] = { ...b, props: { ...b.props, [propName]: value } }
       updateData({ ...puckData, content } as Data)
     },
-    [puckData, blockIndex, updateData],
+    [puckData, blockIndex, zoneKey, updateData],
   )
 
   // Close on ESC

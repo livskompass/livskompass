@@ -218,6 +218,7 @@ export function BlockList() {
   // ── Panel drag-and-drop state ──
   const [panelDropIndex, setPanelDropIndex] = useState<number>(-1)
   const [isPanelDragOver, setIsPanelDragOver] = useState(false)
+  const [dragOverZone, setDragOverZone] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Persist a new global course order from CourseList card drag. Optimistic:
@@ -315,25 +316,62 @@ export function BlockList() {
     [puckData, updateData],
   )
 
+  // Drop a new block from the panel into a Columns zone. Appends at the end
+  // of the zone; stopPropagation keeps the top-level drop handler from also
+  // inserting the block into the page.
+  const handleZoneDrop = useCallback((zoneKey: string, e: React.DragEvent) => {
+    const blockType = e.dataTransfer.getData(PANEL_DRAG_TYPE)
+    setDragOverZone(null)
+    if (!blockType) return
+    e.preventDefault()
+    e.stopPropagation()
+    if (blockType === 'Columns') return // no columns inside columns
+    const base = latestDataRef.current ?? puckData
+    if (!base) return
+    const comp = components[blockType]
+    const defaultProps = comp?.defaultProps ? JSON.parse(JSON.stringify(comp.defaultProps)) : {}
+    defaultProps.id = `${blockType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+    const zones: Record<string, PuckItem[]> = { ...((base.zones as Record<string, PuckItem[]>) || {}) }
+    zones[zoneKey] = [...(zones[zoneKey] || []), { type: blockType, props: defaultProps }]
+    const next = { ...base, zones } as Data
+    latestDataRef.current = next
+    updateData(next)
+  }, [puckData, updateData])
+
   // renderZone: resolves a Columns zone's nested blocks for editing in the admin.
   // Wraps each nested block in EditableBlock + InlineEditBlockContext so inline
   // edits and the settings popover work the same way as top-level blocks.
+  // Each zone is also a drop target for new blocks from the panel.
   const renderZone = useCallback(
     (zoneKey: string): React.ReactNode => {
       const zoneItems: PuckItem[] = (puckData?.zones as Record<string, PuckItem[]> | undefined)?.[zoneKey] || []
+      const isOver = dragOverZone === zoneKey
+      const zoneDropProps = {
+        onDragOver: (e: React.DragEvent) => {
+          if (!e.dataTransfer.types.includes(PANEL_DRAG_TYPE)) return
+          e.preventDefault()
+          e.stopPropagation()
+          e.dataTransfer.dropEffect = 'copy'
+          setDragOverZone(zoneKey)
+        },
+        onDragLeave: (e: React.DragEvent) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverZone(null)
+        },
+        onDrop: (e: React.DragEvent) => handleZoneDrop(zoneKey, e),
+      }
       if (zoneItems.length === 0) {
         return (
-          <div className="py-6 px-4 text-center text-xs rounded-lg" style={{
-            color: 'var(--editor-text-subtle)',
-            border: '1px dashed var(--editor-border-input)',
-            background: 'var(--editor-surface-muted)',
+          <div {...zoneDropProps} className="py-6 px-4 text-center text-xs rounded-lg transition-colors" style={{
+            color: isOver ? 'var(--editor-blue)' : 'var(--editor-text-subtle)',
+            border: isOver ? '2px dashed var(--editor-blue)' : '1px dashed var(--editor-border-input)',
+            background: isOver ? 'var(--editor-blue-lightest)' : 'var(--editor-surface-muted)',
           }}>
-            Empty column
+            {isOver ? 'Drop block here' : 'Empty column — drag a block here'}
           </div>
         )
       }
       return (
-        <div className="flex flex-col gap-4">
+        <div {...zoneDropProps} className="flex flex-col gap-4 rounded-lg transition-shadow" style={isOver ? { boxShadow: '0 0 0 2px var(--editor-blue)' } : undefined}>
           {zoneItems.map((zItem, zIdx) => {
             const zComp = components[zItem.type]
             if (!zComp?.render) return null
@@ -365,7 +403,7 @@ export function BlockList() {
         </div>
       )
     },
-    [puckData, saveZoneBlockProp],
+    [puckData, saveZoneBlockProp, dragOverZone, handleZoneDrop, reorderCourses],
   )
 
   // Drag-and-drop reorder (existing blocks)
