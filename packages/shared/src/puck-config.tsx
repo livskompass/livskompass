@@ -429,6 +429,15 @@ export const puckConfig: Config = {
           return {
             ...base,
             backgroundImage: { type: 'text' as const, label: 'Background image URL', metadata: { isImage: true } },
+            mobileImageFocus: {
+              type: 'select' as const,
+              label: 'Image focus on mobile',
+              options: [
+                { label: 'Center (default)', value: 'center' },
+                { label: 'Left side of image', value: 'left' },
+                { label: 'Right side of image', value: 'right' },
+              ],
+            },
             backgroundVideo: { type: 'text' as const, label: 'Background video URL', metadata: { isVideo: true } },
             overlayDarkness: {
               type: 'select' as const,
@@ -465,6 +474,15 @@ export const puckConfig: Config = {
           return {
             ...base,
             backgroundImage: { type: 'text' as const, label: 'Background image URL', metadata: { isImage: true } },
+            mobileImageFocus: {
+              type: 'select' as const,
+              label: 'Image focus on mobile',
+              options: [
+                { label: 'Center (default)', value: 'center' },
+                { label: 'Left side of image', value: 'left' },
+                { label: 'Right side of image', value: 'right' },
+              ],
+            },
             backgroundVideo: { type: 'text' as const, label: 'Background video URL', metadata: { isVideo: true } },
             overlayDarkness: {
               type: 'select' as const,
