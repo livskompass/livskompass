@@ -372,6 +372,33 @@ export function BlockList() {
 
   const { dragState, dropIndicatorIndex, handleDragStart } = useDragReorder(handleReorder)
 
+  // Reorder the columns of a Columns block: permute the zone content arrays
+  // so column content moves between positions while the layout stays put.
+  const reorderColumnsZones = useCallback(
+    (columnsId: string, from: number, to: number) => {
+      if (from === to) return
+      const base = latestDataRef.current ?? puckData
+      if (!base) return
+      const block = (base.content as PuckItem[]).find(
+        (b) => b.type === 'Columns' && b.props?.id === columnsId,
+      )
+      if (!block) return
+      const count = block.props?.layout === '33-33-33' ? 3 : 2
+      if (from < 0 || from >= count || to < 0 || to >= count) return
+      const zones: Record<string, PuckItem[]> = { ...((base.zones as Record<string, PuckItem[]>) || {}) }
+      const cols = Array.from({ length: count }, (_, i) => zones[`${columnsId}:column-${i + 1}`] || [])
+      const [moved] = cols.splice(from, 1)
+      cols.splice(to, 0, moved)
+      cols.forEach((arr, i) => {
+        zones[`${columnsId}:column-${i + 1}`] = arr
+      })
+      const next = { ...base, zones } as Data
+      latestDataRef.current = next
+      updateData(next)
+    },
+    [puckData, updateData],
+  )
+
   // renderZone: resolves a Columns zone's nested blocks for editing in the admin.
   // Wraps each nested block in EditableBlock + InlineEditBlockContext so inline
   // edits and the settings popover work the same way as top-level blocks.
@@ -689,7 +716,7 @@ export function BlockList() {
                 isDragSource={!dragState?.zoneKey && dragState?.sourceIndex === index}
               >
                 <InlineEditBlockContext.Provider
-                  value={{ isAdmin: true, blockIndex: index, saveBlockProp, blockProps: item.props, reorderCourses }}
+                  value={{ isAdmin: true, blockIndex: index, saveBlockProp, blockProps: item.props, reorderCourses, reorderColumns: reorderColumnsZones }}
                 >
                   <Fn {...item.props} />
                 </InlineEditBlockContext.Provider>

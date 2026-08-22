@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
-import { Plus, Trash2, ChevronUp, ChevronDown, GripVertical } from 'lucide-react'
+import { Plus, Trash2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, GripVertical } from 'lucide-react'
 import { useInlineEditBlock, InlineArrayOpsContext } from '../context'
 
 // ── Array drag-and-drop context (pointer-event based) ──
@@ -13,6 +13,7 @@ interface ArrayDragContextValue {
   fieldName: string
   dragState: ArrayDragState | null
   dropTargetIndex: number
+  horizontal: boolean
   onPointerDown: (itemIndex: number, e: React.PointerEvent) => void
   registerItem: (index: number, el: HTMLElement | null) => void
 }
@@ -27,12 +28,16 @@ export function ArrayDragProvider({
   children,
   fieldName,
   onMove,
+  horizontal = false,
 }: {
   children: React.ReactNode
   fieldName: string
   /** Custom move handler — used instead of InlineArrayOpsContext when the
    *  items are not a block-local array (e.g. CourseList's live course cards). */
   onMove?: (from: number, to: number) => void
+  /** Items sit side by side (e.g. Columns) — drop target follows the cursor's
+   *  X position and the indicator renders as a vertical edge bar. */
+  horizontal?: boolean
 }) {
   const editCtx = useInlineEditBlock()
   const arrayOps = useContext(InlineArrayOpsContext)
@@ -99,11 +104,12 @@ export function ArrayDragProvider({
         itemRefs.current.forEach((el, idx) => {
           if (idx === itemIndex) return
           const r = el.getBoundingClientRect()
-          const mid = r.top + r.height / 2
-          const dist = Math.abs(moveE.clientY - mid)
+          const mid = horizontal ? r.left + r.width / 2 : r.top + r.height / 2
+          const cursor = horizontal ? moveE.clientX : moveE.clientY
+          const dist = Math.abs(cursor - mid)
           if (dist < closestDist) {
             closestDist = dist
-            closest = moveE.clientY < mid ? idx : idx + 1
+            closest = cursor < mid ? idx : idx + 1
           }
         })
         if (closest === itemIndex || closest === itemIndex + 1) closest = -1
@@ -142,7 +148,7 @@ export function ArrayDragProvider({
   if (!editCtx || (!arrayOps && !onMove)) return <>{children}</>
 
   return (
-    <ArrayDragCtx.Provider value={{ fieldName, dragState, dropTargetIndex, onPointerDown, registerItem }}>
+    <ArrayDragCtx.Provider value={{ fieldName, dragState, dropTargetIndex, horizontal, onPointerDown, registerItem }}>
       {children}
     </ArrayDragCtx.Provider>
   )
@@ -158,6 +164,21 @@ function DropIndicator() {
         <div className="flex-1 h-[3px] bg-blue-500 rounded-full shadow-sm" />
         <div className="w-3 h-3 rounded-full bg-blue-500 -mr-1.5 shrink-0 shadow-sm" />
       </div>
+    </div>
+  )
+}
+
+/** Vertical edge bar for horizontal (side-by-side) item layouts — rendered
+ *  absolutely inside the item wrapper so the grid flow is not disturbed. */
+function VerticalDropIndicator({ side }: { side: 'left' | 'right' }) {
+  return (
+    <div
+      className="absolute inset-y-0 z-20 pointer-events-none flex flex-col items-center"
+      style={side === 'left' ? { left: -8 } : { right: -8 }}
+    >
+      <div className="w-3 h-3 rounded-full bg-blue-500 -mt-1.5 shrink-0 shadow-sm" />
+      <div className="flex-1 w-[3px] bg-blue-500 rounded-full shadow-sm" />
+      <div className="w-3 h-3 rounded-full bg-blue-500 -mb-1.5 shrink-0 shadow-sm" />
     </div>
   )
 }
@@ -200,6 +221,7 @@ export function ArrayItemControls({ fieldName, itemIndex, totalItems, onMove, ch
   const isDragSource = dragCtx?.dragState?.sourceIndex === itemIndex && dragCtx?.fieldName === fieldName
   const showDropBefore = dragCtx?.dropTargetIndex === itemIndex
   const showDropAfter = dragCtx?.dropTargetIndex === itemIndex + 1 && itemIndex === totalItems - 1
+  const horizontal = dragCtx?.horizontal === true
 
   // Register this item's DOM element for position calculations
   const itemRef = useRef<HTMLDivElement>(null)
@@ -210,11 +232,13 @@ export function ArrayItemControls({ fieldName, itemIndex, totalItems, onMove, ch
 
   return (
     <>
-      {showDropBefore && <DropIndicator />}
+      {!horizontal && showDropBefore && <DropIndicator />}
       <div
         ref={itemRef}
         className={`relative group/array-item transition-all duration-200 ease-out ${isDragSource ? 'opacity-15 scale-[0.96]' : ''}`}
       >
+        {horizontal && showDropBefore && <VerticalDropIndicator side="left" />}
+        {horizontal && showDropAfter && <VerticalDropIndicator side="right" />}
         {children}
 
         {/* Drag handle — left side, subtle always visible, stronger on hover */}
@@ -243,20 +267,20 @@ export function ArrayItemControls({ fieldName, itemIndex, totalItems, onMove, ch
             <button
               onClick={() => moveItem(itemIndex, itemIndex - 1)}
               className="flex items-center justify-center w-6 h-6 rounded-md bg-white border border-zinc-200 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 shadow-sm transition-colors"
-              aria-label="Move up"
-              title="Move up"
+              aria-label={horizontal ? 'Move left' : 'Move up'}
+              title={horizontal ? 'Move left' : 'Move up'}
             >
-              <ChevronUp className="h-3.5 w-3.5" />
+              {horizontal ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
             </button>
           )}
           {canMoveDown && (
             <button
               onClick={() => moveItem(itemIndex, itemIndex + 1)}
               className="flex items-center justify-center w-6 h-6 rounded-md bg-white border border-zinc-200 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 shadow-sm transition-colors"
-              aria-label="Move down"
-              title="Move down"
+              aria-label={horizontal ? 'Move right' : 'Move down'}
+              title={horizontal ? 'Move right' : 'Move down'}
             >
-              <ChevronDown className="h-3.5 w-3.5" />
+              {horizontal ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
           )}
           {!onMove && arrayOps && (

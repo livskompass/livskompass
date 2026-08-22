@@ -102,6 +102,9 @@ export interface InlineEditContextValue {
   /** Persist a new global course order (provided by the admin editor; enables
    *  drag-to-reorder on CourseList cards). */
   reorderCourses?: (ids: string[]) => void
+  /** Reorder the columns of a Columns block (provided by the admin editor;
+   *  moves zone content between column positions). */
+  reorderColumns?: (blockId: string, from: number, to: number) => void
 }
 
 export const InlineEditBlockContext = createContext<InlineEditContextValue | null>(null)

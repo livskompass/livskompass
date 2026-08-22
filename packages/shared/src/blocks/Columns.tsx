@@ -1,5 +1,7 @@
 import React, { createContext, useContext } from 'react'
 import { cn } from '../ui/utils'
+import { useInlineEditBlock } from '../context'
+import { ArrayDragProvider, ArrayItemControls } from './ArrayItemControls'
 
 export interface ColumnsProps {
   layout: '50-50' | '33-33-33' | '66-33' | '33-66'
@@ -53,7 +55,29 @@ export function Columns({
   id,
 }: ColumnsProps) {
   const renderZone = useContext(ZoneRenderContext)
+  const editCtx = useInlineEditBlock()
   const threeCol = layout === '33-33-33'
+  const count = threeCol ? 3 : 2
+
+  // Admin editor provides reorderColumns — enables drag-to-reorder whole columns
+  const canReorder = !!(editCtx?.reorderColumns && id)
+  const onMove = canReorder
+    ? (from: number, to: number) => editCtx!.reorderColumns!(id!, from, to)
+    : undefined
+
+  const columns = Array.from({ length: count }, (_, i) => {
+    const cell = (
+      <div key={i} className="min-h-[60px]">
+        {renderZone?.(`${id}:column-${i + 1}`)}
+      </div>
+    )
+    if (!onMove) return cell
+    return (
+      <ArrayItemControls key={i} fieldName="__columns" itemIndex={i} totalItems={count} onMove={onMove}>
+        {cell}
+      </ArrayItemControls>
+    )
+  })
 
   return (
     <InColumnContext.Provider value={true}>
@@ -69,16 +93,12 @@ export function Columns({
           paddingInline: 'var(--container-px)',
         }}
       >
-        <div className="min-h-[60px]">
-          {renderZone?.(`${id}:column-1`)}
-        </div>
-        <div className="min-h-[60px]">
-          {renderZone?.(`${id}:column-2`)}
-        </div>
-        {threeCol && (
-          <div className="min-h-[60px]">
-            {renderZone?.(`${id}:column-3`)}
-          </div>
+        {onMove ? (
+          <ArrayDragProvider fieldName="__columns" onMove={onMove} horizontal>
+            {columns}
+          </ArrayDragProvider>
+        ) : (
+          columns
         )}
       </div>
     </InColumnContext.Provider>
