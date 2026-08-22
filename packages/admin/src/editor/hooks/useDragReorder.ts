@@ -8,6 +8,8 @@ interface DragState {
   ghostX: number
   ghostHeight: number
   ghostWidth: number
+  /** Set when dragging a block that lives inside a Columns zone */
+  zoneKey?: string
 }
 
 const DRAG_THRESHOLD = 5 // px before drag activates (click vs drag)
@@ -22,22 +24,30 @@ const BLOCK_SELECTOR = '[data-block-index]'
  * - handleDragStart: call on pointerdown on a drag handle
  * - dropIndicatorIndex: where the blue insertion line should show (-1 = none)
  */
-export function useDragReorder(onReorder: (from: number, to: number) => void) {
+export function useDragReorder(onReorder: (from: number, to: number, zoneKey?: string) => void) {
   const [dragState, setDragState] = useState<DragState | null>(null)
   const [dropIndicatorIndex, setDropIndicatorIndex] = useState(-1)
 
   const startPos = useRef({ x: 0, y: 0 })
   const offsetRef = useRef({ x: 0, y: 0 })
   const sourceIndexRef = useRef(-1)
+  const zoneScopeRef = useRef<string | null>(null)
   const isDraggingRef = useRef(false)
   const blockRectsRef = useRef<{ top: number; bottom: number; mid: number; index: number }[]>([])
   const ghostElRef = useRef<HTMLDivElement | null>(null)
   const placeholderRef = useRef<HTMLDivElement | null>(null)
   const thresholdCleanupRef = useRef<(() => void) | null>(null)
 
-  // Snapshot all block positions at drag start
+  // Snapshot the dragged block's sibling positions at drag start.
+  // A zone drag only sees blocks in that zone; a top-level drag excludes
+  // zone-nested blocks (their zone-relative indices would collide).
   const snapshotBlockRects = useCallback(() => {
-    const blocks = document.querySelectorAll(BLOCK_SELECTOR)
+    const zoneKey = zoneScopeRef.current
+    const blocks = zoneKey
+      ? document.querySelectorAll(`[data-zone-key="${zoneKey}"] > ${BLOCK_SELECTOR}`)
+      : [...document.querySelectorAll(BLOCK_SELECTOR)].filter(
+          (el) => !el.closest('[data-zone-key]'),
+        )
     const rects: { top: number; bottom: number; mid: number; index: number }[] = []
     blocks.forEach((el) => {
       const idx = parseInt(el.getAttribute('data-block-index') || '-1', 10)
@@ -138,6 +148,7 @@ export function useDragReorder(onReorder: (from: number, to: number) => void) {
       placeholderRef.current = null
     }
     isDraggingRef.current = false
+    zoneScopeRef.current = null
     setDragState(null)
     setDropIndicatorIndex(-1)
     document.body.style.cursor = ''
@@ -181,7 +192,7 @@ export function useDragReorder(onReorder: (from: number, to: number) => void) {
       if (dropIdx > src) dropIdx -= 1 // Account for removed source
 
       if (dropIdx >= 0 && dropIdx !== src) {
-        onReorder(src, dropIdx)
+        onReorder(src, dropIdx, zoneScopeRef.current ?? undefined)
       }
 
       cleanup()
@@ -206,7 +217,7 @@ export function useDragReorder(onReorder: (from: number, to: number) => void) {
 
   // Start drag handler — attach to grip handle's onPointerDown
   const handleDragStart = useCallback(
-    (blockIndex: number, e: React.PointerEvent) => {
+    (blockIndex: number, e: React.PointerEvent, zoneKey?: string) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -215,6 +226,7 @@ export function useDragReorder(onReorder: (from: number, to: number) => void) {
 
       startPos.current = { x: e.clientX, y: e.clientY }
       sourceIndexRef.current = blockIndex
+      zoneScopeRef.current = zoneKey ?? null
 
       // Wait for threshold before committing to drag
       const handleThresholdMove = (moveEvent: PointerEvent) => {
@@ -240,6 +252,7 @@ export function useDragReorder(onReorder: (from: number, to: number) => void) {
             ghostX: moveEvent.clientX,
             ghostHeight: height,
             ghostWidth: width,
+            zoneKey: zoneScopeRef.current ?? undefined,
           })
         }
       }

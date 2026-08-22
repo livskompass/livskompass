@@ -338,10 +338,45 @@ export function BlockList() {
     updateData(next)
   }, [puckData, updateData])
 
+  // Drag-and-drop reorder (existing blocks) — zoneKey set when the drag
+  // started inside a Columns zone, in which case only that zone reorders
+  const handleReorder = useCallback(
+    (fromIndex: number, toIndex: number, zoneKey?: string) => {
+      if (fromIndex === toIndex) return
+      const base = latestDataRef.current ?? puckData
+      if (!base) return
+      if (zoneKey) {
+        const zones: Record<string, PuckItem[]> = { ...((base.zones as Record<string, PuckItem[]>) || {}) }
+        const zoneItems = [...(zones[zoneKey] || [])]
+        if (fromIndex < 0 || fromIndex >= zoneItems.length) return
+        if (toIndex < 0 || toIndex >= zoneItems.length) return
+        const [moved] = zoneItems.splice(fromIndex, 1)
+        zoneItems.splice(toIndex, 0, moved)
+        zones[zoneKey] = zoneItems
+        const next = { ...base, zones } as Data
+        latestDataRef.current = next
+        updateData(next)
+        return
+      }
+      if (fromIndex < 0 || fromIndex >= base.content.length) return
+      if (toIndex < 0 || toIndex >= base.content.length) return
+      const content = [...base.content]
+      const [moved] = content.splice(fromIndex, 1)
+      content.splice(toIndex, 0, moved)
+      const next = { ...base, content } as Data
+      latestDataRef.current = next
+      updateData(next)
+    },
+    [puckData, updateData],
+  )
+
+  const { dragState, dropIndicatorIndex, handleDragStart } = useDragReorder(handleReorder)
+
   // renderZone: resolves a Columns zone's nested blocks for editing in the admin.
   // Wraps each nested block in EditableBlock + InlineEditBlockContext so inline
   // edits and the settings popover work the same way as top-level blocks.
-  // Each zone is also a drop target for new blocks from the panel.
+  // Each zone is also a drop target for new blocks from the panel, and its
+  // blocks reorder with the same drag handle as top-level blocks.
   const renderZone = useCallback(
     (zoneKey: string): React.ReactNode => {
       const zoneItems: PuckItem[] = (puckData?.zones as Record<string, PuckItem[]> | undefined)?.[zoneKey] || []
@@ -370,8 +405,10 @@ export function BlockList() {
           </div>
         )
       }
+      const isZoneDrag = dragState?.zoneKey === zoneKey
       return (
-        <div {...zoneDropProps} className="flex flex-col gap-4 rounded-lg transition-shadow" style={isOver ? { boxShadow: '0 0 0 2px var(--editor-blue)' } : undefined}>
+        <div {...zoneDropProps} data-zone-key={zoneKey} className="flex flex-col gap-4 rounded-lg transition-shadow" style={isOver ? { boxShadow: '0 0 0 2px var(--editor-blue)' } : undefined}>
+          {isZoneDrag && dropIndicatorIndex === 0 && <DropIndicator />}
           {zoneItems.map((zItem, zIdx) => {
             const zComp = components[zItem.type]
             if (!zComp?.render) return null
@@ -379,49 +416,36 @@ export function BlockList() {
             const zBlockId = zItem.props?.id || `${zoneKey}-${zItem.type}-${zIdx}`
             const zLabel = zComp.label || zItem.type
             return (
-              <EditableBlock
-                key={zBlockId}
-                blockId={zBlockId}
-                blockType={zItem.type}
-                blockLabel={zLabel}
-                blockIndex={zIdx}
-              >
-                <InlineEditBlockContext.Provider
-                  value={{
-                    isAdmin: true,
-                    blockIndex: zIdx,
-                    blockProps: zItem.props,
-                    saveBlockProp: (bi, name, val) => saveZoneBlockProp(zoneKey, bi, name, val),
-                    reorderCourses,
-                  }}
+              <React.Fragment key={zBlockId}>
+                <EditableBlock
+                  blockId={zBlockId}
+                  blockType={zItem.type}
+                  blockLabel={zLabel}
+                  blockIndex={zIdx}
+                  onDragStart={(idx, ev) => handleDragStart(idx, ev, zoneKey)}
+                  isDragSource={isZoneDrag && dragState?.sourceIndex === zIdx}
                 >
-                  <ZFn {...zItem.props} />
-                </InlineEditBlockContext.Provider>
-              </EditableBlock>
+                  <InlineEditBlockContext.Provider
+                    value={{
+                      isAdmin: true,
+                      blockIndex: zIdx,
+                      blockProps: zItem.props,
+                      saveBlockProp: (bi, name, val) => saveZoneBlockProp(zoneKey, bi, name, val),
+                      reorderCourses,
+                    }}
+                  >
+                    <ZFn {...zItem.props} />
+                  </InlineEditBlockContext.Provider>
+                </EditableBlock>
+                {isZoneDrag && dropIndicatorIndex === zIdx + 1 && <DropIndicator />}
+              </React.Fragment>
             )
           })}
         </div>
       )
     },
-    [puckData, saveZoneBlockProp, dragOverZone, handleZoneDrop, reorderCourses],
+    [puckData, saveZoneBlockProp, dragOverZone, handleZoneDrop, reorderCourses, dragState, dropIndicatorIndex, handleDragStart],
   )
-
-  // Drag-and-drop reorder (existing blocks)
-  const handleReorder = useCallback(
-    (fromIndex: number, toIndex: number) => {
-      if (!puckData) return
-      if (fromIndex < 0 || fromIndex >= puckData.content.length) return
-      if (toIndex < 0 || toIndex >= puckData.content.length) return
-      if (fromIndex === toIndex) return
-      const content = [...puckData.content]
-      const [moved] = content.splice(fromIndex, 1)
-      content.splice(toIndex, 0, moved)
-      updateData({ ...puckData, content } as Data)
-    },
-    [puckData, updateData],
-  )
-
-  const { dragState, dropIndicatorIndex, handleDragStart } = useDragReorder(handleReorder)
 
   const handleDeselectAll = useCallback(() => {
     selectBlock(null)
@@ -644,7 +668,7 @@ export function BlockList() {
         {isPanelDragOver && panelDropIndex === 0 && <PanelDropIndicator />}
 
         {/* Reorder drop indicator before first block */}
-        {dragState && dropIndicatorIndex === 0 && <DropIndicator />}
+        {dragState && !dragState.zoneKey && dropIndicatorIndex === 0 && <DropIndicator />}
 
         {items.map((item: PuckItem, index: number) => {
           const comp = components[item.type]
@@ -662,7 +686,7 @@ export function BlockList() {
                 blockLabel={label}
                 blockIndex={index}
                 onDragStart={handleDragStart}
-                isDragSource={dragState?.sourceIndex === index}
+                isDragSource={!dragState?.zoneKey && dragState?.sourceIndex === index}
               >
                 <InlineEditBlockContext.Provider
                   value={{ isAdmin: true, blockIndex: index, saveBlockProp, blockProps: item.props, reorderCourses }}
@@ -672,7 +696,7 @@ export function BlockList() {
               </EditableBlock>
 
               {/* Reorder drop indicator after this block */}
-              {dragState && dropIndicatorIndex === index + 1 && <DropIndicator />}
+              {dragState && !dragState.zoneKey && dropIndicatorIndex === index + 1 && <DropIndicator />}
 
               {/* Panel drop indicator after this block */}
               {isPanelDragOver && panelDropIndex === index + 1 && <PanelDropIndicator />}
