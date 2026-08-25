@@ -26,6 +26,7 @@ import { CourseList } from './blocks/CourseList'
 import { ProductList } from './blocks/ProductList'
 import { ContactForm } from './blocks/ContactForm'
 import { BookingForm } from './blocks/BookingForm'
+import { NewsletterSignup } from './blocks/NewsletterSignup'
 import { CourseInfo } from './blocks/CourseInfo'
 import { BookingCTA } from './blocks/BookingCTA'
 import { PostHeader } from './blocks/PostHeader'
@@ -210,7 +211,7 @@ export const puckConfig: Config = {
     marketing: { title: 'Marketing', components: ['CTABanner', 'CardGrid', 'Testimonial', 'ButtonGroup', 'PricingTable'] },
     media: { title: 'Media', components: ['ImageGallery', 'VideoEmbed', 'AudioEmbed', 'FileEmbed', 'EmbedBlock'] },
     dynamic: { title: 'Dynamic', components: ['CourseList', 'ProductList', 'PostGrid', 'PageCards', 'NavigationMenu'] },
-    interactive: { title: 'Interactive', components: ['ContactForm', 'BookingForm'] },
+    interactive: { title: 'Interactive', components: ['ContactForm', 'BookingForm', 'NewsletterSignup'] },
     data: { title: 'Data-bound', components: ['CourseHeader', 'CourseInfo', 'BookingCTA', 'PostHeader'] },
   },
 
@@ -941,6 +942,26 @@ export const puckConfig: Config = {
         priceSuffix: { type: 'text', label: 'Price suffix' },
       },
       render: (props: any) => <SectionBgWrap bg={props.sectionBg}><BookingForm {...props} /></SectionBgWrap>,
+    },
+    NewsletterSignup: {
+      label: 'Newsletter Signup',
+      defaultProps: {
+        sectionBg: 'transparent',
+        heading: 'Nyhetsbrev',
+        description: 'Få nyheter om utbildningar, material och forskning kring ACT och mindfulness — direkt till din inkorg.',
+        buttonText: 'Anmäl mig',
+        placeholder: 'din@epost.se',
+        consentText: 'Genom att anmäla dig samtycker du till att vi sparar din e-postadress för att skicka nyhetsbrev. Du kan avsluta prenumerationen när som helst.',
+      },
+      fields: {
+        sectionBg: sectionBgField,
+        heading: { type: 'text', label: 'Heading' },
+        description: { type: 'textarea', label: 'Description' },
+        buttonText: { type: 'text', label: 'Button text' },
+        placeholder: { type: 'text', label: 'Email placeholder' },
+        consentText: { type: 'textarea', label: 'Consent text' },
+      },
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><NewsletterSignup {...props} /></SectionBgWrap>,
     },
 
     // ── Data-bound ──

@@ -73,6 +73,7 @@ const INLINE_FIELDS: Record<string, Set<string>> = {
   PersonCard: new Set(['name', 'title', 'bio', 'email', 'phone', 'image']),
   BookingCTA: new Set(['heading', 'description', 'buttonText']),
   BookingForm: new Set(['nameLabel', 'emailLabel', 'phoneLabel', 'organizationLabel', 'participantsLabel', 'notesLabel', 'submitButtonText', 'totalLabel']),
+  NewsletterSignup: new Set(['heading', 'description', 'buttonText', 'consentText']),
   CourseInfo: new Set(['locationLabel', 'dateLabel', 'priceLabel', 'spotsLabel', 'deadlineLabel']),
   PricingTable: new Set(['heading']),
   PostHeader: new Set(['backLinkText']),
