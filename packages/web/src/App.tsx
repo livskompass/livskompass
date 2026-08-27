@@ -14,6 +14,7 @@ const BookingConfirmation = React.lazy(() => import('./pages/BookingConfirmation
 const PostDetail = React.lazy(() => import('./pages/PostDetail'))
 const ProductDetail = React.lazy(() => import('./pages/ProductDetail'))
 const NotFound = React.lazy(() => import('./pages/NotFound'))
+const NewsletterIssue = React.lazy(() => import('./pages/NewsletterIssue'))
 const DesignSystem = React.lazy(() => import('./pages/DesignSystem'))
 
 /**
@@ -136,6 +137,9 @@ function App() {
 
           {/* Blog detail */}
           <Route path="nyhet/:slug" element={<Suspense fallback={<PageLoader />}><PostDetail /></Suspense>} />
+
+          {/* Newsletter issue — rendered on-site from the Get a Newsletter archive */}
+          <Route path="nyhetsbrev/:id" element={<Suspense fallback={<PageLoader />}><NewsletterIssue /></Suspense>} />
 
           {/* Material (product) detail */}
           <Route path="material/:slug" element={<Suspense fallback={<PageLoader />}><ProductDetail /></Suspense>} />

@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || '/api'
+export const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 // Derive the media base URL from API_BASE by stripping the /api suffix.
 // In production: "https://livskompass-api.livskompass-config.workers.dev"

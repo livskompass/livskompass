@@ -855,7 +855,7 @@ export const helpArticles: HelpArticle[] = [
     steps: [
       'Drag "Newsletter Archive" from the Dynamic category in the block panel.',
       'It automatically lists all sent newsletters, newest first — no manual updating needed.',
-      'Each row links to the newsletter\'s public web version, opening in a new tab.',
+      'Each row opens the newsletter rendered on this site (at /nyhetsbrev/...), with a back link to the archive.',
       'Click the heading to edit it inline.',
     ],
     settings: [

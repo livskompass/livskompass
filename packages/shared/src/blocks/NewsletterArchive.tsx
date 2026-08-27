@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react'
+import { ChevronRight, ExternalLink } from 'lucide-react'
 import { useFetchJson, formatSwedishDate } from '../helpers'
 import { cn } from '../ui/utils'
 import { useEditableText, useInlineEditBlock } from '../context'
@@ -10,6 +10,7 @@ export interface NewsletterArchiveProps {
 }
 
 interface Issue {
+  id?: number | null
   subject: string
   date: string | null
   url: string
@@ -59,22 +60,28 @@ export function NewsletterArchive({
         <p {...editHandlers(emptyTextEdit)} className={cn('text-muted', emptyTextEdit?.className)}>{emptyText}</p>
       ) : (
         <div className="border border-default rounded-xl divide-y divide-default overflow-hidden bg-surface-elevated">
-          {issues.map((issue, i) => (
-            <a
-              key={i}
-              href={issue.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between gap-4 px-5 py-4 hover:bg-surface transition-colors outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-inset"
-              onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}
-            >
-              <div className="min-w-0">
-                <div className="font-medium text-foreground truncate group-hover:text-accent transition-colors">{issue.subject}</div>
-                {issue.date && <div className="text-body-sm text-muted mt-0.5">{formatSwedishDate(issue.date)}</div>}
-              </div>
-              <ExternalLink className="h-4 w-4 shrink-0 text-faint group-hover:text-accent transition-colors" />
-            </a>
-          ))}
+          {issues.map((issue, i) => {
+            // With an id, the newsletter opens rendered on this site; the
+            // external web version is only a fallback for older cache entries.
+            const internal = issue.id != null
+            return (
+              <a
+                key={i}
+                href={internal ? `/nyhetsbrev/${issue.id}` : issue.url}
+                {...(internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+                className="group flex items-center justify-between gap-4 px-5 py-4 hover:bg-surface transition-colors outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-inset"
+                onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}
+              >
+                <div className="min-w-0">
+                  <div className="font-medium text-foreground truncate group-hover:text-accent transition-colors">{issue.subject}</div>
+                  {issue.date && <div className="text-body-sm text-muted mt-0.5">{formatSwedishDate(issue.date)}</div>}
+                </div>
+                {internal
+                  ? <ChevronRight className="h-4 w-4 shrink-0 text-faint group-hover:text-accent transition-colors" />
+                  : <ExternalLink className="h-4 w-4 shrink-0 text-faint group-hover:text-accent transition-colors" />}
+              </a>
+            )
+          })}
         </div>
       )}
     </div>

@@ -45,7 +45,8 @@ newsletterRoutes.get('/archive', async (c) => {
   if (!token) return c.json({ issues: [] })
 
   const cache = caches.default
-  const cacheKey = new Request('https://internal.livskompass.cache/newsletter-archive')
+  // v2: response shape gained `id` — new key so stale cached lists are skipped
+  const cacheKey = new Request('https://internal.livskompass.cache/newsletter-archive-v2')
   const hit = await cache.match(cacheKey)
   if (hit) return new Response(hit.body, hit)
 
@@ -60,6 +61,7 @@ newsletterRoutes.get('/archive', async (c) => {
     const issues = (results as Record<string, any>[])
       .filter((m) => !m.test && (m.preview_url || m.share_url) && m.subject)
       .map((m) => ({
+        id: m.id ?? null,
         subject: String(m.subject),
         date: m.time_to_send || m.updated || null,
         url: String(m.preview_url || m.share_url),
@@ -72,6 +74,47 @@ newsletterRoutes.get('/archive', async (c) => {
     return response
   } catch {
     return c.json({ issues: [] })
+  }
+})
+
+// One newsletter, rendered — fetches the mail's public preview page (the
+// only place Get a Newsletter exposes the rendered HTML for block-editor
+// mails) so the site can show newsletters without sending visitors away.
+// The HTML is script-free email markup; the web app additionally renders it
+// inside a sandboxed iframe with scripts disabled.
+newsletterRoutes.get('/archive/:id', async (c) => {
+  const token = c.env.GAN_API_TOKEN
+  const id = c.req.param('id')
+  if (!token || !/^\d+$/.test(id)) return c.json({ error: 'Not found' }, 404)
+
+  const cache = caches.default
+  const cacheKey = new Request(`https://internal.livskompass.cache/newsletter-issue/${id}`)
+  const hit = await cache.match(cacheKey)
+  if (hit) return new Response(hit.body, hit)
+
+  const base = c.env.GAN_API_URL || 'https://api.getanewsletter.com'
+  try {
+    const res = await fetch(`${base}/v3/mails/sent/${id}/`, {
+      headers: { Authorization: `Token ${token}`, Accept: 'application/json' },
+    })
+    if (!res.ok) return c.json({ error: 'Not found' }, 404)
+    const m = (await res.json()) as Record<string, any>
+    if (m.test || !m.preview_url) return c.json({ error: 'Not found' }, 404)
+
+    const pres = await fetch(String(m.preview_url))
+    if (!pres.ok) return c.json({ error: 'Not found' }, 404)
+    const html = await pres.text()
+
+    const response = c.json({
+      subject: String(m.subject || ''),
+      date: m.time_to_send || m.updated || null,
+      html,
+    })
+    response.headers.set('Cache-Control', 'public, max-age=21600')
+    c.executionCtx.waitUntil(cache.put(cacheKey, response.clone()))
+    return response
+  } catch {
+    return c.json({ error: 'Not found' }, 404)
   }
 })
 
