@@ -605,7 +605,9 @@ export function BlockList() {
     return {
       id: e.id, slug: e.slug, title: e.title, description: e.description || '',
       location: e.location || '', start_date: e.start_date || null, end_date: e.end_date || null,
-      price_sek: e.price_sek ?? null, max_participants: e.max_participants ?? null,
+      date_text: e.date_text || null,
+      price_sek: e.price_sek ?? null, price_note: e.price_note || null,
+      max_participants: e.max_participants ?? null,
       current_participants: e.current_participants ?? 0, registration_deadline: e.registration_deadline || null,
       status: e.status || 'draft', content: e.content || '',
     }
