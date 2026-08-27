@@ -55,7 +55,12 @@ function ManualCardItem({ card, index, totalItems, cardColor }: { card: ManualCa
 
   return (
     <ArrayItemControls fieldName="manualCards" itemIndex={index} totalItems={totalItems}>
-    <a href={card.link || '#'} className="block group rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2" onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}>
+    <a
+      href={card.link || '#'}
+      {...(/^https?:\/\//i.test(card.link || '') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      className="block group rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2"
+      onClick={editCtx ? (e: React.MouseEvent) => e.preventDefault() : undefined}
+    >
       <div className={cn('rounded-lg overflow-hidden h-full hover:shadow-[0_0_28px_4px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-300', colors.bg)}>
         {(card.image || editCtx) && (
           <div className="aspect-video overflow-hidden rounded-t-lg">

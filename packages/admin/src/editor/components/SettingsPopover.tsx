@@ -558,6 +558,12 @@ function PagePicker({ label, value, onChange }: { label: string; value: string; 
     ? pages.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()) || p.slug.includes(search.toLowerCase()))
     : pages
 
+  // Pasted URLs pass through as-is — external links (https://...), absolute
+  // paths (/...) and mailto: all work; "www." gets an https:// prefix.
+  const trimmed = search.trim()
+  const isUrlInput = /^(https?:\/\/|\/|www\.|mailto:)/i.test(trimmed)
+  const urlValue = /^www\./i.test(trimmed) ? `https://${trimmed}` : trimmed
+
   return (
     <div>
       <FieldLabel label={label} />
@@ -574,12 +580,27 @@ function PagePicker({ label, value, onChange }: { label: string; value: string; 
       )}
       <input
         type="text"
-        placeholder="Search pages..."
+        placeholder="Search pages or paste a URL..."
         className={INPUT_CLASS}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && isUrlInput) {
+            e.preventDefault()
+            onChange(urlValue)
+            setSearch('')
+          }
+        }}
       />
-      {search && filtered.length > 0 && (
+      {isUrlInput && (
+        <button
+          onClick={() => { onChange(urlValue); setSearch('') }}
+          className="mt-1 w-full text-left px-2.5 py-1.5 text-sm rounded-md border border-zinc-200 bg-white hover:bg-blue-50 text-blue-700 transition-colors truncate"
+        >
+          Use link: <span className="font-medium">{urlValue}</span>
+        </button>
+      )}
+      {search && !isUrlInput && filtered.length > 0 && (
         <div className="mt-1 max-h-[200px] overflow-y-auto rounded-md border border-zinc-200 bg-white">
           {filtered.slice(0, 20).map((p) => (
             <button
