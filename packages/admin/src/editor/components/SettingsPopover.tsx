@@ -559,10 +559,13 @@ function PagePicker({ label, value, onChange }: { label: string; value: string; 
     : pages
 
   // Pasted URLs pass through as-is — external links (https://...), absolute
-  // paths (/...) and mailto: all work; "www." gets an https:// prefix.
+  // paths (/...) and mailto: all work. Anything domain-shaped without a
+  // scheme ("gansub.com/t/v/x", "www.dn.se") gets an https:// prefix.
   const trimmed = search.trim()
-  const isUrlInput = /^(https?:\/\/|\/|www\.|mailto:)/i.test(trimmed)
-  const urlValue = /^www\./i.test(trimmed) ? `https://${trimmed}` : trimmed
+  const hasScheme = /^(https?:\/\/|\/|mailto:)/i.test(trimmed)
+  const isBareDomain = /^[\w-]+(\.[\w-]+)+(\/\S*|\?\S*|#\S*)?$/.test(trimmed)
+  const isUrlInput = hasScheme || isBareDomain
+  const urlValue = hasScheme ? trimmed : `https://${trimmed}`
 
   return (
     <div>
