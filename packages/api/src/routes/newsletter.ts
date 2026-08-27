@@ -37,6 +37,44 @@ export async function withNewsletterTable<T>(db: D1Database, op: () => Promise<T
   }
 }
 
+// Public archive of sent newsletters — proxies Get a Newsletter's sent-mails
+// list so the site can render an auto-updating archive. The API token stays
+// server-side; responses are cached for an hour via the Cache API.
+newsletterRoutes.get('/archive', async (c) => {
+  const token = c.env.GAN_API_TOKEN
+  if (!token) return c.json({ issues: [] })
+
+  const cache = caches.default
+  const cacheKey = new Request('https://internal.livskompass.cache/newsletter-archive')
+  const hit = await cache.match(cacheKey)
+  if (hit) return new Response(hit.body, hit)
+
+  const base = c.env.GAN_API_URL || 'https://api.getanewsletter.com'
+  try {
+    const res = await fetch(`${base}/v3/mails/sent/?page_size=100`, {
+      headers: { Authorization: `Token ${token}`, Accept: 'application/json' },
+    })
+    if (!res.ok) return c.json({ issues: [] })
+    const data = (await res.json()) as { results?: unknown[] }
+    const results = Array.isArray(data.results) ? data.results : Array.isArray(data) ? (data as unknown[]) : []
+    const issues = (results as Record<string, any>[])
+      .filter((m) => !m.test && (m.preview_url || m.share_url) && m.subject)
+      .map((m) => ({
+        subject: String(m.subject),
+        date: m.time_to_send || m.updated || null,
+        url: String(m.preview_url || m.share_url),
+      }))
+      .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
+
+    const response = c.json({ issues })
+    response.headers.set('Cache-Control', 'public, max-age=3600')
+    c.executionCtx.waitUntil(cache.put(cacheKey, response.clone()))
+    return response
+  } catch {
+    return c.json({ issues: [] })
+  }
+})
+
 // Subscribe to the newsletter — rate limited to 5 per minute per IP.
 // Emails are stored in D1 (newsletter_signups) and read out in the admin
 // "Newsletter" page for manual mailing-list updates.

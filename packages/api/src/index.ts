@@ -33,6 +33,10 @@ export type Bindings = {
   RESEND_API_URL?: string
   CONTACT_NOTIFY_EMAIL?: string
   CONTACT_FROM_EMAIL?: string
+  // Get a Newsletter — powers the public newsletter archive.
+  // GAN_API_TOKEN is a secret (wrangler secret put); GAN_API_URL is a test override.
+  GAN_API_TOKEN?: string
+  GAN_API_URL?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()

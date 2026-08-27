@@ -27,6 +27,7 @@ import { ProductList } from './blocks/ProductList'
 import { ContactForm } from './blocks/ContactForm'
 import { BookingForm } from './blocks/BookingForm'
 import { NewsletterSignup } from './blocks/NewsletterSignup'
+import { NewsletterArchive } from './blocks/NewsletterArchive'
 import { CourseInfo } from './blocks/CourseInfo'
 import { BookingCTA } from './blocks/BookingCTA'
 import { PostHeader } from './blocks/PostHeader'
@@ -210,7 +211,7 @@ export const puckConfig: Config = {
     content: { title: 'Content', components: ['Hero', 'RichText', 'ImageBlock', 'Accordion', 'PageHeader', 'PersonCard', 'FeatureGrid', 'StatsCounter'] },
     marketing: { title: 'Marketing', components: ['CTABanner', 'CardGrid', 'Testimonial', 'ButtonGroup', 'PricingTable'] },
     media: { title: 'Media', components: ['ImageGallery', 'VideoEmbed', 'AudioEmbed', 'FileEmbed', 'EmbedBlock'] },
-    dynamic: { title: 'Dynamic', components: ['CourseList', 'ProductList', 'PostGrid', 'PageCards', 'NavigationMenu'] },
+    dynamic: { title: 'Dynamic', components: ['CourseList', 'ProductList', 'PostGrid', 'PageCards', 'NavigationMenu', 'NewsletterArchive'] },
     interactive: { title: 'Interactive', components: ['ContactForm', 'BookingForm', 'NewsletterSignup'] },
     data: { title: 'Data-bound', components: ['CourseHeader', 'CourseInfo', 'BookingCTA', 'PostHeader'] },
   },
@@ -896,6 +897,17 @@ export const puckConfig: Config = {
         alignment: { type: 'radio', label: 'Alignment', options: [{ label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }] },
       },
       render: (props: any) => <SectionBgWrap bg={props.sectionBg}><NavigationMenu {...props} /></SectionBgWrap>,
+    },
+    NewsletterArchive: {
+      label: 'Newsletter Archive',
+      defaultProps: { sectionBg: 'transparent', heading: 'Nyhetsbrev', maxItems: 0, emptyText: 'Inga nyhetsbrev ännu.' },
+      fields: {
+        sectionBg: sectionBgField,
+        heading: { type: 'text', label: 'Heading' },
+        maxItems: { type: 'number', label: 'Max items (0 = all)' },
+        emptyText: { type: 'text', label: 'Empty text' },
+      },
+      render: (props: any) => <SectionBgWrap bg={props.sectionBg}><NewsletterArchive {...props} /></SectionBgWrap>,
     },
 
     // ── Interactive ──

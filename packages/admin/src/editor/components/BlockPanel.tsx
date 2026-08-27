@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { Search, X, GripVertical, Columns, Type, Image, BarChart3, Layout, MessageSquare, Database, ChevronLeft, ChevronRight, ChevronDown,
   Heading, AlignLeft, ImageIcon, Layers, Star, FileText, List, Grid3x3, SplitSquareHorizontal, Minus, MoveVertical,
   Megaphone, CreditCard, Quote, MousePointerClick, Video, Music, File, Code2, BookOpen, ShoppingCart, Newspaper, Navigation, Mail, CalendarCheck, Info, Tag,
-  ExternalLink, MailPlus
+  ExternalLink, MailPlus, Archive
 } from 'lucide-react'
 import { puckConfig, getEditingSurface } from '@livskompass/shared'
 import { useEditor } from '../context'
@@ -55,6 +55,7 @@ const BLOCK_ICONS: Record<string, React.ReactNode> = {
   ContactForm: <Mail className="h-3.5 w-3.5" />,
   BookingForm: <CalendarCheck className="h-3.5 w-3.5" />,
   NewsletterSignup: <MailPlus className="h-3.5 w-3.5" />,
+  NewsletterArchive: <Archive className="h-3.5 w-3.5" />,
   BookingCTA: <CalendarCheck className="h-3.5 w-3.5" />,
   CourseInfo: <Info className="h-3.5 w-3.5" />,
   PostHeader: <Tag className="h-3.5 w-3.5" />,
