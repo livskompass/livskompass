@@ -285,11 +285,13 @@ export const helpArticles: HelpArticle[] = [
     id: 'block-columns',
     title: 'Columns',
     category: 'blocks-layout',
-    keywords: ['columns', 'layout', 'grid', 'split', 'two column', 'three column', 'side by side'],
+    keywords: ['columns', 'layout', 'grid', 'split', 'two column', 'three column', 'side by side', 'reorder', 'swap', 'move column'],
     steps: [
       'Drag "Columns" from the Layout category in the block panel.',
       'By default, it creates a 50-50 two-column layout.',
-      'Add content blocks inside each column by dragging them into the column area.',
+      'Add content blocks inside each column by dragging them from the block panel into the column area.',
+      'Reorder blocks inside a column by dragging them with the {icon:grip} grip handle.',
+      'Swap entire columns: hover a column and drag its {icon:grip} grip handle sideways, or use the Move left / Move right arrows.',
       'Open settings {icon:settings} to change the layout split.',
     ],
     settings: [
@@ -424,20 +426,25 @@ export const helpArticles: HelpArticle[] = [
     id: 'block-accordion',
     title: 'Accordion (FAQ)',
     category: 'blocks-content',
-    keywords: ['accordion', 'faq', 'collapse', 'expand', 'question', 'answer', 'dropdown', 'toggle'],
+    keywords: ['accordion', 'faq', 'collapse', 'expand', 'question', 'answer', 'dropdown', 'toggle', 'reorder', 'order', 'link', 'länk', 'clickable'],
     steps: [
       'Drag "Accordion" from the Content category in the block panel.',
-      'Click the heading to edit the section title inline.',
-      'Open settings (gear icon) to add, edit, or remove accordion items.',
-      'Each item has a "question" (clickable header) and "answer" (expandable content).',
-      'Use the + button in the array field to add more items.',
+      'Click the heading to edit the section title inline, and click any question or answer to edit it directly.',
+      'Answers are rich text: select text in an answer and use the link button in the formatting toolbar to make clickable links (e.g. to reports).',
+      'Reorder questions by dragging the {icon:grip} grip handle that appears when you hover an item, or use the up/down arrows on the right.',
+      'Click "Add question" below the list to add a new item — then drag it to the top if the newest should show first.',
+      'Hover an item and click the trash icon to remove it.',
     ],
     settings: [
-      { name: 'Items', description: 'Array of question/answer pairs. Each has a question (header text) and answer (expandable content).' },
+      { name: 'Items', description: 'Array of question/answer pairs. Also editable directly on the page — inline editing is usually easier.' },
       { name: 'Initially expanded', description: 'Which items start open: none, first, or all.' },
       { name: 'Style', description: 'Visual style: default, bordered, or minimal.' },
       { name: 'Icon position', description: 'Expand/collapse icon placement: left or right.' },
       { name: 'Section Background', description: 'Background color behind the accordion.' },
+    ],
+    tips: [
+      'Answers support bold, italic, lists, and links — the same formatting toolbar as Rich Text.',
+      'Newest question on top: add it, then drag it to the first position.',
     ],
   },
   {
@@ -558,7 +565,7 @@ export const helpArticles: HelpArticle[] = [
       { name: 'Source', description: 'Where cards come from: manual (you define them), posts, courses, or products (auto-fetched from the API).' },
       { name: 'Max items', description: 'Limit the number of cards shown.' },
       { name: 'Columns', description: 'Grid columns: 2, 3, or 4.' },
-      { name: 'Manual cards', description: 'When source is "manual": array of cards with title, description, image, link, and badge.' },
+      { name: 'Manual cards', description: 'When source is "manual": array of cards with title, description, image, link, and badge. The link field accepts internal pages (search by name) or a pasted external URL.' },
       { name: 'Card style', description: 'Visual style: default, bordered, or shadow.' },
       { name: 'Card color', description: 'Card background: white, yellow, mist, or dark.' },
       { name: 'Section Background', description: 'Background color behind the grid.' },
@@ -566,6 +573,7 @@ export const helpArticles: HelpArticle[] = [
     tips: [
       'Use source "courses" to auto-show published courses without manual updating.',
       'Use source "posts" to auto-show latest blog posts.',
+      'Cards can link outside the site: paste any URL (e.g. "gansub.com/...") into the Link field and click "Use link". External links open in a new tab.',
     ],
   },
   {
@@ -839,6 +847,28 @@ export const helpArticles: HelpArticle[] = [
       { name: 'Section Background', description: 'Background color behind the menu.' },
     ],
   },
+  {
+    id: 'block-newsletterarchive',
+    title: 'Newsletter Archive',
+    category: 'blocks-dynamic',
+    keywords: ['newsletter', 'archive', 'arkiv', 'nyhetsbrev', 'utskick', 'sent', 'issues', 'get a newsletter'],
+    steps: [
+      'Drag "Newsletter Archive" from the Dynamic category in the block panel.',
+      'It automatically lists all sent newsletters, newest first — no manual updating needed.',
+      'Each row links to the newsletter\'s public web version, opening in a new tab.',
+      'Click the heading to edit it inline.',
+    ],
+    settings: [
+      { name: 'Max items (0 = all)', description: 'Limit how many newsletters are listed. 0 shows all.' },
+      { name: 'Empty text', description: 'Text shown when there are no newsletters to list.' },
+      { name: 'Section Background', description: 'Background color behind the list.' },
+    ],
+    tips: [
+      'The list comes straight from Get a Newsletter — send a newsletter and it appears here automatically (updates within an hour).',
+      'Pairs well with the Newsletter Signup block on a dedicated newsletter page.',
+      'Test sends are filtered out automatically.',
+    ],
+  },
 
   // ═══════════════════════════════════════
   // INTERACTIVE BLOCKS
@@ -899,6 +929,26 @@ export const helpArticles: HelpArticle[] = [
       'This block is designed for course pages — it reads the course data from the page context.',
       'After submission, users are redirected to Stripe checkout for payment.',
       'Bookings appear in the "Bookings" section of the admin.',
+    ],
+  },
+  {
+    id: 'block-newslettersignup',
+    title: 'Newsletter Signup',
+    category: 'blocks-interactive',
+    keywords: ['newsletter', 'signup', 'subscribe', 'nyhetsbrev', 'anmäl', 'prenumerera', 'email', 'e-post'],
+    steps: [
+      'Drag "Newsletter Signup" from the Interactive category in the block panel.',
+      'Click the heading, description, button text, or consent line to edit them inline.',
+      'The form is greyed out in the editor — that is intentional, it only accepts signups on the live site.',
+      'Publish the page. Visitors who sign up appear in the Newsletter section of the admin.',
+    ],
+    settings: [
+      { name: 'Email placeholder', description: 'Placeholder text inside the email field.' },
+      { name: 'Section Background', description: 'Background color behind the signup card.' },
+    ],
+    tips: [
+      'Signups land in the same Newsletter list as the popup and footer forms, and trigger the same email notification.',
+      'Good fit for the contact page or a dedicated newsletter page.',
     ],
   },
 
@@ -1028,7 +1078,7 @@ export const helpArticles: HelpArticle[] = [
     id: 'course-settings',
     title: 'Course Settings',
     category: 'content-management',
-    keywords: ['course settings', 'date', 'price', 'location', 'participants', 'deadline', 'capacity', 'registration', 'status', 'rename'],
+    keywords: ['course settings', 'date', 'price', 'location', 'participants', 'deadline', 'capacity', 'registration', 'status', 'rename', 'flera datum', 'löpande start', 'moms', 'date text', 'price note'],
     steps: [
       'Open a course in the editor by clicking its title or pencil icon in the Courses list.',
       'Click the title text at the top of the editor to rename the course.',
@@ -1043,7 +1093,9 @@ export const helpArticles: HelpArticle[] = [
       { name: 'Location', description: 'Where the course takes place (e.g. "Stockholm" or "Online").' },
       { name: 'Start date', description: 'Course start date. Shown on the course page and in listings.' },
       { name: 'End date', description: 'Course end date (optional, for multi-day courses).' },
+      { name: 'Date text (free text)', description: 'Shown INSTEAD of the dates when set — e.g. "4 utbildningsdagar: 12 sep, 3 okt…" or "Löpande start". Start date is still used for ordering.' },
       { name: 'Price (SEK)', description: 'Course price in Swedish kronor. Required for Stripe checkout to work.' },
+      { name: 'Price note', description: 'Short text after the price, e.g. "exkl. moms". Shown on cards and the course page.' },
       { name: 'Max participants', description: 'Maximum number of participants. Course auto-sets to "Full" when reached.' },
       { name: 'Registration deadline', description: 'Last date to register. After this, the booking form is disabled.' },
     ],
