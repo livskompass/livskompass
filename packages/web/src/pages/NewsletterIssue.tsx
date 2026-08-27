@@ -72,32 +72,34 @@ export default function NewsletterIssue() {
     }
   }, [status])
 
-  if (status === 'error') {
-    return (
-      <div className="mx-auto py-16 text-center" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
-        <p className="text-muted mb-6">Nyhetsbrevet kunde inte laddas.</p>
-        <Link to="/nyhetsbrev" className="text-accent underline">Till alla nyhetsbrev</Link>
-      </div>
-    )
-  }
-
   // Links inside the newsletter open in a new tab.
   const srcDoc = issue ? issue.html.replace(/<head([^>]*)>/i, '<head$1><base target="_blank">') : ''
 
+  // Match the page background to the newsletter's own body background so the
+  // top of the page blends seamlessly into the email. data-nav-theme="dark"
+  // flips the fixed site nav to its light variant over this area.
+  const bodyBg =
+    issue?.html.match(/<body[^>]*style="[^"]*background(?:-color)?:\s*(#[0-9a-fA-F]{3,8})/i)?.[1] || '#004638'
+
   return (
-    <div>
+    <div data-nav-theme="dark" style={{ background: bodyBg, minHeight: '60vh' }}>
       {/* pt-24 clears the fixed site header */}
       <div className="mx-auto pt-24 pb-6" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
-        <Link to="/nyhetsbrev" className="inline-flex items-center gap-1.5 text-body-sm text-muted hover:text-accent transition-colors">
+        <Link to="/nyhetsbrev" className="inline-flex items-center gap-1.5 text-body-sm text-white/70 hover:text-white transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Alla nyhetsbrev
         </Link>
       </div>
-      {status === 'loading' ? (
-        <div className="mx-auto animate-pulse" style={{ maxWidth: '42rem', paddingInline: 'var(--container-px)' }}>
-          <div className="h-72 rounded-xl bg-stone-200/60 mb-4" />
-          <div className="h-4 w-2/3 rounded bg-stone-200/60 mb-2" />
-          <div className="h-4 w-1/2 rounded bg-stone-200/50" />
+      {status === 'error' ? (
+        <div className="mx-auto py-16 text-center" style={{ maxWidth: 'var(--width-content)', paddingInline: 'var(--container-px)' }}>
+          <p className="text-white/80 mb-6">Nyhetsbrevet kunde inte laddas.</p>
+          <Link to="/nyhetsbrev" className="text-white underline">Till alla nyhetsbrev</Link>
+        </div>
+      ) : status === 'loading' ? (
+        <div className="mx-auto animate-pulse pb-16" style={{ maxWidth: '42rem', paddingInline: 'var(--container-px)' }}>
+          <div className="h-72 rounded-xl bg-white/10 mb-4" />
+          <div className="h-4 w-2/3 rounded bg-white/10 mb-2" />
+          <div className="h-4 w-1/2 rounded bg-white/5" />
         </div>
       ) : (
         <iframe
