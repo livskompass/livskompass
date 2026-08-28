@@ -195,6 +195,14 @@ export function useEditableText(propName: string, currentValue: string) {
         e.preventDefault()
         e.currentTarget.blur()
       }
+      // Editable text often sits inside a real <button> or <a> — Space would
+      // activate the parent and navigate away. Swallow the event and insert
+      // the character ourselves so typing still works.
+      if (e.key === ' ') {
+        e.preventDefault()
+        e.stopPropagation()
+        document.execCommand('insertText', false, ' ')
+      }
     },
     [],
   )
@@ -229,6 +237,9 @@ export function useEditableText(propName: string, currentValue: string) {
     suppressContentEditableWarning: true as const,
     onBlur: handleBlur,
     onKeyDown: handleKeyDown,
+    // Editable text often sits inside a real <a>/<button> — clicking it must
+    // start editing, not activate the parent (which navigates on the site).
+    onClick: (e: React.MouseEvent<HTMLElement>) => { e.preventDefault(); e.stopPropagation() },
     className: 'outline-none ring-0 hover:ring-1 hover:ring-stone-400/40 hover:ring-offset-2 focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 rounded-sm transition-shadow cursor-text' + (textColorClass ? ' ' + textColorClass : ''),
     style: sizeStyle,
     ...(isButtonText
@@ -293,6 +304,14 @@ export function useInlineEdit(propName: string, currentValue: string, componentI
         e.preventDefault()
         e.currentTarget.blur()
       }
+      // Editable text often sits inside a real <button> or <a> — Space would
+      // activate the parent and navigate away. Swallow the event and insert
+      // the character ourselves so typing still works.
+      if (e.key === ' ') {
+        e.preventDefault()
+        e.stopPropagation()
+        document.execCommand('insertText', false, ' ')
+      }
     },
     [],
   )
@@ -307,6 +326,7 @@ export function useInlineEdit(propName: string, currentValue: string, componentI
     suppressContentEditableWarning: true as const,
     onBlur: handleBlur,
     onKeyDown: handleKeyDown,
+    onClick: (e: React.MouseEvent<HTMLElement>) => { e.preventDefault(); e.stopPropagation() },
     className: INLINE_EDIT_CLASS,
     'data-inline-edit': propName,
   }
